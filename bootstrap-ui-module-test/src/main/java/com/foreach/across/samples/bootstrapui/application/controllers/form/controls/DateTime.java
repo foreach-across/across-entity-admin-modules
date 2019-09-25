@@ -65,7 +65,9 @@ class DateTime extends ExampleController
 				panel( "Localized fr_FR (Date)", datepickerLocalizedfrFR_Date().setControlName( "dp12" ) ),
 				panel( "Localized fr_FR (LocalDateTime)", datepickerLocalizedfrFR_LocalDateTime().setControlName( "dp13[]" ) ),
 				panel( "Localized ja_JP (Date)", datepickerLocalizedjaJP_Date().setControlName( "dp14" ) ),
-				panel( "Localized ja_JP (LocalDateTime)", datepickerLocalizedjaJP_LocalDateTime().setControlName( "dp15" ) )
+				panel( "Localized ja_JP (LocalDateTime)", datepickerLocalizedjaJP_LocalDateTime().setControlName( "dp15" ) ),
+				panel( "Date datepicker", bootstrap.builders.datetime().controlName( "date-dp1" ).date().value( LocalDate.now() ).build() ),
+				panel( "Time datepicker", bootstrap.builders.datetime().controlName( "time-dp1" ).time().value( LocalTime.now() ).build() )
 		);
 	}
 

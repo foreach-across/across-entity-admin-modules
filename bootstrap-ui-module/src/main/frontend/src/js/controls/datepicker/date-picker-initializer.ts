@@ -49,6 +49,7 @@ function initializeDateTimePickers( node: any ): void {
         $( this ).on( 'change.datetimepicker', ( e: any ) => formatAndSetDate( e.date ) );
         $( this ).find( 'input[type="text"]' ).on( 'blur focusout', () => {
             $( this ).data( 'datetimepicker' ).hide();
+            formatAndSetDate( $( this ).data( 'datetimepicker' ).date() );
         } );
 
         const initialDate = $( this ).data( 'datetimepicker' ).date();
