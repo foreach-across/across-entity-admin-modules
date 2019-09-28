@@ -21,10 +21,12 @@ hs_err_pid*
 
 ### Custom ignores
 target
-.idea
 *.iml
 db
 .DS_Store
 local-data
 node_modules
 bootstrap-demo-app/resources/views/static/bootstrapSample/theme
+.idea/$*
+.idea/libraries
+.idea/template

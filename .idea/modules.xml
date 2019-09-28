@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/admin-web-bootstrap-4-project.iml" filepath="$PROJECT_DIR$/admin-web-bootstrap-4-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bootstrap-theme/ax-bootstrap-theme.iml" filepath="$PROJECT_DIR$/bootstrap-theme/ax-bootstrap-theme.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bootstrap-demo-app/bootstrap-demo-app.iml" filepath="$PROJECT_DIR$/bootstrap-demo-app/bootstrap-demo-app.iml" />
+    </modules>
+  </component>
+</project>

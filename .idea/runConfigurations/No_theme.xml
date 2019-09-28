@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="No theme" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="bootstrap-demo-app" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.across.samples.bootstrap.BootstrapSampleApplication" />
+    <option name="ACTIVE_PROFILES" value="dev,theme-none" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
