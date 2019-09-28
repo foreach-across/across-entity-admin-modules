@@ -1,3 +1,21 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@charset "UTF-8";
+
 /*!**/
 /* * Copyright 2014 the original author or authors*/
 /* **/
@@ -14,20 +32,80 @@
 /* * limitations under the License.*/
 /* *!*/
 
-@charset "UTF-8";
 
 body {
     padding-top: 5rem;
 }
 
 /* Navbar styling*/
-.navbar-header {background: url("../images/across-logo.svg") no-repeat left center;padding-left: 20px;background-size: 35px 35px;}  .navbar-header .logo {position: absolute;max-width: 40px;top: 4px;left: 10px;}  .navbar-header .navbar-brand {padding-left: 43px;font-weight: 700;font-size: 0.95em;text-transform: uppercase;color: #eeeeee;}
+.navbar-header {
+    background: url("../images/across-logo.svg") no-repeat left center;
+    padding-left: 20px;
+    background-size: 35px 35px;
+}
+
+.navbar-header .logo {
+    position: absolute;
+    max-width: 40px;
+    top: 4px;
+    left: 10px;
+}
+
+.navbar-header .navbar-brand {
+    padding-left: 43px;
+    font-weight: 700;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    color: #eeeeee;
+}
 
 /* Toest styling*/
-.toast-message button.close {display: none;}  li.admin-nav-user-context.with-thumbnail > a {padding-bottom: 8px;padding-top: 12px;}  .admin-nav-user-context .admin-nav-user-context-thumbnail {width: 30px;height: 30px;border-radius: 5px;}
+.toast-message button.close {
+    display: none;
+}
+
+li.admin-nav-user-context.with-thumbnail > a {
+    padding-bottom: 8px;
+    padding-top: 12px;
+}
+
+.admin-nav-user-context .admin-nav-user-context-thumbnail {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+}
 
 /* Sortable styling*/
-table.table th.sortable{cursor:pointer}table.table th.sortable:after{color:#c4c4c4;content:' ↕';font-size:1em}table.table th.sortable:hover{opacity:0.95;background-color:#fff;text-decoration:none}table.table th.sortable:hover:after{color:#222223;text-decoration:none}table.table th.sortable.desc:after{content:' ↑';color:#222223}table.table th.sortable.asc:after{content:' ↓';color:#222223}
+table.table th.sortable {
+    cursor: pointer
+}
+
+table.table th.sortable:after {
+    color: #c4c4c4;
+    content: ' ↕';
+    font-size: 1em
+}
+
+table.table th.sortable:hover {
+    opacity: 0.95;
+    background-color: #fff;
+    text-decoration: none
+}
+
+table.table th.sortable:hover:after {
+    color: #222223;
+    text-decoration: none
+}
+
+table.table th.sortable.desc:after {
+    content: ' ↑';
+    color: #222223
+}
+
+table.table th.sortable.asc:after {
+    content: ' ↓';
+    color: #222223
+}
 
 
 /*!* todo: to bootstrap ui css! *!*/
@@ -113,3 +191,12 @@ table.table th.sortable{cursor:pointer}table.table th.sortable:after{color:#c4c4
 /*}*/
 
 
+/* These styles should be overridden by a theme */
+
+/* Developer tools nav item */
+.nav-panels .awm-nav-developer-tools .card-header i { float: right; margin-top: 0.25rem; }
+.nav-panels .awm-nav-developer-tools.card { border-color: var(--warning); }
+.nav-panels .awm-nav-developer-tools .card-header { background-color: var(--warning); }
+
+/* Page header */
+.page-header { margin-bottom: 1.5rem; }

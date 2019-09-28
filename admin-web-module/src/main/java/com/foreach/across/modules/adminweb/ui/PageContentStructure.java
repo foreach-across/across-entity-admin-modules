@@ -277,7 +277,6 @@ public class PageContentStructure extends AbstractNodeViewElement
 
 			NodeViewElement heading = new NodeViewElement( ELEMENT_PAGE_TITLE, "h3" );
 			heading.addCssClass( "page-header" );
-			heading.set( css.margin.bottom.s4, css.padding.bottom.s2, css.border.bottom );
 			heading.addChild( titleText );
 			heading.addChild( new TextViewElement( " " ) );
 
