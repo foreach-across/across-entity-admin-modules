@@ -34,8 +34,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
-import static com.foreach.across.modules.adminweb.resource.AdminWebIcons.*;
+import static com.foreach.across.modules.adminweb.resource.AdminWebIcons.ADMINISTRATION_HOME;
+import static com.foreach.across.modules.adminweb.resource.AdminWebIcons.USER_CONTEXT_MENU;
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Registers the user context menu item to render in the right navbar on the default template.
@@ -74,7 +77,7 @@ public final class DefaultAdminMenuRegistrar
 		                .attribute( AdminMenu.ATTR_NAV_POSITION, AdminWebLayoutTemplate.NAVBAR_RIGHT )
 		                .attribute( PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL, false )
 		                .attribute( UserContextAdminMenuGroup.ATTRIBUTE, userContextAdminMenuGroup )
-		                .attribute( "html:class", "admin-nav-user-context" )
+		                .attribute( customizeViewElement( css.of( "admin-nav-user-context" ) ) )
 		                .order( Ordered.LOWEST_PRECEDENCE );
 
 		if ( StringUtils.isNotEmpty( userContextAdminMenuGroup.getDisplayName() ) ) {
@@ -93,7 +96,7 @@ public final class DefaultAdminMenuRegistrar
 			NodeViewElement image = new NodeViewElement( "img" );
 			image.addCssClass( "admin-nav-user-context-thumbnail" );
 			image.setAttribute( "src", userContextAdminMenuGroup.getThumbnailUrl() );
-			group.attribute( "html:class", "nav-item admin-nav-user-context" )
+			group.attribute( customizeViewElement( css.of( "admin-nav-user-context", "with-thumbnail" ) ) )
 			     .attribute( NavComponentBuilder.ATTR_ICON, image );
 		}
 

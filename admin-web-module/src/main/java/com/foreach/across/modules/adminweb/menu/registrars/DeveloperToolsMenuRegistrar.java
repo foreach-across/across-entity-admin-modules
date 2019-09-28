@@ -52,7 +52,7 @@ public final class DeveloperToolsMenuRegistrar
 				         new String[] { AdminWebLayoutTemplate.NAVBAR_RIGHT, AdminWebLayoutTemplate.SIDEBAR }
 		         )
 		         .attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( DEVELOPER_TOOLS ) )
-		         .attribute( customizeViewElement( css.of( "awm-nav-developer-tools" ) ) )
+		         .attribute( customizeViewElement( css.of( "admin-nav-developer-tools" ) ) )
 		         .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 		         .order( Ordered.LOWEST_PRECEDENCE - 1 );
 	}

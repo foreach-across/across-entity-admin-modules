@@ -27,9 +27,9 @@ var AdminWebModule = (function( $ ) {
             };
 
             // render dismissible feedback section alerts as toastr notifications
-            $( '.alert-dismissible', node ).each( function() {
+            $( '.alert-dismissible:not(.no-toast)', node ).each( function() {
                 var alert = $( this );
-                alert.addClass( 'hidden' );
+                alert.addClass( 'd-none' );
 
                 var type = 'success';
                 if ( alert.hasClass( 'alert-danger' ) ) {

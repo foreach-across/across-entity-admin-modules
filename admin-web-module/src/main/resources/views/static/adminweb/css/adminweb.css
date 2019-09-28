@@ -16,63 +16,34 @@
 
 @charset "UTF-8";
 
-/*!**/
-/* * Copyright 2014 the original author or authors*/
-/* **/
-/* * Licensed under the Apache License, Version 2.0 (the "License");*/
-/* * you may not use this file except in compliance with the License.*/
-/* * You may obtain a copy of the License at*/
-/* **/
-/* * http://www.apache.org/licenses/LICENSE-2.0*/
-/* **/
-/* * Unless required by applicable law or agreed to in writing, software*/
-/* * distributed under the License is distributed on an "AS IS" BASIS,*/
-/* * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*/
-/* * See the License for the specific language governing permissions and*/
-/* * limitations under the License.*/
-/* *!*/
-
-
 body {
     padding-top: 5rem;
 }
 
 /* Navbar styling*/
-.navbar-header {
-    background: url("../images/across-logo.svg") no-repeat left center;
-    padding-left: 20px;
-    background-size: 35px 35px;
-}
-
-.navbar-header .logo {
-    position: absolute;
-    max-width: 40px;
-    top: 4px;
-    left: 10px;
-}
-
 .navbar-header .navbar-brand {
-    padding-left: 43px;
-    font-weight: 700;
-    font-size: 0.95em;
+    background: url("../images/across-logo.svg") no-repeat left center;
+    background-size: 32px 32px;
+    padding-left: 45px;
+    font-weight: 600;
+    font-size: 0.95rem;
     text-transform: uppercase;
     color: #eeeeee;
 }
 
-/* Toest styling*/
-.toast-message button.close {
-    display: none;
-}
-
-li.admin-nav-user-context.with-thumbnail > a {
-    padding-bottom: 8px;
-    padding-top: 12px;
+/* Top nav user context menu */
+.nav-item.admin-nav-user-context.with-thumbnail > a {
+    padding-left: 40px;
+    margin-left: 0.5rem;
 }
 
 .admin-nav-user-context .admin-nav-user-context-thumbnail {
-    width: 30px;
-    height: 30px;
     border-radius: 5px;
+    position: absolute;
+    display: block;
+    top: calc(50% - 17px);
+    left: 0.5rem;
+    max-height: 34px;
 }
 
 /* Sortable styling*/
@@ -194,9 +165,45 @@ table.table th.sortable.asc:after {
 /* These styles should be overridden by a theme */
 
 /* Developer tools nav item */
-.nav-panels .awm-nav-developer-tools .card-header i { float: right; margin-top: 0.25rem; }
-.nav-panels .awm-nav-developer-tools.card { border-color: var(--warning); }
-.nav-panels .awm-nav-developer-tools .card-header { background-color: var(--warning); }
+.nav-panels .admin-nav-developer-tools .card-header i {
+    float: right;
+    margin-top: 0.25rem;
+}
+
+.nav-panels .admin-nav-developer-tools.card {
+    border-color: var(--warning);
+}
+
+.nav-panels .admin-nav-developer-tools .card-header {
+    background-color: var(--warning);
+}
 
 /* Page header */
-.page-header { margin-bottom: 1.5rem; }
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+/* Dismissible alerts are displayed as toasts */
+.alert-dismissible:not(.no-toast) {
+    display: none;
+}
+
+/* Toasts */
+.toast {
+    top: 4rem;
+}
+.toast-message button.close {
+    display: none;
+}
+.toast-error {
+    background-color: var(--danger);
+}
+.toast-success {
+    background-color: var(--success);
+}
+.toast-info {
+     background-color: var(--info);
+}
+.toast-warning {
+    background-color: var(--warning);
+}

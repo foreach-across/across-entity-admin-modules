@@ -23,6 +23,7 @@ import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import static admin.application.config.CustomAdminWebIcons.*;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
@@ -70,7 +72,7 @@ public class PageContentStructureController
 				.item( "/one", "One", "#" ).order( 1 ).and()
 				.group( "/advanced", "Advanced settings" )
 				.order( 2 )
-				.attribute( "html:class", "pull-right" )
+				.attribute( NavComponentBuilder.customizeViewElement( css.cssFloat.right ) )
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 				.and()
 				.item( "/advanced/trash", "Move to trash", "#" )
@@ -79,7 +81,7 @@ public class PageContentStructureController
 				.group( "/two", "Two" ).order( 3 )
 				.attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( DOWNLOAD ) )
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
-				.attribute( "html:class", "pull-right" )
+				.attribute( NavComponentBuilder.customizeViewElement( css.cssFloat.right ) )
 				.and()
 				.item( "/two/one", "Item 1", "#" ).order( 1 ).and()
 				.item( "/two/two", "Item 2", "#" ).order( 2 ).and()
@@ -96,6 +98,7 @@ public class PageContentStructureController
 				.item( "/two/six", "Item 5", "#" ).order( 6 )
 				.and()
 				.build();
+		menu.select( MenuSelector.byPath( "/two/three/2" ) );
 		menu.sort();
 
 		page.setPageTitle( "Some page title..." );
@@ -105,6 +108,11 @@ public class PageContentStructureController
 		page.addToFeedback(
 				bootstrap.builders.alert().danger().dismissible()
 				                  .text( "Global feedback section with a lot of content that will be rendered as a toastr notification." )
+				                  .build( builderContext )
+		);
+		page.addToFeedback(
+				bootstrap.builders.alert().warning().dismissible().with( css.of( "no-toast" ) )
+				                  .text( "This is a dismissible alert which will never be rendered as a toast..." )
 				                  .build( builderContext )
 		);
 
