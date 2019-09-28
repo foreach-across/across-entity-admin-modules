@@ -19,12 +19,19 @@ import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.menu.PrefixContextMenuItemBuilderProcessor;
 import com.foreach.across.modules.web.menu.RequestMenuBuilder;
+import com.foreach.across.modules.web.menu.RequestMenuSelector;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
 
 public class AdminMenuBuilder extends RequestMenuBuilder<AdminMenu, AdminMenuEvent>
 {
-	@Autowired
 	private AdminWeb adminWeb;
+
+	@Autowired
+	public void setAdminWeb( AdminWeb adminWeb ) {
+		this.adminWeb = adminWeb;
+	}
 
 	@Override
 	public AdminMenu build() {
@@ -33,10 +40,11 @@ public class AdminMenuBuilder extends RequestMenuBuilder<AdminMenu, AdminMenuEve
 
 	@Override
 	public AdminMenuEvent createEvent( AdminMenu menu ) {
-		PathBasedMenuBuilder menuBuilder = new PathBasedMenuBuilder( new PrefixContextMenuItemBuilderProcessor(
-				adminWeb ) );
+		PathBasedMenuBuilder menuBuilder = new PathBasedMenuBuilder( new PrefixContextMenuItemBuilderProcessor( adminWeb ) );
 
-		menuBuilder.root( "/" ).title( "Administration" );
+		menuBuilder.root( "/" )
+		           .attribute( RequestMenuSelector.ATTRIBUTE_MATCHERS, Collections.singletonList( "" ) )
+		           .title( "Administration" );
 
 		return new AdminMenuEvent( menu, menuBuilder );
 	}
