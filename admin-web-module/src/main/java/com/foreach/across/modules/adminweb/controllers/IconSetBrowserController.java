@@ -23,7 +23,6 @@ import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -50,7 +49,7 @@ public class IconSetBrowserController
 	@GetMapping(path = "/{iconSetName}")
 	public String listIconSets( AdminMenu adminMenu, Model model, @PathVariable String iconSetName ) {
 		adminMenu.breadcrumbLeaf( iconSetName );
-		model.addAttribute( "icons", new TreeMap<String, AbstractNodeViewElement>( IconSetRegistry.getIconSet( iconSetName ).getAllRegisteredIcons() ) );
+		model.addAttribute( "icons", new TreeMap<>( IconSetRegistry.getIconSet( iconSetName ).getAllRegisteredIcons() ) );
 		model.addAttribute( "iconSetName", iconSetName );
 
 		page.setPageTitle( "IconSet: " + iconSetName );

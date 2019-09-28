@@ -16,25 +16,24 @@
 
 package com.foreach.across.modules.adminweb.config;
 
-import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.annotations.Module;
-import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.controllers.AuthenticationController;
-import com.foreach.across.modules.adminweb.menu.*;
-import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.adminweb.controllers.IconSetBrowserController;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
+import com.foreach.across.modules.adminweb.menu.AdminMenuBuilder;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenuBuilder;
 import com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConfiguration;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
+import lombok.RequiredArgsConstructor;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.annotation.AnnotationClassFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -42,20 +41,13 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import javax.annotation.PostConstruct;
 
 @Configuration
+@RequiredArgsConstructor
+@ComponentScan(basePackageClasses = AuthenticationController.class)
 public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfiguration
 {
-	@Autowired
-	@Module(AcrossModule.CURRENT_MODULE)
-	private AdminWebModule adminWebModule;
-
-	@Autowired
-	private MenuFactory menuFactory;
-
-	@Autowired
-	private AdminWebModuleSettings settings;
-
-	@Autowired
-	private LocaleProperties localeProperties;
+	private final MenuFactory menuFactory;
+	private final AdminWebModuleSettings settings;
+	private final LocaleProperties localeProperties;
 
 	@SuppressWarnings("unchecked")
 	@PostConstruct
@@ -100,15 +92,5 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 	@Bean
 	public EntityAdminMenuBuilder entityAdminMenuBuilder() {
 		return new EntityAdminMenuBuilder();
-	}
-
-	@Bean
-	public AuthenticationController authenticationController() {
-		return new AuthenticationController();
-	}
-
-	@Bean
-	public IconSetBrowserController iconSetBrowserController( PageContentStructure page) {
-		return new IconSetBrowserController(page);
 	}
 }
