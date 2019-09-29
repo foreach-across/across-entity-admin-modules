@@ -1,0 +1,16 @@
+/* Top navigation: breadcrumb and menu */
+
+.top-nav-menu .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+.top-nav-menu .dropdown-toggle:after {
+  display: none;
+}
+
+.breadcrumb {
+  background: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}

@@ -17,14 +17,13 @@
     </style>
 </head>
 <body>
-
-<div class="wrapper" th:unless="${isLoginPage}">
-
+<div class="layout-wrapper" th:unless="${isLoginPage}">
     <!--/* Main menu navigation */-->
-    <nav id="sidebar" class="sidebar collapse show py-2 px-3">
+    <nav id="sidebar" class="layout-sidebar">
         <div class="sidebar-header">
-            <a class="navbar-brand" th:if="${@adminWeb.title}" th:href="@{${#webapp.path('/')}}" th:text="${@adminWeb.title}">
-                application name
+            <a class="navbar-brand" th:href="@{${#webapp.path('/')}}" th:title="${@adminWeb.title}">
+                <span class="application-logo"></span>
+                <span class="application-name" th:text="${@adminWeb.title}">application name</span>
             </a>
         </div>
 
@@ -33,34 +32,14 @@
         <div th:if="${adminWebSidebarFixed}" class="sidebar-footer py-3">
             <across:view element="${adminWebNavbarRightNavigation}"/>
         </div>
-        <!--        <across:view element="${adminWebSidebarNavigation}"/>-->
-        <!--/*
-        <div class="navbar-header admin-navbar-title">
-
-        </div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#admin-top-navbar" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="admin-top-navbar">
-            <across:view element="${adminWebNavbarNavigation}"/>
-
-        </div>
-        */-->
     </nav>
 
     <!--/* Content body */-->
-    <div th:if="${childPage}" id="content" class="px-5 pb-5 pt-3">
-        <a class="sidebar-toggle" href="#sidebar" data-toggle="collapse" title="Toggle sidebar">
-            <i class="fas fa-align-left"></i>
-        </a>
-
-        <nav>
+    <div th:if="${childPage}" id="content" class="layout-content">
+        <nav class="top-nav d-flex justify-content-between flex-md-column-reverse flex-lg-row">
             <across:view element="${adminWebBreadcrumb}"/>
-            <th:block th:unless="${adminWebSidebarFixed}">
-                <across:view element="${adminWebNavbarRightNavigation}"/>
-            </th:block>
+            <across:view th:unless="${adminWebSidebarFixed}" element="${adminWebNavbarRightNavigation}"/>
         </nav>
-
         <div th:replace="${childPage} :: content"></div>
     </div>
 </div>

@@ -1,15 +1,18 @@
 package com.foreach.across.modules.adminwebthemes.layout;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.adminweb.events.UserContextAdminMenuGroup;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
+import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
+import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -19,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.resource.WebResource.css;
 
@@ -26,6 +30,11 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 {
 	public AdminWebSidebarLayoutTemplate() {
 		super( AdminWeb.NAME, "th/adminweb-themes/sidebar-layout" );
+	}
+
+	@EventListener
+	public void customizeTopNavigation( AdminMenuEvent adminMenu ) {
+		adminMenu.builder().group( UserContextAdminMenuGroup.MENU_PATH ).attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
 	}
 
 	@Override
@@ -70,8 +79,7 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 						MODEL_ATTR_NAVBAR_RIGHT,
 						key -> bootstrap.builders.nav()
 						                         .menu( adminMenu )
-						                         .navbar()
-						                         .with( BootstrapStyles.css.navbar.nav )
+						                         .with( css.of( "top-nav-menu" ) )
 						                         .keepGroupsAsGroup( true )
 						                         .replaceGroupBySelectedItem( false )
 						                         .filter( navPosition( NAVBAR_RIGHT, false ) )
@@ -89,6 +97,7 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 						MODEL_ATTR_BREADCRUMB,
 						key -> bootstrap.builders
 								.breadcrumb()
+								.with( css.of( "top-nav-breadcrumb" ) )
 								.menu( adminMenu )
 								.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
 								.build()

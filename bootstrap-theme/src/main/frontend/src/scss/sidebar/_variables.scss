@@ -1,0 +1,17 @@
+@import "../../../node_modules/bootstrap/scss/mixins";
+@import "../../../node_modules/bootstrap/scss/functions";
+
+/* Bootstrap variables */
+$enable-rounded: false;
+$enable-shadows: true;
+$enable-gradients: false;
+$enable-transitions: false;
+
+@import url(https://fonts.googleapis.com/css?family=Oxygen:400,300,700);
+
+$font-family-sans-serif: 'Oxygen', sans-serif;
+
+@import "../../../node_modules/bootstrap/scss/variables";
+
+/* Theme specific variables */
+$theme-sidebar-width: 300px !default;

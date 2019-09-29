@@ -1,0 +1,25 @@
+/* Main layout */
+body {
+  padding-top:0;
+}
+
+.layout-wrapper {
+  display: flex;
+  width: 100%
+}
+
+.layout-sidebar {
+  min-width: $theme-sidebar-width;
+  max-width: $theme-sidebar-width;
+  height: 100vh;
+  background-color: theme-color("dark");
+  padding: 1rem;
+}
+
+.layout-content {
+  position: absolute;
+  width: calc(100% - #{$theme-sidebar-width});
+  top: 0;
+  right: 0;
+  padding: 1.5rem 2rem;
+}
