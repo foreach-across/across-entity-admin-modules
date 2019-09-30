@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -64,37 +65,30 @@ public class EntityOverviewController
 		NodeViewElementBuilder row = bootstrap.builders.row();
 
 		entitiesByGroup.forEach( ( groupName, entities ) -> {
-			NodeViewElementBuilder body = html.builders.div().css( "panel-body" );
+			NodeViewElementBuilder body = html.builders.div().with( css.listGroup, css.listGroup.flush );
 
 			entities.forEach( entityConfiguration -> {
-				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+				EntityViewLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityViewLinkBuilder.class );
 				EntityMessageCodeResolver codeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 				body.add(
-						html.builders.p().add(
-								bootstrap.builders.link()
-								                  .text( codeResolver.getNameSingular() )
-								                  .url( linkBuilder.overview() )
-						)
+						bootstrap.builders.link()
+						                  .text( codeResolver.getNameSingular() )
+						                  .url( linkBuilder.toUriString() )
+						                  .with( css.listGroup.item, css.listGroup.item.action )
 				);
 			} );
 
 			row.add(
 					bootstrap.builders.column( Grid.Device.MD.width( 3 ) )
-					                  .add(
-							                  html.builders.div()
-							                               .css( "panel", "panel-primary" )
-							                               .add(
-									                               html.builders
-											                               .div()
-											                               .css( "panel-heading" )
-											                               .add(
-													                               html.builders.h3()
-													                                            .css( "panel-title" )
-													                                            .add( TextViewElement.text( groupName ) )
-											                               )
-							                               )
-							                               .add( body )
+					                  .add( html.builders.div()
+					                                     .with( css.card )
+					                                     .add( html.builders
+							                                           .div()
+							                                           .with( css.card.header )
+							                                           .add( TextViewElement.text( groupName ) )
+					                                     )
+					                                     .add( body )
 					                  )
 			);
 		} );
