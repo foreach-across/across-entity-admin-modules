@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -63,11 +64,14 @@ public class FormGroupElement extends AbstractNodeViewElement
 
 	/**
 	 * -- SETTER --
-	 * When rendering, should field errors be detected from the bound object.
+	 * When rendering, should field errors be detected from the bound object based on the control in this form group.
 	 * If {@code true} (default) the controlName of the form control will be used as property name of the bound
 	 * object, if no such property, an exception will occur when rendering.
 	 */
 	private boolean detectFieldErrors = true;
+
+	@Setter(value = AccessLevel.NONE)
+	private String[] fieldErrorsToShow = new String[0];
 
 	public FormGroupElement() {
 		super( "div" );
@@ -92,6 +96,21 @@ public class FormGroupElement extends AbstractNodeViewElement
 
 	public <V extends ViewElement> V getTooltip( Class<V> elementType ) {
 		return returnIfType( tooltip, elementType );
+	}
+
+	/**
+	 * Additional field names for which errors should be detected from the bound object.
+	 * These errors will be rendered no matter the setting of {@link #isDetectFieldErrors()}.
+	 * The latter will only auto-detect the field errors for the attached control.
+	 * <p/>
+	 * The {@link org.springframework.validation.Errors} object attached to the bound object
+	 * will be queried for the field errors with the given names.
+	 *
+	 * @param fieldNames field names
+	 */
+	public FormGroupElement setFieldErrorsToShow( String... fieldNames ) {
+		this.fieldErrorsToShow = fieldNames;
+		return this;
 	}
 
 	@Override
@@ -246,7 +265,6 @@ public class FormGroupElement extends AbstractNodeViewElement
 		super.setHtmlId( htmlId );
 		return this;
 	}
-
 
 	@Override
 	public FormGroupElement set( WitherSetter... setters ) {
