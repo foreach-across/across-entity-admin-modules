@@ -17,7 +17,6 @@
 package com.foreach.across.samples.entity.application.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdAuditableEntity;
-import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,9 +24,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**

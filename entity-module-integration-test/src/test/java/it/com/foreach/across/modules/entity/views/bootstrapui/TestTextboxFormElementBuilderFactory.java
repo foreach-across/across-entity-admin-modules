@@ -28,10 +28,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
 import com.foreach.across.modules.entity.web.EntityViewModel;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,8 +38,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

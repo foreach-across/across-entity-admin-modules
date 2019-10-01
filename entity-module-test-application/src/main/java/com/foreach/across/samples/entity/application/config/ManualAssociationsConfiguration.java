@@ -26,11 +26,11 @@ import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelpe
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;

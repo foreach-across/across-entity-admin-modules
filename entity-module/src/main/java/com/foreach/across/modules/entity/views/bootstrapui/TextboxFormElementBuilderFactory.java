@@ -32,11 +32,11 @@ import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProce
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;

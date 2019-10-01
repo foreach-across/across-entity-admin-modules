@@ -22,9 +22,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author Stijn Vanhoof
@@ -47,7 +47,7 @@ public class Friend extends SettableIdBasedEntity<Friend>
 			}
 	)
 	private Long id;
-	
+
 	@NotBlank
 	@Length(max = 250)
 	private String name;

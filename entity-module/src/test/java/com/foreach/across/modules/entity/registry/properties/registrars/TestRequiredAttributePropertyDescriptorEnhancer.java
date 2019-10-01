@@ -23,8 +23,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.querydsl.core.util.ReflectionUtils;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
@@ -34,6 +32,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

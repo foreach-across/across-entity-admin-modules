@@ -19,9 +19,9 @@ package com.foreach.across.testmodules.mongo.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author Arne Vandamme

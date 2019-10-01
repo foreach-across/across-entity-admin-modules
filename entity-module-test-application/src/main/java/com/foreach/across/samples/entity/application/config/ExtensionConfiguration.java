@@ -35,13 +35,13 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.Partner;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;

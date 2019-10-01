@@ -16,13 +16,13 @@
 
 package com.foreach.across.testmodules.springdata.business;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Represents a link between client and group, with an extra role property.  This is the role
