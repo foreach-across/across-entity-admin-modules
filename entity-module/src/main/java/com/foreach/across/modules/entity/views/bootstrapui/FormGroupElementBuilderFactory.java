@@ -25,10 +25,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupDescriptionTextPostProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupHelpTextPostProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupRequiredPostProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupTooltipTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.*;
 import com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -67,16 +64,19 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 		ViewElementBuilder controlBuilder = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, controlMode );
 
-		FormGroupElementBuilder formGroup = bootstrap.builders.formGroup().name( NAME_PREFIX + propertyDescriptor.getName() )
-		                                               .data( "em-property", propertyDescriptor.getName() )
-		                                               .control( controlBuilder );
+		FormGroupElementBuilder formGroup = bootstrap.builders
+				.formGroup()
+				.name( NAME_PREFIX + propertyDescriptor.getName() )
+				.data( "em-property", propertyDescriptor.getName() )
+				.control( controlBuilder );
 
 		// add form write post processors
 		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode.forSingle() ) ) {
 			formGroup.postProcessor( new FormGroupRequiredPostProcessor<>() )
 			         .postProcessor( new FormGroupDescriptionTextPostProcessor<>() )
 			         .postProcessor( new FormGroupTooltipTextPostProcessor<>() )
-			         .postProcessor( new FormGroupHelpTextPostProcessor<>() );
+			         .postProcessor( new FormGroupHelpTextPostProcessor<>() )
+			         .postProcessor( new FormGroupFieldErrorsPostProcessor<>() );
 		}
 
 		// todo: clean this up, work with separate control (?) allow list value to be without link, but other to be with

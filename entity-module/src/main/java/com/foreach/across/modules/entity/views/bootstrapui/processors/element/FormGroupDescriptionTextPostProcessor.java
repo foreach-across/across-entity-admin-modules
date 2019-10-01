@@ -26,7 +26,6 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -57,9 +56,9 @@ public class FormGroupDescriptionTextPostProcessor<T extends ViewElement> extend
 
 			if ( !StringUtils.isEmpty( text ) ) {
 				element.setDescriptionBlock(
-						html.builders.div(css.form.text, css.margin.bottom.s1)
-						      .add( new TextViewElement( text, escapeHtml ) )
-						      .build( builderContext )
+						html.builders.div( css.form.text, css.margin.bottom.s1 )
+						             .add( new TextViewElement( text, escapeHtml ) )
+						             .build( builderContext )
 				);
 			}
 		}
