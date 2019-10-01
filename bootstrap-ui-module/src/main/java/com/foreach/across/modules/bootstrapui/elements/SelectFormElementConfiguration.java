@@ -54,7 +54,7 @@ public class SelectFormElementConfiguration extends TreeMap<String, Object>
 	}
 
 	public SelectFormElementConfiguration() {
-		setDropupAuto( false );
+		setDropupAuto( true );
 	}
 
 	/**
