@@ -47,7 +47,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select data-bootstrapui-adapter-type='bootstrap-select' name='boxName' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' />"
+				"<select data-bootstrapui-adapter-type='bootstrap-select' name='boxName' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:true}' />"
 		);
 	}
 
