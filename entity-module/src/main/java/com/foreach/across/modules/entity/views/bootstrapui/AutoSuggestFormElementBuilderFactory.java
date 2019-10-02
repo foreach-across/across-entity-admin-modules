@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.DEFAULT_DATASET;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.setAttribute;
@@ -156,11 +157,11 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 			                    table.setAttribute( "data-role", "items" );
 
 			                    if ( items.isEmpty() ) {
-				                    table.addCssClass( "hidden" );
+				                    table.set( css.display.none );
 			                    }
 
 			                    TableViewElement.Row hidden = new TableViewElement.Row();
-			                    hidden.addCssClass( "hidden" );
+			                    hidden.set( css.display.none );
 			                    table.addChild( hidden );
 
 			                    items.forEach( item -> {

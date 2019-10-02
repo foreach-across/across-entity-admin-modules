@@ -16,38 +16,28 @@
 
 package com.foreach.across.samples.entity.application.config;
 
-import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
-import com.foreach.across.modules.spring.security.actions.AllowableActions;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.samples.entity.application.business.Friend;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * @author Stijn Vanhoof
- * @since 3.3.0
- */
 @Configuration
+@RequiredArgsConstructor
 public class FriendConfiguration implements EntityConfigurer
 {
+	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
+
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Friend.class )
-		        .allowableActionsBuilder(
-				        new EntityConfigurationAllowableActionsBuilder()
-				        {
-					        @Override
-					        public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
-						        return new AllowableActionSet();
-					        }
-
-					        @Override
-					        public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
-						        return new AllowableActionSet();
-					        }
-				        }
+		        .properties(
+				        props -> props.property( "users" )
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+				                      .attribute( autoSuggestData.entityQuery( "name ilike '%{0}%'" ) )
 		        );
 	}
 }

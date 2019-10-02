@@ -27,7 +27,7 @@ export class MultiValueAutoSuggest
         const editItemTemplate = element.find( '[data-role=edit-item-template]' ).first();
 
         if ( items.find( 'tr' ).length > 1 ) {
-            items.removeClass( 'hidden' );
+            items.removeClass( 'd-none' );
         }
 
         const triggerChange = () => {
@@ -41,7 +41,7 @@ export class MultiValueAutoSuggest
             e.preventDefault();
             $( e.currentTarget ).closest( '[data-role=item]' ).remove();
             if ( items.find( 'tr' ).length === 1 ) {
-                items.addClass( 'hidden' );
+                items.addClass( 'd-none' );
             }
             triggerChange();
         };
@@ -62,7 +62,7 @@ export class MultiValueAutoSuggest
                                     .replace( '{{label}}', MultiValueAutoSuggest.escapeHtml( '' + selectedValue.label ) ) );
                     item.find( '[data-action=remove-item]' ).click( removeHandler );
                     items.append( item );
-                    items.removeClass( 'hidden' );
+                    items.removeClass( 'd-none' );
                 }
                 adapter.reset();
                 triggerChange();
