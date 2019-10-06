@@ -36,8 +36,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport<EntityViewLinkBuilder>
 		implements EntityLinkBuilder
 {
-	EntityViewLinkBuilder( UriComponentsBuilder uriComponents, EntityViewLinks links ) {
-		super( uriComponents, links );
+	EntityViewLinkBuilder( UriComponentsBuilder uriComponents, EntityViewLinks links, EntityViewRouterB router ) {
+		super( uriComponents, links, router );
 	}
 
 	/**
@@ -51,7 +51,7 @@ public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport
 	 * @return create new instance view
 	 */
 	public EntityViewLinkBuilderSupport createView() {
-		return new EntityViewLinkBuilderSupport( toUriComponentsBuilder().pathSegment( "create" ), links );
+		return new EntityViewLinkBuilderSupport( toUriComponentsBuilder().pathSegment( "create" ), links, router );
 	}
 
 	@Deprecated
@@ -110,13 +110,16 @@ public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport
 	{
 		private final EntityConfiguration<Object> entityConfiguration;
 
-		ForEntityConfiguration( UriComponentsBuilder uriComponents, EntityConfiguration<Object> entityConfiguration, EntityViewLinks links ) {
-			super( uriComponents.pathSegment( entityConfiguration.getName() ), links );
+		ForEntityConfiguration( UriComponentsBuilder uriComponents,
+		                        EntityConfiguration<Object> entityConfiguration,
+		                        EntityViewLinks links,
+		                        EntityViewRouterB router ) {
+			super( router.applyEntityRoot( uriComponents, entityConfiguration ), links, router );
 			this.entityConfiguration = entityConfiguration;
 		}
 
 		ForEntityConfiguration( UriComponentsBuilder uriComponents, ForEntityConfiguration original ) {
-			super( uriComponents, original.links );
+			super( uriComponents, original.links, original.router );
 			this.entityConfiguration = original.entityConfiguration;
 		}
 
@@ -127,7 +130,8 @@ public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport
 
 		@Override
 		public SingleEntityViewLinkBuilder.ForEntityConfiguration withId( @NonNull Object id ) {
-			return new SingleEntityViewLinkBuilder.ForEntityConfiguration( toUriComponentsBuilder(), entityConfiguration, links.convertId( id ), links );
+			return new SingleEntityViewLinkBuilder.ForEntityConfiguration( toUriComponentsBuilder(), entityConfiguration, links.convertId( id ), links,
+			                                                               router );
 		}
 
 		@Override
@@ -152,14 +156,18 @@ public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport
 		private final EntityAssociation entityAssociation;
 		private final String parentEntityId;
 
-		ForEntityAssociation( UriComponentsBuilder uriComponents, EntityAssociation entityAssociation, String parentEntityId, EntityViewLinks links ) {
-			super( uriComponents.pathSegment( "associations", entityAssociation.getName() ), links );
+		ForEntityAssociation( UriComponentsBuilder uriComponents,
+		                      EntityAssociation entityAssociation,
+		                      String parentEntityId,
+		                      EntityViewLinks links,
+		                      EntityViewRouterB router ) {
+			super( router.applyAssociationPath( uriComponents, entityAssociation ), links, router );
 			this.entityAssociation = entityAssociation;
 			this.parentEntityId = parentEntityId;
 		}
 
 		ForEntityAssociation( UriComponentsBuilder uriComponents, ForEntityAssociation original ) {
-			super( uriComponents, original.links );
+			super( uriComponents, original.links, original.router );
 			entityAssociation = original.entityAssociation;
 			parentEntityId = original.parentEntityId;
 		}
@@ -203,7 +211,7 @@ public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport
 				case LINKED:
 					return links.linkTo( entityAssociation.getTargetEntityConfiguration() ).withId( id ).withFromUrl( toUriString() );
 				default:
-					return new SingleEntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder().pathSegment( links.convertId( id ) ), links );
+					return new SingleEntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder().pathSegment( links.convertId( id ) ), links, router );
 			}
 		}
 

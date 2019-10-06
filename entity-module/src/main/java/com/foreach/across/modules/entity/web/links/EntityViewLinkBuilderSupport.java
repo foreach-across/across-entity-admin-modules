@@ -37,12 +37,14 @@ public class EntityViewLinkBuilderSupport<T extends EntityViewLinkBuilderSupport
 {
 	private final DelegatingUriComponentsBuilders uriComponents;
 	protected final EntityViewLinks links;
+	protected final EntityViewRouterB router;
 
-	public EntityViewLinkBuilderSupport( UriComponentsBuilder uriComponents, EntityViewLinks links ) {
-		this.uriComponents =
-				uriComponents instanceof DelegatingUriComponentsBuilders ? (DelegatingUriComponentsBuilders) uriComponents : new DelegatingUriComponentsBuilders(
-						uriComponents );
+	public EntityViewLinkBuilderSupport( UriComponentsBuilder uriComponents, EntityViewLinks links, EntityViewRouterB router ) {
+		this.uriComponents = uriComponents instanceof DelegatingUriComponentsBuilders
+				? (DelegatingUriComponentsBuilders) uriComponents : new DelegatingUriComponentsBuilders( uriComponents );
+
 		this.links = links;
+		this.router = router;
 	}
 
 	/**
@@ -162,7 +164,7 @@ public class EntityViewLinkBuilderSupport<T extends EntityViewLinkBuilderSupport
 
 	@SuppressWarnings("unchecked")
 	protected T cloneLinkBuilder( UriComponentsBuilder uriComponents ) {
-		return (T) new EntityViewLinkBuilderSupport( uriComponents, links );
+		return (T) new EntityViewLinkBuilderSupport( uriComponents, links, router );
 	}
 
 	private static class DelegatingUriComponentsBuilders extends UriComponentsBuilder

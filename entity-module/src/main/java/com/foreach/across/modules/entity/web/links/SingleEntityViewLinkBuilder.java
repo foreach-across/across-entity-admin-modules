@@ -27,8 +27,8 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderSupport<SingleEntityViewLinkBuilder>
 {
-	SingleEntityViewLinkBuilder( UriComponentsBuilder uriComponents, EntityViewLinks links ) {
-		super( uriComponents, links );
+	SingleEntityViewLinkBuilder( UriComponentsBuilder uriComponents, EntityViewLinks links, EntityViewRouterB router ) {
+		super( uriComponents, links, router );
 	}
 
 	/**
@@ -108,8 +108,9 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 		ForEntityConfiguration( UriComponentsBuilder uriComponents,
 		                        EntityConfiguration<Object> entityConfiguration,
 		                        String instanceId,
-		                        EntityViewLinks links ) {
-			super( uriComponents, links );
+		                        EntityViewLinks links,
+		                        EntityViewRouterB router ) {
+			super( uriComponents, links, router );
 
 			this.entityConfiguration = entityConfiguration;
 			this.instanceId = instanceId;
@@ -118,7 +119,7 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 		}
 
 		private ForEntityConfiguration( UriComponentsBuilder uriComponents, ForEntityConfiguration original ) {
-			super( uriComponents, original.links );
+			super( uriComponents, original.links, original.router );
 
 			entityConfiguration = original.entityConfiguration;
 			instanceId = original.instanceId;
@@ -135,7 +136,7 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 					throw new IllegalArgumentException( "No EntityAssociation nor EntityConfiguration registered with name " + associationName );
 				}
 			}
-			return new EntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder(), association, this.instanceId, this.links );
+			return new EntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder(), association, this.instanceId, this.links, this.router );
 		}
 
 		@Override
@@ -146,7 +147,7 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 				return links.linkTo( targetConfiguration ).withFromUrl( toUriString() );
 			}
 
-			return new EntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder(), association, this.instanceId, this.links );
+			return new EntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder(), association, this.instanceId, this.links, this.router );
 		}
 
 		@Override
@@ -158,7 +159,7 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 				return links.linkTo( targetConfiguration ).forInstance( target ).withFromUrl( toUriString() );
 			}
 
-			return new EntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder(), association, this.instanceId, this.links )
+			return new EntityViewLinkBuilder.ForEntityAssociation( toUriComponentsBuilder(), association, this.instanceId, this.links, this.router )
 					.forInstance( target );
 		}
 
@@ -187,8 +188,8 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 
 	public static class ForEntityAssociation extends SingleEntityViewLinkBuilder
 	{
-		ForEntityAssociation( UriComponentsBuilder uriComponents, EntityViewLinks links ) {
-			super( uriComponents, links );
+		ForEntityAssociation( UriComponentsBuilder uriComponents, EntityViewLinks links, EntityViewRouterB router ) {
+			super( uriComponents, links, router );
 		}
 
 		@Override
@@ -208,7 +209,7 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 
 		@Override
 		protected ForEntityAssociation cloneLinkBuilder( UriComponentsBuilder uriComponents ) {
-			return new ForEntityAssociation( uriComponents, this.links );
+			return new ForEntityAssociation( uriComponents, this.links, this.router );
 		}
 	}
 }

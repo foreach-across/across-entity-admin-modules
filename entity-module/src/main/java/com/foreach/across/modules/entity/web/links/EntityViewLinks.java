@@ -108,10 +108,10 @@ public class EntityViewLinks
 	 */
 	@SuppressWarnings("unchecked")
 	public ForEntityConfiguration linkTo( EntityConfiguration<?> entityConfiguration ) {
-		return new ForEntityConfiguration( newUriComponents(), (EntityConfiguration<Object>) entityConfiguration, this );
+		return new ForEntityConfiguration( newUriComponents(), (EntityConfiguration<Object>) entityConfiguration, this, new EntityViewRouterB() );
 	}
 
-	private UriComponentsBuilder newUriComponents() {
+	UriComponentsBuilder newUriComponents() {
 		return UriComponentsBuilder.newInstance().path( rootPath );
 	}
 
