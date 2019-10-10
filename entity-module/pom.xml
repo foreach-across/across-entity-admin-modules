@@ -122,6 +122,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.foreach.libs</groupId>
 			<artifactId>common-test</artifactId>
 			<scope>test</scope>
@@ -173,7 +183,7 @@
 						<inherited>true</inherited>
 						<id>aggregate</id>
 						<goals>
-                            <goal>aggregate-no-fork</goal>
+							<goal>aggregate-no-fork</goal>
 						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
