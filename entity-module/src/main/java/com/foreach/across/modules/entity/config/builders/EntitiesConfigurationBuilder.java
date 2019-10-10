@@ -23,10 +23,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -41,8 +38,6 @@ import java.util.function.Predicate;
  *
  * @author Arne Vandamme
  */
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntitiesConfigurationBuilder
 {
 	private final List<EntityConfigurationBuilder<?>> newConfigurationBuilders = new ArrayList<>();
@@ -53,10 +48,9 @@ public class EntitiesConfigurationBuilder
 
 	private EntityConfigurationBuilder<Object> allBuilder;
 
-	private BeanFactory beanFactory;
+	private final BeanFactory beanFactory;
 
-	@Autowired
-	public EntitiesConfigurationBuilder( BeanFactory beanFactory ) {
+	EntitiesConfigurationBuilder( @NonNull AutowireCapableBeanFactory beanFactory ) {
 		this.beanFactory = beanFactory;
 	}
 
@@ -140,7 +134,7 @@ public class EntitiesConfigurationBuilder
 	 * @param entityRegistry to modify
 	 */
 	@SuppressWarnings("unchecked")
-	public void apply( @NonNull MutableEntityRegistry entityRegistry ) {
+	void apply( @NonNull MutableEntityRegistry entityRegistry ) {
 		List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders = new ArrayList<>();
 
 		// First create manual new entities

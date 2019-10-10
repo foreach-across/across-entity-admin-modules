@@ -67,7 +67,7 @@ public class ExtensionConfiguration implements EntityConfigurer
 						                    item -> item.attribute( NavComponentBuilder.ATTR_ICON,
 						                                            IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "external-link-alt" ) ) )
 						        .andThen( formSettings().forExtension( true ).formLayout( Grid.create( 12 ) ) )
-						        .andThen( builder -> builder.viewProcessor( new PartnerExtensionViewProcessor() ) )
+						        .andThen( builder -> builder.viewProcessor( vp -> vp.createBean( PartnerExtensionViewProcessor.class ) ) )
 		        );
 	}
 
