@@ -20,8 +20,11 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.samples.entity.application.business.Friend;
+import com.foreach.across.samples.entity.application.business.Hobby;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,14 +33,38 @@ import org.springframework.context.annotation.Configuration;
 public class FriendConfiguration implements EntityConfigurer
 {
 	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
+	private final EntityPropertyRegistrationHelper proxyPropertyRegistrar;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Friend.class )
 		        .properties(
-				        props -> props.property( "users" )
+				        props -> props.property( proxyPropertyRegistrar.entityIdProxy( "hobby" )
+				                                                       .entityType( Hobby.class )
+				                                                       .targetPropertyName( "hobbyId" ) )
+				                      .and()
+				                      .property( "hobbyId" )
+				                      .hidden( true )
+				                      .and()
+				                      .property( "users" )
 				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
 				                      .attribute( autoSuggestData.entityQuery( "name ilike '%{0}%'" ) )
+		        )
+		        .listView(
+				        lvb -> lvb.showProperties( ".", "~hobby" )
+		        );
+
+		entities.withType( Hobby.class )
+		        .association(
+				        ab -> ab.name( "users" )
+				                .associationType( EntityAssociation.Type.EMBEDDED )
+				                .targetEntityType( Friend.class )
+				                .targetProperty( "hobby" )
+				                .listView()
+				                .detailView()
+				                .updateFormView()
+				                .createFormView()
+				                .show()
 		        );
 	}
 }

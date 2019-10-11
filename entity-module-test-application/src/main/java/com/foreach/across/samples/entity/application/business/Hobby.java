@@ -20,33 +20,25 @@ import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.Set;
-import java.util.TreeSet;
 
-/**
- * @author Stijn Vanhoof
- * @since 3.3.0
- */
 @Entity
-@Table(name = "test_friend")
+@Table(name = "test_hobby")
 @Getter
 @Setter
-public class Friend extends SettableIdBasedEntity<Friend>
+public class Hobby extends SettableIdBasedEntity<Hobby>
 {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "seq_test_friend_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "seq_test_hobby_id")
 	@GenericGenerator(
-			name = "seq_test_friend_id",
+			name = "seq_test_hobby_id",
 			strategy = AcrossSequenceGenerator.STRATEGY,
 			parameters = {
-					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_test_friend_id"),
+					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_test_hobby_id"),
 					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "1")
 			}
 	)
@@ -55,16 +47,4 @@ public class Friend extends SettableIdBasedEntity<Friend>
 	@NotBlank
 	@Length(max = 250)
 	private String name;
-
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-	@ManyToMany(fetch = FetchType.EAGER)
-	@BatchSize(size = 50)
-	@JoinTable(
-			name = "test_friend_user",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "friend_id"))
-	private Set<User> users = new TreeSet<>();
-
-	@Column
-	private Long hobbyId;
 }
