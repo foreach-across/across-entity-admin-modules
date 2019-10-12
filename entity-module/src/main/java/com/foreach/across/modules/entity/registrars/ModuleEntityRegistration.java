@@ -23,7 +23,7 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.events.AcrossContextBootstrappedEvent;
 import com.foreach.across.core.events.AcrossModuleBootstrappedEvent;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
-import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityRegistryConfigurer;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -92,12 +92,12 @@ public class ModuleEntityRegistration
 		AcrossContextBeanRegistry beanRegistry = AcrossContextUtils.getBeanRegistry( contextBootstrappedEvent.getContext() );
 
 		// Configure the configuration builder
-		EntitiesConfigurationBuilder builder = new EntitiesConfigurationBuilder( beanFactory );
+		EntityRegistryConfigurer registryBuilder = new EntityRegistryConfigurer( beanFactory );
 		for ( EntityConfigurer configurer : beanRegistry.getBeansOfType( EntityConfigurer.class, true ) ) {
-			configurer.configure( builder );
+			registryBuilder.add( configurer );
 		}
 
-		builder.apply( entityRegistry );
+		registryBuilder.applyTo( entityRegistry );
 	}
 
 	private void applyModule( AcrossModuleInfo moduleInfo ) {

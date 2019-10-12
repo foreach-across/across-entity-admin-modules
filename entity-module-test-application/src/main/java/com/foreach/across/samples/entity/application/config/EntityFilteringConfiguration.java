@@ -60,7 +60,6 @@ import com.foreach.across.samples.entity.application.repositories.UserRepository
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.convert.TypeDescriptor;
@@ -160,9 +159,12 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                   .associationType( EntityAssociation.Type.EMBEDDED )
 		                                   .listView( "customListView",
 		                                              lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( Collections.emptyList(), pageable, 0L ) )
-		                                                        .postProcess( AssociationHeaderViewProcessor.class,
-		                                                                      p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
-		                                                                            .setAddEntityMenu( true ) )
+		                                                        .viewProcessor(
+				                                                        vp -> vp.withType( AssociationHeaderViewProcessor.class )
+				                                                                .configure( p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
+				                                                                                  .setAddEntityMenu( true ) )
+				                                                                .deferred()
+		                                                        )
 		                                   )
 		                                   .formView( "customView", basicSettings().adminMenu( "customView" )
 		                                                                           .andThen( formSettings().forExtension( false )
@@ -200,7 +202,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				                                          .<User>valueFetcher( user -> user.getId() + " - " + user.getName() )
                                           )
                                           .showResultNumber( false )
-                                          .viewProcessor( new EntityViewProcessorAdapter()
+                                          .viewProcessor( vp -> vp.provideBean( new EntityViewProcessorAdapter()
                                           {
 	                                          @Override
 	                                          protected void registerWebResources( EntityViewRequest entityViewRequest,
@@ -211,7 +213,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				                                                         .toBucket( WebResource.JAVASCRIPT_PAGE_END )
 		                                          );
 	                                          }
-                                          } )
+                                          } ) )
                                           .entityQueryFilter( eqf -> eqf.showProperties( "name", "group", "active" )
                                                                         .basicMode( true )
                                                                         .advancedMode( true )
@@ -233,7 +235,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		             .listView(
 				             lvb -> lvb.defaultSort( "name" )
 				                       .entityQueryFilter( false )
-				                       .viewProcessor( partnerFilterProcessor() )
+				                       .viewProcessor( vb -> vb.createBean( PartnerFilterProcessor.class ) )
 		             );
 
 		// Custom filters on users under Group
@@ -269,20 +271,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				                     .associationType( EntityAssociation.Type.EMBEDDED )
 				                     .listView(
 						                     lvb -> lvb.defaultSort( new Sort( "name" ) )
-						                               .viewProcessor( userInGroupFilterProcessor() )
+						                               .viewProcessor( vb -> vb.createBean( UserInGroupFilterProcessor.class ) )
 				                     )
 		             )
 		             .attribute( EntityAttributes.OPTIONS_ENTITY_QUERY, "name like 'animals%' order by id desc" );
-	}
-
-	@Bean
-	protected PartnerFilterProcessor partnerFilterProcessor() {
-		return new PartnerFilterProcessor();
-	}
-
-	@Bean
-	protected UserInGroupFilterProcessor userInGroupFilterProcessor() {
-		return new UserInGroupFilterProcessor();
 	}
 
 	/**
