@@ -17,6 +17,7 @@
 package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
@@ -35,6 +36,7 @@ import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAda
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
+import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
@@ -51,6 +53,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.Note;
 import com.foreach.across.samples.entity.application.business.Partner;
@@ -73,6 +76,7 @@ import org.springframework.web.bind.WebDataBinder;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
@@ -210,7 +214,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	                                                                               WebResourceRegistry webResourceRegistry ) {
 		                                          webResourceRegistry.apply(
 				                                          WebResourceRule.add( WebResource.javascript( "@static:/entityModuleTest/js/test.js" ) )
-				                                                         .toBucket( WebResource.JAVASCRIPT_PAGE_END )
+				                                                         .toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+				                                          WebResourceRule
+						                                          .add( WebResource.javascript( "@static:/entityModuleTest/js/summary-view-extension.js" ) )
+						                                          .toBucket( WebResource.JAVASCRIPT_PAGE_END )
 		                                          );
 	                                          }
                                           } ) )
@@ -225,7 +232,25 @@ public class EntityFilteringConfiguration implements EntityConfigurer
                                                                         )
                                           )
                      )
-                     .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group", "address" ) );
+                     .view(
+		                     EntityView.SUMMARY_VIEW_NAME,
+		                     vb -> vb.showProperties( "name", "group", "address" )
+		                             .viewProcessor( vp -> vp.provideBean( new EntityViewProcessorAdapter()
+		                             {
+			                             @Override
+			                             protected void render( EntityViewRequest entityViewRequest,
+			                                                    EntityView entityView,
+			                                                    ContainerViewElementBuilderSupport<?, ?> containerBuilder,
+			                                                    ViewElementBuilderMap builderMap,
+			                                                    ViewElementBuilderContext builderContext ) {
+				                             containerBuilder.add(
+						                             bootstrap.builders.button( BootstrapStyles.css.button.primary )
+						                                               .text( "Say hello" )
+						                                               .data( "say-hello", true )
+				                             );
+			                             }
+		                             } ) )
+                     );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );
