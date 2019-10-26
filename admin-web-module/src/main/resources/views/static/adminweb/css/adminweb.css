@@ -192,18 +192,28 @@ table.table th.sortable.asc:after {
 .toast {
     top: 4rem;
 }
+
 .toast-message button.close {
     display: none;
 }
+
 .toast-error {
     background-color: var(--danger);
 }
+
 .toast-success {
     background-color: var(--success);
 }
+
 .toast-info {
-     background-color: var(--info);
+    background-color: var(--info);
 }
+
 .toast-warning {
     background-color: var(--warning);
+}
+
+/* Show invalid feedback inside form groups */
+.form-group.is-invalid .invalid-feedback {
+    display: block;
 }
