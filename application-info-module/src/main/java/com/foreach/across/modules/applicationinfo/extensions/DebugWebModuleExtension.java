@@ -18,10 +18,13 @@ package com.foreach.across.modules.applicationinfo.extensions;
 
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.applicationinfo.controllers.ApplicationInfoController;
+import com.foreach.across.modules.applicationinfo.controllers.rest.ApplicationInfoRestController;
+import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 
 /**
  * Configuration that sets the default debug web dashboard to the application info controller.
@@ -29,15 +32,25 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Arne Vandamme
  * @since 1.0.1
  */
-@ModuleConfiguration("DebugWebModule")
+@ModuleConfiguration(DebugWebModule.NAME)
 @Slf4j
-public class DebugWebModuleConfiguration
+class DebugWebModuleExtension
 {
 	@Autowired
 	public void registerDashboardIfNecessary( DebugWebModuleSettings settings ) {
 		if ( StringUtils.equals( settings.getDashboard(), "/" ) ) {
-			log.trace( "Registering debug dashboard to application info controller" );
+			LOG.trace( "Registering debug dashboard to application info controller" );
 			settings.setDashboard( ApplicationInfoController.PATH );
 		}
+	}
+
+	@Bean
+	public ApplicationInfoController applicationInfoController() {
+		return new ApplicationInfoController();
+	}
+
+	@Bean
+	public ApplicationInfoRestController applicationInfoRestController() {
+		return new ApplicationInfoRestController();
 	}
 }

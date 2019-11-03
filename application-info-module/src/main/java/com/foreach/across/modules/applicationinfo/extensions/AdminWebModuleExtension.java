@@ -17,6 +17,7 @@
 package com.foreach.across.modules.applicationinfo.extensions;
 
 import com.foreach.across.core.annotations.ModuleConfiguration;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.config.RememberMeProperties;
 import com.foreach.common.spring.context.ApplicationInfo;
@@ -27,24 +28,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Set default settings on AdminWebModule based on configured application info.
  */
-@ModuleConfiguration("AdminWebModule")
+@ModuleConfiguration(AdminWebModule.NAME)
 @Slf4j
-public class AdminWebModuleConfiguration
+class AdminWebModuleExtension
 {
 	@Autowired
-	public void registerAdminWebTitle( AdminWebModuleSettings adminWebModuleSettings,
-	                                   ApplicationInfo applicationInfo ) {
+	public void registerAdminWebTitle( AdminWebModuleSettings adminWebModuleSettings, ApplicationInfo applicationInfo ) {
 		if ( adminWebModuleSettings.getTitle() == null ) {
-			log.trace( "Registering application name as AdminWeb title" );
+			LOG.trace( "Registering application name as AdminWeb title" );
 			adminWebModuleSettings.setTitle( applicationInfo.getApplicationName() );
 		}
 	}
 
 	@Autowired
-	public void registerRememberMeCookie( RememberMeProperties rememberMeProperties,
-	                                      ApplicationInfo applicationInfo ) {
+	public void registerRememberMeCookie( RememberMeProperties rememberMeProperties, ApplicationInfo applicationInfo ) {
 		if ( StringUtils.equals( RememberMeProperties.DEFAULT_COOKIE, rememberMeProperties.getCookie() ) ) {
-			log.trace( "Registering application id as name for the AdminWeb remember me cookie" );
+			LOG.trace( "Registering application id as name for the AdminWeb remember me cookie" );
 			rememberMeProperties.setCookie(
 					StringUtils.deleteWhitespace( "rm-admin-" + applicationInfo.getApplicationId() )
 			);
