@@ -88,8 +88,11 @@ export class EntityModule
                 const keyCode = (e.keyCode ? e.keyCode : e.which);
                 if ( keyCode === 13 ) {
                     e.preventDefault();
+                    const values = $.map( container.find( 'table .js-multi-value-item .js-multi-value-value' ), ( el ) => {
+                        return el.innerHTML;
+                    } );
                     const value = $( e.currentTarget ).val();
-                    if ( value ) {
+                    if ( value && !values.includes( value ) ) {
                         const template = container.find( '.js-multi-value-template' ).clone( false );
                         template.removeClass( 'd-none js-multi-value-template' );
                         template.addClass( 'js-multi-value-item' );
