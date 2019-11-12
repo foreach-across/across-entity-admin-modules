@@ -157,7 +157,8 @@ public class EntityIdProxyPropertyRegistrar implements Function<EntityPropertyRe
 			          EntityModel entityModel = configurationSupplier.get().getEntityModel();
 
 			          Serializable targetId = (Serializable) targetProperty.getPropertyValue( owner );
-			          return entityModel.findOne( convertIfNecessary( targetId, entityModel.getIdType() ) );
+			          Serializable id = convertIfNecessary( targetId, entityModel.getIdType() );
+			          return id != null ? entityModel.findOne( id ) : null;
 		          } )
 		          .contextualValidator( ( object, property, errors, hints ) -> {
 			          // if required, add a simple not null check to cover common cases
@@ -207,7 +208,8 @@ public class EntityIdProxyPropertyRegistrar implements Function<EntityPropertyRe
 				          TypeDescriptor entityTypeDescriptor = newProperty.getPropertyTypeDescriptor().getElementTypeDescriptor();
 
 				          for ( Object o : valuesAsList ) {
-					          converted.add( entityModel.findOne( convertIfNecessary( (Serializable) o, entityModel.getIdType() ) ) );
+					          Serializable id = convertIfNecessary( (Serializable) o, entityModel.getIdType() );
+					          converted.add( id != null ? entityModel.findOne( id ) : null );
 				          }
 
 				          return mvcConversionService.convert( converted,

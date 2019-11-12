@@ -90,6 +90,9 @@ public class TestEntityIdProxyPropertyRegistrar
 		RefOwner owner = new RefOwner();
 		assertThat( owner.getRefId() ).isNull();
 
+		assertThat( ref.getController().fetchValue( EntityPropertyBindingContext.forReading( owner ) ) ).isNull();
+		verify( entityModel, never() ).findOne( any() );
+
 		ref.getController().applyValue( EntityPropertyBindingContext.forUpdating( owner, owner ), EntityPropertyValue.of( new Ref( 20 ) ) );
 		assertThat( owner.getRefId() ).isEqualTo( 20 );
 
