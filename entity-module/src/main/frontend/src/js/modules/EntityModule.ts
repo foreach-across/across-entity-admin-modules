@@ -83,6 +83,7 @@ export class EntityModule
          */
         $( '.js-multi-value-control', node ).each( ( ix, element ) => {
             const container = $( element );
+            const allowDuplicates = container.attr('data-allow-duplicates') === 'true';
 
             container.find( '.js-multi-value-input' ).on( 'keypress', ( e ) => {
                 const keyCode = (e.keyCode ? e.keyCode : e.which);
@@ -92,7 +93,7 @@ export class EntityModule
                         return el.innerHTML;
                     } );
                     const value = $( e.currentTarget ).val();
-                    if ( value && !values.includes( value ) ) {
+                    if ( value && (allowDuplicates || !values.includes( value ) ) ) {
                         const template = container.find( '.js-multi-value-template' ).clone( false );
                         template.removeClass( 'd-none js-multi-value-template' );
                         template.addClass( 'js-multi-value-item' );

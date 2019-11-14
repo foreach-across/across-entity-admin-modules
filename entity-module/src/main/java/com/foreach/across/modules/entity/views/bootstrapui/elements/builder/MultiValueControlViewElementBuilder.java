@@ -30,8 +30,19 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
  */
 public final class MultiValueControlViewElementBuilder extends TextboxFormElementBuilder
 {
+	public static final String ALLOW_DUPLICATES_ATTRIBUTE_NAME = "data-allow-duplicates";
+
 	public MultiValueControlViewElementBuilder() {
 		customTemplate( "th/entity/elements :: multi-value-control" );
+	}
+
+	public MultiValueControlViewElementBuilder allowDuplicates() {
+		return allowDuplicates( true );
+	}
+
+	public MultiValueControlViewElementBuilder allowDuplicates( boolean allowDuplicates ) {
+		attribute( ALLOW_DUPLICATES_ATTRIBUTE_NAME, allowDuplicates );
+		return this;
 	}
 
 	@Override
