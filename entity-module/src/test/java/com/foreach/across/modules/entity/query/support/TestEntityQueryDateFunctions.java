@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -139,7 +140,7 @@ public class TestEntityQueryDateFunctions
 		assertTrue( result instanceof LocalDate );
 
 		LocalDate calculatedLocalDate = (LocalDate) result;
-		assertEquals( calculatedLocalDate.getDayOfWeek().getValue(), today.getDay() );
+		assertEquals( calculatedLocalDate.getDayOfWeek().getValue(), dayOfWeekForToday() );
 	}
 
 	@Test
@@ -156,12 +157,11 @@ public class TestEntityQueryDateFunctions
 		assertTrue( result instanceof ZonedDateTime );
 
 		ZonedDateTime calculatedLocalTime = (ZonedDateTime) result;
-		assertEquals( today.getDay(), calculatedLocalTime.getDayOfWeek().getValue() );
+		assertEquals( dayOfWeekForToday(), calculatedLocalTime.getDayOfWeek().getValue() );
 	}
 
 	@Test
 	public void todayWithLocalDateTimeAsReturnType() {
-		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
 		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null );
 
 		assertTrue( result instanceof LocalDateTime );
@@ -169,6 +169,10 @@ public class TestEntityQueryDateFunctions
 		LocalDateTime calculatedLocalDateTime = (LocalDateTime) result;
 		assertNotNull( calculatedLocalDateTime );
 
-		assertEquals( today.getDay(), calculatedLocalDateTime.getDayOfWeek().getValue() );
+		assertEquals( dayOfWeekForToday(), calculatedLocalDateTime.getDayOfWeek().getValue() );
+	}
+
+	private int dayOfWeekForToday() {
+		return DayOfWeek.from( LocalDateTime.now().truncatedTo( ChronoUnit.DAYS ) ).getValue();
 	}
 }
