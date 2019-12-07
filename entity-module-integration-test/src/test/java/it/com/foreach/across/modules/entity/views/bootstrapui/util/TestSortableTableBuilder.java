@@ -65,7 +65,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	private static final String TABLE_WITH_RESULT_NUMBER = "<div class='table-responsive'>" +
 			"<table class='em-sortableTable-table table table-hover table' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 			"<thead>" +
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
@@ -78,7 +78,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	private static final String TABLE_WITH_RESULT_NUMBER_AND_FORM = "<div class='table-responsive'>" +
 			"<table class='em-sortableTable-table table table-hover table' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0' data-tbl-form='my-form'>" +
+			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1' data-tbl-form='my-form'>" +
 			"<thead>" +
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
@@ -91,7 +91,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	private static final String TABLE_WITHOUT_RESULT_NUMBER = "<div class='table-responsive'>" +
 			"<table class='em-sortableTable-table table table-hover table' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 			"<thead>" +
 			"<tr><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
@@ -374,7 +374,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		expect( "<div class='table-responsive'>" +
 				        "<table class='em-sortableTable-table table table-hover table' " +
 				        "data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 				        "<thead>" +
 				        "<tr><th class='result-number'>#</th>" +
 				        "<th data-tbl-field='propertyOne' class='sortable' data-tbl-sort-property='sortOnMe' data-tbl='sortableTable'>" +
@@ -392,7 +392,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		expect( "<div class='table-responsive'>" +
 				        "<table class='em-sortableTable-table table table-hover table' " +
 				        "data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 				        "<thead>" +
 				        "<tr><th class='result-number'>#</th>" +
 				        "<th data-tbl-field='propertyOne' class='sortable' data-tbl-sort-property='sortOnMe' data-tbl='sortableTable'>" +
