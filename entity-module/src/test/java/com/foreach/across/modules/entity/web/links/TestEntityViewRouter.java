@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TestEntityViewRouter
 {
 	@Test
-	void routerRuleParsing() {
+	void entityRoot() {
 		assertRule(
 				EntityViewRouter.builder().entityRoot( "/entities/{entityName}" ).build().getEntityRoot(),
 				"/entities/{entityName}", "/entities/{entityName}", Collections.emptyMap(), false );
@@ -50,16 +50,36 @@ class TestEntityViewRouter
 	}
 
 	@Test
+	void viewSegment() {
+		assertRule( EntityViewRouter.builder().build().getViewSegment(),
+		            "?view={viewName}", "", Collections.singletonMap( "view", "{viewName}" ), true );
+
+		assertRule( EntityViewRouter.builder().viewSegment( "/{viewName}" ).build().getViewSegment(),
+		            "/{viewName}", "/{viewName}", Collections.emptyMap(), true );
+	}
+
+	@Test
+	void ruleForView() {
+
+	}
+
+	@Test
 	void defaultRouter() {
 		EntityViewRouter router = EntityViewRouter.builder().build();
 		assertThat( router.getEntityRoot().getOriginalValue() ).isEqualTo( "/{entityName}" );
 		assertThat( router.getViewSegment().getOriginalValue() ).isEqualTo( "?view={viewName}" );
 		assertRule( router.getRuleForView( EntityView.LIST_VIEW_NAME ), "", "", Collections.emptyMap(), true );
 		assertRule( router.getRuleForView( EntityView.CREATE_VIEW_NAME ), "/create", "/create", Collections.emptyMap(), true );
+		//"/associations/{associationName}"
+		// > /user/10/groups/new
+		//"/associations/{assocationName}/create"
+		//router.getAssociationSegment()
+		// single association view
+		// generic association view
 	}
 
-	private void assertRule( EntityViewRouter.Rule rule, String value, String path, Map<Object, Object> queryParams, boolean appendToUri ) {
-		assertThat( rule.getOriginalValue() ).isEqualTo( value );
+	private void assertRule( EntityViewRouter.Rule rule, String originalValue, String path, Map<Object, Object> queryParams, boolean appendToUri ) {
+		assertThat( rule.getOriginalValue() ).isEqualTo( originalValue );
 		assertThat( rule.getPath() ).isEqualTo( path );
 		assertThat( rule.getQueryParams() ).isEqualTo( queryParams );
 		assertThat( rule.isAppendToUri() ).isEqualTo( appendToUri );
