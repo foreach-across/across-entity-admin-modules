@@ -16,13 +16,10 @@
 
 package com.foreach.across.modules.bootstrapui.extensions;
 
-import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.core.annotations.PostRefresh;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryBroken;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryBrokenImpl;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.*;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
@@ -32,8 +29,6 @@ import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import com.foreach.across.modules.web.ui.thymeleaf.ViewElementModelWriterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.Optional;
 

@@ -32,10 +32,10 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import com.foreach.across.modules.web.ui.elements.builder.ViewElementGeneratorBuilder;
 
 /**
- * A helper class for creating a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for all main bootstrap 4 components.
+ * A helper class for creating a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for all main Bootstrap 4 components.
  * This class should not be used directly but instead use the provided  {@link BootstrapViewElements#builders}.
  * <p>
- * For example to create a button element you can use: {@code BootstrapViewElements.builders.button()}
+ * For example to create a button element you can use: {@code BootstrapViewElements.builders.button()}.
  * </p>
  *
  * @author Stijn Vanhoof
@@ -43,6 +43,7 @@ import com.foreach.across.modules.web.ui.elements.builder.ViewElementGeneratorBu
  */
 public class BootstrapViewElementBuilders
 {
+	@Deprecated
 	public final BootstrapOptionsBuilderFactoryHelper option = new BootstrapOptionsBuilderFactoryHelper();
 	public final BootstrapSelectBuilderFactoryHelper select = new BootstrapSelectBuilderFactoryHelper();
 	public final BootstrapTableBuilderFactoryHelper table = new BootstrapTableBuilderFactoryHelper();

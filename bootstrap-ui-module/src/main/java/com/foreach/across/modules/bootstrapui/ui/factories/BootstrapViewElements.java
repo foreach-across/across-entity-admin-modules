@@ -18,20 +18,21 @@ package com.foreach.across.modules.bootstrapui.ui.factories;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
+import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
 import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapFieldSetElementFactoryHelper;
 import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapSelectElementFactoryHelper;
 import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapTableElementFactoryHelper;
-import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
-import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 
 /**
- * Entry point for creating a bootstrap {@link ViewElement}. An equivalent {@link BootstrapViewElementBuilders} class has been provided
+ * Entry point for creating a bootstrap {@link ViewElement} control. An equivalent {@link BootstrapViewElementBuilders} class has been provided
  * to create {@link com.foreach.across.modules.web.ui.ViewElementBuilder} and this is available as {@link BootstrapViewElements#builders}.
  * <p>
- * For example to create a select element you can use: {@code Bootstrap.bootstrap.select()}
+ * For example to create a select element you can use: {@code BootstrapViewElements.bootstrap.select()} for a {@code ViewElement},
+ * or {@code BootstrapViewElements.bootstrap.builders.options()} to configure a {@code ViewElementBuilder}.
  * </p>
  *
  * @author Stijn Vanhoof
