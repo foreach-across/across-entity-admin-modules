@@ -21,7 +21,6 @@ import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunction;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.implementation.bytecode.constant.DefaultValue;
 import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
@@ -30,7 +29,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 class TestBootstrapAttributes
 {

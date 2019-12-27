@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 @FunctionalInterface
 public interface BootstrapStyleRule extends ViewElement.WitherSetter<HtmlViewElement>, ViewElement.WitherRemover<HtmlViewElement>

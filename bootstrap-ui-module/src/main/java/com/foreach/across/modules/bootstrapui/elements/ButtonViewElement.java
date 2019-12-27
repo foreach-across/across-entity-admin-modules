@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
@@ -28,6 +29,7 @@ import lombok.experimental.Accessors;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Represents a Bootstrap button.
@@ -41,7 +43,8 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.BUTTON;
 	private String text, title, url = "#";
-	private Style style = Style.Button.DEFAULT;
+	private Style style;
+	private BootstrapStyleRule styleRule;
 
 	@NonNull
 	private Type type = Type.BUTTON;
@@ -63,6 +66,18 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	public ButtonViewElement() {
 		super( ELEMENT_TYPE );
 		setTagName( "button" );
+		setStyle( Style.Button.LIGHT );
+	}
+
+	public void setStyle( Style style ) {
+		this.style = style;
+		if ( styleRule != null ) {
+			remove( styleRule );
+		}
+		styleRule = Style.Button.toBootstrapStyleRule( style );
+		if ( styleRule != null ) {
+			super.set( styleRule );
+		}
 	}
 
 	@Override
@@ -197,7 +212,21 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 
 	@Override
 	public ButtonViewElement set( WitherSetter... setters ) {
-		super.set( setters );
+		Stream.of( setters )
+		      .forEach( setter -> {
+			      if ( setter instanceof BootstrapStyleRule ) {
+				      BootstrapStyleRule sr = (BootstrapStyleRule) setter;
+				      Style buttonStyle = Style.Button.fromBootstrapStyleRule( sr );
+				      if ( buttonStyle != null ) {
+					      if ( styleRule != null ) {
+						      remove( styleRule );
+					      }
+					      style = buttonStyle;
+					      styleRule = sr;
+				      }
+			      }
+			      super.set( setter );
+		      } );
 		return this;
 	}
 

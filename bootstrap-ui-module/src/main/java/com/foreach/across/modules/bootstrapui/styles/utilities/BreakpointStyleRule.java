@@ -30,7 +30,7 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
  * See the Bootstrap documentation for details on the responsive utilities.
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public interface BreakpointStyleRule extends BootstrapStyleRule
 {

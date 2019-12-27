@@ -24,7 +24,7 @@ import lombok.NonNull;
  * HTML {@code aria-} attributes.
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 @SuppressWarnings("WeakerAccess")
 public class HtmlAriaAttributes

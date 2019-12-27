@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.*;
 
 /**
@@ -122,7 +122,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 				inputGroup,
 				"<div class='input-group'>"
 						+ "<div class='input-group-prepend'>"
-						+ "<button type='button' class='btn btn-default' />"
+						+ "<button type='button' class='btn btn-light' />"
 						+ "</div>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "<div class='input-group-append'>"
@@ -146,7 +146,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "</div>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "<div class='input-group-append'>"
-						+ "<button type='button' class='btn btn-default' />"
+						+ "<button type='button' class='btn btn-light' />"
 						+ "</div>"
 						+ "</div>"
 		);

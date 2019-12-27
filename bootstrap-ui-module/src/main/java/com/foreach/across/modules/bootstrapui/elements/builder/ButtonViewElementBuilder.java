@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,12 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Size;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.remove;
 
 public class ButtonViewElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<ButtonViewElement, ButtonViewElementBuilder>
 {
@@ -194,6 +197,16 @@ public class ButtonViewElementBuilder extends AbstractLinkSupportingNodeViewElem
 	public ButtonViewElementBuilder style( Style style ) {
 		this.style = style;
 		return this;
+	}
+
+	@Override
+	public ButtonViewElementBuilder css( String... cssClasses ) {
+		return super.with( BootstrapStyles.css.of( cssClasses ) );
+	}
+
+	@Override
+	public ButtonViewElementBuilder removeCss( String... cssClasses ) {
+		return super.with( remove( BootstrapStyles.css.of( cssClasses ) ) );
 	}
 
 	public ButtonViewElementBuilder size( Size size ) {

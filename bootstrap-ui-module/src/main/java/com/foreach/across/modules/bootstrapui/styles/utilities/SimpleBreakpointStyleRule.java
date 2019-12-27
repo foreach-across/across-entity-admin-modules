@@ -21,7 +21,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class SimpleBreakpointStyleRule implements BreakpointStyleRule
 {

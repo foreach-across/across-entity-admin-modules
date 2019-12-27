@@ -26,7 +26,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * should be added as well (eg "alert" should always be added before the "alert-primary").
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class ColorStyleRule
 {

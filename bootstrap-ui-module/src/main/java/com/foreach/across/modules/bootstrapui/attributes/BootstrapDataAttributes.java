@@ -25,7 +25,7 @@ import lombok.NonNull;
  * HTML {@code data-} attributes.
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 @SuppressWarnings("WeakerAccess")
 public class BootstrapDataAttributes

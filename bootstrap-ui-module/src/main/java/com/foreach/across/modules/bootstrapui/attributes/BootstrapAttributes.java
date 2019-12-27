@@ -23,7 +23,7 @@ import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunctio
  * Regular HTML attributes.
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 @SuppressWarnings("WeakerAccess")
 public class BootstrapAttributes

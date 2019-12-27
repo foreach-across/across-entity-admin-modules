@@ -21,7 +21,7 @@ import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunctio
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class ToggleAttribute extends AttributeWitherFunction<String>
 {

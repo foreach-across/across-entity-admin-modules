@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,9 +88,7 @@ public class TestNumericFormElementConfiguration
 
 	@Test
 	public void euroInBack() {
-		NumericFormElementConfiguration configuration = new NumericFormElementConfiguration(
-				Locale.forLanguageTag( "nl-BE" )
-		);
+		NumericFormElementConfiguration configuration = new NumericFormElementConfiguration( Locale.forLanguageTag( "nl-BE" ) );
 
 		assertEquals( 6, configuration.size() );
 		assertEquals( Long.MIN_VALUE, configuration.get( "minimumValue" ) );

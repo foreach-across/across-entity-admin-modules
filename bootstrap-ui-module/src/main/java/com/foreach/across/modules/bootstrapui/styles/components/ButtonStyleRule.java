@@ -27,7 +27,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * https://getbootstrap.com/docs/4.3/components/buttons/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class ButtonStyleRule extends ColorStyleRule implements BootstrapStyleRule
 {

@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * See https://getbootstrap.com/docs/4.3/utilities/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 class TestBootstrapStylesUtilities
 {

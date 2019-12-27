@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
@@ -177,7 +176,7 @@ public class TestDateTimeFormElementConfiguration
 
 		assertEquals( "2015-08-07 10:31", configuration.get( "minDate" ) );
 		assertEquals( "2015-08-08 10:31", configuration.get( "maxDate" ) );
-		Map<String, Boolean> buttons = (Map<String, Boolean>)configuration.get( "buttons" );
+		Map<String, Boolean> buttons = (Map<String, Boolean>) configuration.get( "buttons" );
 		assertEquals( true, buttons.get( "showClear" ) );
 	}
 

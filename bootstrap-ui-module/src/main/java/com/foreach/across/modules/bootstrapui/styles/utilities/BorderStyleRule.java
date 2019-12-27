@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class BorderStyleRule extends ColorStyleRule implements BootstrapStyleRule
 {

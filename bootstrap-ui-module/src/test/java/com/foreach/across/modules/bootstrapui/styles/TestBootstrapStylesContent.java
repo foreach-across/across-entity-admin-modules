@@ -25,7 +25,7 @@ import static com.foreach.across.modules.bootstrapui.styles.TestBootstrapStylesU
  * See https://getbootstrap.com/docs/4.3/content/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 class TestBootstrapStylesContent
 {
