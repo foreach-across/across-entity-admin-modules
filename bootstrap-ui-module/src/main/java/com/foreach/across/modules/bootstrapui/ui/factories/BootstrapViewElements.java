@@ -24,7 +24,7 @@ import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapFiel
 import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapSelectElementFactoryHelper;
 import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapTableElementFactoryHelper;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 
 /**
@@ -140,12 +140,15 @@ public class BootstrapViewElements
 		return hidden().set( setters );
 	}
 
-	public AbstractNodeViewElement icon( String iconSetName, String iconName ) {
+	/**
+	 * Directly resolve an icon from the {@link IconSet}.
+	 *
+	 * @param iconSetName name of the icon set which contains the icon
+	 * @param iconName    name of the icon
+	 * @return icon element
+	 */
+	public HtmlViewElement icon( String iconSetName, String iconName ) {
 		return IconSet.iconSet( iconSetName ).icon( iconName );
-	}
-
-	public AbstractNodeViewElement icon( String iconSetName, String iconName, ViewElement.WitherSetter... setters ) {
-		return icon( iconSetName, iconSetName ).set( setters );
 	}
 
 	public InputGroupFormElement inputGroup() {
