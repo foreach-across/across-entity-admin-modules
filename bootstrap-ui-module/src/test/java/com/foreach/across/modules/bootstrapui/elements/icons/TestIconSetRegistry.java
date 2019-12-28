@@ -22,23 +22,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
  * @author Stijn Vanhoof
  */
-public class TestSimpleIconSetRegistry
+class TestIconSetRegistry
 {
 	private SimpleIconSet initialSimpleIconSet = mock( SimpleIconSet.class );
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		IconSetRegistry.addIconSet( "test", initialSimpleIconSet );
 	}
 
 	@Test
-	public void addNewIconSet() {
+	void unknownIconSetResultsInException() {
+		assertThatExceptionOfType( IllegalArgumentException.class )
+				.isThrownBy( () -> IconSetRegistry.getIconSet( "unknownIconSet" ) );
+	}
+
+	@Test
+	void addNewIconSet() {
 		SimpleIconSet testSimpleIconSet = mock( SimpleIconSet.class );
 
 		IconSetRegistry.addIconSet( "bootstrapUiModule", testSimpleIconSet );
@@ -47,36 +53,36 @@ public class TestSimpleIconSetRegistry
 	}
 
 	@Test
-	public void getAllIconSets(){
-		IconSetRegistry.removeAllIconSets(  );
-		IconSetRegistry.addIconSet( "test1",  mock( SimpleIconSet.class ) );
-		IconSetRegistry.addIconSet( "test2",  mock( SimpleIconSet.class ) );
+	void getAllIconSets() {
+		IconSetRegistry.removeAllIconSets();
+		IconSetRegistry.addIconSet( "test1", mock( SimpleIconSet.class ) );
+		IconSetRegistry.addIconSet( "test2", mock( SimpleIconSet.class ) );
 
 		assertThat( IconSetRegistry.getAllIconSets() ).hasSize( 2 );
 	}
 
 	@Test
-	public void invalidIconSetThrowIllegalArgumentException() {
+	void invalidIconSetThrowIllegalArgumentException() {
 		Assertions.assertThrows( IllegalArgumentException.class, () -> {
 			IconSetRegistry.getIconSet( "unknown" );
 		} );
 	}
 
 	@Test
-	public void overrideIconSet() {
+	void overrideIconSet() {
 		SimpleIconSet simpleIconSetThatWillOverride = mock( SimpleIconSet.class );
 		IconSetRegistry.addIconSet( "test", simpleIconSetThatWillOverride );
 
 		assertThat( IconSetRegistry.getIconSet( "test" ) ).isEqualTo( simpleIconSetThatWillOverride );
 		MutableIconSet previouslySetIconSet = IconSetRegistry.getIconSet( "test" );
-		previouslySetIconSet.add( "sample-icon", (iconName) -> new NodeViewElement( "i" ) );
-		IconSetRegistry.addIconSet( "test",  previouslySetIconSet);
+		previouslySetIconSet.add( "sample-icon", ( iconName ) -> new NodeViewElement( "i" ) );
+		IconSetRegistry.addIconSet( "test", previouslySetIconSet );
 
 		assertThat( IconSetRegistry.getIconSet( "test" ) ).isEqualTo( previouslySetIconSet );
 	}
 
 	@Test
-	public void removeIconSet() {
+	void removeIconSet() {
 		SimpleIconSet testSimpleIconSet = mock( SimpleIconSet.class );
 
 		IconSetRegistry.addIconSet( "bootstrapUiModule", testSimpleIconSet );

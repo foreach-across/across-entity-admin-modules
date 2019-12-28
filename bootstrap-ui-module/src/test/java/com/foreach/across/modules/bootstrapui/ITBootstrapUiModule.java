@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui;
 
 import com.foreach.across.config.EnableAcrossContext;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
@@ -31,7 +32,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Arne Vandamme
@@ -48,10 +49,17 @@ public class ITBootstrapUiModule
 	@Test
 	public void webResourcesShouldBeRegistered() {
 		packageManagers.forEach( mgr -> {
-			assertNotNull( mgr.getPackage( BootstrapUiWebResources.NAME ) );
-			assertNotNull( mgr.getPackage( JQueryWebResources.NAME ) );
-			assertNotNull( mgr.getPackage( BootstrapUiFormElementsWebResources.NAME ) );
+			assertThat( mgr.getPackage( BootstrapUiWebResources.NAME ) ).isNotNull();
+			assertThat( mgr.getPackage( JQueryWebResources.NAME ) ).isNotNull();
+			assertThat( mgr.getPackage( BootstrapUiFormElementsWebResources.NAME ) ).isNotNull();
 		} );
+	}
+
+	@Test
+	public void iconSetsShouldBeAvailable() {
+		assertThat( IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_BRANDS ).icon( "500px" ) ).isNotNull();
+		assertThat( IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_REGULAR ).icon( "angry" ) ).isNotNull();
+		assertThat( IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "ad" ) ).isNotNull();
 	}
 
 	@Configuration

@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.core.annotations.PostRefresh;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.*;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
@@ -30,6 +31,7 @@ import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import com.foreach.across.modules.web.ui.thymeleaf.ViewElementModelWriterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 /**
@@ -83,6 +85,11 @@ class BootstrapUiConfiguration
 			modelWriterRegistry.registerModelWriter( ScriptViewElement.class, new ScriptViewElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( BootstrapUiElements.GENERIC_FORM_CONTROL, new FormControlElementModelWriter() );
 		} );
+	}
+
+	@PostConstruct
+	void registerIconSets() {
+		BootstrapUiModuleIcons.registerFontAwesomeIconSets();
 	}
 
 	@PostRefresh
