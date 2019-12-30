@@ -22,6 +22,7 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.*;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
@@ -89,6 +90,8 @@ class BootstrapUiConfiguration
 
 	@PostConstruct
 	void registerIconSets() {
+		// clear the previously registered icon sets - workaround for static reference
+		IconSetRegistry.removeAllIconSets();
 		BootstrapUiModuleIcons.registerFontAwesomeIconSets();
 	}
 
