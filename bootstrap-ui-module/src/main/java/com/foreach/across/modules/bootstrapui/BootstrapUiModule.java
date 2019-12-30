@@ -22,6 +22,7 @@ import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
 import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.web.AcrossWebModule;
 
 import java.util.Set;
@@ -49,5 +50,8 @@ public class BootstrapUiModule extends AcrossModule
 	@Override
 	public void prepareForBootstrap( ModuleBootstrapConfig currentModule, AcrossBootstrapConfig contextConfig ) {
 		contextConfig.extendModule( AcrossWebModule.NAME, new ComponentScanConfigurer( getClass().getPackage().getName() + ".config" ) );
+
+		// clear the previously registered icon sets - ensure no leftover in case of unclean shutdown
+		IconSetRegistry.removeAllIconSets();
 	}
 }

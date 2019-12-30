@@ -91,8 +91,6 @@ class BootstrapUiConfiguration
 
 	@PostConstruct
 	void registerIconSets() {
-		// clear the previously registered icon sets - ensure no leftover in case of unclean shutdown
-		clearIconSets();
 		BootstrapUiModuleIcons.registerFontAwesomeIconSets();
 	}
 
