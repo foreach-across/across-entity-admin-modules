@@ -69,7 +69,7 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 		setStyle( Style.Button.LIGHT );
 	}
 
-	public void setStyle( Style style ) {
+	public ButtonViewElement setStyle( Style style ) {
 		this.style = style;
 		if ( styleRule != null ) {
 			remove( styleRule );
@@ -78,6 +78,7 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 		if ( styleRule != null ) {
 			super.set( styleRule );
 		}
+		return this;
 	}
 
 	@Override
