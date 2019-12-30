@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.DEFAULT_DATASET;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.setAttribute;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -222,7 +222,7 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 		LinkViewElement link = new LinkViewElement();
 		link.setAttribute( "data-action", "remove-item" );
 		link.setTitle( removeItemMessage );
-		link.addChild( entityModuleIcons.controls.autosuggest.removeItem() );
+		link.addChild( entityModuleIcons.controls.autoSuggest.removeItem() );
 		actions.addChild( link );
 
 		row.addChild( actions );
@@ -233,7 +233,7 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 	                                                                ViewElementMode viewElementMode,
 	                                                                Settings controlSettings,
 	                                                                AutoSuggestFormElementConfiguration controlConfiguration ) {
-		return bootstrap.builders.autosuggest()
+		return bootstrap.builders.autoSuggest()
 		                         .name( propertyDescriptor.getName() )
 		                         .controlName( propertyDescriptor.getName() )
 		                         .configuration( controlConfiguration )

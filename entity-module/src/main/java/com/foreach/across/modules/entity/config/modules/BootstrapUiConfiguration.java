@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.config.icons;
+package com.foreach.across.modules.entity.config.modules;
 
-import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
-import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.entity.EntityModuleIcons;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
+import org.springframework.context.annotation.Configuration;
 
-public class EntityModuleAutoSuggestIcons
+import javax.annotation.PostConstruct;
+
+/**
+ * @author Arne Vandamme
+ * @since 4.0.0
+ */
+@Configuration
+@ConditionalOnBootstrapUI
+class BootstrapUiConfiguration
 {
-	public final static String REMOVE_ITEM = "control-autosuggest-remove-item";
-
-	public AbstractNodeViewElement removeItem() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( REMOVE_ITEM );
+	@PostConstruct
+	public void registerIconSets() {
+		EntityModuleIcons.registerIconSet();
 	}
 }

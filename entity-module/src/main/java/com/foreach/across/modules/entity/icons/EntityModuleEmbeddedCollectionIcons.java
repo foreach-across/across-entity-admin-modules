@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.config.icons;
+package com.foreach.across.modules.entity.icons;
 
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 
-public class EntityModuleFormViewIcons
+public class EntityModuleEmbeddedCollectionIcons
 {
-	public static final String DELETE = "formView-delete";
-	public static final String ADVANCED_SETTINGS = "formView-nav-advanced-settings";
+	public static final String ITEM_HANDLE = "embeddedCollection-item-handle";
+	public static final String ITEM_ADD = "embeddedCollection-item-add";
+	public static final String ITEM_REMOVE = "embeddedCollection-item-remove";
 
-	public AbstractNodeViewElement delete() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( DELETE );
+	public HtmlViewElement itemHandle() {
+		return IconSet.iconSet( EntityModule.NAME ).icon( ITEM_HANDLE );
 	}
 
-	public AbstractNodeViewElement advancedSettings() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( ADVANCED_SETTINGS );
+	public HtmlViewElement addItem() {
+		return IconSet.iconSet( EntityModule.NAME ).icon( ITEM_ADD );
+	}
+
+	public HtmlViewElement removeItem() {
+		return IconSet.iconSet( EntityModule.NAME ).icon( ITEM_REMOVE );
 	}
 }

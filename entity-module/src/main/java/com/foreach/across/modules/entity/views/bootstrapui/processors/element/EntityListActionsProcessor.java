@@ -31,7 +31,7 @@ import lombok.Setter;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 
 /**
  * Adds common actions (update, delete) for an {@link EntityConfiguration} entity to every result item.

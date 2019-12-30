@@ -108,7 +108,7 @@ public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElement
 		                                               .attribute( "data-entity-query-property", "myOption" )
 		                                               .attribute( "data-entity-query-operand", "IN" )
 		                                               .attribute( "data-entity-query-control", "marker" )
-		                                               .add( bootstrap.builders.option.option().checkbox().value( "myOption" ) )
+		                                               .add( bootstrap.builders.checkbox().value( "myOption" ) )
 		                                               .build( builderContext ) );
 	}
 

@@ -47,7 +47,7 @@ import java.util.*;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**

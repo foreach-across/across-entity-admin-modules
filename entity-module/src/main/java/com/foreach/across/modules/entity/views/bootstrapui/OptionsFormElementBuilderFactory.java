@@ -93,7 +93,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		String actualType = determineActualType( viewElementType, selectFormElementConfiguration, typeDescriptor.isCollection() );
 
 		OptionsFormElementBuilder options =
-				bootstrap.builders.option
+				bootstrap.builders
 						.options()
 						.name( descriptor.getName() )
 						.controlName( descriptor.getName() )
@@ -309,12 +309,12 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@SuppressWarnings("unchecked")
 	private OptionIterableBuilder createBooleanOptionIterableBuilder( EntityPropertyDescriptor descriptor ) {
 		return FixedOptionIterableBuilder.sorted(
-				bootstrap.builders.option
+				bootstrap.builders
 						.option().rawValue( Boolean.TRUE )
 						.text( "#{properties." + descriptor.getName() + ".value[true]=Yes}" )
 						.value( Boolean.TRUE )
 						.postProcessor( LocalizedTextPostProcessor.INSTANCE ),
-				bootstrap.builders.option
+				bootstrap.builders
 						.option().rawValue( Boolean.FALSE )
 						.text( "#{properties." + descriptor.getName() + ".value[false]=No}" )
 						.value( Boolean.FALSE )

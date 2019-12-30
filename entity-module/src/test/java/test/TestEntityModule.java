@@ -19,6 +19,7 @@ package test;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.EntityModuleIcons;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
@@ -28,6 +29,7 @@ import org.junit.Test;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * @author Arne Vandamme
@@ -46,6 +48,9 @@ public class TestEntityModule
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isEmpty();
 			assertThat( context.getBeansOfType( EntityViewLinks.class ) ).isEmpty();
 			assertThat( context.getBeansOfType( EntityViewElementBuilderFactory.class ) ).isEmpty();
+
+			assertThatExceptionOfType( IllegalArgumentException.class )
+					.isThrownBy( EntityModuleIcons.entityModuleIcons.formView::delete );
 		}
 	}
 
@@ -59,6 +64,8 @@ public class TestEntityModule
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isEmpty();
 			assertThat( context.getBeansOfType( EntityViewLinks.class ) ).isEmpty();
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, BootstrapUiElementTypeLookupStrategy.class ) ).isNotEmpty();
+
+			assertThat( EntityModuleIcons.entityModuleIcons.formView.delete() ).isNotNull();
 		}
 	}
 
@@ -69,6 +76,8 @@ public class TestEntityModule
 				.build()) {
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isNotEmpty();
 			assertThat( context.getBeanOfType( EntityViewLinks.class ) ).isNotNull();
+
+			assertThat( EntityModuleIcons.entityModuleIcons.formView.delete() ).isNotNull();
 		}
 	}
 }

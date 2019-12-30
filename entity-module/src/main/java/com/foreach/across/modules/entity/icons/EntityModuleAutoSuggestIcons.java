@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.config.icons;
+package com.foreach.across.modules.entity.icons;
 
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 
-public class EntityModuleEmbeddedCollectionIcons
+public class EntityModuleAutoSuggestIcons
 {
-	public static final String ITEM_HANDLE = "embeddedCollection-item-handle";
-	public static final String ITEM_ADD = "embeddedCollection-item-add";
-	public static final String ITEM_REMOVE = "embeddedCollection-item-remove";
+	public final static String REMOVE_ITEM = "control-autosuggest-remove-item";
 
-	public AbstractNodeViewElement itemHandle() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( ITEM_HANDLE );
-	}
-
-	public AbstractNodeViewElement addItem() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( ITEM_ADD );
-	}
-
-	public AbstractNodeViewElement removeItem() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( ITEM_REMOVE );
+	public HtmlViewElement removeItem() {
+		return IconSet.iconSet( EntityModule.NAME ).icon( REMOVE_ITEM );
 	}
 }

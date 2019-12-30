@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.config.icons;
+package com.foreach.across.modules.entity.icons;
 
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 
 public class EntityModuleListViewIcons
 {
@@ -31,27 +31,27 @@ public class EntityModuleListViewIcons
 	public static final String PREVIOUS_PAGE = "previous-page";
 	public static final String NEXT_PAGE = "next-page";
 
-	public AbstractNodeViewElement search() {
+	public HtmlViewElement search() {
 		return IconSet.iconSet( EntityModule.NAME ).icon( ENTITY_QUERY_SEARCH );
 	}
 
-	public AbstractNodeViewElement linkToDeleteView() {
+	public HtmlViewElement linkToDeleteView() {
 		return IconSet.iconSet( EntityModule.NAME ).icon( LINK_DELETE );
 	}
 
-	public AbstractNodeViewElement linkToDetailView() {
+	public HtmlViewElement linkToDetailView() {
 		return IconSet.iconSet( EntityModule.NAME ).icon( LINK_DETAIL );
 	}
 
-	public AbstractNodeViewElement linkToEditView() {
+	public HtmlViewElement linkToEditView() {
 		return IconSet.iconSet( EntityModule.NAME ).icon( LINK_EDIT );
 	}
 
-	public AbstractNodeViewElement nextPage() {
+	public HtmlViewElement nextPage() {
 		return IconSet.iconSet( EntityModule.NAME ).icon( NEXT_PAGE );
 	}
 
-	public AbstractNodeViewElement previousPage() {
+	public HtmlViewElement previousPage() {
 		return IconSet.iconSet( EntityModule.NAME ).icon( PREVIOUS_PAGE );
 	}
 }

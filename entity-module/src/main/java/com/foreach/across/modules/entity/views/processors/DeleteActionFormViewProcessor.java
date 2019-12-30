@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 
 /**
  * Adds a delete button to the existing {@link SingleEntityFormViewProcessor#FORM_BUTTONS} if the {@link AllowableAction#DELETE} is present.

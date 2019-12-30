@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 

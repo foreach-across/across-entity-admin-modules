@@ -51,7 +51,7 @@ import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 
 @ConditionalOnAdminWeb
 @Component

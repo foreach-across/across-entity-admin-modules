@@ -33,7 +33,7 @@ import java.util.List;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_REQUEST;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;

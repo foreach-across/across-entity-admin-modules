@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.config.icons;
+package com.foreach.across.modules.entity.icons;
 
 public class EntityModuleControlIcons
 {
-	public EntityModuleAutoSuggestIcons autosuggest = new EntityModuleAutoSuggestIcons();
+	public EntityModuleAutoSuggestIcons autoSuggest = new EntityModuleAutoSuggestIcons();
 }

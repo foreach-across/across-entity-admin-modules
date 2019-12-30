@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
@@ -43,7 +44,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
-import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
@@ -65,7 +65,8 @@ public class ExtensionConfiguration implements EntityConfigurer
 				        basicSettings()
 						        .adminMenu( "/extension",
 						                    item -> item.attribute( NavComponentBuilder.ATTR_ICON,
-						                                            IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "external-link-alt" ) ) )
+						                                            IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID )
+						                                                   .icon( "external-link-alt" ) ) )
 						        .andThen( formSettings().forExtension( true ).formLayout( Grid.create( 12 ) ) )
 						        .andThen( builder -> builder.viewProcessor( vp -> vp.createBean( PartnerExtensionViewProcessor.class ) ) )
 		        );

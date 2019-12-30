@@ -19,7 +19,6 @@ package com.foreach.across.samples.entity.application.controllers;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
@@ -40,10 +39,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
+import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
-import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
 /**
@@ -233,7 +232,7 @@ public class SortableTableSimpleController
 							bootstrap.builders.table().cell().add(
 									bootstrap.builders.button()
 									                  .link( partner.getUrl() )
-									                  .icon( iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "new-window" ) )
+									                  .icon( iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "new-window" ) )
 									                  .iconOnly()
 									                  .attribute( "target", "_blank" )
 									                  .text( "Visit partner website" )
