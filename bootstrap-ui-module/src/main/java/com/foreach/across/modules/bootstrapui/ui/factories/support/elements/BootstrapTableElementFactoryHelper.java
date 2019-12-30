@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.ui.factories.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**

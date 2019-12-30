@@ -72,10 +72,10 @@ class CheckboxesAndRadios extends ExampleController
 						.add( html.hr() )
 						.add( options.get()
 						             .controlName( "optionsControl" )
-						             .add( bootstrap.builders.option.option().text( "" ).value( 0 ) )
-						             .add( bootstrap.builders.option.option().text( "option 1" ).value( 1 ) )
-						             .add( bootstrap.builders.option.option().text( "option 2" ).value( 2 ).selected() )
-						             .add( bootstrap.builders.option.option().text( "option 3" ).value( 3 ) ) ),
+						             .add( bootstrap.builders.option().text( "" ).value( 0 ) )
+						             .add( bootstrap.builders.option().text( "option 1" ).value( 1 ) )
+						             .add( bootstrap.builders.option().text( "option 2" ).value( 2 ).selected() )
+						             .add( bootstrap.builders.option().text( "option 3" ).value( 3 ) ) ),
 				panel( "Browser native controls" )
 						.add( control.get().setRenderAsCustomControl( false ).setControlName( "control" ).setText( "Simple control text" ) ),
 				panel( "Unwrapped" )

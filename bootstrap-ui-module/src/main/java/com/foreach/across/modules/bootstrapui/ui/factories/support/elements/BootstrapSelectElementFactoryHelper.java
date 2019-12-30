@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.ui.factories.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support.elements;
 
-import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
-import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
- * Support class used by {@link BootstrapViewElementBuilders}
- *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
-public class BootstrapFieldSetBuilderFactoryHelper
+@SuppressWarnings("unused")
+public class BootstrapSelectElementFactoryHelper
 {
-	public FieldsetFormElementBuilder.Legend legend( FieldsetFormElementBuilder fieldset ) {
-		return new FieldsetFormElementBuilder.Legend( fieldset );
+	public SelectFormElement.Option option( ViewElement.WitherSetter... setters ) {
+		return option().set( setters );
 	}
 
-	public FieldsetFormElementBuilder.Legend legend( FieldsetFormElementBuilder fieldset, ViewElement.WitherSetter... setters ) {
-		return legend( fieldset ).with( setters );
+	public SelectFormElement.Option option() {
+		return new SelectFormElement.Option();
+	}
+
+	public SelectFormElement.OptionGroup optionGroup( ViewElement.WitherSetter... setters ) {
+		return optionGroup().set( setters );
+	}
+
+	public SelectFormElement.OptionGroup optionGroup() {
+		return new SelectFormElement.OptionGroup();
 	}
 }

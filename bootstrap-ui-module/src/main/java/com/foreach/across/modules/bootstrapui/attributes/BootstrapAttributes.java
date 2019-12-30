@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.bootstrapui.attributes;
 
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunction;
 
 /**
@@ -34,7 +33,7 @@ public class BootstrapAttributes
 	public final HtmlAriaAttributes aria = new HtmlAriaAttributes();
 	public final AttributeWitherFunction<String> role = new AttributeWitherFunction<>( "role" );
 
-	public ViewElement.WitherSetter role( String value ) {
+	public AttributeWitherFunction.AttributeValueWitherFunction<String> role( String value ) {
 		return role.withValue( value );
 	}
 
@@ -42,14 +41,13 @@ public class BootstrapAttributes
 		return data.of( attributeName );
 	}
 
-	public ViewElement.WitherSetter data( String attributeName, Object value ) {
+	public AttributeWitherFunction.AttributeValueWitherFunction data( String attributeName, Object value ) {
 		return data.of( attributeName ).withValue( value );
 	}
 
 	public <S> AttributeWitherFunction<S> aria( String attributeName ) {
 		return aria.of( attributeName );
 	}
-
 
 	public <S> AttributeWitherFunction<S> of( String attributeName ) {
 		return new AttributeWitherFunction<>( attributeName );

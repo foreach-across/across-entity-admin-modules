@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.ui.factories.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support.builders;
 
-import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
@@ -57,7 +57,7 @@ public class BootstrapTableBuilderFactoryHelper
 	}
 
 	public TableViewElementBuilder.Cell headerCell( ViewElement.WitherSetter... setters ) {
-		return cell(setters).heading( true );
+		return cell( setters ).heading( true );
 	}
 
 	public TableViewElementBuilder.Footer footer() {

@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.bootstrapui.attributes;
 
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunction;
 import lombok.NonNull;
 
@@ -36,19 +35,19 @@ public class HtmlAriaAttributes
 	public final AttributeWitherFunction<String> label = of( "label" );
 	public final DefaultValueAttributeWitherFunction<Boolean> hidden = of( "hidden", true );
 
-	public ViewElement.WitherSetter hasPopup( boolean value ) {
+	public AttributeWitherFunction.AttributeValueWitherFunction hasPopup( boolean value ) {
 		return hasPopup.withValue( value );
 	}
 
-	public ViewElement.WitherSetter expanded( boolean value ) {
+	public AttributeWitherFunction.AttributeValueWitherFunction<Boolean> expanded( boolean value ) {
 		return expanded.withValue( value );
 	}
 
-	public ViewElement.WitherSetter hidden( boolean value ) {
+	public AttributeWitherFunction.AttributeValueWitherFunction<Boolean> hidden( boolean value ) {
 		return hidden.withValue( value );
 	}
 
-	public ViewElement.WitherSetter label( @NonNull String text ) {
+	public AttributeWitherFunction.AttributeValueWitherFunction<String> label( @NonNull String text ) {
 		return label.withValue( text );
 	}
 

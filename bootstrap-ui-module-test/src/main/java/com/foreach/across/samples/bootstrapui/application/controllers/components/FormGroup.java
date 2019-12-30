@@ -80,11 +80,10 @@ class FormGroup extends ExampleController
 				                    bootstrap.builders.formGroup()
 				                                      .label( "Radio options" )
 				                                      .control(
-						                                      bootstrap.builders.option.options()
-						                                                               .radio()
-						                                                               .controlName( "radio" )
-						                                                               .add( bootstrap.builders.option.option().text( "Option 1" ) )
-						                                                               .add( bootstrap.builders.option.option().text( "Option 2" ) )
+						                                      bootstrap.builders.radioList()
+						                                                        .controlName( "radio" )
+						                                                        .add( bootstrap.builders.option().text( "Option 1" ) )
+						                                                        .add( bootstrap.builders.option().text( "Option 2" ) )
 				                                      )
 		                    )
 		                    .build();
@@ -100,7 +99,7 @@ class FormGroup extends ExampleController
 		model.addAttribute( "item", target );
 
 		AutoSuggestFormElementBuilder autoSuggestControl =
-				bootstrap.builders.autosuggest()
+				bootstrap.builders.autoSuggest()
 				                  .configuration(
 						                  withDataSet( dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" ) )
 				                  )

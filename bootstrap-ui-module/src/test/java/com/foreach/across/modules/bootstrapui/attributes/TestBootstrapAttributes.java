@@ -18,12 +18,14 @@ package com.foreach.across.modules.bootstrapui.attributes;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunction;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -55,6 +57,15 @@ class TestBootstrapAttributes
 	void role() {
 		assertAttribute( attribute.role ).is( "role" );
 		assertAttribute( attribute.role( "button" ) ).is( "role", "button" );
+	}
+
+	@Test
+	void asPredicate() {
+		NodeViewElement a = html.a( attribute.data( "name" ).withValue( "my-name" ) );
+		assertThat( a.getAttribute( "data-name" ) ).isEqualTo( "my-name" );
+		assertThat( a.matches( attribute.data( "name" ) ) ).isTrue();
+		assertThat( a.matches( attribute.data( "name", "my-name" ) ) ).isTrue();
+		assertThat( a.matches( attribute.data( "name", "not-my-name" ) ) ).isFalse();
 	}
 
 	static AttributeDefaultValueMatcher assertAttribute( @NonNull DefaultValueAttributeWitherFunction function ) {

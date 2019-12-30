@@ -17,7 +17,6 @@
 package com.foreach.across.modules.bootstrapui.attributes;
 
 import com.foreach.across.modules.bootstrapui.attributes.data.ToggleAttribute;
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunction;
 import lombok.NonNull;
 
@@ -34,7 +33,7 @@ public class BootstrapDataAttributes
 
 	public final ToggleAttribute toggle = new ToggleAttribute();
 
-	public ViewElement.WitherSetter toggle( String value ) {
+	public AttributeWitherFunction.AttributeValueWitherFunction<String> toggle( String value ) {
 		return toggle.withValue( value );
 	}
 

@@ -60,11 +60,11 @@ class ControlAdapters extends ExampleController
 		generatedElements.put( "Group of radiobuttons", optionElement().controlName( "ca-multi-radio" ).radio().build() );
 		generatedElements.put( "Nested control adapters",
 		                       html.builders.div().htmlId( "ca-nested-containers" )
-		                                                     .attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" )
-		                                                     .add(
-				                                                     optionElement().controlName( "ca-nested-multi-checkbox" ).checkbox(),
-				                                                     optionElement().controlName( "ca-nested-multi-radio" ).radio()
-		                                                     ).build()
+		                                    .attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" )
+		                                    .add(
+				                                    optionElement().controlName( "ca-nested-multi-checkbox" ).checkbox(),
+				                                    optionElement().controlName( "ca-nested-multi-radio" ).radio()
+		                                    ).build()
 		);
 		generatedElements.put( "Select", optionElement().controlName( "ca-select" ).select().build() );
 		generatedElements.put( "Multi select", optionElement().controlName( "ca-multi-select" ).select().multiple().build() );
@@ -78,7 +78,7 @@ class ControlAdapters extends ExampleController
 		                                      .select( SelectFormElementConfiguration.liveSearch() )
 		                                      .build() );
 		generatedElements.put( "Autosuggest",
-		                       bootstrap.builders.autosuggest().controlName( "ca-autosuggest" )
+		                       bootstrap.builders.autoSuggest().controlName( "ca-autosuggest" )
 		                                         .configuration(
 				                                         withDataSet( dataset -> dataset.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" ) ) )
 		                                         .build() );
@@ -106,9 +106,11 @@ class ControlAdapters extends ExampleController
 				                                                                                                   "ca-" + identifier + "-unwrapped-no-label" )
 		                                                                                                   .build() );
 		generatedElements.put( identifier + " outside label", html.builders.div()
-				.add( bootstrap.builders.label().text( "Alive" ).target( "ca-" + identifier + "-out-label" ) )
-				.add( getOptionBuilder( identifier ).value( "Yes" ).controlName( "ca-" + identifier + "-out-label" ) )
-				.build() );
+		                                                                   .add( bootstrap.builders.label().text( "Alive" )
+		                                                                                           .target( "ca-" + identifier + "-out-label" ) )
+		                                                                   .add( getOptionBuilder( identifier ).value( "Yes" ).controlName(
+				                                                                   "ca-" + identifier + "-out-label" ) )
+		                                                                   .build() );
 	}
 
 	private OptionFormElementBuilder getOptionBuilder( String identifier ) {
@@ -116,15 +118,15 @@ class ControlAdapters extends ExampleController
 	}
 
 	private OptionsFormElementBuilder optionElement() {
-		return bootstrap.builders.option.options()
-				.addAll( optionChildElements() );
+		return bootstrap.builders.options()
+		                         .addAll( optionChildElements() );
 	}
 
 	private Collection<ViewElementBuilder> optionChildElements() {
 		return Arrays.asList(
-				bootstrap.builders.option.option().text( "One" ).value( 1 ),
-				bootstrap.builders.option.option().text( "Two" ).value( 2 ),
-				bootstrap.builders.option.option().text( "3" ).value( "Three" )
+				bootstrap.builders.option().text( "One" ).value( 1 ),
+				bootstrap.builders.option().text( "Two" ).value( 2 ),
+				bootstrap.builders.option().text( "3" ).value( "Three" )
 		);
 	}
 

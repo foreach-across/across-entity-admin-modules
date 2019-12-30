@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.bootstrapui.attributes.data;
 
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunction;
 
 /**
@@ -25,11 +24,11 @@ import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunctio
  */
 public class ToggleAttribute extends AttributeWitherFunction<String>
 {
-	public final ViewElement.WitherSetter dropdown = this.withValue( "dropdown" );
-	public final ViewElement.WitherSetter tab = this.withValue( "tab" );
-	public final ViewElement.WitherSetter modal = this.withValue( "modal" );
-	public final ViewElement.WitherSetter collapse = this.withValue( "collapse" );
-	public final ViewElement.WitherSetter tooltip = this.withValue( "tooltip" );
+	public final AttributeWitherFunction.AttributeValueWitherFunction<String> dropdown = this.withValue( "dropdown" );
+	public final AttributeWitherFunction.AttributeValueWitherFunction<String> tab = this.withValue( "tab" );
+	public final AttributeWitherFunction.AttributeValueWitherFunction<String> modal = this.withValue( "modal" );
+	public final AttributeWitherFunction.AttributeValueWitherFunction<String> collapse = this.withValue( "collapse" );
+	public final AttributeWitherFunction.AttributeValueWitherFunction<String> tooltip = this.withValue( "tooltip" );
 
 	public ToggleAttribute() {
 		super( "data-toggle" );

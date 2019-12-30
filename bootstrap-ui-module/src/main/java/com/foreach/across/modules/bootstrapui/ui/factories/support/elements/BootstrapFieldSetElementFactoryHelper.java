@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.ui.factories.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
-import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
