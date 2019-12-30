@@ -26,7 +26,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
-import static com.foreach.across.modules.adminweb.resource.AdminWebIcons.DEVELOPER_TOOLS;
+import static com.foreach.across.modules.adminweb.AdminWebModuleIcons.DEVELOPER_TOOLS;
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;

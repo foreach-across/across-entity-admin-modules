@@ -17,6 +17,7 @@
 package com.foreach.across.modules.adminweb.config;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.adminweb.AdminWebModuleIcons;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.controllers.AuthenticationController;
@@ -54,6 +55,8 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 	public void initialize() {
 		menuFactory.addMenuBuilder( adminMenuBuilder(), AdminMenu.class );
 		menuFactory.addMenuBuilder( entityAdminMenuBuilder(), EntityAdminMenu.class );
+
+		AdminWebModuleIcons.registerIconSet();
 	}
 
 	@Override

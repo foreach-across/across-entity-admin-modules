@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.adminweb.resource;
+package com.foreach.across.modules.adminweb;
 
-import com.foreach.across.modules.adminweb.AdminWebModule;
-import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 
-import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 
-@Configuration
-public class AdminWebIcons
+public class AdminWebModuleIcons
 {
+	public static final String ICON_SET = AdminWebModule.NAME;
+
 	public static final String DEVELOPER_TOOLS = "developer-tools";
 	public static final String ADMINISTRATION_HOME = "administration-home";
 	public static final String USER_CONTEXT_MENU = "user-context-menu";
 
-	@Autowired
-	public void registerAdminWebIconSet() {
+	public static void registerIconSet() {
 		SimpleIconSet adminWebIconSet = new SimpleIconSet();
-		adminWebIconSet.add( DEVELOPER_TOOLS, ( imageName ) -> iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "wrench" ) );
-		adminWebIconSet.add( ADMINISTRATION_HOME, ( imageName ) -> iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "home" ) );
-		adminWebIconSet.add( USER_CONTEXT_MENU, ( imageName ) -> iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "user" ) );
+		adminWebIconSet.add( DEVELOPER_TOOLS, ( imageName ) -> iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "wrench" ) );
+		adminWebIconSet.add( ADMINISTRATION_HOME, ( imageName ) -> iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "home" ) );
+		adminWebIconSet.add( USER_CONTEXT_MENU, ( imageName ) -> iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "user" ) );
 
-		IconSetRegistry.addIconSet( AdminWebModule.NAME, adminWebIconSet );
+		IconSetRegistry.addIconSet( ICON_SET, adminWebIconSet );
 	}
 }

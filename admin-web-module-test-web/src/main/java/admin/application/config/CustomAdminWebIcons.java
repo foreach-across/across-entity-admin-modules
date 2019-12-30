@@ -17,13 +17,12 @@
 package admin.application.config;
 
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.MutableIconSet;
-import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 
 @Configuration
@@ -36,9 +35,9 @@ public class CustomAdminWebIcons
 	@Autowired
 	public void registerAdminWebIconSet() {
 		MutableIconSet adminWebIconSet = IconSetRegistry.getIconSet( AdminWebModule.NAME );
-		adminWebIconSet.add( DELETE, ( imageName ) -> iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "trash" ) );
-		adminWebIconSet.add( DOWNLOAD, ( imageName ) -> iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "download" ) );
-		adminWebIconSet.add( ALERT, ( imageName ) -> iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "exclamation-triangle" ) );
+		adminWebIconSet.add( DELETE, ( imageName ) -> iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "trash" ) );
+		adminWebIconSet.add( DOWNLOAD, ( imageName ) -> iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "download" ) );
+		adminWebIconSet.add( ALERT, ( imageName ) -> iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "exclamation-triangle" ) );
 
 		IconSetRegistry.addIconSet( AdminWebModule.NAME, adminWebIconSet );
 	}
