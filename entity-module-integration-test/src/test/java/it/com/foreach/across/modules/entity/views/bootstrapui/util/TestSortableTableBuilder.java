@@ -70,7 +70,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
 			"<tbody>" +
-			"<tr class='odd'><td class='result-number align-middle'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+			"<tr class='odd'><td class='align-middle result-number'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
 			"</tbody>" +
 			"</table>" +
 			"</div>";
@@ -83,7 +83,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
 			"<tbody>" +
-			"<tr class='odd'><td class='result-number align-middle'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+			"<tr class='odd'><td class='align-middle result-number'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
 			"</tbody>" +
 			"</table>" +
 			"</div>";
@@ -236,8 +236,8 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 						"</thead>" +
 						"<tbody>" +
-						"<tr class='odd'><td class='result-number align-middle'>21</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
-						"<tr class='even'><td class='result-number align-middle'>22</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+						"<tr class='odd'><td class='align-middle result-number'>21</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+						"<tr class='even'><td class='align-middle result-number'>22</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
 						"</tbody>" +
 						"</table>" +
 						"</div>" +
@@ -381,7 +381,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 				        "Property name</th></tr>" +
 				        "</thead>" +
 				        "<tbody>" +
-				        "<tr class='odd'><td class='result-number align-middle'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+				        "<tr class='odd'><td class='align-middle result-number'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
 				        "</tbody>" +
 				        "</table>" +
 				        "</div>"
@@ -399,7 +399,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 				        "Property name</th></tr>" +
 				        "</thead>" +
 				        "<tbody>" +
-				        "<tr class='odd'><td class='result-number align-middle'>1</td><td data-tbl-field='propertyOne' class='align-middle'>Property value</td></tr>" +
+				        "<tr class='odd'><td class='align-middle result-number'>1</td><td data-tbl-field='propertyOne' class='align-middle'>Property value</td></tr>" +
 				        "</tbody>" +
 				        "</table>" +
 				        "</div>"
