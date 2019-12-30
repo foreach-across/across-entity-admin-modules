@@ -122,7 +122,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 				inputGroup,
 				"<div class='input-group'>"
 						+ "<div class='input-group-prepend'>"
-						+ "<button type='button' class='btn btn-light' />"
+						+ "<button type='button' class='btn' />"
 						+ "</div>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "<div class='input-group-append'>"
@@ -146,7 +146,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "</div>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "<div class='input-group-append'>"
-						+ "<button type='button' class='btn btn-light' />"
+						+ "<button type='button' class='btn' />"
 						+ "</div>"
 						+ "</div>"
 		);

@@ -142,7 +142,7 @@ public class TestFieldsetFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				fieldset,
 				"<fieldset>" +
-						"<legend>legend text<button type='button' class='btn btn-light' /></legend>" +
+						"<legend>legend text<button type='button' class='btn' /></legend>" +
 						"line 1" +
 						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />" +
 						"</fieldset>"

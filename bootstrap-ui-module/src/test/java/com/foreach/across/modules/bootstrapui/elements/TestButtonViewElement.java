@@ -41,8 +41,8 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void styleAndStyleRuleInteroperability() {
 		ButtonViewElement button = bootstrap.button();
-		assertThat( button.getStyle() ).isEqualTo( Style.LIGHT );
-		renderAndExpect( button, "<button type='button' class='btn btn-light'></button>" );
+		assertThat( button.getStyle() ).isEqualTo( Style.Button.DEFAULT );
+		renderAndExpect( button, "<button type='button' class='btn'></button>" );
 
 		button.setStyle( null );
 		assertThat( button.getStyle() ).isNull();
@@ -66,25 +66,25 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		ButtonViewElement button = new ButtonViewElement();
 		button.setText( "Link button" );
 
-		renderAndExpect( button, "<button type='button' class='btn btn-light'>Link button</button>" );
+		renderAndExpect( button, "<button type='button' class='btn'>Link button</button>" );
 
 		button.setType( ButtonViewElement.Type.BUTTON_SUBMIT );
-		renderAndExpect( button, "<button type='submit' class='btn btn-light'>Link button</button>" );
+		renderAndExpect( button, "<button type='submit' class='btn'>Link button</button>" );
 
 		button.setType( ButtonViewElement.Type.BUTTON_RESET );
-		renderAndExpect( button, "<button type='reset' class='btn btn-light'>Link button</button>" );
+		renderAndExpect( button, "<button type='reset' class='btn'>Link button</button>" );
 
 		button.setType( ButtonViewElement.Type.INPUT );
-		renderAndExpect( button, "<input type='button' class='btn btn-light' value='Link button' />" );
+		renderAndExpect( button, "<input type='button' class='btn' value='Link button' />" );
 
 		button.setType( ButtonViewElement.Type.INPUT_SUBMIT );
-		renderAndExpect( button, "<input type='submit' class='btn btn-light' value='Link button' />" );
+		renderAndExpect( button, "<input type='submit' class='btn' value='Link button' />" );
 
 		button.setType( ButtonViewElement.Type.INPUT_RESET );
-		renderAndExpect( button, "<input type='reset' class='btn btn-light' value='Link button' />" );
+		renderAndExpect( button, "<input type='reset' class='btn' value='Link button' />" );
 
 		button.setType( ButtonViewElement.Type.LINK );
-		renderAndExpect( button, "<a class='btn btn-light' href='#' role='button'>Link button</a>" );
+		renderAndExpect( button, "<a class='btn' href='#' role='button'>Link button</a>" );
 	}
 
 	@Test
@@ -95,31 +95,31 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		button.setText( "Link button" );
 
 		renderAndExpect( button,
-		                 "<button id='bouton' type='button' value='123' name='bouton' class='btn btn-light'>Link button</button>" );
+		                 "<button id='bouton' type='button' value='123' name='bouton' class='btn'>Link button</button>" );
 
 		button.setType( ButtonViewElement.Type.BUTTON_SUBMIT );
 		renderAndExpect( button,
-		                 "<button id='bouton' name='bouton' value='123' type='submit' class='btn btn-light'>Link button</button>" );
+		                 "<button id='bouton' name='bouton' value='123' type='submit' class='btn'>Link button</button>" );
 
 		button.setType( ButtonViewElement.Type.BUTTON_RESET );
 		renderAndExpect( button,
-		                 "<button id='bouton' name='bouton' value='123' type='reset' class='btn btn-light'>Link button</button>" );
+		                 "<button id='bouton' name='bouton' value='123' type='reset' class='btn'>Link button</button>" );
 
 		button.setType( ButtonViewElement.Type.INPUT );
 		renderAndExpect( button,
-		                 "<input id='bouton' name='bouton' type='button' class='btn btn-light' value='123' />" );
+		                 "<input id='bouton' name='bouton' type='button' class='btn' value='123' />" );
 
 		button.setType( ButtonViewElement.Type.INPUT_SUBMIT );
 		renderAndExpect( button,
-		                 "<input id='bouton' name='bouton' type='submit' class='btn btn-light' value='123' />" );
+		                 "<input id='bouton' name='bouton' type='submit' class='btn' value='123' />" );
 
 		button.setType( ButtonViewElement.Type.INPUT_RESET );
 		renderAndExpect( button,
-		                 "<input id='bouton' name='bouton' type='reset' class='btn btn-light' value='123' />" );
+		                 "<input id='bouton' name='bouton' type='reset' class='btn' value='123' />" );
 
 		button.setType( ButtonViewElement.Type.LINK );
 		renderAndExpect( button,
-		                 "<a id='bouton' data-value='123' class='btn btn-light' href='#' role='button'>Link button</a>" );
+		                 "<a id='bouton' data-value='123' class='btn' href='#' role='button'>Link button</a>" );
 	}
 
 	@Test
@@ -214,13 +214,13 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		button.setText( "active button" );
 		button.setState( ButtonViewElement.State.ACTIVE );
 
-		renderAndExpect( button, "<button type='button' class='btn btn-light active'>active button</button>" );
+		renderAndExpect( button, "<button type='button' class='btn active'>active button</button>" );
 
 		button.setType( ButtonViewElement.Type.INPUT );
-		renderAndExpect( button, "<input type='button' class='btn btn-light active' value='active button' />" );
+		renderAndExpect( button, "<input type='button' class='btn active' value='active button' />" );
 
 		button.setType( ButtonViewElement.Type.LINK );
-		renderAndExpect( button, "<a class='btn btn-light active' href='#' role='button'>active button</a>" );
+		renderAndExpect( button, "<a class='btn active' href='#' role='button'>active button</a>" );
 	}
 
 	@Test
@@ -230,14 +230,14 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		button.setState( ButtonViewElement.State.DISABLED );
 
 		renderAndExpect( button,
-		                 "<button type='button' class='btn btn-light' disabled='disabled'>disabled button</button>" );
+		                 "<button type='button' class='btn' disabled='disabled'>disabled button</button>" );
 
 		button.setType( ButtonViewElement.Type.INPUT );
 		renderAndExpect( button,
-		                 "<input type='button' class='btn btn-light' disabled='disabled' value='disabled button' />" );
+		                 "<input type='button' class='btn' disabled='disabled' value='disabled button' />" );
 
 		button.setType( ButtonViewElement.Type.LINK );
-		renderAndExpect( button, "<a class='btn btn-light disabled' href='#' role='button'>disabled button</a>" );
+		renderAndExpect( button, "<a class='btn disabled' href='#' role='button'>disabled button</a>" );
 
 		button.setDisabled( false );
 		assertThat( button.getState() ).isNull();
@@ -254,12 +254,12 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				button,
-				"<button type='button' data-url='http://go-somewhere.com' class='btn btn-light'>click me</button>"
+				"<button type='button' data-url='http://go-somewhere.com' class='btn'>click me</button>"
 		);
 
 		button.setType( ButtonViewElement.Type.LINK );
 		renderAndExpect( button,
-		                 "<a class='btn btn-light' href='http://go-somewhere.com' role='button'>click me</a>" );
+		                 "<a class='btn' href='http://go-somewhere.com' role='button'>click me</a>" );
 	}
 
 	@Test
@@ -269,7 +269,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		button.setIcon( html.i( css.fa.brands( "barcode" ) ) );
 
 		renderAndExpect( button,
-		                 "<button type='button' class='btn btn-light'>" +
+		                 "<button type='button' class='btn'>" +
 				                 "<i class='fab fa-barcode'></i> icon button" +
 				                 "</button>" );
 
@@ -277,7 +277,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		button.setText( null );
 
 		renderAndExpect( button,
-		                 "<button type='button' class='btn btn-light' title='icon button'>" +
+		                 "<button type='button' class='btn' title='icon button'>" +
 				                 "<i class='fab fa-barcode'></i>" +
 				                 "</button>" );
 	}
@@ -290,7 +290,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<button id='two' type='button' name='two' class='btn btn-light' />"
+				"<button id='two' type='button' name='two' class='btn' />"
 		);
 
 		assertThat( control.getControlName() ).isEqualTo( "two" );
@@ -308,7 +308,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<button id='prefix.one' type='button' name='prefix.one' class='btn btn-light' />"
+				"<button id='prefix.one' type='button' name='prefix.one' class='btn' />"
 		);
 
 		assertThat( control.getControlName() ).isEqualTo( "prefix.one" );

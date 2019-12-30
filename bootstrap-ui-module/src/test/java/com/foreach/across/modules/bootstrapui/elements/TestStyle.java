@@ -42,7 +42,7 @@ class TestStyle
 	@Test
 	void buttonRules() {
 		assertThat( Button.toBootstrapStyleRule( Style.ACTIVE ) ).isNull();
-		assertThat( Button.toBootstrapStyleRule( Button.DEFAULT ) ).isEqualTo( css.button.light );
+		assertThat( Button.toBootstrapStyleRule( Button.DEFAULT ) ).isEqualTo( css.button );
 		assertThat( Button.toBootstrapStyleRule( Button.LIGHT ) ).isEqualTo( css.button.light );
 		assertThat( Button.toBootstrapStyleRule( Button.DARK ) ).isEqualTo( css.button.dark );
 		assertThat( Button.toBootstrapStyleRule( Button.PRIMARY ) ).isEqualTo( css.button.primary );
@@ -55,6 +55,7 @@ class TestStyle
 
 		assertThat( Button.fromBootstrapStyleRule( css.button.block ) ).isNull();
 		assertThat( Button.fromBootstrapStyleRule( css.button.outline.white ) ).isNull();
+		assertThat( Button.fromBootstrapStyleRule( css.button ) ).isEqualTo( Button.DEFAULT );
 		assertThat( Button.fromBootstrapStyleRule( css.button.light ) ).isEqualTo( Button.LIGHT );
 		assertThat( Button.fromBootstrapStyleRule( css.button.outline.light ) ).isEqualTo( Button.LIGHT );
 		assertThat( Button.fromBootstrapStyleRule( css.button.dark ) ).isEqualTo( Button.DARK );

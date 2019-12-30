@@ -37,9 +37,7 @@ public class Style implements Serializable
 
 	public static class Button
 	{
-		@Deprecated
-		public static final Style DEFAULT = Style.LIGHT;
-
+		public static final Style DEFAULT = Style.DEFAULT;
 		public static final Style LIGHT = Style.LIGHT;
 		public static final Style DARK = Style.DARK;
 		public static final Style PRIMARY = Style.PRIMARY;
@@ -54,6 +52,7 @@ public class Style implements Serializable
 		private static final Map<BootstrapStyleRule, Style> styleRuleToStyleMapping = new HashMap<>( 20 );
 
 		static {
+			styleToStyleRuleMapping.put( DEFAULT, css.button );
 			styleToStyleRuleMapping.put( LIGHT, css.button.light );
 			styleToStyleRuleMapping.put( DARK, css.button.dark );
 			styleToStyleRuleMapping.put( PRIMARY, css.button.primary );
@@ -64,6 +63,7 @@ public class Style implements Serializable
 			styleToStyleRuleMapping.put( DANGER, css.button.danger );
 			styleToStyleRuleMapping.put( LINK, css.button.link );
 
+			styleRuleToStyleMapping.put( css.button, DEFAULT );
 			styleRuleToStyleMapping.put( css.button.light, LIGHT );
 			styleRuleToStyleMapping.put( css.button.outline.light, LIGHT );
 			styleRuleToStyleMapping.put( css.button.dark, DARK );

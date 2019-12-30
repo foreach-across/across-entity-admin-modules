@@ -66,7 +66,7 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	public ButtonViewElement() {
 		super( ELEMENT_TYPE );
 		setTagName( "button" );
-		setStyle( Style.Button.LIGHT );
+		setStyle( Style.Button.DEFAULT );
 	}
 
 	public ButtonViewElement setStyle( Style style ) {
