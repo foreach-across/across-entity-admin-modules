@@ -33,6 +33,7 @@ import com.foreach.across.modules.web.ui.thymeleaf.ViewElementModelWriterRegistr
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Optional;
 
 /**
@@ -90,8 +91,8 @@ class BootstrapUiConfiguration
 
 	@PostConstruct
 	void registerIconSets() {
-		// clear the previously registered icon sets - workaround for static reference
-		IconSetRegistry.removeAllIconSets();
+		// clear the previously registered icon sets - ensure no leftover in case of unclean shutdown
+		clearIconSets();
 		BootstrapUiModuleIcons.registerFontAwesomeIconSets();
 	}
 
@@ -104,5 +105,10 @@ class BootstrapUiConfiguration
 					packageManager.register( BootstrapUiFormElementsWebResources.NAME, new BootstrapUiFormElementsWebResources( !developmentMode.isActive() ) );
 				}
 		);
+	}
+
+	@PreDestroy
+	void clearIconSets() {
+		IconSetRegistry.removeAllIconSets();
 	}
 }
