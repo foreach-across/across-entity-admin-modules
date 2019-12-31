@@ -62,7 +62,7 @@ public class GridStyleRule
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Row implements BootstrapStyleRule
 	{
-		public final BootstrapStyleRule noGutters = of( "row", "no-gutters" );
+		public final BootstrapStyleRule noGutters = BootstrapStyleRule.appendOnSet( this, "no-gutters" );
 
 		@Override
 		public String[] toCssClasses() {

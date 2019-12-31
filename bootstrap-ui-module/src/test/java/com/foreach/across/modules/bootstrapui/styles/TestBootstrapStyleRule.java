@@ -43,11 +43,11 @@ class TestBootstrapStyleRule
 
 	@Test
 	void asRemover() {
-		NodeViewElement node = html.a( css.button.primary );
+		NodeViewElement node = html.a( BootstrapStyleRule.of( "btn", "btn-primary" ) );
 		assertThat( node.hasCssClass( "btn" ) ).isTrue();
 		assertThat( node.hasCssClass( "btn-primary" ) ).isTrue();
 
-		node.remove( css.button.primary );
+		node.remove( BootstrapStyleRule.of( "btn", "btn-primary" ) );
 		assertThat( node.hasCssClass( "btn" ) ).isFalse();
 		assertThat( node.hasCssClass( "btn-primary" ) ).isFalse();
 	}
@@ -58,5 +58,19 @@ class TestBootstrapStyleRule
 		assertThat( node.matches( css.button.primary ) ).isTrue();
 		assertThat( node.matches( css.button ) ).isTrue();
 		assertThat( node.matches( css.button.secondary ) ).isFalse();
+	}
+
+	@Test
+	void appending() {
+		NodeViewElement node = html.a( css.button.primary );
+		assertThat( node.matches( css.button.primary ) ).isTrue();
+		assertThat( node.matches( css.button ) ).isTrue();
+
+		node.remove( css.button.primary );
+		assertThat( node.matches( css.button.primary ) ).isFalse();
+		assertThat( node.matches( css.button ) ).isTrue();
+
+		node.remove( css.button );
+		assertThat( node.matches( css.button ) ).isFalse();
 	}
 }

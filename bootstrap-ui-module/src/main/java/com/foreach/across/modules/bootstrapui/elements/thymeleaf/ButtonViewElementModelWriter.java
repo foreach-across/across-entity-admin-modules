@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.EnumSet;
 
 import static com.foreach.across.modules.bootstrapui.elements.ButtonViewElement.Type.*;
-import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.BootstrapModelWriterUtils.addSizeForPrefix;
 
 /**
  * @author Arne Vandamme
@@ -40,7 +39,6 @@ public class ButtonViewElementModelWriter extends AbstractHtmlViewElementModelWr
 
 		writer.addAttribute( "title", button.getTitle() );
 
-		addButtonStyleAttributes( button, writer );
 		addButtonStateAttributes( button, writer );
 		addButtonUrl( button, writer );
 
@@ -95,15 +93,13 @@ public class ButtonViewElementModelWriter extends AbstractHtmlViewElementModelWr
 		else if ( button.getState() == ButtonViewElement.State.DISABLED ) {
 			if ( button.getType() == ButtonViewElement.Type.LINK ) {
 				writer.addAttributeValue( "class", "disabled" );
+				writer.addAttribute( "aria-disabled", true );
+				writer.addAttribute( "tabindex", "-1" );
 			}
 			else {
 				writer.addBooleanAttribute( "disabled", true );
 			}
 		}
-	}
-
-	private void addButtonStyleAttributes( ButtonViewElement button, ThymeleafModelBuilder writer ) {
-		addSizeForPrefix( writer, button.getSize(), "btn" );
 	}
 
 	private void changeButtonTypeElement( ButtonViewElement button, ThymeleafModelBuilder writer ) {

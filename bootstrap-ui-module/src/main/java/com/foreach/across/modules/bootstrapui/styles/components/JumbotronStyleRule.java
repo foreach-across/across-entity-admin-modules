@@ -26,7 +26,7 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
  */
 public class JumbotronStyleRule implements BootstrapStyleRule
 {
-	public final BootstrapStyleRule fluid = BootstrapStyleRule.of( "jumbotron", "jumbotron-fluid" );
+	public final BootstrapStyleRule fluid = BootstrapStyleRule.appendOnSet( this, "jumbotron-fluid" );
 
 	@Override
 	public String[] toCssClasses() {

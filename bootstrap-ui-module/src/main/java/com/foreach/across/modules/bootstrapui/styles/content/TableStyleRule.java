@@ -23,6 +23,7 @@ import com.foreach.across.modules.bootstrapui.styles.utilities.SimpleBreakpointS
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
@@ -34,11 +35,11 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
 public class TableStyleRule extends ColorStyleRule implements BootstrapStyleRule
 {
 	public final Head head = new Head();
-	public final BootstrapStyleRule striped = of( "table", "table-striped" );
-	public final BootstrapStyleRule bordered = of( "table", "table-bordered" );
-	public final BootstrapStyleRule borderless = of( "table", "table-borderless" );
-	public final BootstrapStyleRule hover = of( "table", "table-hover" );
-	public final BootstrapStyleRule small = of( "table", "table-sm" );
+	public final BootstrapStyleRule striped = appendOnSet( this, "table-striped" );
+	public final BootstrapStyleRule bordered = appendOnSet( this, "table-bordered" );
+	public final BootstrapStyleRule borderless = appendOnSet( this, "table-borderless" );
+	public final BootstrapStyleRule hover = appendOnSet( this, "table-hover" );
+	public final BootstrapStyleRule small = appendOnSet( this, "table-sm" );
 	public final BootstrapStyleRule active = of( "table-active" );
 	public final BreakpointStyleRule reponsive = new SimpleBreakpointStyleRule( "table-responsive", null );
 

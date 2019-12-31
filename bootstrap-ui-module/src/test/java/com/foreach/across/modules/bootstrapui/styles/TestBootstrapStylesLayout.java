@@ -35,7 +35,7 @@ class TestBootstrapStylesLayout
 		assertStyle( css.grid.container ).is( "container" );
 		assertStyle( css.grid.container.fluid ).is( "container-fluid" );
 		assertStyle( css.grid.row ).is( "row" );
-		assertStyle( css.grid.row.noGutters ).is( "row", "no-gutters" );
+		assertStyle( css.grid.row.noGutters ).is( "row", "no-gutters" ).removes( "no-gutters" );
 
 		// column
 		assertStyle( css.grid.column ).is( "col" );

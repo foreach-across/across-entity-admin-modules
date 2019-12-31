@@ -46,7 +46,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 
 		button.setStyle( null );
 		assertThat( button.getStyle() ).isNull();
-		renderAndExpect( button, "<button type='button' class=''></button>" );
+		renderAndExpect( button, "<button type='button'></button>" );
 
 		button.set( css.button.warning );
 		assertThat( button.getStyle() ).isEqualTo( Style.WARNING );
@@ -169,43 +169,19 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		renderAndExpect( button, "<button type='button' class='btn btn-danger btn-lg'>Link button</button>" );
 
 		button.setType( ButtonViewElement.Type.INPUT );
-		button.setSize( Size.EXTRA_SMALL );
-		renderAndExpect( button, "<input type='button' class='btn btn-danger btn-xs' value='Link button' />" );
+		button.setSize( Size.SMALL );
+		renderAndExpect( button, "<input type='button' class='btn btn-danger btn-sm' value='Link button' />" );
 
 		button.setType( ButtonViewElement.Type.LINK );
-		button.setSize( Size.SMALL );
-		renderAndExpect( button, "<a class='btn btn-danger btn-sm' href='#' role='button'>Link button</a>" );
+		button.set( css.button.large );
+		assertThat( button.getSize() ).isEqualTo( Size.LARGE );
+		renderAndExpect( button, "<a class='btn btn-danger btn-lg' href='#' role='button'>Link button</a>" );
 
 		button.setSize( Size.DEFAULT );
 		renderAndExpect( button, "<a class='btn btn-danger' href='#' role='button'>Link button</a>" );
 
 		button.setSize( null );
 		renderAndExpect( button, "<a class='btn btn-danger' href='#' role='button'>Link button</a>" );
-	}
-
-	@Test
-	public void blockLevel() {
-		ButtonViewElement button = new ButtonViewElement();
-		button.setText( "Link button" );
-		button.setStyle( Style.Button.DANGER );
-
-		button.setSize( Size.LARGE.asBlock() );
-		renderAndExpect( button, "<button type='button' class='btn btn-danger btn-lg btn-block'>Link button</button>" );
-
-		button.setType( ButtonViewElement.Type.INPUT );
-		button.setSize( Size.EXTRA_SMALL.asBlock() );
-		renderAndExpect( button,
-		                 "<input type='button' class='btn btn-danger btn-xs btn-block' value='Link button' />" );
-
-		button.setType( ButtonViewElement.Type.LINK );
-		button.setSize( Size.SMALL.asBlock() );
-		renderAndExpect( button, "<a class='btn btn-danger btn-sm btn-block' href='#' role='button'>Link button</a>" );
-
-		button.setSize( Size.BLOCK );
-		renderAndExpect( button, "<a class='btn btn-danger btn-block' href='#' role='button'>Link button</a>" );
-
-		button.setSize( Size.BLOCK.asBlock() );
-		renderAndExpect( button, "<a class='btn btn-danger btn-block' href='#' role='button'>Link button</a>" );
 	}
 
 	@Test
@@ -237,7 +213,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		                 "<input type='button' class='btn' disabled='disabled' value='disabled button' />" );
 
 		button.setType( ButtonViewElement.Type.LINK );
-		renderAndExpect( button, "<a class='btn disabled' href='#' role='button'>disabled button</a>" );
+		renderAndExpect( button, "<a class='btn disabled' aria-disabled='true' tabindex='-1' href='#' role='button'>disabled button</a>" );
 
 		button.setDisabled( false );
 		assertThat( button.getState() ).isNull();

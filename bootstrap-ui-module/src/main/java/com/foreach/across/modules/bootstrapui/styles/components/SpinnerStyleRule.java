@@ -36,7 +36,7 @@ public class SpinnerStyleRule
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Grow implements BootstrapStyleRule
 	{
-		public final BootstrapStyleRule small = of( "spinner-grow", "spinner-grow-sm" );
+		public final BootstrapStyleRule small = BootstrapStyleRule.appendOnSet( this, "spinner-grow-sm" );
 
 		@Override
 		public String[] toCssClasses() {

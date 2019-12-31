@@ -107,21 +107,120 @@ public class Style implements Serializable
 		}
 	}
 
+	/**
+	 * Use the {@link com.foreach.across.modules.bootstrapui.styles.BootstrapStyles#table} style rules instead.
+	 * New Bootstrap 4 rules are not available as {@link Style}, only values present before {@code 3.0.0} are
+	 * implemented for backwards compatibility.
+	 */
+	@Deprecated
 	public static class Table
 	{
+		@Deprecated
 		public static final Style STRIPED = new Style( "striped", true );
+		@Deprecated
 		public static final Style BORDERED = new Style( "bordered", true );
+		@Deprecated
 		public static final Style HOVER = new Style( "hover", true );
-		public static final Style CONDENSED = new Style( "condensed", true );
+		@Deprecated
+		public static final Style CONDENSED = new Style( "sm", true );
+
+		private static final Map<Style, BootstrapStyleRule> styleToStyleRuleMapping = new HashMap<>( 10 );
+		private static final Map<BootstrapStyleRule, Style> styleRuleToStyleMapping = new HashMap<>( 20 );
+
+		static {
+			styleToStyleRuleMapping.put( STRIPED, css.table.striped );
+			styleToStyleRuleMapping.put( BORDERED, css.table.bordered );
+			styleToStyleRuleMapping.put( HOVER, css.table.hover );
+			styleToStyleRuleMapping.put( CONDENSED, css.table.small );
+
+			styleRuleToStyleMapping.put( css.table.striped, STRIPED );
+			styleRuleToStyleMapping.put( css.table.bordered, BORDERED );
+			styleRuleToStyleMapping.put( css.table.hover, HOVER );
+			styleRuleToStyleMapping.put( css.table.small, CONDENSED );
+		}
+
+		/**
+		 * Compatibility between the old Style enum approach and the new BootstrapStyleRule,
+		 * attempts to resolve a Style enum from the bootstrap style rule.
+		 *
+		 * @param styleRule style rule
+		 * @return matching Style (can be {@code null})
+		 */
+		@Nullable
+		public static Style fromBootstrapStyleRule( BootstrapStyleRule styleRule ) {
+			return styleRuleToStyleMapping.get( styleRule );
+		}
+
+		/**
+		 * Converts a Style enum value to the equivalent style rule.
+		 *
+		 * @param style enum value
+		 * @return equivalent bootstrap style rule (can be {@code null})
+		 */
+		@Nullable
+		public static BootstrapStyleRule toBootstrapStyleRule( Style style ) {
+			return styleToStyleRuleMapping.get( style );
+		}
 	}
 
+	/**
+	 * Use the {@link com.foreach.across.modules.bootstrapui.styles.BootstrapStyles#table} style rules instead.
+	 * New Bootstrap 4 rules are not available as {@link Style}, only values present before {@code 3.0.0} are
+	 * implemented for backwards compatibility.
+	 */
+	@Deprecated
 	public static class TableCell
 	{
+		@Deprecated
 		public static final Style ACTIVE = Style.ACTIVE;
+		@Deprecated
 		public static final Style SUCCESS = Style.SUCCESS;
+		@Deprecated
 		public static final Style INFO = Style.INFO;
+		@Deprecated
 		public static final Style WARNING = Style.WARNING;
+		@Deprecated
 		public static final Style DANGER = Style.DANGER;
+
+		private static final Map<Style, BootstrapStyleRule> styleToStyleRuleMapping = new HashMap<>( 10 );
+		private static final Map<BootstrapStyleRule, Style> styleRuleToStyleMapping = new HashMap<>( 20 );
+
+		static {
+			styleToStyleRuleMapping.put( ACTIVE, css.table.active );
+			styleToStyleRuleMapping.put( SUCCESS, css.table.success );
+			styleToStyleRuleMapping.put( INFO, css.table.info );
+			styleToStyleRuleMapping.put( WARNING, css.table.warning );
+			styleToStyleRuleMapping.put( DANGER, css.table.danger );
+
+			styleRuleToStyleMapping.put( css.table.active, ACTIVE );
+			styleRuleToStyleMapping.put( css.table.success, SUCCESS );
+			styleRuleToStyleMapping.put( css.table.info, INFO );
+			styleRuleToStyleMapping.put( css.table.warning, WARNING );
+			styleRuleToStyleMapping.put( css.table.danger, DANGER );
+		}
+
+		/**
+		 * Compatibility between the old Style enum approach and the new BootstrapStyleRule,
+		 * attempts to resolve a Style enum from the bootstrap style rule.
+		 *
+		 * @param styleRule style rule
+		 * @return matching Style (can be {@code null})
+		 */
+		@Nullable
+		public static Style fromBootstrapStyleRule( BootstrapStyleRule styleRule ) {
+			return styleRuleToStyleMapping.get( styleRule );
+		}
+
+		/**
+		 * Converts a Style enum value to the equivalent style rule.
+		 *
+		 * @param style enum value
+		 * @return equivalent bootstrap style rule (can be {@code null})
+		 */
+		@Nullable
+		public static BootstrapStyleRule toBootstrapStyleRule( Style style ) {
+			return styleToStyleRuleMapping.get( style );
+		}
 	}
 
 	public static final Style DEFAULT = new Style( "default", true );

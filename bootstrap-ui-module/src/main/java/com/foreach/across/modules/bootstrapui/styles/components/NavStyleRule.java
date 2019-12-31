@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.styles.components;
 
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
@@ -30,8 +31,8 @@ public class NavStyleRule implements BootstrapStyleRule
 {
 	public final BootstrapStyleRule item = of( "nav-item" );
 	public final BootstrapStyleRule link = of( "nav-link" );
-	public final BootstrapStyleRule tabs = of( "nav", "nav-tabs" );
-	public final BootstrapStyleRule pills = of( "nav", "nav-pills" );
+	public final BootstrapStyleRule tabs = appendOnSet( this, "nav-tabs" );
+	public final BootstrapStyleRule pills = appendOnSet( this, "nav-pills" );
 	public final BootstrapStyleRule fill = of( "nav-fill" );
 	public final BootstrapStyleRule justified = of( "nav-justified" );
 

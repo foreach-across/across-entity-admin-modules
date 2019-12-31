@@ -17,9 +17,13 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.Style.Button;
+import com.foreach.across.modules.bootstrapui.elements.Style.Table;
+import com.foreach.across.modules.bootstrapui.elements.Style.TableCell;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.SerializationUtils;
 
+import static com.foreach.across.modules.bootstrapui.elements.Style.ACTIVE;
+import static com.foreach.across.modules.bootstrapui.elements.Style.SECONDARY;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -41,7 +45,7 @@ class TestStyle
 
 	@Test
 	void buttonRules() {
-		assertThat( Button.toBootstrapStyleRule( Style.ACTIVE ) ).isNull();
+		assertThat( Button.toBootstrapStyleRule( ACTIVE ) ).isNull();
 		assertThat( Button.toBootstrapStyleRule( Button.DEFAULT ) ).isEqualTo( css.button );
 		assertThat( Button.toBootstrapStyleRule( Button.LIGHT ) ).isEqualTo( css.button.light );
 		assertThat( Button.toBootstrapStyleRule( Button.DARK ) ).isEqualTo( css.button.dark );
@@ -73,5 +77,37 @@ class TestStyle
 		assertThat( Button.fromBootstrapStyleRule( css.button.danger ) ).isEqualTo( Button.DANGER );
 		assertThat( Button.fromBootstrapStyleRule( css.button.outline.danger ) ).isEqualTo( Button.DANGER );
 		assertThat( Button.fromBootstrapStyleRule( css.button.link ) ).isEqualTo( Button.LINK );
+	}
+
+	@Test
+	void tableRules() {
+		assertThat( Table.toBootstrapStyleRule( ACTIVE ) ).isNull();
+		assertThat( Table.toBootstrapStyleRule( Table.HOVER ) ).isEqualTo( css.table.hover );
+		assertThat( Table.toBootstrapStyleRule( Table.STRIPED ) ).isEqualTo( css.table.striped );
+		assertThat( Table.toBootstrapStyleRule( Table.CONDENSED ) ).isEqualTo( css.table.small );
+		assertThat( Table.toBootstrapStyleRule( Table.BORDERED ) ).isEqualTo( css.table.bordered );
+
+		assertThat( Table.fromBootstrapStyleRule( css.table ) ).isNull();
+		assertThat( Table.fromBootstrapStyleRule( css.table.hover ) ).isEqualTo( Table.HOVER );
+		assertThat( Table.fromBootstrapStyleRule( css.table.striped ) ).isEqualTo( Table.STRIPED );
+		assertThat( Table.fromBootstrapStyleRule( css.table.small ) ).isEqualTo( Table.CONDENSED );
+		assertThat( Table.fromBootstrapStyleRule( css.table.bordered ) ).isEqualTo( Table.BORDERED );
+	}
+
+	@Test
+	void tableCellRules() {
+		assertThat( TableCell.toBootstrapStyleRule( SECONDARY ) ).isNull();
+		assertThat( TableCell.toBootstrapStyleRule( TableCell.ACTIVE ) ).isEqualTo( css.table.active );
+		assertThat( TableCell.toBootstrapStyleRule( TableCell.DANGER ) ).isEqualTo( css.table.danger );
+		assertThat( TableCell.toBootstrapStyleRule( TableCell.INFO ) ).isEqualTo( css.table.info );
+		assertThat( TableCell.toBootstrapStyleRule( TableCell.SUCCESS ) ).isEqualTo( css.table.success );
+		assertThat( TableCell.toBootstrapStyleRule( TableCell.WARNING ) ).isEqualTo( css.table.warning );
+
+		assertThat( TableCell.fromBootstrapStyleRule( css.table ) ).isNull();
+		assertThat( TableCell.fromBootstrapStyleRule( css.table.active ) ).isEqualTo( TableCell.ACTIVE );
+		assertThat( TableCell.fromBootstrapStyleRule( css.table.danger ) ).isEqualTo( TableCell.DANGER );
+		assertThat( TableCell.fromBootstrapStyleRule( css.table.info ) ).isEqualTo( TableCell.INFO );
+		assertThat( TableCell.fromBootstrapStyleRule( css.table.success ) ).isEqualTo( TableCell.SUCCESS );
+		assertThat( TableCell.fromBootstrapStyleRule( css.table.warning ) ).isEqualTo( TableCell.WARNING );
 	}
 }

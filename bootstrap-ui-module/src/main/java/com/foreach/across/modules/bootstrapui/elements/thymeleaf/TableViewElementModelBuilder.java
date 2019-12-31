@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@ import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 
-import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.BootstrapModelWriterUtils.addStyle;
-import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.BootstrapModelWriterUtils.addStylesForPrefix;
-
 /**
  * @author Arne Vandamme
  * @since 1.0.0
@@ -33,7 +30,6 @@ public class TableViewElementModelBuilder extends AbstractHtmlViewElementModelWr
 		@Override
 		protected void writeOpenElement( TableViewElement.Row row, ThymeleafModelBuilder model ) {
 			super.writeOpenElement( row, model );
-			addStyle( model, row.getStyle() );
 		}
 	}
 
@@ -47,7 +43,6 @@ public class TableViewElementModelBuilder extends AbstractHtmlViewElementModelWr
 				model.changeOpenElement( "th" );
 			}
 
-			addStyle( model, cell.getStyle() );
 			model.addAttribute( "colspan", cell.getColumnSpan() );
 		}
 	}
@@ -61,8 +56,6 @@ public class TableViewElementModelBuilder extends AbstractHtmlViewElementModelWr
 		}
 
 		super.writeOpenElement( table, model );
-		model.addAttributeValue( "class", "table" );
-		addStylesForPrefix( model, table.getStyles(), "table" );
 
 		model.addViewElement( table.getCaption() );
 		model.addViewElement( table.getColumnGroup() );

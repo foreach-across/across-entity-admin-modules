@@ -50,6 +50,7 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	private Type type = Type.BUTTON;
 
 	private State state;
+	@Deprecated
 	private Size size;
 
 	/**
@@ -77,6 +78,24 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 		styleRule = Style.Button.toBootstrapStyleRule( style );
 		if ( styleRule != null ) {
 			super.set( styleRule );
+		}
+		return this;
+	}
+
+	@Deprecated
+	public ButtonViewElement setSize( Size newSize ) {
+		if ( size != null ) {
+			BootstrapStyleRule styleRule = size.toBootstrapStyleRule();
+			if ( styleRule != null ) {
+				super.remove( styleRule );
+			}
+		}
+		size = newSize;
+		if ( newSize != null ) {
+			BootstrapStyleRule styleRule = newSize.toBootstrapStyleRule();
+			if ( styleRule != null ) {
+				super.set( styleRule );
+			}
 		}
 		return this;
 	}
@@ -224,6 +243,11 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 					      }
 					      style = buttonStyle;
 					      styleRule = sr;
+				      }
+				      Size buttonSize = Size.fromBootstrapStyleRule( sr );
+				      if ( buttonSize != null ) {
+					      setSize( null );
+					      size = buttonSize;
 				      }
 			      }
 			      super.set( setter );

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author Arne Vandamme
  */
@@ -29,11 +32,12 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void simple() {
 		TableViewElement table = new TableViewElement();
+		assertThat( table.matches( css.table ) ).isTrue();
 
-		renderAndExpect(
-				table,
-				"<table class='table' />"
-		);
+		renderAndExpect( table, "<table class='table' />" );
+
+		table.remove( css.table );
+		renderAndExpect( table, "<table />" );
 	}
 
 	@Test
@@ -68,17 +72,19 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 	public void styles() {
 		TableViewElement table = new TableViewElement();
 		table.addStyle( Style.Table.CONDENSED );
+		assertThat( table.matches( css.table.small ) ).isTrue();
 
 		renderAndExpect(
 				table,
-				"<table class='table table-condensed' />"
+				"<table class='table table-sm' />"
 		);
 
 		table.addStyle( Style.Table.HOVER );
 		renderAndExpect(
 				table,
-				"<table class='table table-condensed table-hover' />"
+				"<table class='table-sm table table-hover' />"
 		);
+		assertThat( table.matches( css.table.small.and( css.table.hover ) ) ).isTrue();
 
 		table.clearStyles();
 		table.setStyles( Collections.singleton( Style.Table.STRIPED ) );
@@ -86,6 +92,24 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 				table,
 				"<table class='table table-striped' />"
 		);
+		assertThat( table.matches( css.table.striped.and( css.table.hover.negate() ) ) ).isTrue();
+	}
+
+	@Test
+	public void styleRuleToStyles() {
+		TableViewElement table = new TableViewElement();
+		table.set( css.table.small );
+		assertThat( table.getStyles() ).containsExactly( Style.Table.CONDENSED );
+
+		table.set( css.table.hover );
+		assertThat( table.getStyles() ).containsExactlyInAnyOrder( Style.Table.CONDENSED, Style.Table.HOVER );
+
+		table.set( css.table.striped );
+		assertThat( table.getStyles() ).containsExactlyInAnyOrder( Style.Table.CONDENSED, Style.Table.HOVER, Style.Table.STRIPED );
+
+		table.remove( css.table.striped, css.table.small, css.table.hover );
+		table.set( css.table.bordered );
+		assertThat( table.getStyles() ).containsExactly( Style.Table.BORDERED );
 	}
 
 	@Test
@@ -100,6 +124,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 
 		TableViewElement.Cell warning = cell( "three" );
 		warning.setStyle( Style.TableCell.WARNING );
+		assertThat( warning.matches( css.table.warning ) ).isTrue();
 
 		table.addChild( row( warning, cell( "four" ) ) );
 
@@ -108,6 +133,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 
 		TableViewElement.Row activeRow = row( doubleCell );
 		activeRow.setStyle( Style.ACTIVE );
+		assertThat( activeRow.matches( css.table.active ) ).isTrue();
 
 		table.addChild( activeRow );
 
@@ -116,8 +142,32 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 				"<table class='table'>" +
 						"<tr><th>heading 1</th><th>heading 2</th></tr>" +
 						"<tr><td>one</td><td>two</td></tr>" +
-						"<tr><td class='warning'>three</td><td>four</td></tr>" +
-						"<tr class='active'><td colspan='2'>five</td></tr>" +
+						"<tr><td class='table-warning'>three</td><td>four</td></tr>" +
+						"<tr class='table-active'><td colspan='2'>five</td></tr>" +
+						"</table>"
+		);
+
+		warning.set( css.table.danger );
+		activeRow.set( css.table.success );
+		renderAndExpect(
+				table,
+				"<table class='table'>" +
+						"<tr><th>heading 1</th><th>heading 2</th></tr>" +
+						"<tr><td>one</td><td>two</td></tr>" +
+						"<tr><td class='table-danger'>three</td><td>four</td></tr>" +
+						"<tr class='table-success'><td colspan='2'>five</td></tr>" +
+						"</table>"
+		);
+
+		warning.remove( css.table.danger );
+		activeRow.remove( css.table.success );
+		renderAndExpect(
+				table,
+				"<table class='table'>" +
+						"<tr><th>heading 1</th><th>heading 2</th></tr>" +
+						"<tr><td>one</td><td>two</td></tr>" +
+						"<tr><td>three</td><td>four</td></tr>" +
+						"<tr><td colspan='2'>five</td></tr>" +
 						"</table>"
 		);
 	}

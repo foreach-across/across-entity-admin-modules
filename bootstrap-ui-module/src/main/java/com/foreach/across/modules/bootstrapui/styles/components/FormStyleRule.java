@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
@@ -75,8 +76,8 @@ public class FormStyleRule
 		@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 		public static class Label implements BootstrapStyleRule
 		{
-			public final BootstrapStyleRule large = of( "col-form-label", "col-form-label-lg" );
-			public final BootstrapStyleRule small = of( "col-form-label", "col-form-label-sm" );
+			public final BootstrapStyleRule large = BootstrapStyleRule.appendOnSet( this, "col-form-label-lg" );
+			public final BootstrapStyleRule small = BootstrapStyleRule.appendOnSet( this, "col-form-label-sm" );
 
 			@Override
 			public String[] toCssClasses() {
@@ -89,9 +90,9 @@ public class FormStyleRule
 	public static class Custom
 	{
 		public final Control control = new Control();
-		public final BootstrapStyleRule checkbox = of( "custom-control", "custom-checkbox" );
-		public final BootstrapStyleRule radio = of( "custom-control", "custom-radio" );
-		public final BootstrapStyleRule switchControl = of( "custom-control", "custom-switch" );
+		public final BootstrapStyleRule checkbox = appendOnSet( control, "custom-checkbox" );
+		public final BootstrapStyleRule radio = appendOnSet( control, "custom-radio" );
+		public final BootstrapStyleRule switchControl = appendOnSet( control, "custom-switch" );
 		public final BootstrapStyleRule range = of( "custom-range" );
 		public final Select select = new Select();
 		public final File file = new File();
@@ -112,8 +113,8 @@ public class FormStyleRule
 		@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 		public static class Select implements BootstrapStyleRule
 		{
-			public final BootstrapStyleRule small = of( "custom-select", "custom-select-sm" );
-			public final BootstrapStyleRule large = of( "custom-select", "custom-select-lg" );
+			public final BootstrapStyleRule small = appendOnSet( this, "custom-select-sm" );
+			public final BootstrapStyleRule large = appendOnSet( this, "custom-select-lg" );
 
 			@Override
 			public String[] toCssClasses() {

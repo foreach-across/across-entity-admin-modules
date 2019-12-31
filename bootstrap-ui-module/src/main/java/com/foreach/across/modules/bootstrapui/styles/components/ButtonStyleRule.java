@@ -31,7 +31,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  */
 public class ButtonStyleRule extends ColorStyleRule implements BootstrapStyleRule
 {
-	public final BootstrapStyleRule link = of( "btn", "btn-link" );
+	public final BootstrapStyleRule link = BootstrapStyleRule.appendOnSet( this, "btn-link" );
 	public final ColorStyleRule outline = new ColorStyleRule( "btn-outline", "btn" );
 	public final BootstrapStyleRule small = of( "btn-sm" );
 	public final BootstrapStyleRule large = of( "btn-lg" );

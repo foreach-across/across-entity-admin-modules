@@ -17,8 +17,8 @@
 package com.foreach.across.modules.bootstrapui.styles.utilities;
 
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
-import org.apache.commons.lang3.ArrayUtils;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
@@ -41,14 +41,14 @@ public class ColorStyleRule
 	public final BootstrapStyleRule white;
 
 	public ColorStyleRule( String prefix, String... additionalCss ) {
-		primary = of( ArrayUtils.add( additionalCss, prefix + "-primary" ) );
-		secondary = of( ArrayUtils.add( additionalCss, prefix + "-secondary" ) );
-		success = of( ArrayUtils.add( additionalCss, prefix + "-success" ) );
-		danger = of( ArrayUtils.add( additionalCss, prefix + "-danger" ) );
-		warning = of( ArrayUtils.add( additionalCss, prefix + "-warning" ) );
-		info = of( ArrayUtils.add( additionalCss, prefix + "-info" ) );
-		light = of( ArrayUtils.add( additionalCss, prefix + "-light" ) );
-		dark = of( ArrayUtils.add( additionalCss, prefix + "-dark" ) );
-		white = of( ArrayUtils.add( additionalCss, prefix + "-white" ) );
+		primary = appendOnSet( of( additionalCss ), prefix + "-primary" );
+		secondary = appendOnSet( of( additionalCss ), prefix + "-secondary" );
+		success = appendOnSet( of( additionalCss ), prefix + "-success" );
+		danger = appendOnSet( of( additionalCss ), prefix + "-danger" );
+		warning = appendOnSet( of( additionalCss ), prefix + "-warning" );
+		info = appendOnSet( of( additionalCss ), prefix + "-info" );
+		light = appendOnSet( of( additionalCss ), prefix + "-light" );
+		dark = appendOnSet( of( additionalCss ), prefix + "-dark" );
+		white = appendOnSet( of( additionalCss ), prefix + "-white" );
 	}
 }

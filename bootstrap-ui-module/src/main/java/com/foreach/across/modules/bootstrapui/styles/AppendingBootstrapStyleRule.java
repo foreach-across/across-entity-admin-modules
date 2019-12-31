@@ -14,40 +14,34 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.styles.utilities;
+package com.foreach.across.modules.bootstrapui.styles;
 
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
+ * Specialization of {@link BootstrapStyleRule} which extends an existing rule but has different behaviour
+ * when it comes to removing. When adding all css classes will be added, but when removing only the additional
+ * css classes will be removed. This allows for adding dependent classes for convenience, but leaving them
+ * untouched when removing (in case they had already been added).
+ *
  * @author Arne Vandamme
  * @since 3.0.0
  */
-public class SimpleBreakpointStyleRule implements BreakpointStyleRule
+@RequiredArgsConstructor
+class AppendingBootstrapStyleRule implements BootstrapStyleRule
 {
-	private final String prefix;
-	private final String suffix;
-	private final String[] additionalCss;
-
-	public SimpleBreakpointStyleRule( String prefix, String suffix, String... additionalCss ) {
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.additionalCss = additionalCss;
-	}
-
-	@Override
-	public BootstrapStyleRule on( String breakpoint ) {
-		return BootstrapStyleRule.appendOnSet( BootstrapStyleRule.of( additionalCss ), prefix + "-" + breakpoint + ( suffix != null ? "-" + suffix : "" ) );
-	}
+	private final BootstrapStyleRule originalRule;
+	private final String[] additionalCssClasses;
 
 	@Override
 	public String[] toCssClasses() {
-		return ArrayUtils.add( additionalCss, prefix + ( suffix != null ? "-" + suffix : "" ) );
+		return ArrayUtils.addAll( originalRule.toCssClasses(), additionalCssClasses );
 	}
 
 	@Override
 	public void removeFrom( HtmlViewElement target ) {
-		target.removeCssClass( prefix + ( suffix != null ? "-" + suffix : "" ) );
+		target.removeCssClass( additionalCssClasses );
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,29 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import lombok.NonNull;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * @author Arne Vandamme
+ * @deprecated since 3.0.0 - use {@link com.foreach.across.modules.bootstrapui.styles.BootstrapStyles#button} instead
  */
-public class Size
+public final class Size
 {
-	public static final Size BLOCK = new Size( "block", true );
-	public static final Size DEFAULT = new Size( "", true );
-	public static final Size LARGE = new Size( "lg", true );
-	public static final Size SMALL = new Size( "sm", true );
-	public static final Size EXTRA_SMALL = new Size( "xs", true );
+	public static final Size DEFAULT = new Size( "", true, null );
+	public static final Size LARGE = new Size( "lg", true, css.button.large );
+	public static final Size SMALL = new Size( "sm", true, css.button.small );
 
 	private final boolean isDefault;
 	private final String name;
+	private final BootstrapStyleRule bootstrapStyleRule;
 
-	public Size( String name ) {
-		this( name, false );
-	}
-
-	private Size( @NonNull String name, boolean isDefault ) {
+	private Size( @NonNull String name, boolean isDefault, BootstrapStyleRule bootstrapStyleRule ) {
 		this.name = name;
 		this.isDefault = isDefault;
+		this.bootstrapStyleRule = bootstrapStyleRule;
 	}
 
 	public String getName() {
@@ -56,22 +56,8 @@ public class Size
 		return isDefault;
 	}
 
-	/**
-	 * @return The given size as a block level element.
-	 */
-	public Size asBlock() {
-		if ( this.equals( BLOCK ) ) {
-			return this;
-		}
-
-		final Size parent = this;
-		return new Size( "block", true )
-		{
-			@Override
-			public String forPrefix( String prefix ) {
-				return parent.forPrefix( prefix ) + " " + super.forPrefix( prefix );
-			}
-		};
+	BootstrapStyleRule toBootstrapStyleRule() {
+		return bootstrapStyleRule;
 	}
 
 	@Override
@@ -100,5 +86,15 @@ public class Size
 		int result = ( isDefault ? 1 : 0 );
 		result = 31 * result + ( name != null ? name.hashCode() : 0 );
 		return result;
+	}
+
+	static Size fromBootstrapStyleRule( @NonNull BootstrapStyleRule styleRule ) {
+		if ( styleRule.equals( LARGE.bootstrapStyleRule ) ) {
+			return LARGE;
+		}
+		if ( styleRule.equals( SMALL.bootstrapStyleRule ) ) {
+			return SMALL;
+		}
+		return null;
 	}
 }

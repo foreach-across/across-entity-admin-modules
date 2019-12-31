@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,21 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Represents a HTML table, supporting head, body, foot, caption and colgroup section.
@@ -56,25 +58,76 @@ public class TableViewElement extends AbstractNodeViewElement
 	public TableViewElement() {
 		super( "table" );
 		setElementType( ELEMENT_TYPE );
+		set( css.table );
 	}
 
-	public TableViewElement setStyles( Collection<Style> styles ) {
+	@Deprecated
+	public TableViewElement setStyles( @NonNull Collection<Style> styles ) {
+		styles.stream()
+		      .map( Style.Table::toBootstrapStyleRule )
+		      .filter( Objects::nonNull )
+		      .forEach( super::set );
 		this.styles.addAll( styles );
 		return this;
 	}
 
+	@Deprecated
 	public TableViewElement addStyle( Style style ) {
+		BootstrapStyleRule bootstrapStyleRule = Style.Table.toBootstrapStyleRule( style );
 		styles.add( style );
+		if ( bootstrapStyleRule != null ) {
+			super.set( bootstrapStyleRule );
+		}
 		return this;
 	}
 
+	@Deprecated
 	public TableViewElement removeStyle( Style style ) {
 		styles.remove( style );
+		BootstrapStyleRule bootstrapStyleRule = Style.Table.toBootstrapStyleRule( style );
+		if ( bootstrapStyleRule != null ) {
+			super.remove( bootstrapStyleRule );
+		}
 		return this;
 	}
 
+	@Deprecated
 	public TableViewElement clearStyles() {
+		styles.stream()
+		      .map( Style.Table::toBootstrapStyleRule )
+		      .filter( Objects::nonNull )
+		      .forEach( super::remove );
 		styles.clear();
+		return this;
+	}
+
+	@Override
+	public TableViewElement set( WitherSetter... setters ) {
+		Stream.of( setters )
+		      .forEach( s -> {
+			      if ( s instanceof BootstrapStyleRule ) {
+				      Style style = Style.Table.fromBootstrapStyleRule( (BootstrapStyleRule) s );
+				      if ( style != null ) {
+					      styles.add( style );
+				      }
+			      }
+		      } );
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public TableViewElement remove( WitherRemover... functions ) {
+		Stream.of( functions )
+		      .forEach( f -> {
+			      if ( f instanceof BootstrapStyleRule ) {
+				      Style style = Style.Table.fromBootstrapStyleRule( (BootstrapStyleRule) f );
+				      if ( style != null ) {
+					      styles.remove( style );
+				      }
+			      }
+		      } );
+		super.remove( functions );
 		return this;
 	}
 
@@ -177,18 +230,6 @@ public class TableViewElement extends AbstractNodeViewElement
 	@Override
 	public TableViewElement setHtmlId( String htmlId ) {
 		super.setHtmlId( htmlId );
-		return this;
-	}
-
-	@Override
-	public TableViewElement set( WitherSetter... setters ) {
-		super.set( setters );
-		return this;
-	}
-
-	@Override
-	public TableViewElement remove( WitherRemover... functions ) {
-		super.remove( functions );
 		return this;
 	}
 
@@ -317,13 +358,35 @@ public class TableViewElement extends AbstractNodeViewElement
 			return style;
 		}
 
-		public Row setStyle( Style style ) {
-			this.style = style;
+		public Row setStyle( Style newStyle ) {
+			if ( style != null ) {
+				BootstrapStyleRule bootstrapStyleRule = Style.TableCell.toBootstrapStyleRule( style );
+				if ( bootstrapStyleRule != null ) {
+					super.remove( bootstrapStyleRule );
+				}
+			}
+			this.style = newStyle;
+			BootstrapStyleRule bootstrapStyleRule = Style.TableCell.toBootstrapStyleRule( newStyle );
+			if ( bootstrapStyleRule != null ) {
+				super.set( bootstrapStyleRule );
+			}
 			return this;
 		}
 
 		@Override
 		public Row set( WitherSetter... setters ) {
+			Stream.of( setters )
+			      .forEach( setter -> {
+				      if ( setter instanceof BootstrapStyleRule ) {
+					      Style newStyle = Style.TableCell.fromBootstrapStyleRule( (BootstrapStyleRule) setter );
+					      if ( newStyle != null ) {
+						      if ( style != null ) {
+							      setStyle( null );
+						      }
+						      style = newStyle;
+					      }
+				      }
+			      } );
 			super.set( setters );
 			return this;
 		}
@@ -349,8 +412,35 @@ public class TableViewElement extends AbstractNodeViewElement
 			setElementType( ELEMENT_TYPE + ".cell" );
 		}
 
+		public Cell setStyle( Style newStyle ) {
+			if ( style != null ) {
+				BootstrapStyleRule bootstrapStyleRule = Style.TableCell.toBootstrapStyleRule( style );
+				if ( bootstrapStyleRule != null ) {
+					super.remove( bootstrapStyleRule );
+				}
+			}
+			this.style = newStyle;
+			BootstrapStyleRule bootstrapStyleRule = Style.TableCell.toBootstrapStyleRule( newStyle );
+			if ( bootstrapStyleRule != null ) {
+				super.set( bootstrapStyleRule );
+			}
+			return this;
+		}
+
 		@Override
 		public Cell set( WitherSetter... setters ) {
+			Stream.of( setters )
+			      .forEach( setter -> {
+				      if ( setter instanceof BootstrapStyleRule ) {
+					      Style newStyle = Style.TableCell.fromBootstrapStyleRule( (BootstrapStyleRule) setter );
+					      if ( newStyle != null ) {
+						      if ( style != null ) {
+							      setStyle( null );
+						      }
+						      style = newStyle;
+					      }
+				      }
+			      } );
 			super.set( setters );
 			return this;
 		}

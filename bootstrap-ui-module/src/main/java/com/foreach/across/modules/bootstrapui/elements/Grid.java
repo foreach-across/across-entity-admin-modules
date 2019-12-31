@@ -102,15 +102,22 @@ public class Grid extends ArrayList<Grid.Position>
 
 	public static class Device
 	{
-		public static final Device XS = new Device( "xs" );
 		public static final Device SM = new Device( "sm" );
+
+		@Deprecated
+		public static final Device XS = new Device( "xs" );
+
 		public static final Device MD = new Device( "md" );
 		public static final Device LG = new Device( "lg" );
+		public static final Device XL = new Device( "xl" );
 
+		@Deprecated
 		public static final Device EXTRA_SMALL = XS;
+
 		public static final Device SMALL = SM;
 		public static final Device MEDIUM = MD;
 		public static final Device LARGE = LG;
+		public static final Device EXTRA_LARGE = XL;
 
 		private final String token;
 		private DeviceGridLayout hidden;

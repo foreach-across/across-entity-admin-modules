@@ -72,6 +72,10 @@ public interface BootstrapStyleRule extends ViewElement.WitherSetter<HtmlViewEle
 		return () -> css;
 	}
 
+	static BootstrapStyleRule appendOnSet( BootstrapStyleRule original, String... css ) {
+		return new AppendingBootstrapStyleRule( original, css );
+	}
+
 	static BootstrapStyleRule combine( BootstrapStyleRule... rules ) {
 		return () ->
 				Stream.of( rules )
