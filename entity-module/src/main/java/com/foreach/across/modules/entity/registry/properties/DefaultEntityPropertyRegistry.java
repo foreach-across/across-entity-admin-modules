@@ -71,6 +71,16 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		setDefaultFilter( entityPropertyDescriptor -> !entityPropertyDescriptor.isHidden() );
 	}
 
+	/**
+	 * Create a simple new registry based on property reflection of the class.
+	 *
+	 * @param type class
+	 * @return registry
+	 */
+	public static MutableEntityPropertyRegistry forClass( Class<?> type ) {
+		return DefaultEntityPropertyRegistryProvider.INSTANCE.create( type );
+	}
+
 	@Override
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
 		MutableEntityPropertyDescriptor descriptor = getLocalProperty( propertyName );
@@ -226,7 +236,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		}
 */
 		// todo: fixme decently
-		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+		ViewElementLookupRegistryImpl existingLookupRegistry = child.getAttribute( ViewElementLookupRegistry.class );
 		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
 		if ( existingLookupRegistry != null ) {
 			existingLookupRegistry.mergeInto( lookupRegistry );
@@ -253,15 +263,5 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		register( descriptor );
 
 		return descriptor;
-	}
-
-	/**
-	 * Create a simple new registry based on property reflection of the class.
-	 *
-	 * @param type class
-	 * @return registry
-	 */
-	public static MutableEntityPropertyRegistry forClass( Class<?> type ) {
-		return DefaultEntityPropertyRegistryProvider.INSTANCE.create( type );
 	}
 }
