@@ -17,12 +17,10 @@
 package com.foreach.across.modules.entity.handlers;
 
 import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
-import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -65,7 +63,7 @@ class EntityModuleAdminMenuRegistrar
 	@EventListener
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
-		builder.item( "/entities", "#{EntityModule.adminMenu=Entity management}", "@adminWeb:" + GenericEntityViewController.ROOT_PATH ).group( true );
+		builder.group( "/entities", "#{EntityModule.adminMenu=Entity management}" );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions();
@@ -75,8 +73,7 @@ class EntityModuleAdminMenuRegistrar
 
 				Assert.notNull(
 						messageCodeResolver,
-						"A visible EntityConfiguration (" + entityConfiguration
-								.getName() + ") requires an EntityMessageCodeResolver"
+						"A visible EntityConfiguration (" + entityConfiguration.getName() + ") requires an EntityMessageCodeResolver"
 				);
 
 				EntityMessages messages = new EntityMessages( messageCodeResolver );
@@ -88,8 +85,7 @@ class EntityModuleAdminMenuRegistrar
 
 					if ( moduleInfo != null ) {
 						group = "/entities/" + moduleInfo.getName();
-						builder.group( group, "#{" + moduleInfo.getName() + ".adminMenu=" + moduleInfo.getName() + "}" )
-						       .attribute( AdminMenu.ATTR_BREADCRUMB, false );
+						builder.group( group, "#{" + moduleInfo.getName() + ".adminMenu=" + moduleInfo.getName() + "}" );
 					}
 
 					builder.item( group + "/" + entityConfiguration.getName(),
@@ -104,8 +100,7 @@ class EntityModuleAdminMenuRegistrar
 					}
 				}
 				else {
-					LOG.trace( "Not showing entity {} - not hidden but no EntityLinkBuilder",
-					           entityConfiguration.getName() );
+					LOG.trace( "Not showing entity {} - not hidden but no EntityLinkBuilder", entityConfiguration.getName() );
 				}
 			}
 		}

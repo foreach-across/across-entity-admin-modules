@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.controllers.admin;
 
 import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
@@ -41,11 +40,14 @@ import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewE
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
- * Lists all entity types registered in the context.
+ * Lists all entity types registered in the context for which the user has read access.
+ * Deprecated as of 4.0.0 as the general value was limited. Developers are encouraged to
+ * create their own overview pages.
  *
  * @author Arne Vandamme
+ * @deprecated since 4.0.0
  */
-@AdminWebController
+@Deprecated
 @ConditionalOnBootstrapUI
 @RequiredArgsConstructor
 public class EntityOverviewController
