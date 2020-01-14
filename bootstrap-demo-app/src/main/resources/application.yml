@@ -6,4 +6,5 @@ adminWebModule:
   login:
     rememberMe:
       key: test
+      cookie: rm-awm-bs4
 

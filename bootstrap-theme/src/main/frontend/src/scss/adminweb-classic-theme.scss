@@ -1,3 +1,75 @@
 /**
  * Contains the admin web specific theme css, to be applied after module extension CSS.
  */
+@import "classic/variables";
+
+body {
+  padding-top: 4.5rem;
+}
+
+.page-header {
+  margin: 1.5rem 0.25rem 1.25rem 0.25rem;
+  border-bottom: 1px solid $gray-500;
+  padding-bottom: 0.5rem;
+}
+
+// List group
+.list-group-subgroup .list-group-item {
+  border: 0;
+}
+
+.list-group-subgroup-toggle {
+  &:after {
+    color: $gray-500 !important;
+  }
+}
+
+.card-header + .list-group > .list-group-subgroup > .list-group-item:first-child {
+  border-color: $gray-100;
+}
+
+// Login form
+.form-signin .page-header {
+  background-size: 60px;
+  padding-top: 80px;
+}
+
+// Navbar - main navigation
+.navbar-header .navbar-brand {
+  text-transform: uppercase;
+}
+
+.nav-link {
+  font-weight: 300;
+}
+
+.navbar {
+  .dropdown-menu {
+    margin-top: 0;
+    border-top: 0;
+
+    // expand dropdown to left if not enough room
+    right: 0;
+    left: auto;
+  }
+}
+.navbar-dark {
+  .navbar-nav {
+    .nav-link {
+      @include hover-focus {
+        background-color: lighten($dark, 5%);
+      }
+    }
+  }
+}
+
+// Sidebar
+.sidebar {
+  padding: 0;
+
+  .card-header {
+    font-size: 1rem;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+}

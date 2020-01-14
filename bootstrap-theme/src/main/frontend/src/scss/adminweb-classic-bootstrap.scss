@@ -1,11 +1,19 @@
 /**
  * Contains the general Bootstrap theme css, to be applied before module extension CSS.
  */
-
-$enable-rounded: true;
-$enable-shadows: false;
-$enable-gradients: true;
-$enable-transitions: true;
+@import "classic/variables";
 
 @import "../../node_modules/bootstrap/scss/bootstrap";
+
+// Headings
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  letter-spacing: -0.5px;
+}
+
+// Alerts
+@each $color, $value in $theme-colors {
+  .alert-#{$color} {
+    @include alert-variant($across-alert-bg, theme-color-level($color, $alert-border-level), theme-color-level($color, $alert-color-level));
+  }
+}
 
