@@ -20,15 +20,11 @@ body {
     padding-top: 5rem;
 }
 
-/* Navbar styling*/
+/* Navbar styling - icon */
 .navbar-header .navbar-brand {
     background: url("../images/across-logo.svg") no-repeat left center;
     background-size: 32px 32px;
     padding-left: 45px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    color: #eeeeee;
 }
 
 /* Top nav user context menu */
