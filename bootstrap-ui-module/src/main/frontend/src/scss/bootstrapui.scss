@@ -1,5 +1,5 @@
-/*
- * Copyright 2014 the original author or authors
+/*!
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,17 +95,17 @@
   margin: 0;
 }
 
-table > tbody > tr > td.row-actions {
-  text-align: right;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.pager-form .form-control {
-  width: 54px;
-  text-align: center;
-  vertical-align: middle;
-}
+//table > tbody > tr > td.row-actions {
+//  text-align: right;
+//  padding-left: 15px;
+//  padding-right: 15px;
+//}
+//
+//.pager-form .form-control {
+//  width: 54px;
+//  text-align: center;
+//  vertical-align: middle;
+//}
 
 /**
  * Enable block-style nav rendering, allows for float-right of nav-items.
