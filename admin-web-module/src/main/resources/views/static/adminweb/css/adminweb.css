@@ -42,38 +42,14 @@ body {
     max-height: 34px;
 }
 
-/* Sortable styling*/
-table.table th.sortable {
-    cursor: pointer
+/* Table within card */
+.card-body .table:first-child tr th {
+    border-top: 0;
 }
 
-table.table th.sortable:after {
-    color: #c4c4c4;
-    content: ' ↕';
-    font-size: 1em
+.card-body .table:last-child {
+    margin-bottom: 0;
 }
-
-table.table th.sortable:hover {
-    opacity: 0.95;
-    background-color: #fff;
-    text-decoration: none
-}
-
-table.table th.sortable:hover:after {
-    color: #222223;
-    text-decoration: none
-}
-
-table.table th.sortable.desc:after {
-    content: ' ↑';
-    color: #222223
-}
-
-table.table th.sortable.asc:after {
-    content: ' ↓';
-    color: #222223
-}
-
 
 /*!* todo: to bootstrap ui css! *!*/
 /*table td .btn {*/
