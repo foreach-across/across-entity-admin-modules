@@ -518,7 +518,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		// TODO by rending a BootstrapUi builder two 'table' classes will be present on the table element, see TableViewElementModelBuilder
 		TableViewElementBuilder table = bootstrap.builders.table()
 		                                                  .css( "em-sortableTable-table" )
-		                                                   .name( elementName( ELEMENT_TABLE ) )
+		                                                  .name( elementName( ELEMENT_TABLE ) )
 		                                                  .responsive()
 		                                                  .with( getTableStyles() )
 		                                                  .attributes( createTableAttributes() );
@@ -617,9 +617,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 					table.cell()
 					     .with( css.align.middle )
 					     .css( "result-number" )
-					     .add(
-							     html.builders.text( "" ).postProcessor( new ResultNumberProcessor( startIndex ) )
-					     )
+					     .add( html.builders.text( "" ).postProcessor( new ResultNumberProcessor( startIndex ) ) )
 			);
 		}
 
@@ -725,17 +723,16 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		pager.add(
 				html.builders.label()
-				             .add( html.builders.span().with( css.margin.right.s2 )
+				             .add( html.builders.span()
 				                                .add( html.builders.unescapedText( messages.page( currentPage ) ) ) )
 				             .add(
 						             bootstrap.builders.textbox()
 						                               .attribute( "data-tbl-page-selector", "selector" )
 						                               .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
 						                               .text( String.valueOf( currentPage.getNumber() + 1 ) )
-						                               .with( css.margin.right.s2, css.padding.s2 )
 				             )
 		)
-		     .add( html.builders.span().with( css.margin.right.s2 ).add( html.builders.unescapedText( messages.ofPages( currentPage ) ) ) )
+		     .add( html.builders.span().add( html.builders.unescapedText( messages.ofPages( currentPage ) ) ) )
 		     .add(
 				     bootstrap.builders.link()
 				                       .url( "#" )

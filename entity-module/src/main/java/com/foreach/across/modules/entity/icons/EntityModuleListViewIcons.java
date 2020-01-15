@@ -48,10 +48,10 @@ public class EntityModuleListViewIcons
 	}
 
 	public HtmlViewElement nextPage() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( NEXT_PAGE );
+		return IconSet.iconSet( EntityModule.NAME ).icon( NEXT_PAGE ).addCssClass( "fa-fw" );
 	}
 
 	public HtmlViewElement previousPage() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( PREVIOUS_PAGE );
+		return IconSet.iconSet( EntityModule.NAME ).icon( PREVIOUS_PAGE ).addCssClass( "fa-fw" );
 	}
 }

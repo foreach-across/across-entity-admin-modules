@@ -29,7 +29,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import lombok.Setter;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 
@@ -64,7 +63,6 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row row ) {
 		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell()
 				.name( CELL_NAME )
-				.with( css.text.nowrap )
 				.css( "row-actions" );
 
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );

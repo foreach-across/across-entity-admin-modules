@@ -18,18 +18,94 @@
 @import 'modules/entity-query-filter-form';
 @import 'modules/multi-value-autosuggest';
 
-table.table tr.odd {
-  background-color: rgba(0, 0, 0, .05);
+// Table
+.card-body table.table:first-child {
+  margin-top: -.5rem;
 }
 
-//.table > thead > tr.odd {
-//  background-color: #ffffff;
-//}
-//
-//.pager-form {
-//  color: black;
-//}
-//
+table.table {
+  td.result-number, th.result-number {
+    text-align: center;
+    width: 40px;
+  }
+
+  td.row-actions, th.row-actions {
+    text-align: right;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    white-space: nowrap;
+  }
+
+  .btn {
+    padding: 0 0.25rem;
+  }
+
+  // apply fixed-width to all icon buttons
+  .row-actions .fas {
+    width: 1.25em;
+    text-align: center;
+  }
+
+  tr.odd {
+    background-color: rgba(0, 0, 0, .03);
+  }
+
+  th.sortable {
+    cursor: pointer
+  }
+
+  th.sortable:after {
+    color: #c4c4c4;
+    content: ' ↕';
+    font-size: 1em
+  }
+
+  th.sortable:hover {
+    opacity: 0.95;
+    background-color: #fff;
+    text-decoration: none
+  }
+
+  th.sortable:hover:after {
+    color: #222223;
+    text-decoration: none
+  }
+
+  th.sortable.desc:after {
+    content: ' ↑';
+    color: #222223
+  }
+
+  th.sortable.asc:after {
+    content: ' ↓';
+    color: #222223
+  }
+}
+
+// Pager form
+.pager-form {
+  span {
+    margin-left: .5rem;
+    margin-right: .5rem;
+  }
+
+  .form-control {
+    width: 54px;
+    text-align: center;
+  }
+
+  .btn, .no-btn {
+    width: 46px;
+  }
+
+  .no-btn {
+    margin-right: -.5rem;
+  }
+
+  label > span:first-child {
+    margin-left: 0;
+  }
+}
 
 //
 //.element-fieldset {
