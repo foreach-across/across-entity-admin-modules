@@ -70,7 +70,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
 			"<tbody>" +
-			"<tr class='odd'><td class='align-middle result-number'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+			"<tr class='odd'><td class='result-number'>1</td><td data-tbl-field='propertyOne'>Property value</td></tr>" +
 			"</tbody>" +
 			"</table>" +
 			"</div>";
@@ -83,7 +83,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
 			"<tbody>" +
-			"<tr class='odd'><td class='align-middle result-number'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+			"<tr class='odd'><td class='result-number'>1</td><td data-tbl-field='propertyOne'>Property value</td></tr>" +
 			"</tbody>" +
 			"</table>" +
 			"</div>";
@@ -96,7 +96,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"<tr><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
 			"<tbody>" +
-			"<tr class='odd'><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+			"<tr class='odd'><td data-tbl-field='propertyOne'>Property value</td></tr>" +
 			"</tbody>" +
 			"</table>" +
 			"</div>";
@@ -236,8 +236,8 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 						"</thead>" +
 						"<tbody>" +
-						"<tr class='odd'><td class='align-middle result-number'>21</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
-						"<tr class='even'><td class='align-middle result-number'>22</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+						"<tr class='odd'><td class='result-number'>21</td><td data-tbl-field='propertyOne'>Property value</td></tr>" +
+						"<tr class='even'><td class='result-number'>22</td><td data-tbl-field='propertyOne'>Property value</td></tr>" +
 						"</tbody>" +
 						"</table>" +
 						"</div>" +
@@ -247,9 +247,9 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"0\" class=\"btn btn-link\">" +
 						"<i class=\"previous-page\"></i>" +
 						"</a>" +
-						"<label><span class=\"mr-2\"></span><input data-bootstrapui-adapter-type=\"basic\" type=\"text\"\n" +
-						"\t\tclass=\"mr-2 p-2 form-control\" value=\"2\" data-tbl=\"entityList\" data-tbl-page-selector=\"selector\" /></label>" +
-						"<span class=\"mr-2\"></span>" +
+						"<label><span></span><input data-bootstrapui-adapter-type=\"basic\" type=\"text\"\n" +
+						"\t\tclass=\"form-control\" value=\"2\" data-tbl=\"entityList\" data-tbl-page-selector=\"selector\" /></label>" +
+						"<span></span>" +
 						"<a data-tbl=\"entityList\" href=\"#\" class=\"total-pages-link\" data-tbl-page=\"2\">3</a>" +
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"2\" class=\"btn btn-link\">" +
 						"<i class=\"next-page\"></i>" +
@@ -381,7 +381,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 				        "Property name</th></tr>" +
 				        "</thead>" +
 				        "<tbody>" +
-				        "<tr class='odd'><td class='align-middle result-number'>1</td><td class='align-middle' data-tbl-field='propertyOne'>Property value</td></tr>" +
+				        "<tr class='odd'><td class='result-number'>1</td><td data-tbl-field='propertyOne'>Property value</td></tr>" +
 				        "</tbody>" +
 				        "</table>" +
 				        "</div>"
@@ -399,7 +399,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 				        "Property name</th></tr>" +
 				        "</thead>" +
 				        "<tbody>" +
-				        "<tr class='odd'><td class='align-middle result-number'>1</td><td data-tbl-field='propertyOne' class='align-middle'>Property value</td></tr>" +
+				        "<tr class='odd'><td class='result-number'>1</td><td data-tbl-field='propertyOne'>Property value</td></tr>" +
 				        "</tbody>" +
 				        "</table>" +
 				        "</div>"

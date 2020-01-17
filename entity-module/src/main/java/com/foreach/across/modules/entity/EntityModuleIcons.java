@@ -51,8 +51,8 @@ public class EntityModuleIcons
 		iconSet.add( EntityModuleListViewIcons.LINK_EDIT, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "edit" ) );
 		iconSet.add( EntityModuleListViewIcons.LINK_DELETE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
 		                                                                            .set( css.text.danger ) );
-		iconSet.add( EntityModuleListViewIcons.PREVIOUS_PAGE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "step-backward" ) );
-		iconSet.add( EntityModuleListViewIcons.NEXT_PAGE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "step-forward" ) );
+		iconSet.add( EntityModuleListViewIcons.PREVIOUS_PAGE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "step-backward" ).addCssClass( "fa-fw" ) );
+		iconSet.add( EntityModuleListViewIcons.NEXT_PAGE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "step-forward" ).addCssClass( "fa-fw" ) );
 
 		iconSet.add( EntityModuleAutoSuggestIcons.REMOVE_ITEM, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
 		                                                                               .set( css.text.danger ) );

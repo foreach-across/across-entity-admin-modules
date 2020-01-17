@@ -615,7 +615,6 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			int startIndex = Math.max( 0, page.getNumber() ) * page.getSize();
 			valueRow.add(
 					table.cell()
-					     .with( css.align.middle )
 					     .css( "result-number" )
 					     .add( html.builders.text( "" ).postProcessor( new ResultNumberProcessor( startIndex ) ) )
 			);
@@ -625,7 +624,6 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			ViewElementBuilder valueBuilder = createValue( descriptor );
 
 			TableViewElementBuilder.Cell cell = table.cell()
-			                                         .with( css.align.middle )
 			                                         .name( descriptor.getName() )
 			                                         .attribute( DATA_ATTR_FIELD, descriptor.getName() );
 
