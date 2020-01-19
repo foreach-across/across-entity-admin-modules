@@ -67,18 +67,18 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	public String findElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
 		ViewElementMode singleMode = viewElementMode.forSingle();
 
-		if ( ViewElementMode.FILTER_FORM.equals( singleMode )) {
+		if ( ViewElementMode.FILTER_FORM.matchesTypeOf( singleMode )) {
 			return FilterFormGroupElementBuilderFactory.VIEW_ELEMENT_TYPE;
 		}
 
-		if ( ViewElementMode.FILTER_CONTROL.equals( singleMode ) ) {
+		if ( ViewElementMode.FILTER_CONTROL.matchesTypeOf( singleMode ) ) {
 			return findFilterControlElementType( descriptor, viewElementMode.isForMultiple() );
 		}
 
-		boolean isForWriting = ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.isControl( singleMode );
+		boolean isForWriting = ViewElementMode.FORM_WRITE.matchesTypeOf( singleMode ) || ViewElementMode.isControl( singleMode );
 
 		if ( isForWriting && !descriptor.isWritable() && descriptor.isReadable() ) {
-			if ( ViewElementMode.FORM_WRITE.equals( singleMode ) ) {
+			if ( ViewElementMode.FORM_WRITE.matchesTypeOf( singleMode ) ) {
 				viewElementMode = ViewElementMode.FORM_READ;
 			}
 			else {
@@ -86,7 +86,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			}
 		}
 
-		boolean isForReading = ViewElementMode.FORM_READ.equals( singleMode ) || ViewElementMode.isValue( viewElementMode );
+		boolean isForReading = ViewElementMode.FORM_READ.matchesTypeOf( singleMode ) || ViewElementMode.isValue( viewElementMode );
 
 		if ( ( !descriptor.isWritable() && !descriptor.isReadable() ) && isForWriting ) {
 			return null;
@@ -104,7 +104,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		boolean isEmbeddedCandidate = propertyType != null && isEmbeddedCandidate( propertyType );
 		boolean hasVisibleProperties = isEmbedded == null && isEmbeddedCandidate && hasVisibleProperties( propertyType, entityConfiguration );
 
-		if ( ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.FORM_READ.equals( singleMode ) ) {
+		if ( ViewElementMode.FORM_WRITE.matchesTypeOf( singleMode ) || ViewElementMode.FORM_READ.matchesTypeOf( singleMode ) ) {
 			if ( propertyType != null
 					&& isSingularType( propertyType )
 					&& ( ( isEmbedded == null && !isRegisteredEntity && isEmbeddedCandidate
@@ -131,7 +131,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		boolean isEmbeddedCollection = isEmbeddedCollection( descriptor );
 
-		if ( isEmbeddedCollection && ViewElementMode.VALUE.equals( viewElementMode.forSingle() ) ) {
+		if ( isEmbeddedCollection && ViewElementMode.VALUE.matchesTypeOf( viewElementMode.forSingle() ) ) {
 			return EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE;
 		}
 

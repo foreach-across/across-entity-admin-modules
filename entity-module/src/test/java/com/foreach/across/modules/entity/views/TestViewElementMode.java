@@ -16,87 +16,229 @@
 
 package com.foreach.across.modules.entity.views;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.entity.views.ViewElementMode.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Arne Vandamme
  * @since 2.2.0
  */
-public class TestViewElementMode
+class TestViewElementMode
 {
 	private static final String NAME_SINGLE = "MY_NAME";
 	private static final String NAME_MULTIPLE = "MY_NAME_MULTIPLE";
 
 	@Test
-	public void toSringEqualsType() {
-		assertEquals( NAME_SINGLE, new ViewElementMode( NAME_SINGLE ).toString() );
-		assertEquals( NAME_MULTIPLE, new ViewElementMode( NAME_MULTIPLE ).toString() );
+	void toStringEqualsType() {
+		assertThat( NAME_SINGLE ).isEqualTo( ViewElementMode.of( NAME_SINGLE ).toString() );
+		assertThat( NAME_MULTIPLE ).isEqualTo( ViewElementMode.of( NAME_MULTIPLE ).toString() );
 	}
 
 	@Test
-	public void multipleSuffixIsAddedIfMissing() {
-		ViewElementMode mode = new ViewElementMode( NAME_SINGLE );
-		assertFalse( mode.isForMultiple() );
+	void multipleSuffixIsAddedIfMissing() {
+		ViewElementMode mode = ViewElementMode.of( NAME_SINGLE );
+		assertThat( mode.isForMultiple() ).isFalse();
 
 		ViewElementMode multiple = mode.forMultiple();
-		assertEquals( new ViewElementMode( NAME_MULTIPLE ), multiple );
+		assertThat( ViewElementMode.of( NAME_MULTIPLE ) ).isEqualTo( multiple );
 
-		assertTrue( multiple.isForMultiple() );
+		assertThat( multiple.isForMultiple() ).isTrue();
 		assertSame( multiple, multiple.forMultiple() );
 	}
 
 	@Test
-	public void multipleSuffixIsRemovedForSingle() {
-		ViewElementMode multiple = new ViewElementMode( NAME_MULTIPLE );
-		assertTrue( multiple.isForMultiple() );
+	void multipleSuffixIsRemovedForSingle() {
+		ViewElementMode multiple = ViewElementMode.of( NAME_MULTIPLE );
+		assertThat( multiple.isForMultiple() ).isTrue();
 
 		ViewElementMode single = multiple.forSingle();
-		assertEquals( new ViewElementMode( NAME_SINGLE ), single );
+		assertThat( ViewElementMode.of( NAME_SINGLE ) ).isEqualTo( single );
 
-		assertFalse( single.isForMultiple() );
-		assertSame( single, single.forSingle() );
+		assertThat( single.isForMultiple() ).isFalse();
+		assertThat( single ).isSameAs( single.forSingle() );
 	}
 
 	@Test
-	public void isListMode() {
-		assertTrue( isList( ViewElementMode.LIST_VALUE ) );
-		assertTrue( isList( ViewElementMode.LIST_LABEL ) );
-		assertTrue( isList( ViewElementMode.LIST_CONTROL ) );
-		assertTrue( isList( ViewElementMode.LIST_VALUE.forMultiple() ) );
-		assertTrue( isList( ViewElementMode.LIST_LABEL.forMultiple() ) );
-		assertTrue( isList( ViewElementMode.LIST_CONTROL.forMultiple() ) );
-		assertFalse( isList( ViewElementMode.CONTROL ) );
+	void isListMode() {
+		assertThat( isList( ViewElementMode.LIST_VALUE ) ).isTrue();
+		assertThat( isList( ViewElementMode.LIST_LABEL ) ).isTrue();
+		assertThat( isList( ViewElementMode.LIST_CONTROL ) ).isTrue();
+		assertThat( isList( ViewElementMode.LIST_VALUE.forMultiple() ) ).isTrue();
+		assertThat( isList( ViewElementMode.LIST_LABEL.forMultiple() ) ).isTrue();
+		assertThat( isList( ViewElementMode.LIST_CONTROL.forMultiple() ) ).isTrue();
+		assertThat( isList( ViewElementMode.CONTROL ) ).isFalse();
 	}
 
 	@Test
-	public void isLabelMode() {
-		assertTrue( isLabel( ViewElementMode.LABEL ) );
-		assertTrue( isLabel( ViewElementMode.LIST_LABEL ) );
-		assertTrue( isLabel( ViewElementMode.LABEL.forMultiple() ) );
-		assertTrue( isLabel( ViewElementMode.LIST_LABEL.forMultiple() ) );
-		assertFalse( isLabel( ViewElementMode.CONTROL ) );
+	void isLabelMode() {
+		assertThat( isLabel( ViewElementMode.LABEL ) ).isTrue();
+		assertThat( isLabel( ViewElementMode.LIST_LABEL ) ).isTrue();
+		assertThat( isLabel( ViewElementMode.LABEL.forMultiple() ) ).isTrue();
+		assertThat( isLabel( ViewElementMode.LIST_LABEL.forMultiple() ) ).isTrue();
+		assertThat( isLabel( ViewElementMode.CONTROL ) ).isFalse();
 	}
 
 	@Test
-	public void isValueMode() {
-		assertTrue( isValue( ViewElementMode.VALUE ) );
-		assertTrue( isValue( ViewElementMode.LIST_VALUE ) );
-		assertTrue( isValue( ViewElementMode.VALUE.forMultiple() ) );
-		assertTrue( isValue( ViewElementMode.LIST_VALUE.forMultiple() ) );
-		assertFalse( isValue( ViewElementMode.CONTROL ) );
+	void isValueMode() {
+		assertThat( isValue( ViewElementMode.VALUE ) ).isTrue();
+		assertThat( isValue( ViewElementMode.LIST_VALUE ) ).isTrue();
+		assertThat( isValue( ViewElementMode.VALUE.forMultiple() ) ).isTrue();
+		assertThat( isValue( ViewElementMode.LIST_VALUE.forMultiple() ) ).isTrue();
+		assertThat( isValue( ViewElementMode.CONTROL ) ).isFalse();
 	}
 
 	@Test
-	public void isControlMode() {
-		assertTrue( isControl( ViewElementMode.CONTROL ) );
-		assertTrue( isControl( ViewElementMode.LIST_CONTROL ) );
-		assertTrue( isControl( ViewElementMode.FILTER_CONTROL ) );
-		assertTrue( isControl( ViewElementMode.CONTROL.forMultiple() ) );
-		assertTrue( isControl( ViewElementMode.LIST_CONTROL.forMultiple() ) );
-		assertTrue( isControl( ViewElementMode.FILTER_CONTROL.forMultiple() ) );
-		assertFalse( isControl( ViewElementMode.LABEL ) );
+	void isControlMode() {
+		assertThat( isControl( ViewElementMode.CONTROL ) ).isTrue();
+		assertThat( isControl( ViewElementMode.LIST_CONTROL ) ).isTrue();
+		assertThat( isControl( ViewElementMode.FILTER_CONTROL ) ).isTrue();
+		assertThat( isControl( ViewElementMode.CONTROL.forMultiple() ) ).isTrue();
+		assertThat( isControl( ViewElementMode.LIST_CONTROL.forMultiple() ) ).isTrue();
+		assertThat( isControl( ViewElementMode.FILTER_CONTROL.forMultiple() ) ).isTrue();
+		assertThat( isControl( ViewElementMode.LABEL ) ).isFalse();
+	}
+
+	@Test
+	void exceptionThrownIfIllegalCharacters() {
+		assertThatExceptionOfType( IllegalArgumentException.class )
+				.isThrownBy( () -> ViewElementMode.of( "VALUE(Y" ) );
+		assertThatExceptionOfType( IllegalArgumentException.class )
+				.isThrownBy( () -> ViewElementMode.of( "VALUE)Y" ) );
+		assertThatExceptionOfType( IllegalArgumentException.class )
+				.isThrownBy( () -> ViewElementMode.of( "VALUE=Y" ) );
+		assertThatExceptionOfType( IllegalArgumentException.class )
+				.isThrownBy( () -> ViewElementMode.of( "VALUE,Y" ) );
+	}
+
+	@Test
+	void withChildModes() {
+		ViewElementMode original = ViewElementMode.of( "original" );
+		assertThat( original.getChildModes() ).isEmpty();
+		ViewElementMode one = original.withChildMode( "one", ViewElementMode.of( "nestedOne" ) );
+		assertThat( original.getChildModes() ).isEmpty();
+		assertThat( one.getChildModes() )
+				.containsEntry( "one", ViewElementMode.of( "nestedOne" ) )
+				.hasSize( 1 );
+		ViewElementMode two = one.withChildMode( "two", ViewElementMode.of( "nestedTwo" ) );
+		assertThat( original.getChildModes() ).isEmpty();
+		assertThat( one.getChildModes() )
+				.containsEntry( "one", ViewElementMode.of( "nestedOne" ) )
+				.hasSize( 1 );
+		assertThat( original.getChildModes() ).isEmpty();
+		assertThat( two.getChildModes() )
+				.containsEntry( "one", ViewElementMode.of( "nestedOne" ) )
+				.containsEntry( "two", ViewElementMode.of( "nestedTwo" ) )
+				.hasSize( 2 );
+		assertThat( two.withoutChildModes() )
+				.isEqualTo( original )
+				.isNotEqualTo( one );
+		assertThat( two.withoutChildMode( "two" ) )
+				.isEqualTo( one )
+				.isNotEqualTo( original );
+	}
+
+	@Test
+	void matchesTypeOfAny() {
+		assertThat( ViewElementMode.of( "one" ).matchesTypeOf( ViewElementMode.of( "one" ) ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" ).matchesTypeOf( ViewElementMode.of( "two" ) ) ).isFalse();
+		assertThat( ViewElementMode.of( "one" )
+		                           .withChildMode( "sub", ViewElementMode.of( "subMode" ) )
+		                           .matchesTypeOf( ViewElementMode.of( "one" ) ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" ).matchesTypeOf( ViewElementMode.of( "one" ).forMultiple() ) ).isFalse();
+		assertThat( ViewElementMode.of( "one" ).forMultiple().matchesTypeOf( ViewElementMode.of( "one" ) ) ).isFalse();
+		assertThat( ViewElementMode.of( "one" ).forMultiple().matchesTypeOf( ViewElementMode.of( "one" ).forMultiple() ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" )
+		                           .withChildMode( "sub", ViewElementMode.of( "subMode" ) )
+		                           .forMultiple()
+		                           .matchesTypeOf( ViewElementMode.of( "one" ) ) ).isFalse();
+		assertThat( ViewElementMode.of( "one" )
+		                           .withChildMode( "sub", ViewElementMode.of( "subMode" ) )
+		                           .forMultiple()
+		                           .matchesTypeOf( ViewElementMode.of( "one" ).forMultiple() ) ).isTrue();
+
+		assertThat( ViewElementMode.of( "one" ).matchesTypeOfAny( ViewElementMode.of( "two" ), ViewElementMode.of( "one" ) ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" ).matchesTypeOfAny( ViewElementMode.of( "two" ), ViewElementMode.of( "three" ) ) ).isFalse();
+	}
+
+	@Test
+	void matchesSingleTypeOfAny() {
+		assertThat( ViewElementMode.of( "one" ).matchesSingleTypeOf( ViewElementMode.of( "one" ) ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" ).matchesSingleTypeOf( ViewElementMode.of( "two" ) ) ).isFalse();
+		assertThat( ViewElementMode.of( "one" ).forMultiple().matchesSingleTypeOf( ViewElementMode.of( "two" ).forMultiple() ) ).isFalse();
+		assertThat( ViewElementMode.of( "one" )
+		                           .withChildMode( "sub", ViewElementMode.of( "subMode" ) )
+		                           .matchesSingleTypeOf( ViewElementMode.of( "one" ) ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" ).matchesSingleTypeOf( ViewElementMode.of( "one" ).forMultiple() ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" ).forMultiple().matchesSingleTypeOf( ViewElementMode.of( "one" ) ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" ).forMultiple().matchesSingleTypeOf( ViewElementMode.of( "one" ).forMultiple() ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" )
+		                           .withChildMode( "sub", ViewElementMode.of( "subMode" ) )
+		                           .forMultiple()
+		                           .matchesSingleTypeOf( ViewElementMode.of( "one" ) ) ).isTrue();
+		assertThat( ViewElementMode.of( "one" )
+		                           .withChildMode( "sub", ViewElementMode.of( "subMode" ) )
+		                           .forMultiple()
+		                           .matchesSingleTypeOf( ViewElementMode.of( "one" ).forMultiple() ) ).isTrue();
+
+		assertThat( ViewElementMode.of( "one" ).matchesSingleTypeOfAny( ViewElementMode.of( "two" ).forMultiple(), ViewElementMode.of( "one" ).forMultiple() ) )
+				.isTrue();
+		assertThat( ViewElementMode.of( "one" ).matchesSingleTypeOfAny( ViewElementMode.of( "two" ).forMultiple(), ViewElementMode.of( "three" ) ) ).isFalse();
+	}
+
+	@Test
+	void toAndFromString() {
+		assertThat( ViewElementMode.of( "one" ).toString() ).isEqualTo( "one" );
+		assertThat( ViewElementMode.of( "one" ).forMultiple().toString() ).isEqualTo( "one_MULTIPLE" );
+		assertThat( ViewElementMode.of( "one_MULTIPLE" ) ).isEqualTo( ViewElementMode.of( "one" ).forMultiple() );
+
+		assertThat(
+				ViewElementMode.of( "one" )
+				               .withChildMode( "sub1", ViewElementMode.of( "control" ) )
+				               .toString()
+		).isEqualTo( "one(sub1=control)" );
+
+		assertThat(
+				ViewElementMode.of( "one" )
+				               .withChildMode( "sub1", ViewElementMode.of( "control" ) )
+				               .withChildMode( "sub2", ViewElementMode.of( "label" )
+				                                                      .withChildMode( "subSub", ViewElementMode.of( ( "custom" ) ) ) )
+				               .toString()
+		).isEqualTo( "one(sub1=control,sub2=label(subSub=custom))" );
+
+		assertThat( ViewElementMode.of( "one(sub1=control)" ) )
+				.isEqualTo( ViewElementMode.of( "one" )
+				                           .withChildMode( "sub1", ViewElementMode.of( "control" ) ) );
+		assertThat( ViewElementMode.of( "one(sub1=control,sub2=label(subSub=custom))" ) )
+				.isEqualTo( ViewElementMode.of( "one" )
+				                           .withChildMode( "sub1", ViewElementMode.of( "control" ) )
+				                           .withChildMode( "sub2", ViewElementMode.of( "label" )
+				                                                                  .withChildMode( "subSub", ViewElementMode.of( ( "custom" ) ) ) ) );
+
+		assertThatExceptionOfType( IllegalArgumentException.class )
+				.isThrownBy( () -> ViewElementMode.of( "one(sub1=control,sub2=label(subSub=custom)" ) );
+	}
+
+	@Test
+	void getChildModeReturnsDefault() {
+		ViewElementMode mode = of( "one" )
+				.withChildMode( "sub1", of( "control" ) )
+				.withChildMode( "sub2", of( "label" ) );
+
+		assertThat( mode.getChildMode( "sub3" ) ).isNull();
+		assertThat( mode.getChildMode( "sub3", FORM_READ ) ).isEqualTo( FORM_READ );
+		assertThat( mode.getChildMode( "sub1" ) ).isEqualTo( of( "control" ) );
+		assertThat( mode.getChildMode( "sub2", FORM_READ ) ).isEqualTo( of( "label" ) );
+	}
+
+	@Test
+	void hasChildModes() {
+		assertThat( ViewElementMode.of("one").hasChildModes() ).isFalse();
+		assertThat( ViewElementMode.of("one").withChildMode( "sub1", of( "control" ) ).hasChildModes() ).isTrue();
+		assertThat( ViewElementMode.of("one").withChildMode( "sub1", of( "control" ) ).withoutChildMode( "sub1" ).hasChildModes() ).isFalse();
+		assertThat( ViewElementMode.of("one").withChildMode( "sub1", of( "control" ) ).withoutChildModes().hasChildModes() ).isFalse();
 	}
 }
