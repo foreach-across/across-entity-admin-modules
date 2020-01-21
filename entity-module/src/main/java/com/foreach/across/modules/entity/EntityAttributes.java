@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityListActionsProcessor;
@@ -114,6 +115,12 @@ public interface EntityAttributes
 	 * If not explicitly set, a strategy will be used to determine if a property should behave as an embedded object.
 	 */
 	String IS_EMBEDDED_OBJECT = EntityPropertyDescriptor.class.getName() + ".embedded";
+
+	/**
+	 * Represents the target property that the {@link EntityPropertyRegistry#LABEL} proxies.
+	 * Only set in case a target property was used.
+	 */
+	String LABEL_TARGET_PROPERTY = EntityPropertyRegistry.LABEL + ".targetProperty";
 
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
