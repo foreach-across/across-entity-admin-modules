@@ -54,7 +54,7 @@ import static com.foreach.across.modules.entity.util.EntityUtils.resolveEntityTy
  * and attaching them immediately to the scope of an entity configuration or property.
  * <p/>
  * This will register the dataset in the {@link AutoSuggestDataEndpoint} (which must be
- * available) and attache the id of the dataset as attribute on the descriptor or configuration.
+ * available) and attach the id of the dataset as attribute on the descriptor or configuration.
  *
  * @author Arne Vandamme
  * @since 3.4.0
