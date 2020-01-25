@@ -55,6 +55,22 @@ public class EntitiesConfigurationBuilder
 	}
 
 	/**
+	 * Configure a builder for a new {@link EntityConfiguration} for the class specified.
+	 * This will automatically introspect the class and create the initial property registry.
+	 * Use {@link #create()} if you want a blank entity configuration builder.
+	 * <p/>
+	 * Note: functionally this is the same as calling {@link #withType(Class)}. This method is
+	 * provided for readability to indicate explicit registration of a new type.
+	 *
+	 * @return configuration builder
+	 * @see #create()
+	 * @see #withType(Class)
+	 */
+	public <U> EntityConfigurationBuilder<U> register( @NonNull Class<U> entityType ) {
+		return create().entityType( entityType, true );
+	}
+
+	/**
 	 * Configure a builder for a new {@link EntityConfiguration}.  The {@link EntityConfigurationBuilder} will
 	 * only be passed to this consumer and the consumer is expected to manually populate a valid entity configuration.
 	 * If you want the default {@link EntityConfigurationProvider} to be called, you should use
@@ -209,14 +225,22 @@ public class EntitiesConfigurationBuilder
 			MutableEntityRegistry entityRegistry,
 			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders ) {
 		typeBuilders.forEach(
-				( type, builder ) ->
-						applyEntityConfigurationBuilder(
-								forCreation,
-								entityRegistry,
-								appliedBuilders,
-								entityRegistry.getEntityConfiguration( type ),
-								builder
-						)
+				( type, builder ) -> {
+					MutableEntityConfiguration existing = entityRegistry.getEntityConfiguration( type );
+
+					if ( forCreation && existing == null && !builder.hasEntityType() ) {
+						// assign type automatically so creation does not fail
+						builder.entityType( type, true );
+					}
+
+					applyEntityConfigurationBuilder(
+							forCreation,
+							entityRegistry,
+							appliedBuilders,
+							existing,
+							builder
+					);
+				}
 		);
 	}
 
