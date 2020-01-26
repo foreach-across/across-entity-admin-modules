@@ -234,16 +234,19 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 	                                                                    EntityView entityView, String fromUrl ) {
 		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
 		return html.builders
-				.container()
+				.div()
 				.name( "buttons" )
+				.css( "em-form-actions" )
 				.add( bootstrap.builders.button()
 				                        .name( "btn-save" )
+				                        .data( "em-button-role", "save" )
 				                        .style( Style.PRIMARY )
 				                        .submit()
 				                        .text( messages.messageWithFallback( "actions.save" ) )
 				)
 				.add( bootstrap.builders.button()
 				                        .name( "btn-cancel" )
+				                        .data( "em-button-role", "cancel" )
 				                        .link( fromUrl )
 				                        .text( messages.messageWithFallback( "actions.cancel" ) )
 				);

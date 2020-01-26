@@ -136,6 +136,7 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 						buttons.addFirstChild(
 								bootstrap.builders.button()
 								                  .name( "btn-delete" )
+								                  .data( "em-button-role", "delete" )
 								                  .style( Style.DANGER )
 								                  .submit()
 								                  .text( messages.messageWithFallback( "buttons.delete" ) )

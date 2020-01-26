@@ -120,7 +120,9 @@ class EntityModuleAdminMenuRegistrar
 
 			if ( allowableActions.contains( AllowableAction.UPDATE ) || allowableActions.contains( AllowableAction.READ ) ) {
 				val linkToGeneralMenuItem = resolveLinkToGeneralMenuItem( currentEntityLink, entityViewRequest, menu.getViewContext(), allowableActions );
-				builder.item( linkToGeneralMenuItem.toString(), messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
+				builder.item( "/general",
+				              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ),
+				              linkToGeneralMenuItem.toString() )
 				       .order( Ordered.HIGHEST_PRECEDENCE );
 			}
 

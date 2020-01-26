@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
@@ -27,6 +28,7 @@ import com.foreach.across.modules.entity.views.processors.support.EntityPageStru
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -79,6 +81,12 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	 */
 	@Setter
 	private String titleMessageCode = EntityMessages.PAGE_TITLE_VIEW;
+
+	/**
+	 * Should the {@link Menu#getPath()} be included on the entity navigation items.
+	 */
+	@Setter
+	private boolean includeNavPathAsDataAttribute;
 
 	@Override
 	protected void render( EntityViewRequest entityViewRequest,
@@ -138,6 +146,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 				                  .menu( entityMenu )
 				                  .tabs()
 				                  .replaceGroupBySelectedItem()
+				                  .includePathAsDataAttribute(includeNavPathAsDataAttribute  )
 				                  .build( builderContext )
 		);
 	}
@@ -160,5 +169,10 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	@Autowired
 	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
 		this.eventPublisher = eventPublisher;
+	}
+
+	@Autowired
+	void setDevelopmentMode( AcrossDevelopmentMode acrossDevelopmentMode ){
+		includeNavPathAsDataAttribute = acrossDevelopmentMode.isActive();
 	}
 }

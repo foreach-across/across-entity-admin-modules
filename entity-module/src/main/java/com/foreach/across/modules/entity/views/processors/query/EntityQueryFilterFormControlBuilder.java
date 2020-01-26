@@ -177,6 +177,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 
 		if ( basicFilterEnabled || advancedFilterEnabled ) {
 			ButtonViewElementBuilder searchButton = bootstrap.builders.button()
+			                                                          .data( "em-button-role", "search" )
 			                                                          .link()
 			                                                          .submit()
 			                                                          .text( builderContext.resolveText( "#{entityQueryFilter.searchButton}" ) )

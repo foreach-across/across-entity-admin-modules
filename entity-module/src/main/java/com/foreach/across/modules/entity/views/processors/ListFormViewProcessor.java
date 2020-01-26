@@ -134,6 +134,7 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 				                                                               .css( "list-header-actions" )
 				                                                               .add(
 						                                                               bootstrap.builders.button()
+						                                                                                 .data( "em-button-role", "create" )
 						                                                                                 .name( "btn-create" )
 						                                                                                 .link( linkBuilder.create() )
 						                                                                                 .style( Style.Button.PRIMARY )

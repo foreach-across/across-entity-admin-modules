@@ -75,12 +75,16 @@ public class DetailFormViewProcessor extends EntityViewProcessorAdapter
 		EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
 		Object entity = entityViewContext.getEntity();
 
-		ButtonViewElementBuilder backButton = bootstrap.builders.button().name( "btn-back" )
+		ButtonViewElementBuilder backButton = bootstrap.builders.button()
+		                                                        .name( "btn-back" )
+		                                                        .data( "em-button-role", "cancel" )
 		                                                        .link( cancelUrl )
 		                                                        .text( messages.messageWithFallback( "actions.back" ) );
 		if ( entityConfiguration.getAllowableActions( entity ).contains( AllowableAction.UPDATE ) ) {
 			container.add(
-					bootstrap.builders.button().name( "btn-update" )
+					bootstrap.builders.button()
+					                  .name( "btn-update" )
+					                  .data( "em-button-role", "edit" )
 					                  .link( updateUrl )
 					                  .style( Style.PRIMARY )
 					                  .text( messages.withNameSingular( "actions.modify", entity ) )

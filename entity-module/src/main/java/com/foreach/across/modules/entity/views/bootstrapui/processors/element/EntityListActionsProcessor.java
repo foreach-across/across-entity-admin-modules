@@ -83,6 +83,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 		SingleEntityViewLinkBuilder url = linkBuilder.forInstance( entity );
 
 		ButtonViewElementBuilder detailViewBtn = bootstrap.builders.button()
+		                                                           .data( "em-button-role", "view" )
 		                                                           .link( url.toUriString() )
 		                                                           .iconOnly( entityModuleIcons.listView.linkToDetailView() )
 		                                                           .text( messages.viewAction() );
@@ -95,6 +96,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
 				cell.add(
 						bootstrap.builders.button()
+						                  .data( "em-button-role", "edit" )
 						                  .link( url.updateView().toUriString() )
 						                  .iconOnly( entityModuleIcons.listView.linkToEditView() )
 						                  .text( messages.updateAction() )
@@ -108,6 +110,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 		if ( allowableActions.contains( AllowableAction.DELETE ) ) {
 			cell.add(
 					bootstrap.builders.button()
+					                  .data( "em-button-role", "delete" )
 					                  .link( url.deleteView().toUriString() )
 					                  .iconOnly( entityModuleIcons.listView.linkToDeleteView() )
 					                  .text( messages.deleteAction() )

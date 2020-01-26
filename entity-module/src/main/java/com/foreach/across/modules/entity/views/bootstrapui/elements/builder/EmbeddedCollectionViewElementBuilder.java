@@ -278,6 +278,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 						                                 .css( "embedded-collection-item-actions" )
 						                                 .add(
 								                                 bootstrap.builders.link()
+								                                                   .data( "em-button-role", "remove-item" )
 								                                                   .data( ACTION, "remove-item" )
 								                                                   .title( removeItemMessage )
 								                                                   .add( entityModuleIcons.embeddedCollection.removeItem() )
@@ -300,6 +301,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		                    .css( "embedded-collection-actions" )
 		                    .add(
 				                    bootstrap.builders.button()
+				                                      .data( "em-button-role", "add-item" )
 				                                      .data( ACTION, "add-item" )
 				                                      .style( Style.DEFAULT )
 				                                      .with( css.button.outline.secondary, css.size.width100 )

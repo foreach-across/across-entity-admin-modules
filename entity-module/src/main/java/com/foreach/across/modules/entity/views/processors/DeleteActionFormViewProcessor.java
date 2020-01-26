@@ -92,6 +92,7 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 
 		return BootstrapViewElements.bootstrap.builders.button()
 		                                               .name( "btn-delete" )
+		                                               .data( "em-button-role", "delete" )
 		                                               .link( linkToDeleteView.toUriString() )
 		                                               .style( Style.DANGER )
 		                                               .icon( entityModuleIcons.formView.delete() )
