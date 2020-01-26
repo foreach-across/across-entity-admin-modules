@@ -1,0 +1,116 @@
+// Sortable table
+table.table {
+  td.result-number, th.result-number {
+    text-align: center;
+    width: 40px;
+  }
+
+  td.row-actions, th.row-actions {
+    text-align: right;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    white-space: nowrap;
+  }
+
+  .btn {
+    padding: 0 0.25rem;
+  }
+
+  // apply fixed-width to all icon buttons
+  .row-actions .fas {
+    width: 1.25em;
+    text-align: center;
+  }
+
+  tr.odd {
+    background-color: rgba(0, 0, 0, .03);
+  }
+
+  th.sortable {
+    cursor: pointer
+  }
+
+  th.sortable:after {
+    color: #c4c4c4;
+    content: ' ↕';
+    font-size: 1em
+  }
+
+  th.sortable:hover {
+    opacity: 0.95;
+    background-color: #fff;
+    text-decoration: none;
+  }
+
+  th.sortable:hover:after {
+    color: #222223;
+    text-decoration: none;
+  }
+
+  th.sortable.desc:after {
+    content: ' ↑';
+    color: #222223
+  }
+
+  th.sortable.asc:after {
+    content: ' ↓';
+    color: #222223
+  }
+}
+
+// Pager
+.pager-form {
+  label {
+    font-weight: normal;
+  }
+
+  .btn {
+    padding: 0 0.5rem;
+  }
+  //
+  //.no-btn, .btn {
+  //  display: inline-block;
+  //  width: 24px;
+  //}
+
+  .form-control {
+    width: 34px;
+    padding: 0;
+    //margin-right: .5rem;
+
+    &.has-error {
+      border-color: $danger;
+    }
+  }
+
+  label > span:first-child {
+    margin-left: 0;
+  }
+
+  > span, label > span {
+    vertical-align: middle;
+    color: $gray-600;
+  }
+
+  .total-pages-link {
+    font-weight: bold;
+    color: $black;
+  //  margin-right: 0.5rem;
+  }
+}
+
+/*
+.pager-form .no-btn {
+    display: inline-block;
+    width: 24px;
+}
+
+.pager-form .total-pages-link {
+    font-weight: bold;
+    font-size: 14px;
+    vertical-align: middle;
+    color: black;
+    margin-right: 8px;
+}
+
+ */

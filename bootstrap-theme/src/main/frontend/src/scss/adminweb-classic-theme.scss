@@ -13,6 +13,12 @@ body {
   padding-bottom: 0.5rem;
 }
 
+h2, h3 {
+  &.page-header {
+    border-bottom: 1px dotted $gray-400;
+  }
+}
+
 // List group
 .list-group-subgroup .list-group-item {
   border: 0;
@@ -73,3 +79,5 @@ body {
     letter-spacing: -0.5px;
   }
 }
+
+@import "classic/listView";

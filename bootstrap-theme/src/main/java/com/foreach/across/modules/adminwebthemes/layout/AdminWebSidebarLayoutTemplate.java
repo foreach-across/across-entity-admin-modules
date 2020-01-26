@@ -72,6 +72,7 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 						                         .stacked()
 						                         .keepGroupsAsGroup( true )
 						                         .replaceGroupBySelectedItem( false )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( NAVBAR, true ) )
 						                         .build()
 				);
@@ -82,6 +83,7 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 						                         .with( css.of( "top-nav-menu" ) )
 						                         .keepGroupsAsGroup( true )
 						                         .replaceGroupBySelectedItem( false )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( NAVBAR_RIGHT, false ) )
 						                         .build()
 				);
@@ -90,6 +92,7 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 						key -> bootstrap.builders.panels()
 						                         .menu( adminMenu )
 						                         .keepGroupsAsGroup( true )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( SIDEBAR, true ) )
 						                         .build()
 				);
@@ -99,6 +102,7 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 								.breadcrumb()
 								.with( css.of( "top-nav-breadcrumb" ) )
 								.menu( adminMenu )
+								.includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 								.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
 								.build()
 				);
