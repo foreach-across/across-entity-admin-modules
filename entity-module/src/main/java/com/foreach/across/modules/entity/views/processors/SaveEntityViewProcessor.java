@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
@@ -30,6 +31,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -41,6 +43,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpMethod;
@@ -50,6 +53,11 @@ import org.springframework.web.bind.WebDataBinder;
 
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted.ENTITY_CREATED;
+import static com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted.ENTITY_UPDATED;
 
 /**
  * Responsible for saving a single entity after a form submit. Will initialize the command object to bind to the current entity (either
@@ -66,6 +74,7 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 {
 	private EntityViewPageHelper entityViewPageHelper;
 	private ConversionService conversionService;
+	private ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * Set to {@code true} if only the properties should be saved but not the actual entity.
@@ -77,6 +86,20 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 	@Setter
 	@Getter
 	private boolean propertiesOnly;
+
+	/**
+	 * Should the form state be published as an event for modification (defaults to {@code true}).
+	 */
+	@Setter
+	@Getter
+	private boolean publishFormState;
+
+	/**
+	 * Set a consumer to apply to the form state after it has been built and published as an event.
+	 */
+	@Setter
+	@Getter
+	private Consumer<EntityFormStateCompleted<?>> formStateConsumer;
 
 	// todo: listen to specific action only
 
@@ -201,25 +224,70 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 				// clear the binder to force properties to be reloaded, in case redirect does not happen
 				command.getProperties().clear();
 
-				entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS,
-				                                                     isNew ? "feedback.entityCreated" : "feedback.entityUpdated" );
-
-				if ( entityViewRequest.hasPartialFragment() ) {
-					entityView.setRedirectUrl(
-							entityViewContext.getLinkBuilder().forInstance( savedEntity )
-							                 .updateView()
-							                 .withPartial( entityViewRequest.getPartialFragment() )
-							                 .toUriString()
-					);
-				}
-				else {
-					entityView.setRedirectUrl( entityViewContext.getLinkBuilder().forInstance( savedEntity ).updateView().toUriString() );
-				}
+				publishAndApplyEntityFormState( entityViewRequest, entityView, savedEntity, isNew );
 			}
 			catch ( RuntimeException e ) {
 				entityViewPageHelper.throwOrAddExceptionFeedback( entityViewRequest, "feedback.entitySaveFailed", e );
 			}
 		}
+	}
+
+	private void publishAndApplyEntityFormState( EntityViewRequest entityViewRequest, EntityView entityView, Object savedEntity, boolean isNew ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		EntityFormStateCompleted<?> entityState = new EntityFormStateCompleted<>( isNew ? ENTITY_CREATED : ENTITY_UPDATED, savedEntity, entityViewRequest,
+		                                                                          entityView );
+
+		String messageCode = isNew ? "feedback.entityCreated" : "feedback.entityUpdated";
+		entityState.addFeedbackMessage(
+				EntityFormStateCompleted
+						.feedback( Style.SUCCESS )
+						.messageCode( messageCode )
+						.message( entityViewContext.getEntityMessages().withNameSingular( messageCode, entityViewContext.getEntityLabel() ) )
+						.build()
+		);
+
+		if ( entityViewRequest.hasPartialFragment() ) {
+			entityState.setRedirectUrl(
+					entityViewContext.getLinkBuilder().forInstance( savedEntity )
+					                 .updateView()
+					                 .withPartial( entityViewRequest.getPartialFragment() )
+					                 .toUriString()
+			);
+		}
+		else {
+			entityState.setRedirectUrl( entityViewContext.getLinkBuilder().forInstance( savedEntity ).updateView().toUriString() );
+		}
+
+		// view specific handling
+		if ( formStateConsumer != null ) {
+			formStateConsumer.accept( entityState );
+		}
+
+		// event based public modifications
+		if ( publishFormState ) {
+			eventPublisher.publishEvent( entityState );
+		}
+
+		// apply the form state values
+		boolean isRedirect = entityView.isRedirect();
+
+		entityState.getFeedbackMessages()
+		           .stream()
+		           .filter( fm -> !isRedirect || !fm.isOnlyForRedirect() )
+		           .forEach( fm -> {
+			           if ( isRedirect ) {
+				           entityViewPageHelper.addGlobalFeedbackMessageAfterRedirect( entityViewRequest, fm.getStyle(), fm.getMessageOrCode() );
+			           }
+			           else {
+				           // todo: centralize this
+				           PageContentStructure page = entityViewRequest.getPageContentStructure();
+				           page.addToFeedback( bootstrap.builders.alert()
+				                                                 .style( fm.getStyle() )
+				                                                 .dismissible()
+				                                                 .text( fm.getMessageOrCode() )
+				                                                 .build() );
+			           }
+		           } );
 	}
 
 	@Autowired
@@ -230,5 +298,10 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setConversionService( @Qualifier(AcrossWebModule.CONVERSION_SERVICE_BEAN) ConversionService conversionService ) {
 		this.conversionService = conversionService;
+	}
+
+	@Autowired
+	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
+		this.eventPublisher = eventPublisher;
 	}
 }

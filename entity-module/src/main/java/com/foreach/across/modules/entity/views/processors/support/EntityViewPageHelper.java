@@ -62,17 +62,20 @@ public class EntityViewPageHelper
 	 * @param viewRequest   view being requested
 	 * @param feedbackStyle style for the feedback message
 	 * @param messageCode   that should be resolved when rendering the message
+	 * @deprecated use {@link #addGlobalFeedbackMessageAfterRedirect(EntityViewRequest, Style, String)} with full message
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public void addGlobalFeedbackAfterRedirect( @NonNull EntityViewRequest viewRequest, @NonNull Style feedbackStyle, @NonNull String messageCode ) {
-		RedirectAttributes redirectAttributes = viewRequest.getRedirectAttributes();
-		Map<String, Object> model = (Map<String, Object>) redirectAttributes.getFlashAttributes();
-
 		EntityViewContext entityViewContext = viewRequest.getEntityViewContext();
 		EntityMessages messages = entityViewContext.getEntityMessages();
+		addGlobalFeedbackMessageAfterRedirect( viewRequest, feedbackStyle, messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) );
+	}
 
-		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) ->
-				addFeedbackMessage( (Map<String, Style>) value, feedbackStyle, messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) ) );
+	public void addGlobalFeedbackMessageAfterRedirect( @NonNull EntityViewRequest viewRequest, @NonNull Style feedbackStyle, @NonNull String message ) {
+		RedirectAttributes redirectAttributes = viewRequest.getRedirectAttributes();
+		Map<String, Object> model = (Map<String, Object>) redirectAttributes.getFlashAttributes();
+		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) -> addFeedbackMessage( (Map<String, Style>) value, feedbackStyle, message ) );
 	}
 
 	/**
