@@ -83,6 +83,22 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 	}
 
 	@Test
+	public void simpleBreadcrumbWithPathAsDataAttribute() {
+		menu.item( "one", "#{code.one=one}" ).and()
+		    .item( "one/two", "two" );
+
+		Menu built = menu.build();
+		built.setTitle( "Root" );
+		built.select( MenuSelector.byTitle( "two" ) );
+
+		renderAndExpect( builder.menu( built ).includePathAsDataAttribute( true ), "<ol class='breadcrumb'>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\" data-ax-menu-path='one'><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
+				"<li class=\"breadcrumb-item active\" data-ax-menu-path='one/two'>two</li>" +
+				"</ol>" );
+	}
+
+	@Test
 	public void disabledItemsAreSkipped() {
 		menu.item( "one", "one" ).and()
 		    .item( "one/two", "two" ).disable().and()

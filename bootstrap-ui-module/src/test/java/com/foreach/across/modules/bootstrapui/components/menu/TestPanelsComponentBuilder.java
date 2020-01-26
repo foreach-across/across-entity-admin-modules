@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,6 +160,26 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 						"<div class='list-group list-group-flush'>" +
 						"<a class='list-group-item list-group-item-action' href='/one/sub' title='sub one'>sub one</a>" +
 						"<a class='list-group-item list-group-item-action' href='/one/sub2' title='sub one 2'>sub one 2</a>" +
+						"</div>" +
+						"</div>" +
+						"</nav>"
+		);
+	}
+
+	@Test
+	public void groupIsRenderedAsCardWithPathAsDataAttribute() {
+		menu.item( "/one", "one" ).group( true ).and()
+		    .item( "/one/sub", "sub one" ).and()
+		    .item( "/one/sub2", "sub one 2" );
+
+		renderAndExpect(
+				builder.menu( menu.build() ).includePathAsDataAttribute( true ),
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3' data-ax-menu-path='/one'>" +
+						"<div class='card-header'>one</div>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a class='list-group-item list-group-item-action' data-ax-menu-path='/one/sub' href='/one/sub' title='sub one'>sub one</a>" +
+						"<a class='list-group-item list-group-item-action' data-ax-menu-path='/one/sub2' href='/one/sub2' title='sub one 2'>sub one 2</a>" +
 						"</div>" +
 						"</div>" +
 						"</nav>"
@@ -346,6 +366,37 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 						"<div class='list-group list-group-flush'><a href='/one/one' title='one one' class='list-group-item list-group-item-action'>one one</a><a data-toggle='collapse' href='#asidebarMenu-1' title='one sub' class='list-group-item list-group-item-action list-group-subgroup-toggle collapsed'>one sub</a>" +
 						"<div id='asidebarMenu-1' class='list-group-subgroup collapse'><a href='/one/sub/one' title='one sub one' class='list-group-item list-group-item-action'>one sub one</a><a data-toggle='collapse' href='#asidebarMenu-2' title='one sub sub' class='list-group-item list-group-item-action list-group-subgroup-toggle collapsed'>one sub sub</a>" +
 						"<div id='asidebarMenu-2' class='list-group-subgroup collapse'><a href='/one/sub/sub/one' title='one sub sub one' class='list-group-item list-group-item-action'>one sub sub one</a><a href='/one/sub/sub/two' title='one sub sub two' class='list-group-item list-group-item-action'>one sub sub two</a></div>" +
+						"</div>" +
+						"</div>" +
+						"</div>" +
+						"</nav>"
+		);
+	}
+
+	@Test
+	public void subMenuRenderingWithPathAsDataAttribute() {
+		menu.item( "/one", "one" ).group( true ).and()
+		    .item( "/one/one", "one one" ).and()
+		    .group( "/one/sub", "one sub" ).and()
+		    .item( "/one/sub/one", "one sub one" ).and()
+		    .group( "/one/sub/sub", "one sub sub" ).and()
+		    .item( "/one/sub/sub/one", "one sub sub one" ).and()
+		    .item( "/one/sub/sub/two", "one sub sub two" );
+
+		renderAndExpect(
+				builder.menu( menu.build() ).subMenuBaseId( "sidebarMenu" ).keepGroupsAsGroup( true ).includePathAsDataAttribute( true ),
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3' data-ax-menu-path='/one'>" +
+						"<div class='card-header'>one</div>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a data-ax-menu-path='/one/one' href='/one/one' title='one one' class='list-group-item list-group-item-action'>one one</a>" +
+						"<a data-ax-menu-path='/one/sub' data-toggle='collapse' href='#asidebarMenu-1' title='one sub' class='list-group-item list-group-item-action list-group-subgroup-toggle collapsed'>one sub</a>" +
+						"<div id='asidebarMenu-1' class='list-group-subgroup collapse'>" +
+						"<a data-ax-menu-path='/one/sub/one' href='/one/sub/one' title='one sub one' class='list-group-item list-group-item-action'>one sub one</a>" +
+						"<a data-ax-menu-path='/one/sub/sub' data-toggle='collapse' href='#asidebarMenu-2' title='one sub sub' class='list-group-item list-group-item-action list-group-subgroup-toggle collapsed'>one sub sub</a>" +
+						"<div id='asidebarMenu-2' class='list-group-subgroup collapse'>" +
+						"<a data-ax-menu-path='/one/sub/sub/one' href='/one/sub/sub/one' title='one sub sub one' class='list-group-item list-group-item-action'>one sub sub one</a>" +
+						"<a data-ax-menu-path='/one/sub/sub/two' href='/one/sub/sub/two' title='one sub sub two' class='list-group-item list-group-item-action'>one sub sub two</a></div>" +
 						"</div>" +
 						"</div>" +
 						"</div>" +
