@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.adminweb.ui;
 
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
@@ -26,6 +27,8 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.template.LayoutTemplateProcessorAdapterBean;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -68,6 +71,14 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 	public static final String MODEL_ATTR_BREADCRUMB = "adminWebBreadcrumb";
 
 	/**
+	 * Should the {@link Menu#getPath()} value be included as data attribute on nav components.
+	 * By default this will be enabled if {@link AcrossDevelopmentMode} is active.
+	 */
+	@Setter
+	@Getter
+	private boolean includeNavPathAsDataAttribute = false;
+
+	/**
 	 * Create a default template.
 	 */
 	public AdminWebLayoutTemplate() {
@@ -87,6 +98,11 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 	@Autowired
 	void registerAdminWebLayoutTemplate( WebTemplateRegistry adminWebTemplateRegistry ) {
 		adminWebTemplateRegistry.register( this );
+	}
+
+	@Autowired
+	void activateDevelopmentMode( AcrossDevelopmentMode acrossDevelopmentMode ) {
+		includeNavPathAsDataAttribute = acrossDevelopmentMode.isActive();
 	}
 
 	@Override
@@ -120,6 +136,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 						                         .navbar()
 						                         .keepGroupsAsGroup( true )
 						                         .replaceGroupBySelectedItem( false )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( NAVBAR, true ) )
 						                         .css( "navbar-nav mr-auto" )
 						                         .build()
@@ -132,6 +149,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 						                         .css( "navbar-nav" )
 						                         .keepGroupsAsGroup( true )
 						                         .replaceGroupBySelectedItem( false )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( NAVBAR_RIGHT, false ) )
 						                         .build()
 				);
@@ -140,6 +158,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 						key -> bootstrap.builders.panels()
 						                         .menu( adminMenu )
 						                         .keepGroupsAsGroup( true )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( SIDEBAR, true ) )
 						                         .build()
 				);
@@ -148,6 +167,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 						key -> bootstrap.builders
 								.breadcrumb()
 								.menu( adminMenu )
+								.includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 								.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
 								.build()
 				);
