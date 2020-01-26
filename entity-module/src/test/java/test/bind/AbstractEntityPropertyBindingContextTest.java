@@ -59,7 +59,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 	@Before
 	@SuppressWarnings("unchecked")
 	public void createRegistries() {
-		EntityPropertyRegistryProvider registryProvider = DefaultEntityPropertyRegistryProvider.INSTANCE;
+		EntityPropertyRegistryProvider registryProvider = DefaultEntityPropertyRegistryProvider.newInstance();
 		addressProperties = registryProvider.get( Address.class );
 		userProperties = registryProvider.get( User.class );
 		cityProperties = registryProvider.get( City.class );

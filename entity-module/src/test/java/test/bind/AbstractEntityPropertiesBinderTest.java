@@ -55,7 +55,7 @@ public abstract class AbstractEntityPropertiesBinderTest
 
 	@Before
 	public void resetForBinding() {
-		propertyRegistry = new DefaultEntityPropertyRegistry( DefaultEntityPropertyRegistryProvider.INSTANCE );
+		propertyRegistry = new DefaultEntityPropertyRegistry( DefaultEntityPropertyRegistryProvider.newInstance() );
 		registeredProperties().forEach( b -> propertyRegistry.register( b.build() ) );
 
 		propertyValues = new EntityPropertiesBinder( propertyRegistry );

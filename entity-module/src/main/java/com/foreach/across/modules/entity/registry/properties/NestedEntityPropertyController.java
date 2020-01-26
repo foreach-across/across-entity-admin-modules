@@ -19,6 +19,9 @@ package com.foreach.across.modules.entity.registry.properties;
 import lombok.NonNull;
 import org.springframework.validation.Errors;
 
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -50,6 +53,21 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> valueFetcher( Function<EntityPropertyBindingContext, Object> valueFetcher ) {
 		return child.createValueFunction( valueFetcher );
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> bulkValueFetcher( Function<Collection<EntityPropertyBindingContext>, Map<EntityPropertyBindingContext, Object>> valueFetcher ) {
+		return child.bulkValueFetcher( valueFetcher );
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> optimizedForBulkValueFetching( boolean enabled ) {
+		return child.optimizedForBulkValueFetching( enabled );
+	}
+
+	@Override
+	public boolean isOptimizedForBulkValueFetching() {
+		return child.isOptimizedForBulkValueFetching() || parentPropertyDescriptor.getController().isOptimizedForBulkValueFetching();
 	}
 
 	@Override
@@ -123,6 +141,18 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Map<EntityPropertyBindingContext, Object> fetchValues( Collection collection ) {
+		Map<EntityPropertyBindingContext, EntityPropertyBindingContext> input
+				= mapChildContextToOriginal( (Collection<EntityPropertyBindingContext>) collection );
+		Map<EntityPropertyBindingContext, Object> mappedValues = child.fetchValues( input.keySet() );
+
+		IdentityHashMap<EntityPropertyBindingContext, Object> output = new IdentityHashMap<>( mappedValues.size() );
+		mappedValues.forEach( ( mappedKey, value ) -> output.put( input.get( mappedKey ), value ) );
+		return output;
+	}
+
+	@Override
 	public Object createValue( EntityPropertyBindingContext context ) {
 		return child.createValue( childContext( context ) );
 	}
@@ -147,12 +177,16 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 		return child.save( childContext( context ), propertyValue );
 	}
 
-	private EntityPropertyBindingContext childContext( EntityPropertyBindingContext context ) {
-		return context.resolvePropertyBindingContext( parentPropertyDescriptor );
-	}
-
 	@Override
 	public int getOrder() {
 		return child.getOrder();
+	}
+
+	private EntityPropertyBindingContext childContext( EntityPropertyBindingContext context ) {
+		return EntityPropertyBindingContextResolver.resolvePropertyBindingContext( context, parentPropertyDescriptor );
+	}
+
+	private Map<EntityPropertyBindingContext, EntityPropertyBindingContext> mapChildContextToOriginal( Collection<EntityPropertyBindingContext> original ) {
+		return EntityPropertyBindingContextResolver.resolvePropertyBindingContext( original, parentPropertyDescriptor );
 	}
 }

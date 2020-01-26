@@ -20,16 +20,22 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindi
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValidator;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
+import com.google.common.collect.ImmutableMap;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.Errors;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.*;
 
 /**
@@ -37,14 +43,37 @@ import static org.mockito.Mockito.*;
  * @since 3.2.0
  */
 @SuppressWarnings("unchecked")
-public class TestGenericEntityPropertyController
+class TestGenericEntityPropertyController
 {
 	private GenericEntityPropertyController controller = new GenericEntityPropertyController();
 	private EntityPropertyBindingContext context = EntityPropertyBindingContext.forUpdating( "123", BigDecimal.TEN );
 	private EntityPropertyValue<Long> propertyValue = new EntityPropertyValue<>( 123L, 456L, false );
 
 	@Test
-	public void order() {
+	void optimizedForBulkFetching() {
+		GenericEntityPropertyController parent = new GenericEntityPropertyController();
+		assertThat( parent.isOptimizedForBulkValueFetching() ).isFalse();
+		GenericEntityPropertyController child = new GenericEntityPropertyController( parent );
+		assertThat( child.isOptimizedForBulkValueFetching() ).isFalse();
+
+		child.optimizedForBulkValueFetching( true );
+		assertThat( parent.isOptimizedForBulkValueFetching() ).isFalse();
+		assertThat( child.isOptimizedForBulkValueFetching() ).isTrue();
+
+		child = new GenericEntityPropertyController( parent );
+		assertThat( child.isOptimizedForBulkValueFetching() ).isFalse();
+		parent.optimizedForBulkValueFetching( true );
+		assertThat( parent.isOptimizedForBulkValueFetching() ).isTrue();
+		assertThat( child.isOptimizedForBulkValueFetching() ).isTrue();
+
+		child.optimizedForBulkValueFetching( false );
+		assertThat( parent.isOptimizedForBulkValueFetching() ).isTrue();
+		assertThat( child.isOptimizedForBulkValueFetching() ).isFalse();
+
+	}
+
+	@Test
+	void order() {
 		controller.order( 1 );
 		assertThat( controller.getOrder() ).isEqualTo( 1 );
 
@@ -58,7 +87,7 @@ public class TestGenericEntityPropertyController
 	}
 
 	@Test
-	public void getValue() {
+	void getValue() {
 		assertThat( controller.fetchValue( context ) ).isNull();
 
 		controller.valueFetcher( EntityPropertyBindingContext::getEntity );
@@ -78,7 +107,63 @@ public class TestGenericEntityPropertyController
 	}
 
 	@Test
-	public void createValue() {
+	void getValueInBulkWithoutCustomFetcher() {
+		EntityPropertyBindingContext otherContext = EntityPropertyBindingContext.forUpdating( "456", BigDecimal.ONE );
+		List<EntityPropertyBindingContext> contextList = Arrays.asList( context, otherContext );
+
+		assertThat( controller.isOptimizedForBulkValueFetching() ).isFalse();
+
+		assertThat( controller.fetchValues( contextList ) )
+				.containsOnly( entry( context, null ), entry( otherContext, null ) );
+
+		controller.valueFetcher( EntityPropertyBindingContext::getEntity );
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, "123" ), entry( otherContext, "456" ) );
+
+		controller.withEntity( String.class, Long.class ).valueFetcher( Long::parseLong );
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, 123L ), entry( otherContext, 456L ) );
+
+		controller.withTarget( BigDecimal.class, Long.class ).valueFetcher( BigDecimal::longValue );
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, 10L ), entry( otherContext, 1L ) );
+
+		controller.withBindingContext( Long.class ).valueFetcher( ctx -> ctx.<BigDecimal>getTarget().longValue() + ctx.<String>getEntity().length() );
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, 13L ), entry( otherContext, 4L ) );
+	}
+
+	@Test
+	void getValueInBulkWithCustomFetcher() {
+		EntityPropertyBindingContext otherContext = EntityPropertyBindingContext.forUpdating( "456", BigDecimal.ONE );
+		List<EntityPropertyBindingContext> contextList = Arrays.asList( context, otherContext );
+
+		assertThat( controller.fetchValues( contextList ) )
+				.containsOnly( entry( context, null ), entry( otherContext, null ) );
+
+		controller.bulkValueFetcher( ctx -> ImmutableMap.of( context, "abc", otherContext, "def" ) );
+		assertThat( controller.isOptimizedForBulkValueFetching() ).isTrue();
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, "abc" ), entry( otherContext, "def" ) );
+
+		// disabling bulk fetching optimization does not change the actual fetcher use
+		controller.optimizedForBulkValueFetching( false );
+		assertThat( controller.isOptimizedForBulkValueFetching() ).isFalse();
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, "abc" ), entry( otherContext, "def" ) );
+
+		controller.withEntity( String.class, Integer.class )
+		          .bulkValueFetcher( values -> values.stream().collect( Collectors.toMap( Function.identity(), Integer::parseInt ) ) );
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, 123 ), entry( otherContext, 456 ) );
+
+		controller.withTarget( BigDecimal.class, Long.class )
+		          .valueFetcher( bd -> bd.longValue() + 1L )
+		          .bulkValueFetcher( values -> values.stream().collect( Collectors.toMap( Function.identity(), BigDecimal::longValue ) ) );
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, 10L ), entry( otherContext, 1L ) );
+
+		controller.withBindingContext( Long.class )
+		          .bulkValueFetcher( values -> values.stream().collect(
+				          Collectors.toMap( Function.identity(), ctx -> ctx.<BigDecimal>getTarget().longValue() + ctx.<String>getEntity().length() )
+		          ) );
+		assertThat( controller.fetchValues( contextList ) ).containsOnly( entry( context, 13L ), entry( otherContext, 4L ) );
+	}
+
+	@Test
+	void createValue() {
 		assertThat( controller.createValue( context ) ).isNull();
 
 		// function
@@ -115,7 +200,7 @@ public class TestGenericEntityPropertyController
 	}
 
 	@Test
-	public void createDto() {
+	void createDto() {
 		assertThat( controller.createDto( context, "123" ) ).isEqualTo( "123" );
 
 		// function
@@ -152,7 +237,7 @@ public class TestGenericEntityPropertyController
 	}
 
 	@Test
-	public void applyValue() {
+	void applyValue() {
 		assertThat( controller.applyValue( context, propertyValue ) ).isFalse();
 
 		// function
@@ -189,7 +274,7 @@ public class TestGenericEntityPropertyController
 	}
 
 	@Test
-	public void save() {
+	void save() {
 		assertThat( controller.save( context, propertyValue ) ).isFalse();
 
 		// function
@@ -226,7 +311,7 @@ public class TestGenericEntityPropertyController
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		Errors errors = mock( Errors.class );
 
 		controller.validate( context, new EntityPropertyValue( 123, 321, false ), errors, "hint" );

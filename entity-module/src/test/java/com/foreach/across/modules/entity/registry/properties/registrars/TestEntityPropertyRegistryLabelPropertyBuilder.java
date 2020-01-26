@@ -44,8 +44,8 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 		assertNotNull( label );
 		assertEquals( "Label", label.getDisplayName() );
 		assertEquals( new Sort.Order( "test" ), label.getAttribute( Sort.Order.class ) );
-		assertNull( label.getPropertyType() );
-		assertNull( label.getPropertyTypeDescriptor() );
+		assertEquals( Integer.class, label.getPropertyType() );
+		assertEquals( TypeDescriptor.valueOf( Integer.class ), label.getPropertyTypeDescriptor() );
 		assertTrue( label.isReadable() );
 		assertFalse( label.isWritable() );
 		assertTrue( label.isHidden() );
@@ -80,8 +80,8 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 			MutableEntityPropertyDescriptor label = (MutableEntityPropertyDescriptor) invocation.getArguments()[0];
 			assertNotNull( label );
 			assertEquals( "Label", label.getDisplayName() );
-			assertNull( label.getPropertyType() );
-			assertNull( label.getPropertyTypeDescriptor() );
+			assertEquals( String.class, label.getPropertyType() );
+			assertEquals( TypeDescriptor.valueOf( String.class ), label.getPropertyTypeDescriptor() );
 			assertTrue( label.isReadable() );
 			assertFalse( label.isWritable() );
 			assertTrue( label.isHidden() );

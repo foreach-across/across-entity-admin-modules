@@ -17,11 +17,11 @@
 package com.foreach.across.modules.entity.registry;
 
 import com.foreach.across.modules.entity.registry.properties.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.BiConsumer;
 
@@ -32,8 +32,8 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
-public class TestNestedEntityPropertyController
+@ExtendWith(MockitoExtension.class)
+class TestNestedEntityPropertyController
 {
 	@Mock
 	private EntityPropertyController<Object> address;
@@ -49,40 +49,40 @@ public class TestNestedEntityPropertyController
 
 	private NestedEntityPropertyController userAddress;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void before() {
 		userAddress = new NestedEntityPropertyController( user, address );
 		when( pageBindingContext.resolvePropertyBindingContext( user ) ).thenReturn( userBindingContext );
 	}
 
 	@Test
-	public void fetchValue() {
+	void fetchValue() {
 		when( address.fetchValue( userBindingContext ) ).thenReturn( "address value" );
 		assertThat( userAddress.fetchValue( pageBindingContext ) ).isEqualTo( "address value" );
 	}
 
 	@Test
-	public void applyValue() {
+	void applyValue() {
 		EntityPropertyValue<Object> value = new EntityPropertyValue<>( "old", "new", false );
 		userAddress.applyValue( pageBindingContext, value );
 		verify( address ).applyValue( userBindingContext, value );
 	}
 
 	@Test
-	public void createValue() {
+	void createValue() {
 		userAddress.createValue( pageBindingContext );
 		verify( address ).createValue( userBindingContext );
 	}
 
 	@Test
-	public void createDto() {
+	void createDto() {
 		userAddress.createDto( pageBindingContext, "123" );
 		verify( address ).createDto( userBindingContext, "123" );
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void save() {
+	void save() {
 		EntityPropertyValue<Object> value = new EntityPropertyValue<>( "old", "new", false );
 		userAddress.save( pageBindingContext, value );
 		verify( address ).save( userBindingContext, value );

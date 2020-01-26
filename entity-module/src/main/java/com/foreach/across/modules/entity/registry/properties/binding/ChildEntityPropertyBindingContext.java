@@ -47,6 +47,12 @@ public final class ChildEntityPropertyBindingContext extends AbstractEntityPrope
 		return getTarget();
 	}
 
+	ChildEntityPropertyBindingContext setCachedValue( Object cachedValue ) {
+		this.cachedValue = cachedValue;
+		valueFetched = true;
+		return this;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public <U> U getTarget() {

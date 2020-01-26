@@ -126,7 +126,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
-		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/general" ) ).isNotNull().matches( m -> "/admin/item/1".equals( m.getUrl() ) );
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
 
 	}
@@ -141,7 +141,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/general" ) ).isNotNull().matches( m -> "/admin/item/1/update".equals( m.getUrl() ) );
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
-		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/general" ) ).isNotNull().matches( m -> "/admin/item/1".equals( m.getUrl() ) );
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
 	}
 
@@ -182,7 +182,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
-		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/general" ) ).isNotNull().matches( m -> "/admin/item/1".equals( m.getUrl() ) );
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
 	}
 
@@ -198,7 +198,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/general" ) ).isNotNull().matches( m -> "/admin/item/1/update".equals( m.getUrl() ) );
 	}
 
 	@Test
@@ -214,7 +214,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/general" ) ).isNotNull().matches( m -> "/admin/item/1/update".equals( m.getUrl() ) );
 	}
 
 	@Test
@@ -231,7 +231,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
-		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/general" ) ).isNotNull().matches( m -> "/admin/item/1".equals( m.getUrl() ) );
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
 	}
 
