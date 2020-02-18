@@ -686,12 +686,13 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
 		return html.builders.div()
+		                    .css( "no-results-card" )
 		                    .name( elementName( ELEMENT_NORESULTS ) )
 		                    //.attribute( DATA_ATTR_AJAX_LOAD, false )
-		                    .with( css.card, css.border.warning )
+		                    .with( css.card )
 		                    .add(
 				                    html.builders.div()
-				                                 .with( css.card.body, css.text.warning )
+				                                 .with( css.card.body )
 				                                 .add( html.builders.unescapedText( getResolvedPagingMessages().resultsFound( getPage() ) ) )
 		                    );
 	}
