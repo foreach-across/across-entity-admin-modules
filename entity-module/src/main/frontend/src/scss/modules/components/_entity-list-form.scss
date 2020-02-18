@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-$color-success: #27a327 !default;
-$color-warning: #FF9203 !default;
-$color-danger: #dd000c !default;
-$color-info: #42abdc !default;
-$color-offwhite: #f4f4f4 !default;
-$color-primary: lighten(#002c41, 20%);
-
-$em-list-form-margin: 1rem;
+.em-list-form {
+  margin-bottom: $em-list-form-margin;
+}
