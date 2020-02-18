@@ -156,11 +156,11 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 					                    .set( attribute.data( "role", "items" ) );
 
 			                    if ( items.isEmpty() ) {
-				                    table.set( css.display.none );
+				                    table.set( css.of( "hidden-table" ) );
 			                    }
 
 			                    TableViewElement.Row hidden = new TableViewElement.Row();
-			                    hidden.set( css.display.none );
+			                    hidden.set(css.of( "hidden-row" ) );
 			                    table.addChild( hidden );
 
 			                    items.forEach( item -> {
