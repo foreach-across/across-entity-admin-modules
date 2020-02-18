@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 .no-results-card {
   border-color: #ffc107;
+
+  .card-body {
+    color: #ffc107;
+  }
 }
 
-.no-results-card .card-body {
-  color: #ffc107;
+.pager-form {
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-direction: row;
+  flex-direction: row;
 }
