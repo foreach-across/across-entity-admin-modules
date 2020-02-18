@@ -703,8 +703,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		NodeViewElementBuilder pager = html.builders.div()
 		                                            .name( elementName( ELEMENT_PAGER ) )
-		                                            .css( "pager-form", "form-inline" )
-		                                            .with( css.flex.row, css.justifyContent.center );
+		                                            .css( "pager-form", "form-inline" );
 
 		if ( currentPage.hasPrevious() ) {
 			pager.add(
