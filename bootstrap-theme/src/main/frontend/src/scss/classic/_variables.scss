@@ -15,6 +15,11 @@ $red: #dd000c !default;
 $green: #27a327 !default;
 $dark: #002c41 !default;
 
+$white: #ffffff !default;
+$orange1: #ff960d !default;;
+$orange2: #fd9000 !default;;
+
+
 // Options
 $enable-rounded: false !default;
 $enable-shadows: false !default;
@@ -43,6 +48,11 @@ $alert-padding-y: 1rem !default;
 $alert-padding-x: 1rem !default;
 $alert-border-level: 1 !default;
 $alert-color-level: 2 !default;
+
+// Developer tools
+$developer-tools-heading-color: $white !default;
+$developer-tools-heading-background-color: $orange1 !default;
+$developer-tools-heading-border-color: $orange2 !default;
 
 // Navbar
 $navbar-brand-font-size: $font-size-base !default;
