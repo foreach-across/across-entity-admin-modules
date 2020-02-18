@@ -90,7 +90,6 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 				.formName( formName )
 				.css( "em-list-form" )
 				.noValidate()
-				.with( BootstrapStyles.css.margin.bottom.s3 )
 				.get();
 
 		String formHeaderRowName = formName + "-header-row";
