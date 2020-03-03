@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.styles;
 
 /**
+ * Prefixes the bootstrap utility classes with axu
  *
  * @author Stijn Vanhoof
  */
