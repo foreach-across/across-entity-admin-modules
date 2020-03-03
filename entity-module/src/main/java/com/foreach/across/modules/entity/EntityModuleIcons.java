@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
 import com.foreach.across.modules.entity.icons.*;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
@@ -44,18 +45,18 @@ public class EntityModuleIcons
 		iconSet.add( EntityModuleEmbeddedCollectionIcons.ITEM_HANDLE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "bars" ) );
 		iconSet.add( EntityModuleEmbeddedCollectionIcons.ITEM_ADD, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "plus" ) );
 		iconSet.add( EntityModuleEmbeddedCollectionIcons.ITEM_REMOVE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
-		                                                                                      .set( css.text.danger ) );
+		                                                                                      .set( AcrossStyleRule.utility( css.text.danger) ) );
 
 		iconSet.add( EntityModuleListViewIcons.ENTITY_QUERY_SEARCH, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "search" ) );
 		iconSet.add( EntityModuleListViewIcons.LINK_DETAIL, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "eye" ) );
 		iconSet.add( EntityModuleListViewIcons.LINK_EDIT, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "edit" ) );
 		iconSet.add( EntityModuleListViewIcons.LINK_DELETE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
-		                                                                            .set( css.text.danger ) );
+		                                                                            .set( AcrossStyleRule.utility( css.text.danger ) ));
 		iconSet.add( EntityModuleListViewIcons.PREVIOUS_PAGE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "step-backward" ).addCssClass( "fa-fw" ) );
 		iconSet.add( EntityModuleListViewIcons.NEXT_PAGE, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "step-forward" ).addCssClass( "fa-fw" ) );
 
 		iconSet.add( EntityModuleAutoSuggestIcons.REMOVE_ITEM, ( imageName ) -> IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
-		                                                                               .set( css.text.danger ) );
+		                                                                               .set( AcrossStyleRule.utility( css.text.danger ) ));
 
 		IconSetRegistry.addIconSet( ICON_SET, iconSet );
 	}

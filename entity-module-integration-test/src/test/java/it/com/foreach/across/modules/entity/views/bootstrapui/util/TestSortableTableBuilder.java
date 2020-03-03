@@ -243,7 +243,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"</div>" +
 						"</div>" +
 						"<div class=\"card-footer\">" +
-						"<div class=\"pager-form form-inline flex-row justify-content-center\">" +
+						"<div class=\"pager-form form-inline axu-flex-row axu-justify-content-center\">" +
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"0\" class=\"btn btn-link\">" +
 						"<i class=\"previous-page\"></i>" +
 						"</a>" +
@@ -270,8 +270,8 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 		tableBuilder.pagingMessages( messages );
 
-		expect( "<div class='card border-warning'>" +
-				        "<div class='card-body text-warning'>Geen resultaten gevonden</div>" +
+		expect( "<div class='card axu-border-warning'>" +
+				        "<div class='card-body axu-text-warning'>Geen resultaten gevonden</div>" +
 				        "</div>" );
 	}
 

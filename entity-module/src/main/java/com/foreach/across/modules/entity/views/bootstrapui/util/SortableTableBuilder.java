@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.util;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -688,10 +689,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		return html.builders.div()
 		                    .name( elementName( ELEMENT_NORESULTS ) )
 		                    //.attribute( DATA_ATTR_AJAX_LOAD, false )
-		                    .with( css.card, css.border.warning )
+		                    .with( css.card, AcrossStyleRule.utility( css.border.warning ) )
 		                    .add(
 				                    html.builders.div()
-				                                 .with( css.card.body, css.text.warning )
+				                                 .with( css.card.body, AcrossStyleRule.utility( css.text.warning ))
 				                                 .add( html.builders.unescapedText( getResolvedPagingMessages().resultsFound( getPage() ) ) )
 		                    );
 	}
@@ -703,7 +704,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		NodeViewElementBuilder pager = html.builders.div()
 		                                            .name( elementName( ELEMENT_PAGER ) )
 		                                            .css( "pager-form", "form-inline" )
-		                                            .with( css.flex.row, css.justifyContent.center );
+		                                            .with(AcrossStyleRule.utility(  css.flex.row), AcrossStyleRule.utility( css.justifyContent.center ));
 
 		if ( currentPage.hasPrevious() ) {
 			pager.add(

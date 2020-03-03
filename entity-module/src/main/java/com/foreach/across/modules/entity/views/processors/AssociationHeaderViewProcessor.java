@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
 import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -85,7 +86,7 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
 
 		NodeViewElementBuilder contentHeaderBuilder = html.builders.div().css( "tab-pane-header" )
-		                                                           .with( css.margin.bottom.s3 )
+		                                                           .with( AcrossStyleRule.utility(css.margin.bottom.s3 ))
 		                                                           .add( associatedContentTitle( entityViewContext ) );
 
 		if ( addEntityMenu ) {
@@ -103,7 +104,7 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 					entityAdminMenu.getItems().size() == 1 ) {
 				return null;
 			}
-			return BootstrapViewElements.bootstrap.builders.nav( css.display.block )
+			return BootstrapViewElements.bootstrap.builders.nav( AcrossStyleRule.utility( css.display.block ) )
 			                                               .menu( entityAdminMenu )
 			                                               .pills()
 			                                               .replaceGroupBySelectedItem();

@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -56,7 +57,7 @@ public class FormGroupDescriptionTextPostProcessor<T extends ViewElement> extend
 
 			if ( !StringUtils.isEmpty( text ) ) {
 				element.setDescriptionBlock(
-						html.builders.div( css.form.text, css.margin.bottom.s1 )
+						html.builders.div( css.form.text, AcrossStyleRule.utility( css.margin.bottom.s1 ) )
 						             .add( new TextViewElement( text, escapeHtml ) )
 						             .build( builderContext )
 				);

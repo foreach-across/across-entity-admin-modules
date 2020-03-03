@@ -21,7 +21,6 @@ import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
@@ -88,9 +87,8 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 				.form()
 				.name( formName )
 				.formName( formName )
-				.css( "em-list-form" )
+				.css( "em-list-form axu-mb-3" )
 				.noValidate()
-				.with( BootstrapStyles.css.margin.bottom.s3 )
 				.get();
 
 		String formHeaderRowName = formName + "-header-row";
@@ -99,7 +97,7 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 		String formHeaderName = formName + "-header";
 		ColumnViewElementBuilder formHeader = bootstrap.builders.column( Grid.Device.MD.width( Grid.Width.FULL ) )
 		                                                        .name( formHeaderName )
-		                                                        .css( "list-header d-flex" );
+		                                                        .css( "list-header axu-d-flex" );
 
 		formHeaderRow.add( formHeader );
 		listForm.add( formHeaderRow );

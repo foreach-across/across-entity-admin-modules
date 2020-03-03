@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.processors.query;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -28,8 +29,10 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
@@ -167,8 +170,8 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
 		NodeViewElementBuilder container = html.builders.div()
 		                                                .name( "entity-query-filter-form" )
-		                                                .css( "entity-query-filter-form flex-grow-1" )
-		                                                .with( css.margin.right.s3 )
+		                                                .css( "entity-query-filter-form axu-flex-grow-1" )
+		                                                .with( AcrossStyleRule.utility( css.margin.right.s3 ) )
 		                                                .attribute( ATTRIBUTE_ENTITY_QUERY_FILTER_FORM, "default" );
 
 		boolean basicFilterEnabled = isBasicModeActive();
@@ -185,7 +188,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 
 			if ( basicFilterEnabled ) {
 				NodeViewElementBuilder basicFilter = html.builders.div().name( "entity-query-filter-form-basic" )
-				                                                  .css( "entity-query-filter-form-basic", showBasicFilter ? "" : "d-none" );
+				                                                  .css( "entity-query-filter-form-basic", showBasicFilter ? "" : "axu-d-none" );
 				basicFilter.addAll( basicFilterControls )
 				           .add( searchButton );
 
@@ -206,7 +209,8 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 			}
 			else {
 				NodeViewElementBuilder advancedFilter = html.builders.div().name( "entity-query-filter-form-advanced" )
-				                                                     .css( "entity-query-filter-form-advanced ", showBasicFilter ? "d-none" : "d-flex" );
+				                                                     .css( "entity-query-filter-form-advanced ",
+				                                                           showBasicFilter ? "axu-d-none" : "axu-d-flex" );
 
 				NodeViewElementBuilder actions = html.builders.div().css( "list-header-actions" )
 				                                              .add( searchButton );
@@ -214,7 +218,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 				advancedFilter
 						.add(
 								bootstrap.builders.formGroup()
-								                  .css( "form-group flex-grow-1" )
+								                  .css( "form-group axu-flex-grow-1" )
 								                  .control( bootstrap.builders.textbox()
 								                                              .controlName( eqlControlName )
 								                                              .text( eqlStatement )
