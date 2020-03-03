@@ -138,7 +138,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 						                         .replaceGroupBySelectedItem( false )
 						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( NAVBAR, true ) )
-						                         .css( "navbar-nav mr-auto" )
+						                         .css( "navbar-nav axu-mr-auto" )
 						                         .build()
 				);
 				model.computeIfAbsent(

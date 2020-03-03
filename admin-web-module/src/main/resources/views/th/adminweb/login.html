@@ -20,18 +20,18 @@
     <title th:text="'Login: ' + ${@adminWeb.title}">Login page</title>
 </head>
 <body>
-<div class="container h-100" th:fragment="content">
-    <div class="text-right" th:unless="${localeOptions.empty}">
+<div class="container axu-h-100" th:fragment="content">
+    <div class="axu-text-right" th:unless="${localeOptions.empty}">
 		<span th:each="option : ${localeOptions}">
 			<a th:href="@{${@adminWeb.path('/')}(locale=${option.locale})}">
 				<strong th:remove="${option.selected} ? none : tag" th:text="${option.label}">language</strong>
 			</a>
 		</span>
     </div>
-    <div class="row h-75 justify-content-center align-items-center">
+    <div class="row axu-h-75 axu-justify-content-center axu-align-items-center">
         <div class="col-md-4">
             <form name="loginForm" th:action="@{${@adminWeb.path('/login')}}" method="post" role="form" class="form-signin center-block">
-                <div class="text-center page-header">
+                <div class="axu-text-center page-header">
                     <h2 th:text="${@adminWeb.title}">Unizo</h2>
                 </div>
                 <div th:if="${param.error}" class="alert alert-danger">
@@ -44,11 +44,11 @@
                     Please sign in.
                 </div>
                 <label for="username" class="sr-only">Username</label>
-                <input type="text" id="username" name="username" class="form-control mb-2" placeholder="Username"
+                <input type="text" id="username" name="username" class="form-control axu-mb-2" placeholder="Username"
                        required="required" autofocus="autofocus"/>
                 <label for="password" class="sr-only">Password</label>
-                <input type="password" id="password" name="password" class="form-control mb-2" placeholder="Password"/>
-                <div th:if="${isRememberMeEnabled}" class="custom-control custom-checkbox mb-2">
+                <input type="password" id="password" name="password" class="form-control axu-mb-2" placeholder="Password"/>
+                <div th:if="${isRememberMeEnabled}" class="custom-control custom-checkbox axu-mb-2">
                     <input class="custom-control-input" type="checkbox" id="remember-me" name="remember-me"/>
                     <label class="custom-control-label" for="remember-me">Remember me</label>
                 </div>

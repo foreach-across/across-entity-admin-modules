@@ -102,7 +102,7 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'><header class='pcs-header'>" +
-						"<h3 class='page-header'>Simple page title <small class=\"text-muted\"></small></h3>" +
+						"<h3 class='page-header'>Simple page title <small class=\"axu-text-muted\"></small></h3>" +
 						"</header></div>"
 		);
 	}
@@ -114,7 +114,7 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'><header class='pcs-header'>" +
-						"<h3 class='page-header'><small class=\"text-muted\">some action</small></h3>" +
+						"<h3 class='page-header'><small class=\"axu-text-muted\">some action</small></h3>" +
 						"</header></div>"
 		);
 	}
@@ -127,7 +127,7 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'><header class='pcs-header'>" +
-						"<h3 class='page-header'>Simple page title <small class=\"text-muted\">some action</small></h3>" +
+						"<h3 class='page-header'>Simple page title <small class=\"axu-text-muted\">some action</small></h3>" +
 						"</header></div>"
 		);
 	}
