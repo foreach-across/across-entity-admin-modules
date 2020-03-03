@@ -1,0 +1,132 @@
+// stylelint-disable declaration-no-important
+
+//
+// Text
+//
+
+.axu-text-monospace {
+  font-family: $font-family-monospace;
+}
+
+// Alignment
+
+.axu-text-justify {
+  text-align: justify;
+}
+
+.axu-text-wrap {
+  white-space: normal;
+}
+
+.axu-text-nowrap {
+  white-space: nowrap;
+}
+
+.axu-text-truncate {
+  @include text-truncate;
+}
+
+// Responsive alignment
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .axu-text#{$infix}-left {
+      text-align: left;
+    }
+    .axu-text#{$infix}-right {
+      text-align: right;
+    }
+    .axu-text#{$infix}-center {
+      text-align: center;
+    }
+  }
+}
+
+// Transformation
+
+.axu-text-lowercase {
+  text-transform: lowercase;
+}
+
+.axu-text-uppercase {
+  text-transform: uppercase;
+}
+
+.axu-text-capitalize {
+  text-transform: capitalize;
+}
+
+// Weight and italics
+
+.axu-font-weight-light {
+  font-weight: $font-weight-light;
+}
+
+.axu-font-weight-lighter {
+  font-weight: $font-weight-lighter;
+}
+
+.axu-font-weight-normal {
+  font-weight: $font-weight-normal;
+}
+
+.axu-font-weight-bold {
+  font-weight: $font-weight-bold;
+}
+
+.axu-font-weight-bolder {
+  font-weight: $font-weight-bolder;
+}
+
+.axu-font-italic {
+  font-style: italic;
+}
+
+// Contextual colors
+
+.axu-text-white {
+  color: $white;
+}
+
+@each $color, $value in $theme-colors {
+  @include text-emphasis-variant(".axu-text-#{$color}", $value);
+}
+
+.axu-text-body {
+  color: $body-color;
+}
+
+.axu-text-muted {
+  color: $text-muted;
+}
+
+.axu-text-black-50 {
+  color: rgba($black, .5);
+}
+
+.axu-text-white-50 {
+  color: rgba($white, .5);
+}
+
+// Misc
+
+.axu-text-hide {
+  @include text-hide($ignore-warning: true);
+}
+
+.axu-text-decoration-none {
+  text-decoration: none;
+}
+
+.axu-text-break {
+  word-break: break-word; // IE & < Edge 18
+  overflow-wrap: break-word;
+}
+
+// Reset
+
+.axu-text-reset {
+  color: inherit;
+}

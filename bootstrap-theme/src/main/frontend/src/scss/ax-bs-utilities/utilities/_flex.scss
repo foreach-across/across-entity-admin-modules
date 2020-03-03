@@ -1,0 +1,119 @@
+// stylelint-disable declaration-no-important
+
+// Flex variation
+//
+// Custom styles for additional flex alignment options.axu-
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .axu-flex#{$infix}-row {
+      flex-direction: row;
+    }
+    .axu-flex#{$infix}-column {
+      flex-direction: column;
+    }
+    .axu-flex#{$infix}-row-reverse {
+      flex-direction: row-reverse;
+    }
+    .axu-flex#{$infix}-column-reverse {
+      flex-direction: column-reverse;
+    }
+
+    .axu-flex#{$infix}-wrap {
+      flex-wrap: wrap;
+    }
+    .axu-flex#{$infix}-nowrap {
+      flex-wrap: nowrap;
+    }
+    .axu-flex#{$infix}-wrap-reverse {
+      flex-wrap: wrap-reverse;
+    }
+    .axu-flex#{$infix}-fill {
+      flex: 1 1 auto;
+    }
+    .axu-flex#{$infix}-grow-0 {
+      flex-grow: 0;
+    }
+    .axu-flex#{$infix}-grow-1 {
+      flex-grow: 1;
+    }
+    .axu-flex#{$infix}-shrink-0 {
+      flex-shrink: 0;
+    }
+    .axu-flex#{$infix}-shrink-1 {
+      flex-shrink: 1;
+    }
+
+    .axu-justify-content#{$infix}-start {
+      justify-content: flex-start;
+    }
+    .axu-justify-content#{$infix}-end {
+      justify-content: flex-end;
+    }
+    .axu-justify-content#{$infix}-center {
+      justify-content: center;
+    }
+    .axu-justify-content#{$infix}-between {
+      justify-content: space-between;
+    }
+    .axu-justify-content#{$infix}-around {
+      justify-content: space-around;
+    }
+
+    .axu-align-items#{$infix}-start {
+      align-items: flex-start;
+    }
+    .axu-align-items#{$infix}-end {
+      align-items: flex-end;
+    }
+    .axu-align-items#{$infix}-center {
+      align-items: center;
+    }
+    .axu-align-items#{$infix}-baseline {
+      align-items: baseline;
+    }
+    .axu-align-items#{$infix}-stretch {
+      align-items: stretch;
+    }
+
+    .axu-align-content#{$infix}-start {
+      align-content: flex-start;
+    }
+    .axu-align-content#{$infix}-end {
+      align-content: flex-end;
+    }
+    .axu-align-content#{$infix}-center {
+      align-content: center;
+    }
+    .axu-align-content#{$infix}-between {
+      align-content: space-between;
+    }
+    .axu-align-content#{$infix}-around {
+      align-content: space-around;
+    }
+    .axu-align-content#{$infix}-stretch {
+      align-content: stretch;
+    }
+
+    .axu-align-self#{$infix}-auto {
+      align-self: auto;
+    }
+    .axu-align-self#{$infix}-start {
+      align-self: flex-start;
+    }
+    .axu-align-self#{$infix}-end {
+      align-self: flex-end;
+    }
+    .axu-align-self#{$infix}-center {
+      align-self: center;
+    }
+    .axu-align-self#{$infix}-baseline {
+      align-self: baseline;
+    }
+    .axu-align-self#{$infix}-stretch {
+      align-self: stretch;
+    }
+  }
+}
