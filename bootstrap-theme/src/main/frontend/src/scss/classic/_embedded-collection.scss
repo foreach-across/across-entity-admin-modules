@@ -1,0 +1,21 @@
+.embedded-collection-control-list {
+  .embedded-collection-items {
+    .embedded-collection-item > div {
+      vertical-align: top;
+      border-top: 1px dotted #eaeaea;
+      padding-top: 0.6rem;
+    }
+
+    .embedded-collection-item {
+      border-bottom: 1px dotted #eaeaea;
+      padding-top: 0;
+    }
+  }
+
+  .embedded-collection-actions {
+    .btn-outline-secondary {
+
+    }
+  }
+}
+
