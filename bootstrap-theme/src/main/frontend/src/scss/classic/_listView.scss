@@ -12,6 +12,11 @@ table.table {
     white-space: nowrap;
   }
 
+  tr > td {
+    border-top: 1px solid $gray-100;
+  }
+
+
   .btn {
     padding: 0 0.25rem;
   }
@@ -22,8 +27,31 @@ table.table {
     text-align: center;
   }
 
+  .table-danger, .table-danger > th, .table-danger > td {
+    color: $red;
+    background-color: $light-red;
+  }
+
+  // this does not work for some reason
+  //.table-hover .table-danger:hover {
+  //  background-color: $light-red-hover;
+  //}
+  //
+  //.table-hover .table-danger:hover > td,
+  //.table-hover .table-danger:hover > th {
+  //  background-color: $light-red-hover;
+  //}
+
+  tr.table-danger {
+    border-left: 3px solid $red;
+  }
+
   tr.odd {
     background-color: rgba(0, 0, 0, .03);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, .05);
+    }
   }
 
   th.sortable {
@@ -67,6 +95,7 @@ table.table {
   .btn {
     padding: 0 0.5rem;
   }
+
   //
   //.no-btn, .btn {
   //  display: inline-block;
@@ -95,7 +124,7 @@ table.table {
   .total-pages-link {
     font-weight: bold;
     color: $black;
-  //  margin-right: 0.5rem;
+    //  margin-right: 0.5rem;
   }
 }
 

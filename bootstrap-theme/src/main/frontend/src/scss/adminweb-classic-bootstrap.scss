@@ -2,9 +2,7 @@
  * Contains the general Bootstrap theme css, to be applied before module extension CSS.
  */
 @import "classic/variables";
-
 @import "../../node_modules/bootstrap/scss/bootstrap";
-
 @import "ax-bs-utilities/ax-utilities";
 
 // Headings
@@ -27,4 +25,33 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 .card-body .table:last-child {
   margin-bottom: 0;
+}
+
+// Tab content
+.tabbable.filled {
+  background: #fff;
+
+  // top navbar
+  nav > .nav-tabs {
+    background: #f4f4f4;
+    border-color: #eaeaea;
+
+    li a {
+      border: none;
+    }
+
+  }
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
+  background-color: #eee;
+}
+
+
+// Form Controls
+.form-control {
+  color: #555;
+  border: 1px solid #e9e9e9;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }

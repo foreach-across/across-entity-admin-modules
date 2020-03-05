@@ -91,7 +91,7 @@
 }
 
 @each $color, $value in $theme-colors {
-  @include text-emphasis-variant(".axu-text-#{$color}", $value);
+  @include ax-text-emphasis-variant(".axu-text-#{$color}", $value);
 }
 
 .axu-text-body {

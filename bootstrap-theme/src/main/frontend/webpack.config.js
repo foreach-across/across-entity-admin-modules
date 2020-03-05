@@ -20,6 +20,7 @@ const path = require( "path" );
 const workingDirectory = process.env.INIT_CWD;
 
 const cssEntries = [
+    "ax-bootstrap-utilities",
     "adminweb-classic-bootstrap",
     "adminweb-classic-theme",
     "adminweb-sidebar-bootstrap",
