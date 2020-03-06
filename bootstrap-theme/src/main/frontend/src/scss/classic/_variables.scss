@@ -20,8 +20,8 @@ $light-red: #fff1f2 !default;
 $light-red-hover: #ffd8da !default;
 
 $white: #ffffff !default;
-$orange1: #ff960d !default;;
-$orange2: #fd9000 !default;;
+$orange1: #ff960d !default;
+$orange2: #fd9000 !default;
 
 
 // Options
@@ -93,7 +93,7 @@ $list-group-item-padding-y: 0.7rem !default;
 $list-group-border-color: $gray-100 !default;
 $list-group-action-color: #0071a7 !default;
 $list-group-hover-bg: #eee !default;
-$list-group-action-hover-color: darken($list-group-action-color,20%) !default;
+$list-group-action-hover-color: darken($list-group-action-color, 20%) !default;
 $list-group-active-color: $gray-400 !default;
 $list-group-active-bg: $dark !default;
 
@@ -107,6 +107,12 @@ $btn-padding-y-sm: 0.375rem;
 
 // Table
 $table-cell-padding: 0.5rem;
+
+// Overriding variables defined by bootstrap should not use !default
+$success: #27a327;
+$warning: #FF9203;
+$danger: #dd000c;
+$info: #42abdc;
 
 @import "../../../node_modules/bootstrap/scss/variables";
 

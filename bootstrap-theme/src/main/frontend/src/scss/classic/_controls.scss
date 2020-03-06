@@ -6,6 +6,10 @@
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
+.form-control-static {
+  margin-bottom: 0.5rem;
+}
+
 // Select controls
 .bootstrap-select .dropdown-toggle .filter-option-inner-inner {
   min-height: 1.25rem;

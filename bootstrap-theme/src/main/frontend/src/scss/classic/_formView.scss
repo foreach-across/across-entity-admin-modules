@@ -2,3 +2,23 @@
 .pcs .tab-content {
   padding-bottom: $spacer * 1;
 }
+
+// Tab content
+.tabbable.filled {
+  background: #fff;
+
+  // top navbar
+  nav > .nav-tabs {
+    background: #f4f4f4;
+    border-color: #eaeaea;
+
+    li a {
+      border: none;
+    }
+
+  }
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
+  background-color: #eee;
+}

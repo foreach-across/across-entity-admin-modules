@@ -9,6 +9,10 @@
     .embedded-collection-item {
       border-bottom: 1px dotted #eaeaea;
       padding-top: 0;
+
+      &.axu-border-top {
+        border-top: none;
+      }
     }
   }
 
@@ -19,3 +23,28 @@
   }
 }
 
+
+
+
+.embedded-collection-readonly {
+
+  .embedded-collection-items {
+    border: 1px solid #eaeaea;
+    padding-top: 0;
+
+    .embedded-collection-item > div {
+      border: none;
+      border-top: 1px dotted #eaeaea;
+      padding: 0.75rem 0.75rem 0 0.75rem;
+    }
+
+    .embedded-collection-item {
+      border: none;
+      padding-top: 0;
+
+      .embedded-collection-item-data > .form-group {
+        margin-bottom: 0.75rem;
+      }
+    }
+  }
+}
