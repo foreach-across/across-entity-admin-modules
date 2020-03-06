@@ -28,3 +28,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 
+// Dropdowns
+.dropdown-menu {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+  background-color: $blue;
+}
+

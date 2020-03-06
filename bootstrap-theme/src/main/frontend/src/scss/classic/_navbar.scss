@@ -1,0 +1,11 @@
+.navbar-header .navbar-brand {
+  font-weight: 600;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: $gray-400;
+
+  &.active {
+    color: $white;
+  }
+}
