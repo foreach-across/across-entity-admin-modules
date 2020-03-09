@@ -188,7 +188,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 
 			if ( basicFilterEnabled ) {
 				NodeViewElementBuilder basicFilter = html.builders.div().name( "entity-query-filter-form-basic" )
-				                                                  .css( "entity-query-filter-form-basic", showBasicFilter ? "" : "axu-d-none" );
+				                                                  .css( "entity-query-filter-form-basic", showBasicFilter ? "" : "d-none" );
 				basicFilter.addAll( basicFilterControls )
 				           .add( searchButton );
 
@@ -210,7 +210,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 			else {
 				NodeViewElementBuilder advancedFilter = html.builders.div().name( "entity-query-filter-form-advanced" )
 				                                                     .css( "entity-query-filter-form-advanced ",
-				                                                           showBasicFilter ? "axu-d-none" : "axu-d-flex" );
+				                                                           showBasicFilter ? "d-none" : "axu-d-flex" );
 
 				NodeViewElementBuilder actions = html.builders.div().css( "list-header-actions" )
 				                                              .add( searchButton );
