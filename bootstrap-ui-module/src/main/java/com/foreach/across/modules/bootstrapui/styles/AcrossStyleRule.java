@@ -16,23 +16,9 @@
 
 package com.foreach.across.modules.bootstrapui.styles;
 
-/**
- * @author Stijn Vanhoof
- */
-
-import com.foreach.across.modules.bootstrapui.styles.utilities.*;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class AcrossBootstrapStyleRule implements BootstrapStyleRule
+public class AcrossStyleRule
 {
-	private final BootstrapStyleRule bootstrapStyleRule;
-	@Override
-	public String[] toCssClasses() {
-		return bootstrapStyleRule.prefix( "axu-" ).toCssClasses();
-	}
-	public static BootstrapStyleRule of( BootstrapStyleRule bootstrapStyleRule ) {
-		return new AcrossBootstrapStyleRule( bootstrapStyleRule );
+	public static BootstrapStyleRule utility(BootstrapStyleRule bootstrapStyleRule) {
+		return bootstrapStyleRule.prefix( "axu" );
 	}
 }
