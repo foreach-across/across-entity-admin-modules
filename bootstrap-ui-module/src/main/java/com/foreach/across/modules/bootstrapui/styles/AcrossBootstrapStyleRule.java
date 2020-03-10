@@ -28,13 +28,11 @@ import lombok.RequiredArgsConstructor;
 public class AcrossBootstrapStyleRule implements BootstrapStyleRule
 {
 	private final BootstrapStyleRule bootstrapStyleRule;
-
-	public static BootstrapStyleRule of( String... css ) {
-		return new AcrossBootstrapStyleRule( BootstrapStyleRule.of( css ) );
-	}
-
 	@Override
 	public String[] toCssClasses() {
 		return bootstrapStyleRule.prefix( "axu-" ).toCssClasses();
+	}
+	public static BootstrapStyleRule of( BootstrapStyleRule bootstrapStyleRule ) {
+		return new AcrossBootstrapStyleRule( bootstrapStyleRule );
 	}
 }
