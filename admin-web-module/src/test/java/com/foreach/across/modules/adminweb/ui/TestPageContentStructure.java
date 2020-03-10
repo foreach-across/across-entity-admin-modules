@@ -57,9 +57,9 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page, "" +
 						"<div class='pcs'>" +
-						"<div class='mb-3 tabbable filled'>" +
+						"<div class='axu-mb-3 tabbable filled'>" +
 						"<section class='pcs-body-section'>" +
-						"<div class='tab-content px-3'>" +
+						"<div class='tab-content axu-px-3'>" +
 						"<div class='tab-pane active'>" +
 						"some content" +
 						"</div></div></section></div>" +
@@ -82,10 +82,10 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'>" +
-						"<div class='mb-3 tabbable filled'>" +
-						"<nav class='pcs-nav mb-3'>some nav</nav>" +
+						"<div class='axu-mb-3 tabbable filled'>" +
+						"<nav class='pcs-nav axu-mb-3'>some nav</nav>" +
 						"<section class='pcs-body-section'>" +
-						"<div class='tab-content px-3'>" +
+						"<div class='tab-content axu-px-3'>" +
 						"<div class='tab-pane active'>" +
 						"some content" +
 						"</div></div></section></div>" +
