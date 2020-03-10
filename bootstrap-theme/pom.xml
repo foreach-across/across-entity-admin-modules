@@ -25,11 +25,10 @@
     </parent>
 
     <artifactId>ax-bootstrap-theme</artifactId>
-    <version>${revision}</version>
-    <packaging>jar</packaging>
 
     <properties>
-        <across.platform.version>5.0.0-SNAPSHOT</across.platform.version>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <licenses>
@@ -38,40 +37,6 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
-    <developers>
-        <developer>
-            <name>Foreach</name>
-            <organization>Foreach</organization>
-            <organizationUrl>https://www.foreach.be</organizationUrl>
-        </developer>
-    </developers>
-
-    <repositories>
-        <repository>
-            <id>across</id>
-            <name>Across Repository</name>
-            <url>https://repository.foreach.be/nexus/repository/public/</url>
-        </repository>
-    </repositories>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.foreach.across</groupId>
-                <artifactId>across-module-parent</artifactId>
-                <version>${across.platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -89,4 +54,30 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- This defines how a specific module will be flattened -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
