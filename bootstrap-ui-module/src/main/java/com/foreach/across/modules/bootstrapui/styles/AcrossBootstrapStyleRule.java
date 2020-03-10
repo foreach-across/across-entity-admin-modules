@@ -17,13 +17,24 @@
 package com.foreach.across.modules.bootstrapui.styles;
 
 /**
- * Prefixes the bootstrap utility classes with axu
- *
  * @author Stijn Vanhoof
  */
-public class AcrossStyleRule
+
+import com.foreach.across.modules.bootstrapui.styles.utilities.*;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class AcrossBootstrapStyleRule implements BootstrapStyleRule
 {
-	public static BootstrapStyleRule utility(BootstrapStyleRule bootstrapStyleRule) {
-		return bootstrapStyleRule.prefix( "axu" );
+	private final BootstrapStyleRule bootstrapStyleRule;
+
+	public static BootstrapStyleRule of( String... css ) {
+		return new AcrossBootstrapStyleRule( BootstrapStyleRule.of( css ) );
+	}
+
+	@Override
+	public String[] toCssClasses() {
+		return bootstrapStyleRule.prefix( "axu-" ).toCssClasses();
 	}
 }
