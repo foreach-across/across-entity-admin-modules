@@ -29,8 +29,7 @@ public class AdminWebClassicLayoutTemplate extends AdminWebLayoutTemplate {
                 WebResourceRule.add(css("@static:/adminweb-themes/css/adminweb-classic-theme.css"))
                         .withKey("adminweb-theme")
                         .order(Ordered.LOWEST_PRECEDENCE)
-                        .toBucket(WebResource.CSS),
-                WebResourceRule.remove().withKey(BootstrapUiWebResources.NAME + "ui-ax-utils")
+                        .toBucket(WebResource.CSS)
         );
     }
 }

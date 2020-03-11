@@ -21,9 +21,11 @@ $btn-outline-secondary-border-color: $gray-350 !default;
 $btn-outline-secondary-bg-color-hover: darken($btn-outline-secondary-bg-color, 10%) !default;
 $btn-outline-secondary-border-color-hover: darken($btn-outline-secondary-border-color, 12%) !default;
 
+// Ordering
+$order-end: 1000000 !default;
+
 // Alerts
 $across-alert-bg: white !default;
-
 
 // Developer tools
 $developer-tools-heading-color: $white;
