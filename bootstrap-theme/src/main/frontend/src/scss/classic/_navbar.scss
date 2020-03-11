@@ -9,11 +9,3 @@
     color: $white;
   }
 }
-
-.pcs-nav .nav.nav-tabs {
-  // ensure that items are placed at the end of the nav
-  .nav-item.axu-float-right {
-    order: $order-end;
-    margin-left: auto;
-  }
-}
