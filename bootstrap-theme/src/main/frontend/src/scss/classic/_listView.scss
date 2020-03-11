@@ -1,5 +1,42 @@
+@mixin ax-table-row-state-variant($stateName, $color, $background, $background-hover) {
+  // Exact selectors below required to override `.table-striped` and prevent
+  // inheritance to nested tables.
+  .table-#{$stateName} {
+    &,
+    > th,
+    > td {
+      color: $color;
+      background-color: $background;
+    }
+
+    &,
+    tr {
+      border-left: 3px solid $color;
+    }
+  }
+
+  // Hover states for `.table-hover`
+  // Note: this is not available for cells or rows within `thead` or `tfoot`.
+  .table-hover {
+    .table-#{$stateName}:hover {
+      background-color: $background-hover;
+
+      > td,
+      > th {
+        background-color: $background-hover;
+      }
+    }
+  }
+}
+
+@include ax-table-row-state-variant("info", $info, $light-blue, $light-blue-hover);
+@include ax-table-row-state-variant("warning", $warning, $light-orange, $light-orange-hover);
+@include ax-table-row-state-variant("danger", $danger, $light-red, $light-red-hover);
+@include ax-table-row-state-variant("success", $success, $light-green, $light-green-hover);
+
 // Sortable table
 table.table {
+
   td.result-number, th.result-number {
     text-align: center;
     width: 40px;
@@ -27,10 +64,11 @@ table.table {
     text-align: center;
   }
 
-  .table-danger, .table-danger > th, .table-danger > td {
-    color: $red;
-    background-color: $light-red;
-  }
+  //
+  //.table-danger, .table-danger > th, .table-danger > td {
+  //  color: $red;
+  //  background-color: $light-red;
+  //}
 
   // this does not work for some reason
   //.table-hover .table-danger:hover {
@@ -42,9 +80,21 @@ table.table {
   //  background-color: $light-red-hover;
   //}
 
-  tr.table-danger {
-    border-left: 3px solid $red;
-  }
+
+  //tr {
+  //  &.table-danger {
+  //    border-left: 3px solid $red;
+  //  }
+  //  &.table-info {
+  //    border-left: 3px solid $blue;
+  //  }
+  //  &.table-warning {
+  //    border-left: 3px solid $orange;
+  //  }
+  //  &.table-success {
+  //    border-left: 3px solid $green;
+  //  }
+  //}
 
   tr.odd {
     background-color: rgba(0, 0, 0, .03);
