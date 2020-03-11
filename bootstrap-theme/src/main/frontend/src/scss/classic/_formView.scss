@@ -5,12 +5,12 @@
 
 // Tab content
 .tabbable.filled {
-  background: #fff;
+  background: $white;
 
   // top navbar
   nav > .nav-tabs {
-    background: #f4f4f4;
-    border-color: #eaeaea;
+    background: $gray-50;
+    border-color: $gray-200;
 
     li a {
       border: none;
@@ -20,5 +20,5 @@
 }
 
 .nav > li > a:hover, .nav > li > a:focus {
-  background-color: #eee;
+  background-color: $gray-100;
 }

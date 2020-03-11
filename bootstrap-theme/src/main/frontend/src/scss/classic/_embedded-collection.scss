@@ -1,40 +1,49 @@
 .embedded-collection-control-list {
   .embedded-collection-items {
-    .embedded-collection-item > div {
-      vertical-align: top;
-      border-top: 1px dotted #eaeaea;
-      padding-top: 0.6rem;
-    }
 
     .embedded-collection-item {
-      border-bottom: 1px dotted #eaeaea;
+      border-bottom: 1px dotted $gray-200;
       padding-top: 0;
+
+      > div {
+        vertical-align: top;
+        border-top: 1px dotted $gray-200;
+        padding-top: 0.5rem;
+      }
+
+      &.embedded-collection-item-style-compact {
+        border-bottom: 0;
+
+        > div{
+          border-top: none;
+
+          &:first-child {
+            padding-top: 0;
+          }
+        }
+      }
 
       &.axu-border-top {
         border-top: none;
       }
     }
   }
-
-  .embedded-collection-actions {
-    .btn-outline-secondary {
-
-    }
-  }
 }
 
+.embedded-collection-item {
 
+}
 
 
 .embedded-collection-readonly {
 
   .embedded-collection-items {
-    border: 1px solid #eaeaea;
+    border: 1px solid $gray-200;
     padding-top: 0;
 
     .embedded-collection-item > div {
       border: none;
-      border-top: 1px dotted #eaeaea;
+      border-top: 1px dotted $gray-200;
       padding: 0.75rem 0.75rem 0 0.75rem;
     }
 

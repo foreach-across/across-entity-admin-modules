@@ -59,30 +59,30 @@ table.table {
   }
 
   th.sortable:after {
-    color: #c4c4c4;
+    color: $gray-400;
     content: ' ↕';
     font-size: 1em
   }
 
   th.sortable:hover {
     opacity: 0.95;
-    background-color: #fff;
+    background-color: $white;
     text-decoration: none;
   }
 
   th.sortable:hover:after {
-    color: #222223;
+    color: $gray-900;
     text-decoration: none;
   }
 
   th.sortable.desc:after {
     content: ' ↑';
-    color: #222223
+    color: $gray-900
   }
 
   th.sortable.asc:after {
     content: ' ↓';
-    color: #222223
+    color: $gray-900
   }
 
   thead th {

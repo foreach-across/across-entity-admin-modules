@@ -16,21 +16,21 @@ import static com.foreach.across.modules.web.resource.WebResource.css;
  * @author Arne Vandamme
  * @since 0.0.1
  */
-public class AdminWebClassicLayoutTemplate extends AdminWebLayoutTemplate
-{
-	@Override
-	protected void registerWebResources( WebResourceRegistry registry ) {
-		super.registerWebResources( registry );
+public class AdminWebClassicLayoutTemplate extends AdminWebLayoutTemplate {
+    @Override
+    protected void registerWebResources(WebResourceRegistry registry) {
+        super.registerWebResources(registry);
 
-		registry.apply(
-				WebResourceRule.add( css( "@static:/adminweb-themes/css/adminweb-classic-bootstrap.css" ) )
-				               .withKey( BootstrapUiWebResources.NAME )
-				               .replaceIfPresent( true )
-				               .toBucket( WebResource.CSS ),
-				WebResourceRule.add( css( "@static:/adminweb-themes/css/adminweb-classic-theme.css" ) )
-				               .withKey( "adminweb-theme" )
-				               .order( Ordered.LOWEST_PRECEDENCE )
-				               .toBucket( WebResource.CSS )
-		);
-	}
+        registry.apply(
+                WebResourceRule.add(css("@static:/adminweb-themes/css/adminweb-classic-bootstrap.css"))
+                        .withKey(BootstrapUiWebResources.NAME)
+                        .replaceIfPresent(true)
+                        .toBucket(WebResource.CSS),
+                WebResourceRule.add(css("@static:/adminweb-themes/css/adminweb-classic-theme.css"))
+                        .withKey("adminweb-theme")
+                        .order(Ordered.LOWEST_PRECEDENCE)
+                        .toBucket(WebResource.CSS),
+                WebResourceRule.remove().withKey(BootstrapUiWebResources.NAME + "ui-ax-utils")
+        );
+    }
 }
