@@ -19,7 +19,6 @@ package com.foreach.across.modules.entity.views.bootstrapui.elements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -383,12 +382,12 @@ public class ViewElementFieldset extends ContainerViewElement
 		return fieldset -> {
 			NodeViewElement wrapper = new NodeViewElement( "div" );
 			// todo what to do with Style objects? In current case this is also applied for "default"
-			wrapper.addCssClass( "element-fieldset", cssClassName, style.forPrefix( "border" ) )
+			wrapper.addCssClass( "element-fieldset", cssClassName, style.forPrefix( "axu-border" ) )
 			       .set( css.card );
 
 			if ( fieldset.getTitle().hasChildren() ) {
 				NodeViewElement panelHeading = new NodeViewElement( "div" );
-				panelHeading.addCssClass( "element-fieldset-title", style.forPrefix( "bg" ) ).set( css.card.header );
+				panelHeading.addCssClass( "element-fieldset-title", style.forPrefix( "axu-bg" ) ).set( css.card.header );
 				panelHeading.addChild( fieldset.getTitle() );
 				wrapper.addChild( panelHeading );
 			}
@@ -409,7 +408,7 @@ public class ViewElementFieldset extends ContainerViewElement
 			panelBody.addChild( b );
 
 			NodeViewElement panelFooter = new NodeViewElement( "div" );
-			panelFooter.addCssClass( "element-fieldset-footer", style.forPrefix( "bg" ) ).set( css.card.footer );
+			panelFooter.addCssClass( "element-fieldset-footer", style.forPrefix( "axu-bg" ) ).set( css.card.footer );
 			panelFooter.addChild( fieldset.getFooter() );
 
 			wrapper.addChild( panelBody );

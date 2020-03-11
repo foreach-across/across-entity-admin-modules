@@ -22,7 +22,7 @@
         <div class="card-header">[[${entities.size()}]] entities</div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover table-sm">
+                <table class="table table-hover">
                     <thead>
                     <tr>
                         <th class="result-number">#</th>
@@ -86,7 +86,7 @@
                 <h4>Message code lookup
                     <small>(<a th:href="${referenceDocumentationMessageCodes}" target="_blank">view documentation</a>)</small>
                 </h4>
-                <table class="table table-bordered table-sm">
+                <table class="table table-bordered">
                     <tr th:each="messageCode : ${messageCodePrefixes}">
                         <td class="axu-align-middle">
                             <small>[[${messageCode}]]</small>
@@ -98,7 +98,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <h4>Registered properties</h4>
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <thead>
                     <tr>
                         <th>Property name</th>
@@ -135,7 +135,7 @@
                 <h4>Attributes
                     <small>(<a th:href="${referenceDocumentationConfigurationAttributes}" target="_blank">view documentation</a>)</small>
                 </h4>
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <tbody>
                     <tr th:each="attributeName : ${entity.attributeNames()}">
                         <td class="axu-align-middle">
@@ -153,7 +153,7 @@
 <div th:fragment="entityAssociations(entity)" th:with="associations=${entity.associations}">
     <h4>[[${entity.associations.size()}]] outgoing associations (source = [[${entity.name}]])</h4>
     <div class="table-responsive" th:unless="${entity.associations.empty}">
-        <table class="table table-hover table-sm">
+        <table class="table table-hover">
             <thead>
             <tr>
                 <th>Target entity</th>
@@ -191,7 +191,7 @@
     <th:block th:unless="${incomingAssociations.empty}">
         <h4>[[${incomingAssociations.size()}]] incoming associations (target = [[${entity.name}]])</h4>
         <div class="table-responsive" th:with="incoming=${incomingAssociations}">
-            <table class="table table-hover table-sm">
+            <table class="table table-hover">
                 <thead>
                 <tr>
                     <th>Source entity</th>
@@ -277,7 +277,7 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <thead>
                     <tr>
                         <th class="axu-text-center">Association visible</th>
@@ -298,7 +298,7 @@
                 <h4>Attributes
                     <small>(<a th:href="${referenceDocumentationConfigurationAttributes}" target="_blank">view documentation</a>)</small>
                 </h4>
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <tbody>
                     <tr th:each="attributeName : ${association.attributeNames()}">
                         <td class="axu-align-middle">
@@ -310,7 +310,7 @@
                 <h4>View factories
                     <small>(<a th:href="${referenceDocumentationEntityViews}" target="_blank">view documentation</a>)</small>
                 </h4>
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <thead>
                     <tr>
                         <th>View name</th>
@@ -340,7 +340,7 @@
     <h4>View factories
         <small>(<a th:href="${referenceDocumentationEntityViews}" target="_blank">view documentation</a>)</small>
     </h4>
-    <table class="table table-striped table-hover table-sm">
+    <table class="table table-striped table-hover">
         <thead>
         <tr>
             <th>View name</th>
@@ -376,7 +376,7 @@
             <small>(<a th:href="${referenceDocumentationViewProcessors}" target="_blank">view documentation</a>)</small>
         </h4>
         <p th:unless="${processors}">Not a DispatchingEntityViewFactory.</p>
-        <table th:if="${processors}" class="table table-striped table-hover table-sm">
+        <table th:if="${processors}" class="table table-striped table-hover">
             <thead>
             <tr>
                 <th class="result-number">#</th>
@@ -402,7 +402,7 @@
                 <small>(<a th:href="${referenceDocumentationMessageCodes}" target="_blank">view documentation</a>)</small>
             </h4>
             <div class="table-responsive">
-                <table class="table table-bordered table-sm">
+                <table class="table table-bordered">
                     <tr th:each="messageCode : ${messageCodePrefixes}">
                         <td class="axu-align-middle">
                             <small>[[${messageCode}]]</small>
@@ -413,7 +413,7 @@
             <h4>Attributes
                 <small>(<a th:href="${referenceDocumentationConfigurationAttributes}" target="_blank">view documentation</a>)</small>
             </h4>
-            <table class="table table-striped table-hover table-sm">
+            <table class="table table-striped table-hover">
                 <tbody>
                 <tr th:each="attributeName : ${viewFactory.attributeNames()}">
                     <td class="axu-align-middle">
@@ -426,7 +426,7 @@
         <div class="col-md-6">
             <div class="form-group" th:if="${properties}">
                 <h4>Custom property registry</h4>
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <thead>
                     <tr>
                         <th>Property name</th>
@@ -487,7 +487,7 @@
                     <small>(<a th:href="${referenceDocumentationMessageCodes}" target="_blank">view documentation</a>)</small>
                 </h4>
                 <div class="table-responsive">
-                <table class="table table-bordered table-sm">
+                <table class="table table-bordered">
                     <tr th:each="messageCode : ${messageCodePrefixes}">
                         <td class="axu-align-middle"><small>[[${messageCode}]]</small></td>
                     </tr>
@@ -497,7 +497,7 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <thead>
                     <tr>
                         <th class="axu-text-center">Readable</th>
@@ -516,7 +516,7 @@
                 <h4>Attributes
                     <small>(<a th:href="${referenceDocumentationConfigurationAttributes}" target="_blank">view documentation</a>)</small>
                 </h4>
-                <table class="table table-striped table-hover table-sm">
+                <table class="table table-striped table-hover">
                     <tbody>
                     <tr th:each="attributeName : ${property.attributeNames()}">
                         <td class="axu-align-middle">

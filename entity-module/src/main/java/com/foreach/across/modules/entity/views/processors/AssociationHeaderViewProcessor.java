@@ -104,7 +104,7 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 					entityAdminMenu.getItems().size() == 1 ) {
 				return null;
 			}
-			return BootstrapViewElements.bootstrap.builders.nav( AcrossStyleRule.utility( css.display.block ) )
+			return BootstrapViewElements.bootstrap.builders.nav( AcrossStyleRule.utility( css.flex.row ) )
 			                                               .menu( entityAdminMenu )
 			                                               .pills()
 			                                               .replaceGroupBySelectedItem();
