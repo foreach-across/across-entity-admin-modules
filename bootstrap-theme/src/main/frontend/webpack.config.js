@@ -31,7 +31,7 @@ const cssEntries = [
 ];
 
 // const outputDir = "../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1";
-const outputDir = "../resources/views/static/admin-web-themes";
+const outputDir = "../resources/views/static/adminweb-themes";
 
 function resolveFileIdentifier( type, file ) {
     switch ( type ) {
@@ -103,12 +103,13 @@ module.exports = {
         new MiniCssExtractPlugin( {
             "filename": "[name].css"
         } ),
+        // copies ax-bootstrap-utilities so they can be used separately as a webjar
         new CopyWebpackPlugin([
             {
-                from: 'css/**',
-                to: '../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1',
-            },
-        ]),
+                from: '../resources/views/static/adminweb-themes/css/ax-bootstrap-utilities.css',
+                to: '../../../../../../../ax-bootstrap-4-utilities/src/main/resources/META-INF/resources/webjars/ax-bootstrap-4-utilities/0.0.1/ax-bootstrap-utilities.css'
+            }
+        ])
     ],
     "watchOptions":
             {

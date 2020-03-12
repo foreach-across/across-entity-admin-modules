@@ -6,8 +6,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/frontend.docker
-    command: sh -c "cd bootstrap-theme/src/main/frontend && yarn && yarn run build && ls -la ../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1"
-    working_dir: /build
+    command: sh -c "yarn && yarn run build"
+    working_dir: /build/bootstrap-theme/src/main/frontend
     volumes:
       - ./:/build
 #       scope node_modules to the container
