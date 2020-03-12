@@ -1,58 +1,71 @@
 .embedded-collection-control-list {
-  .embedded-collection-items {
+  .embedded-collection-actions{
+    margin-top: 0.5rem;
+  }
+}
 
-    .embedded-collection-item {
-      border-bottom: 1px dotted $gray-200;
+.embedded-collection-item {
+  border-top: 1px dotted $gray-200;
+  padding-top: 0.5rem;
+
+  &.embedded-collection-item-style-compact {
+
+    &.axu-border-top {
+      border-top: 0;
+    }
+
+    &.axu-pt-2:first-child {
+      padding-top: 0;
+    }
+
+    .embedded-collection-item-actions {
+      padding-top: 0.5rem;
+    }
+
+    .embedded-collection-item-data {
+      border-top: none;
       padding-top: 0;
 
-      > div {
-        vertical-align: top;
-        border-top: 1px dotted $gray-200;
-        padding-top: 0.5rem;
-      }
-
-      &.embedded-collection-item-style-compact {
-        border-bottom: 0;
-
-        > div{
-          border-top: none;
-
-          &:first-child {
-            padding-top: 0;
-          }
-        }
-      }
-
-      &.axu-border-top {
-        border-top: none;
+      .form-group {
+        margin-bottom: 0;
       }
     }
   }
 }
 
-.embedded-collection-item {
-
-}
-
-
 .embedded-collection-readonly {
+  border: 1px solid $gray-200;
+  padding: 0 0.75rem 0;
 
-  .embedded-collection-items {
+  .embedded-collection-control-list {
     border: 1px solid $gray-200;
-    padding-top: 0;
+    padding: 0 0.75rem 0;
+  }
 
-    .embedded-collection-item > div {
-      border: none;
-      border-top: 1px dotted $gray-200;
-      padding: 0.75rem 0.75rem 0 0.75rem;
+  .embedded-collection-item.embedded-collection-item {
+    padding-top: 0;
+    border-bottom: 1px dotted $gray-200;
+
+    &:last-child {
+      border-bottom: none;
     }
 
-    .embedded-collection-item {
-      border: none;
-      padding-top: 0;
+    .embedded-collection-item-data {
+      width: 100%;
 
-      .embedded-collection-item-data > .form-group {
-        margin-bottom: 0.75rem;
+      &.axu-mr-2 {
+        margin-right: 0;
+      }
+    }
+
+    .form-group {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+
+      .form-control-static {
+        margin-bottom: 0;
       }
     }
   }

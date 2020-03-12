@@ -34,6 +34,11 @@
 @include ax-table-row-state-variant("danger", $danger, $light-red, $light-red-hover);
 @include ax-table-row-state-variant("success", $success, $light-green, $light-green-hover);
 
+.em-sortableTable-panel .table-responsive {
+  // prevent vertical scrollbar in summary view
+  overflow-y: hidden;
+}
+
 // Sortable table
 table.table {
 
@@ -63,38 +68,6 @@ table.table {
     width: 1.25em;
     text-align: center;
   }
-
-  //
-  //.table-danger, .table-danger > th, .table-danger > td {
-  //  color: $red;
-  //  background-color: $light-red;
-  //}
-
-  // this does not work for some reason
-  //.table-hover .table-danger:hover {
-  //  background-color: $light-red-hover;
-  //}
-  //
-  //.table-hover .table-danger:hover > td,
-  //.table-hover .table-danger:hover > th {
-  //  background-color: $light-red-hover;
-  //}
-
-
-  //tr {
-  //  &.table-danger {
-  //    border-left: 3px solid $red;
-  //  }
-  //  &.table-info {
-  //    border-left: 3px solid $blue;
-  //  }
-  //  &.table-warning {
-  //    border-left: 3px solid $orange;
-  //  }
-  //  &.table-success {
-  //    border-left: 3px solid $green;
-  //  }
-  //}
 
   tr.odd {
     background-color: rgba(0, 0, 0, .03);
@@ -149,12 +122,6 @@ table.table {
   .btn {
     padding: 0 0.5rem;
   }
-
-  //
-  //.no-btn, .btn {
-  //  display: inline-block;
-  //  width: 24px;
-  //}
 
   .form-control {
     width: 34px;
