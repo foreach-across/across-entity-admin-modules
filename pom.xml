@@ -59,12 +59,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <revision>0.0.1-SNAPSHOT</revision>
+        <revision>1.0.0-SNAPSHOT</revision>
     </properties>
 
     <modules>
         <module>bootstrap-theme</module>
         <module>bootstrap-demo-app</module>
+        <module>ax-bootstrap-4-utilities</module>
     </modules>
 
     <build>

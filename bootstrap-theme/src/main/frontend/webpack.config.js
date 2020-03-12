@@ -16,6 +16,7 @@
 
 const webpack = require( "webpack" );
 const path = require( "path" );
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const workingDirectory = process.env.INIT_CWD;
 
@@ -29,7 +30,7 @@ const cssEntries = [
     "adminweb-sidebar-fixed-theme"
 ];
 
-const outputDir = "../resources/META-INF/webjars/ax-bootstrap-theme/0.0.1";
+const outputDir = "../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1";
 
 function resolveFileIdentifier( type, file ) {
     switch ( type ) {
@@ -100,7 +101,13 @@ module.exports = {
         new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin( {
             "filename": "[name].css"
-        } )
+        } ),
+        // new CopyWebpackPlugin([
+        //     {
+        //         from: '**/ax-bootstrap-utilities.css',
+        //         to: 'webjars/ax-bootstrap-utilities.css',
+        //     },
+        // ]),
     ],
     "watchOptions":
             {
