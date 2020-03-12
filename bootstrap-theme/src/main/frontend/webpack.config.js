@@ -30,7 +30,8 @@ const cssEntries = [
     "adminweb-sidebar-fixed-theme"
 ];
 
-const outputDir = "../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1";
+// const outputDir = "../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1";
+const outputDir = "../resources/views/static/admin-web-themes";
 
 function resolveFileIdentifier( type, file ) {
     switch ( type ) {
@@ -102,12 +103,12 @@ module.exports = {
         new MiniCssExtractPlugin( {
             "filename": "[name].css"
         } ),
-        // new CopyWebpackPlugin([
-        //     {
-        //         from: '**/ax-bootstrap-utilities.css',
-        //         to: 'webjars/ax-bootstrap-utilities.css',
-        //     },
-        // ]),
+        new CopyWebpackPlugin([
+            {
+                from: 'css/**',
+                to: '../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1',
+            },
+        ]),
     ],
     "watchOptions":
             {
