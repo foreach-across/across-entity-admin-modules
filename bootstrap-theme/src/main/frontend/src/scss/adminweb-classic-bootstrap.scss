@@ -17,6 +17,12 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   }
 }
 
+// Tables
+
+.table {
+  margin-bottom: $spacer * 1.25;
+}
+
 // Table within card
 .card-body .table:first-child tr th {
   border-top: 0;
@@ -27,7 +33,6 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   margin-bottom: 0;
 }
 
-
 // Dropdowns
 .dropdown-menu {
   padding-top: 0.25rem;
@@ -35,6 +40,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 .dropdown-item:hover, .dropdown-item:focus {
-  background-color: $blue;
+  background-color: $dark;
+  color: $white;
+}
+
+.dropdown-menu.show {
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  -moz-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
 }
 

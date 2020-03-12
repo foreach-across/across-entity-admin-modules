@@ -1,5 +1,47 @@
+@mixin ax-table-row-state-variant($stateName, $color, $background, $background-hover) {
+  // Exact selectors below required to override `.table-striped` and prevent
+  // inheritance to nested tables.
+  .table-#{$stateName} {
+    &,
+    > th,
+    > td {
+      color: $color;
+      background-color: $background;
+    }
+
+    &,
+    tr {
+      border-left: 3px solid $color;
+    }
+  }
+
+  // Hover states for `.table-hover`
+  // Note: this is not available for cells or rows within `thead` or `tfoot`.
+  .table-hover {
+    .table-#{$stateName}:hover {
+      background-color: $background-hover;
+
+      > td,
+      > th {
+        background-color: $background-hover;
+      }
+    }
+  }
+}
+
+@include ax-table-row-state-variant("info", $info, $light-blue, $light-blue-hover);
+@include ax-table-row-state-variant("warning", $warning, $light-orange, $light-orange-hover);
+@include ax-table-row-state-variant("danger", $danger, $light-red, $light-red-hover);
+@include ax-table-row-state-variant("success", $success, $light-green, $light-green-hover);
+
+.em-sortableTable-panel .table-responsive {
+  // prevent vertical scrollbar in summary view
+  overflow-y: hidden;
+}
+
 // Sortable table
 table.table {
+
   td.result-number, th.result-number {
     text-align: center;
     width: 40px;
@@ -27,25 +69,6 @@ table.table {
     text-align: center;
   }
 
-  .table-danger, .table-danger > th, .table-danger > td {
-    color: $red;
-    background-color: $light-red;
-  }
-
-  // this does not work for some reason
-  //.table-hover .table-danger:hover {
-  //  background-color: $light-red-hover;
-  //}
-  //
-  //.table-hover .table-danger:hover > td,
-  //.table-hover .table-danger:hover > th {
-  //  background-color: $light-red-hover;
-  //}
-
-  tr.table-danger {
-    border-left: 3px solid $red;
-  }
-
   tr.odd {
     background-color: rgba(0, 0, 0, .03);
 
@@ -59,30 +82,30 @@ table.table {
   }
 
   th.sortable:after {
-    color: #c4c4c4;
+    color: $gray-400;
     content: ' ↕';
     font-size: 1em
   }
 
   th.sortable:hover {
     opacity: 0.95;
-    background-color: #fff;
+    background-color: $white;
     text-decoration: none;
   }
 
   th.sortable:hover:after {
-    color: #222223;
+    color: $gray-900;
     text-decoration: none;
   }
 
   th.sortable.desc:after {
     content: ' ↑';
-    color: #222223
+    color: $gray-900
   }
 
   th.sortable.asc:after {
     content: ' ↓';
-    color: #222223
+    color: $gray-900
   }
 
   thead th {
@@ -99,12 +122,6 @@ table.table {
   .btn {
     padding: 0 0.5rem;
   }
-
-  //
-  //.no-btn, .btn {
-  //  display: inline-block;
-  //  width: 24px;
-  //}
 
   .form-control {
     width: 34px;

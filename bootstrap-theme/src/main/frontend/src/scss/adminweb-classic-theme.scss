@@ -3,10 +3,11 @@
  */
 @import "classic/variables";
 
-* {
-  // this reduces the boldness of the font
-  -webkit-font-smoothing: antialiased;
-}
+//
+//* {
+//  // this reduces the boldness of the font
+//  -webkit-font-smoothing: antialiased;
+//}
 
 body {
   padding-top: 4.5rem;
@@ -45,6 +46,7 @@ h2, h3 {
   background-color: $developer-tools-heading-background-color;
   border-color: $developer-tools-heading-border-color;
 }
+
 
 // Login form
 .form-signin .page-header {
@@ -100,3 +102,4 @@ h2, h3 {
 @import "classic/formView";
 @import "classic/embedded-collection";
 @import "classic/navbar";
+@import "classic/text";

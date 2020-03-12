@@ -5,12 +5,12 @@
 
 // Tab content
 .tabbable.filled {
-  background: #fff;
+  background: $white;
 
   // top navbar
   nav > .nav-tabs {
-    background: #f4f4f4;
-    border-color: #eaeaea;
+    background: $gray-50;
+    border-color: $gray-200;
 
     li a {
       border: none;
@@ -19,6 +19,37 @@
   }
 }
 
+// navigation
+.pcs .nav {
+  // ensure that items are placed at the end of the nav (and breaks through ordering for items that should be put at the end)
+  .nav-item.axu-float-right {
+    order: $order-end;
+    margin-left: auto;
+  }
+
+  .dropdown-menu {
+    // expand dropdown to left if not enough room
+    right: 0;
+    left: auto;
+  }
+}
+
 .nav > li > a:hover, .nav > li > a:focus {
-  background-color: #eee;
+  background-color: $gray-100;
+}
+
+// association header
+.tab-pane-header .nav-pills {
+  font-size: $font-size-base * 0.9;
+  border-bottom: 1px dotted $gray-350;
+
+  .nav-item > a {
+    padding: 0.3rem 0.9rem;
+    &.active {
+      border-bottom: 4px solid $gray-350;
+      background-color: transparent;
+      color: $dark;
+      margin-bottom: -3px;
+    }
+  }
 }

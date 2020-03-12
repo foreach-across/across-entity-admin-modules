@@ -1,11 +1,11 @@
 .btn-outline-secondary {
-  color: $blue;
-  background-color: #F9F9F9;
-  border-color: #DDD;
+  color: $btn-outline-secondary-color;
+  background-color: $btn-outline-secondary-bg-color;
+  border-color: $btn-outline-secondary-border-color;
 
-  &:hover{
-    color: $blue;
-    background-color: #e0e0e0;
-    border-color: #bebebe;
+  &:hover {
+    color: $btn-outline-secondary-color;
+    background-color: $btn-outline-secondary-bg-color-hover;
+    border-color: $btn-outline-secondary-border-color-hover;
   }
 }
