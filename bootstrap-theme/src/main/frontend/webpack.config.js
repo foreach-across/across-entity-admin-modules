@@ -14,9 +14,11 @@
 * limitations under the License.
 */
 
-const webpack = require( "webpack" );
-const path = require( "path" );
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require("webpack");
+const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 const workingDirectory = process.env.INIT_CWD;
 
@@ -33,36 +35,33 @@ const cssEntries = [
 // const outputDir = "../resources/META-INF/resources/webjars/ax-bootstrap-theme/0.0.1";
 const outputDir = "../resources/views/static/adminweb-themes";
 
-function resolveFileIdentifier( type, file ) {
-    switch ( type ) {
+function resolveFileIdentifier(type, file) {
+    switch (type) {
         case "js":
-            return path.join( "js", file );
+            return path.join("js", file);
         case "scss":
-            return path.join( "css", file );
+            return path.join("css", file);
         default:
     }
     return file;
 }
 
-function resolveFiles( obj, type, files ) {
-    files.forEach( file => obj[resolveFileIdentifier( type, file )] = path.join( path.join( workingDirectory, "src/" + type ), file ) );
+function resolveFiles(obj, type, files) {
+    files.forEach(file  => obj[resolveFileIdentifier(type, file)] = path.join(path.join(workingDirectory, "src/" + type), file));
 }
 
 function resolveEntries() {
     const entries = {};
     // resolveFiles( entries, "js", jsEntries );
-    resolveFiles( entries, "scss", cssEntries );
+    resolveFiles(entries, "scss", cssEntries);
     return entries;
 }
-
-const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
-const FixStyleOnlyEntriesPlugin = require( "webpack-fix-style-only-entries" );
 
 module.exports = {
     "cache": false,
     "entry": resolveEntries(),
     "output": {
-        "path": path.join( workingDirectory, outputDir ),
+        "path": path.join(workingDirectory, outputDir),
         "filename": "[name].js"
     },
     "resolve": {
@@ -84,7 +83,7 @@ module.exports = {
             },
             {
                 "test": /\.scss$/,
-                "include": path.join( workingDirectory, "src/scss" ),
+                "include": path.join(workingDirectory, "src/scss"),
                 "use": [
                     MiniCssExtractPlugin.loader,
                     "css-loader", // translates CSS into CommonJS
@@ -100,21 +99,27 @@ module.exports = {
     "devtool": "source-map",
     "plugins": [
         new FixStyleOnlyEntriesPlugin(),
-        new MiniCssExtractPlugin( {
+        new MiniCssExtractPlugin({
             "filename": "[name].css"
-        } ),
+        }),
         // copies ax-bootstrap-utilities so they can be used separately as a webjar
-        new CopyWebpackPlugin([
-            {
-                from: '../resources/views/static/adminweb-themes/css/ax-bootstrap-utilities.css',
-                to: '../../../../../../../ax-bootstrap-4-utilities/src/main/resources/META-INF/resources/webjars/ax-bootstrap-4-utilities/0.0.1/ax-bootstrap-utilities.css'
-            }
-        ])
+        new FileManagerPlugin({
+            onEnd: [
+                {
+                    copy: [
+                        {
+                            source: '../resources/views/static/adminweb-themes/css/ax-*',
+                            destination: '../../../../ax-bootstrap-4-utilities/src/main/resources/META-INF/resources/webjars/ax-bootstrap-4-utilities/0.0.1'
+                        }
+                    ]
+                }
+            ]
+        })
     ],
     "watchOptions":
-            {
-                "ignored": "/node_modules/",
-                "aggregateTimeout": 300,
-                "poll": 500
-            }
+        {
+            "ignored": "/node_modules/",
+            "aggregateTimeout": 300,
+            "poll": 500
+        }
 };
