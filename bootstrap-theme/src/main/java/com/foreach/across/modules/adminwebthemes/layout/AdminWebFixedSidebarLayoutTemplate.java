@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.resource.WebResource.css;
 
@@ -36,7 +35,8 @@ public class AdminWebFixedSidebarLayoutTemplate extends AdminWebLayoutTemplate
 				WebResourceRule.add( css( "@static:/adminweb-themes/css/adminweb-sidebar-fixed-theme.css" ) )
 				               .withKey( "adminweb-theme" )
 				               .order( Ordered.LOWEST_PRECEDENCE )
-				               .toBucket( WebResource.CSS )
+				               .toBucket( WebResource.CSS ),
+				WebResourceRule.remove().withKey( BootstrapUiWebResources.ACROSS_BOOTSTRAP_UTILITIES )
 		);
 	}
 

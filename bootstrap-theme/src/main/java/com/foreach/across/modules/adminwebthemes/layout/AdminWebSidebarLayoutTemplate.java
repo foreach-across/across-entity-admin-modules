@@ -49,7 +49,8 @@ public class AdminWebSidebarLayoutTemplate extends AdminWebLayoutTemplate
 				WebResourceRule.add( css( "@static:/adminweb-themes/css/adminweb-sidebar-theme.css" ) )
 				               .withKey( "adminweb-theme" )
 				               .order( Ordered.LOWEST_PRECEDENCE )
-				               .toBucket( WebResource.CSS )
+				               .toBucket( WebResource.CSS ),
+				WebResourceRule.remove().withKey( BootstrapUiWebResources.ACROSS_BOOTSTRAP_UTILITIES )
 		);
 	}
 
