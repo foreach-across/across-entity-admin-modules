@@ -109,7 +109,7 @@ module.exports = {
                     copy: [
                         {
                             source: '../resources/views/static/adminweb-themes/css/ax-*',
-                            destination: '../../../../ax-bootstrap-4-utilities/src/main/resources/META-INF/resources/webjars/ax-bootstrap-4-utilities/0.0.1'
+                            destination: '../../../../ax-bootstrap-4-utilities/src/main/resources/META-INF/resources/webjars/ax-bootstrap-4-utilities/0.0.1/css'
                         }
                     ]
                 }
