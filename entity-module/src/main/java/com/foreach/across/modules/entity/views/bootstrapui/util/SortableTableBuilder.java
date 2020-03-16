@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.util;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -689,10 +689,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		return html.builders.div()
 		                    .name( elementName( ELEMENT_NORESULTS ) )
 		                    //.attribute( DATA_ATTR_AJAX_LOAD, false )
-		                    .with( css.card, AcrossStyleRule.utility( css.border.warning ) )
+		                    .with( css.card, AcrossBootstrapStyles.css.border.warning )
 		                    .add(
 				                    html.builders.div()
-				                                 .with( css.card.body, AcrossStyleRule.utility( css.text.warning ))
+				                                 .with( css.card.body, AcrossBootstrapStyles.css.text.warning )
 				                                 .add( html.builders.unescapedText( getResolvedPagingMessages().resultsFound( getPage() ) ) )
 		                    );
 	}
@@ -704,7 +704,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		NodeViewElementBuilder pager = html.builders.div()
 		                                            .name( elementName( ELEMENT_PAGER ) )
 		                                            .css( "pager-form", "form-inline" )
-		                                            .with(AcrossStyleRule.utility(  css.flex.row), AcrossStyleRule.utility( css.justifyContent.center ));
+		                                            .with( AcrossBootstrapStyles.css.flex.row, AcrossBootstrapStyles.css.justifyContent.center );
 
 		if ( currentPage.hasPrevious() ) {
 			pager.add(

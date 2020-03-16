@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -34,7 +34,6 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 
 /**
@@ -61,7 +60,8 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 			                                                                      ContainerViewElementBuilderSupport.class );
 
 			if ( buttonsContainer != null ) {
-				buttonsContainer.add( createDeleteButton( entityViewContext, entityViewRequest.getViewName() ).with( AcrossStyleRule.utility( css.cssFloat.right )) );
+				buttonsContainer.add(
+						createDeleteButton( entityViewContext, entityViewRequest.getViewName() ).with( AcrossBootstrapStyles.css.cssFloat.right ) );
 			}
 		}
 	}

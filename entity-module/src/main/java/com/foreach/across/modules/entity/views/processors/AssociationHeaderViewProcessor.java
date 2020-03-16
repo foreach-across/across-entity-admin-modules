@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -43,7 +43,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
@@ -86,7 +85,7 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
 
 		NodeViewElementBuilder contentHeaderBuilder = html.builders.div().css( "tab-pane-header" )
-		                                                           .with( AcrossStyleRule.utility(css.margin.bottom.s3 ))
+		                                                           .with( AcrossBootstrapStyles.css.margin.bottom.s3 )
 		                                                           .add( associatedContentTitle( entityViewContext ) );
 
 		if ( addEntityMenu ) {
@@ -104,7 +103,7 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 					entityAdminMenu.getItems().size() == 1 ) {
 				return null;
 			}
-			return BootstrapViewElements.bootstrap.builders.nav( AcrossStyleRule.utility( css.flex.row ) )
+			return BootstrapViewElements.bootstrap.builders.nav( AcrossBootstrapStyles.css.flex.row )
 			                                               .menu( entityAdminMenu )
 			                                               .pills()
 			                                               .replaceGroupBySelectedItem();

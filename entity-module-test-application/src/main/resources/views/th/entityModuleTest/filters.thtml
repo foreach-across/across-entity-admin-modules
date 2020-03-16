@@ -16,10 +16,10 @@
 
 <fragments xmlns:th="http://www.w3.org/1999/xhtml">
     <div class="form form-inline" th:fragment="filterForm">
-        <div class="form-group">
-            <label for="partner-name-filter">Filter by name:</label>
+        <div class="form-group axu-mr-3">
+            <label for="partner-name-filter" class="axu-mr-1">Filter by name:</label>
             <input id="partner-name-filter" name="extensions[filter]" th:value="${entityViewCommand.extensions['filter']}" type="text" class="form-control" />
         </div>
-        <input type="submit" class="btn btn-outline-secondary" value="Apply filter" />
+        <input type="submit" class="btn btn-outline-secondary axu-mr-3" value="Apply filter" />
     </div>
 </fragments>

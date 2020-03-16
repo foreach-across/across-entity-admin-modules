@@ -23,14 +23,14 @@
         <tr class="js-multi-value-template d-none">
             <td class="js-multi-value-value">{{value}}</td>
             <td class="row-actions">
-                <a role="button" title="Remove" href="#"><i aria-hidden="true" class="fas fa-times text-danger"></i></a>
+                <a role="button" title="Remove" href="#"><i aria-hidden="true" class="fas fa-times axu-text-danger"></i></a>
                 <input type="hidden" disabled="disabled" th:name="${component.controlName}" value="{{value}}"/>
             </td>
         </tr>
         <tr class="js-multi-value-item" th:each="value : ${component.getAttribute('values')}">
             <td>[[${value}]]</td>
             <td class="row-actions">
-                <a role="button" title="Remove" href="#"><span aria-hidden="true" class="fas fa-times text-danger"></span></a>
+                <a role="button" title="Remove" href="#"><span aria-hidden="true" class="fas fa-times axu-text-danger"></span></a>
                 <input type="hidden" th:name="${component.controlName}" th:value="${value}"/>
             </td>
         </tr>

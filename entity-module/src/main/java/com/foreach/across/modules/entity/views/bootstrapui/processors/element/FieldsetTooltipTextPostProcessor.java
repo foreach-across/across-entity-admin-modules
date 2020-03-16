@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -26,8 +26,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Post-processor that resolves a tooltip text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
@@ -57,7 +55,7 @@ public class FieldsetTooltipTextPostProcessor<T extends ViewElement> extends Abs
 			TooltipViewElement tooltip = new TooltipViewElement();
 			tooltip.setText( text );
 			tooltip.setEscapeHtml( escapeHtml );
-			tooltip.remove( AcrossStyleRule.utility( css.text.muted ));
+			tooltip.remove( AcrossBootstrapStyles.css.text.muted );
 			element.getTitle().addChild( tooltip );
 		}
 	}

@@ -24,7 +24,6 @@ import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
@@ -157,11 +156,11 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 					                    .set( attribute.data( "role", "items" ) );
 
 			                    if ( items.isEmpty() ) {
-				                    table.set( AcrossStyleRule.utility( css.display.none ));
+				                    table.set( css.display.none );
 			                    }
 
 			                    TableViewElement.Row hidden = new TableViewElement.Row();
-			                    hidden.set(AcrossStyleRule.utility(  css.display.none ));
+			                    hidden.set( css.display.none );
 			                    table.addChild( hidden );
 
 			                    items.forEach( item -> {

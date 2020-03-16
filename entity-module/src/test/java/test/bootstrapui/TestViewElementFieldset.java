@@ -137,28 +137,28 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 
 	private Map<String, String> getCssClassesForType( String type ) {
 		Map<String, String> cssClassesForType = new HashMap<>();
-		cssClassesForType.put( "wrapper", "element-fieldset-panel-{} border-{}".replace( "{}", type ) );
-		cssClassesForType.put( "header", "bg-" + type );
-		cssClassesForType.put( "footer", "bg-" + type );
+		cssClassesForType.put( "wrapper", "element-fieldset-panel-{} axu-border-{}".replace( "{}", type ) );
+		cssClassesForType.put( "header", "axu-bg-" + type );
+		cssClassesForType.put( "footer", "axu-bg-" + type );
 		return cssClassesForType;
 	}
 
 	@Test
 	public void customPanelTemplateFormat() {
 		fieldset.setTemplate( ViewElementFieldset.panelTemplate( "x", Style.DANGER ) );
-		renderAndExpect( fieldset, "<div class='element-fieldset x border-danger card'>" +
-				"<div class='element-fieldset-title bg-danger card-header'>title</div>" +
+		renderAndExpect( fieldset, "<div class='element-fieldset x axu-border-danger card'>" +
+				"<div class='element-fieldset-title axu-bg-danger card-header'>title</div>" +
 				"<div class='element-fieldset-content card-body'>" +
 				"<div class='element-fieldset-header'>header</div>" +
 				"<div class='element-fieldset-body'>body</div>" +
 				"</div>" +
-				"<div class='element-fieldset-footer bg-danger card-footer'>footer</div>" +
+				"<div class='element-fieldset-footer axu-bg-danger card-footer'>footer</div>" +
 				"</div>" );
 
 		fieldset.setTemplate( ViewElementFieldset.panelTemplate( "y", Style.PRIMARY ) );
 		fieldset.getFooter().clearChildren();
-		renderAndExpect( fieldset, "<div class='element-fieldset y border-primary card'>" +
-				"<div class='element-fieldset-title bg-primary card-header'>title</div>" +
+		renderAndExpect( fieldset, "<div class='element-fieldset y axu-border-primary card'>" +
+				"<div class='element-fieldset-title axu-bg-primary card-header'>title</div>" +
 				"<div class='element-fieldset-content card-body'>" +
 				"<div class='element-fieldset-header'>header</div>" +
 				"<div class='element-fieldset-body'>body</div>" +
@@ -166,7 +166,7 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 				"</div>" );
 
 		fieldset.getTitle().clearChildren();
-		renderAndExpect( fieldset, "<div class='element-fieldset y border-primary card'>" +
+		renderAndExpect( fieldset, "<div class='element-fieldset y axu-border-primary card'>" +
 				"<div class='element-fieldset-content card-body'>" +
 				"<div class='element-fieldset-header'>header</div>" +
 				"<div class='element-fieldset-body'>body</div>" +

@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.handlers;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -49,7 +49,6 @@ import org.springframework.util.Assert;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 
 @ConditionalOnAdminWeb
@@ -148,7 +147,7 @@ class EntityModuleAdminMenuRegistrar
 			// Generate advanced options
 			builder.group( "/advanced-options",
 			               messageCodeResolver.getMessageWithFallback( "menu.advanced", "Advanced" ) )
-			       .attribute( customizeViewElement( AcrossStyleRule.utility( css.cssFloat.right )) )
+			       .attribute( customizeViewElement( AcrossBootstrapStyles.css.cssFloat.right ) )
 			       .attribute( NavComponentBuilder.ATTR_ICON, entityModuleIcons.formView.advancedSettings() )
 			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
 			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );

@@ -20,7 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
@@ -245,7 +245,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		return html.builders.div()
 		                    .data( ROLE, "item" )
 		                    .data( "item-key", itemKey )
-		                    .with( AcrossStyleRule.utility( css.display.flex), AcrossStyleRule.utility( css.border.top), AcrossStyleRule.utility( css.padding.top.s2 ))
+		                    .with( AcrossBootstrapStyles.css.display.flex, AcrossBootstrapStyles.css.border.top, AcrossBootstrapStyles.css.padding.top.s2 )
 		                    .css( "embedded-collection-item" )
 		                    .add(
 				                    sortable && !readonly ?
@@ -261,7 +261,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 				                                 .name( "itemData" )
 				                                 .data( ROLE, "item-data" )
 				                                 .css( "embedded-collection-item-data" )
-				                                 .with( AcrossStyleRule.utility( css.flex.grow.enabled), AcrossStyleRule.utility( css.margin.right.s2 ))
+				                                 .with( AcrossBootstrapStyles.css.flex.grow.enabled, AcrossBootstrapStyles.css.margin.right.s2 )
 				                                 .add( itemTemplate )
 				                                 .add(
 						                                 !readonly ?
@@ -305,7 +305,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 				                                      .data( "em-button-role", "add-item" )
 				                                      .data( ACTION, "add-item" )
 				                                      .style( Style.DEFAULT )
-				                                      .with( css.button.outline.secondary, AcrossStyleRule.utility(css.size.width100 ))
+				                                      .with( css.button.outline.secondary, AcrossBootstrapStyles.css.size.width100 )
 				                                      .iconLeft()
 				                                      .icon( entityModuleIcons.embeddedCollection.addItem() )
 				                                      .title( addItemMessage )
