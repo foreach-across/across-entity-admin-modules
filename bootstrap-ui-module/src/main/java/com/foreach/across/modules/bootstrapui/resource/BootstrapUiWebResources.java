@@ -37,10 +37,12 @@ public class BootstrapUiWebResources implements WebResourcePackage
 	public static final String NAME = "bootstrap";
 	public static final String POPPER = "popper";
 	public static final String FONT_AWESOME = "font-awesome";
+	public static final String ACROSS_BOOTSTRAP_UTILITIES = "ax-bootstrap-4-utilities";
 
 	private static final String BOOTSTRAP_VERSION = "4.3.1";
 	private static final String POPPER_VERSION = "1.14.3";
 	private static final String FONT_AWESOME_VERSION = "5.10.1";
+	private static final String ACROSS_BOOTSTRAP_UTILITIES_VERSION = "0.0.1";
 
 	private final boolean minified;
 
@@ -73,6 +75,10 @@ public class BootstrapUiWebResources implements WebResourcePackage
 
 				add( WebResource.css( "@static:/" + BootstrapUiModule.NAME + "/css/bootstrapui.css" ) )
 						.withKey( NAME + "ui" )
+						.toBucket( CSS ),
+
+				add( WebResource.css( "@webjars:/ax-bootstrap-4-utilities/" + ACROSS_BOOTSTRAP_UTILITIES_VERSION + "/css/ax-bootstrap-utilities.css" ) )
+						.withKey( ACROSS_BOOTSTRAP_UTILITIES )
 						.toBucket( CSS )
 		);
 	}

@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.styles;
+package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
 
 /**
- * Wrapper around {@link BootstrapStyleRule} to support easy prefixing with {@code axu}.
+ * https://getbootstrap.com/docs/4.3/utilities/float/
  *
  * @author Steven Gentens
  * @since 3.0.0
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class AcrossStyleRule implements BootstrapStyleRule
+public class AcrossFloatStyleRule
 {
-	private final BootstrapStyleRule bootstrapStyleRule;
-
-	@Override
-	public String[] toCssClasses() {
-		return bootstrapStyleRule.prefix( "axu" ).toCssClasses();
-	}
-
-	public static BootstrapStyleRule of( BootstrapStyleRule bootstrapStyleRule ) {
-		return new AcrossStyleRule( bootstrapStyleRule );
-	}
+	public final BreakpointStyleRule left = new AcrossSimpleBreakpointStyleRule( "float", "left" );
+	public final BreakpointStyleRule right = new AcrossSimpleBreakpointStyleRule( "float", "right" );
+	public final BreakpointStyleRule none = new AcrossSimpleBreakpointStyleRule( "float", "none" );
 }

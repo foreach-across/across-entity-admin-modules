@@ -26,8 +26,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
 
@@ -85,12 +85,12 @@ class Scripts extends ExampleController
 		script.addChild( simpleHtmlTemplate() );
 
 		return html.builders.div()
-				.add( script )
-				.add( bootstrap.builders.button(css.button.warning).attribute( "onclick",
-				                          "$(this.parentNode).append( $(BootstrapUiModule.refTarget( $('[data-id=nested]', this.parentNode)).html() ) );" )
-				              .text( "Add simple template" ) )
-				.add( html.builders.p().add( text( "The simple template will be added below." ) ) )
-				.build();
+		                    .add( script )
+		                    .add( bootstrap.builders.button( css.button.warning ).attribute( "onclick",
+		                                                                                     "$(this.parentNode).append( $(BootstrapUiModule.refTarget( $('[data-id=nested]', this.parentNode)).html() ) );" )
+		                                            .text( "Add simple template" ) )
+		                    .add( html.builders.p().add( text( "The simple template will be added below." ) ) )
+		                    .build();
 	}
 
 	private ViewElement simpleHtmlTemplate() {
@@ -100,10 +100,10 @@ class Scripts extends ExampleController
 		script.addChild( html.builders.p().add( text( "hello from html template" ) ).build() );
 
 		return html.builders.div()
-				.add( script )
-				.add( bootstrap.builders.button(css.button.primary).attribute( "onclick",
-				                          "$(this.parentNode).append( $( BootstrapUiModule.refTarget($('[data-id=simple]', this.parentNode)).html() ) );" )
-				              .text( "Show template body" ) )
-				.build();
+		                    .add( script )
+		                    .add( bootstrap.builders.button( css.button.primary ).attribute( "onclick",
+		                                                                                     "$(this.parentNode).append( $( BootstrapUiModule.refTarget($('[data-id=simple]', this.parentNode)).html() ) );" )
+		                                            .text( "Show template body" ) )
+		                    .build();
 	}
 }

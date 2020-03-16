@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.styles;
+package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 
 /**
- * Wrapper around {@link BootstrapStyleRule} to support easy prefixing with {@code axu}.
+ * https://getbootstrap.com/docs/4.3/utilities/overflow/
  *
  * @author Steven Gentens
  * @since 3.0.0
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class AcrossStyleRule implements BootstrapStyleRule
+public class AcrossOverflowStyleRule
 {
-	private final BootstrapStyleRule bootstrapStyleRule;
-
-	@Override
-	public String[] toCssClasses() {
-		return bootstrapStyleRule.prefix( "axu" ).toCssClasses();
-	}
-
-	public static BootstrapStyleRule of( BootstrapStyleRule bootstrapStyleRule ) {
-		return new AcrossStyleRule( bootstrapStyleRule );
-	}
+	public final BootstrapStyleRule auto = AcrossStyleRule.of( BootstrapStyles.css.overflow.auto );
+	public final BootstrapStyleRule hidden = AcrossStyleRule.of( BootstrapStyles.css.overflow.hidden );
 }

@@ -62,7 +62,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	public void renderingModes() {
 		renderAndExpect( builder.tabs(), "<ul class='nav nav-tabs'></ul>" );
 		renderAndExpect( builder.pills(), "<ul class='nav nav-pills'></ul>" );
-		renderAndExpect( builder.stacked(), "<ul class='nav nav-pills flex-column'></ul>" );
+		renderAndExpect( builder.stacked(), "<ul class='nav nav-pills axu-flex-column'></ul>" );
 		renderAndExpect( builder.navbar(), "<ul class='navbar-nav'></ul>" );
 		renderAndExpect( builder.simple(), "<ul class='nav'></ul>" );
 	}

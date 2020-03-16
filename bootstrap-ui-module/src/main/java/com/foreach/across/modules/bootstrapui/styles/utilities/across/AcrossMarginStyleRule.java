@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.styles;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
 /**
- * Wrapper around {@link BootstrapStyleRule} to support easy prefixing with {@code axu}.
+ * https://getbootstrap.com/docs/4.3/utilities/spacing/
  *
  * @author Steven Gentens
  * @since 3.0.0
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class AcrossStyleRule implements BootstrapStyleRule
+public class AcrossMarginStyleRule extends AcrossSpacingStyleRule.WithNegative
 {
-	private final BootstrapStyleRule bootstrapStyleRule;
+	public final WithNegative top = new WithNegative( "mt" );
+	public final WithNegative bottom = new WithNegative( "mb" );
+	public final WithNegative left = new WithNegative( "ml" );
+	public final WithNegative right = new WithNegative( "mr" );
+	public final WithNegative horizontal = new WithNegative( "mx" );
+	public final WithNegative vertical = new WithNegative( "my" );
 
-	@Override
-	public String[] toCssClasses() {
-		return bootstrapStyleRule.prefix( "axu" ).toCssClasses();
-	}
-
-	public static BootstrapStyleRule of( BootstrapStyleRule bootstrapStyleRule ) {
-		return new AcrossStyleRule( bootstrapStyleRule );
+	public AcrossMarginStyleRule() {
+		super( "m" );
 	}
 }

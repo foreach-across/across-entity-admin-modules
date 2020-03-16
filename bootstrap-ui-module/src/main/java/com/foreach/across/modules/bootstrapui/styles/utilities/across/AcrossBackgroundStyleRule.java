@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.styles;
+package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 
 /**
- * Wrapper around {@link BootstrapStyleRule} to support easy prefixing with {@code axu}.
- *
  * @author Steven Gentens
  * @since 3.0.0
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class AcrossStyleRule implements BootstrapStyleRule
+public class AcrossBackgroundStyleRule extends AcrossColorStyleRule
 {
-	private final BootstrapStyleRule bootstrapStyleRule;
+	public final BootstrapStyleRule transparent = AcrossStyleRule.of( BootstrapStyles.css.background.transparent );
+	public final AcrossColorStyleRule gradient = new AcrossColorStyleRule( "bg-gradient" );
 
-	@Override
-	public String[] toCssClasses() {
-		return bootstrapStyleRule.prefix( "axu" ).toCssClasses();
-	}
-
-	public static BootstrapStyleRule of( BootstrapStyleRule bootstrapStyleRule ) {
-		return new AcrossStyleRule( bootstrapStyleRule );
+	public AcrossBackgroundStyleRule() {
+		super( "bg" );
 	}
 }
