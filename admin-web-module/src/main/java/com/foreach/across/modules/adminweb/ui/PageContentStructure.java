@@ -17,10 +17,12 @@
 package com.foreach.across.modules.adminweb.ui;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
-import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.*;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -96,7 +98,7 @@ public class PageContentStructure extends AbstractNodeViewElement
 		header.addCssClass( CSS_HEADER );
 
 		footer = new NodeViewElement( "footer" );
-		footer.set( AcrossStyleRule.utility( css.margin.bottom.s3 ) )
+		footer.set( AcrossBootstrapStyles.css.margin.bottom.s3 )
 		      .addCssClass( CSS_FOOTER );
 
 		nav = new NodeViewElement( "nav" );
@@ -307,16 +309,16 @@ public class PageContentStructure extends AbstractNodeViewElement
 		if ( super.hasChildren() ) {
 			if ( renderAsTabs ) {
 				NodeViewElement tabWrapper = new NodeViewElement( "div" );
-				tabWrapper.set( AcrossStyleRule.utility( css.margin.bottom.s3 ) )
+				tabWrapper.set( AcrossBootstrapStyles.css.margin.bottom.s3 )
 				          .addCssClass( "tabbable", "filled" );
 				if ( nav.hasChildren() ) {
-					tabWrapper.addChild( nav.set( AcrossStyleRule.utility( css.margin.bottom.s3 ) )
+					tabWrapper.addChild( nav.set( AcrossBootstrapStyles.css.margin.bottom.s3 )
 					                        .set( witherFor( AbstractNodeViewElement.class, this::useDisplayBlockIfNecessary ) ) );
 				}
 				tabWrapper.addChild( body );
 
 				NodeViewElement tabContent = new NodeViewElement( "div" );
-				tabContent.set( css.tab.content, AcrossStyleRule.utility( css.padding.horizontal.s3 ) );
+				tabContent.set( css.tab.content, AcrossBootstrapStyles.css.padding.horizontal.s3 );
 				body.addChild( tabContent );
 
 				NodeViewElement tabPane = new NodeViewElement( "div" );
@@ -356,7 +358,7 @@ public class PageContentStructure extends AbstractNodeViewElement
 			menu.findAll( child -> child instanceof NodeViewElement && ( (NodeViewElement) child )
 					.hasCssClass( "nav" ) )
 			    .findFirst()
-			    .ifPresent( ul -> ul.set( AcrossStyleRule.utility( css.display.block ) ) );
+			    .ifPresent( ul -> ul.set( AcrossBootstrapStyles.css.display.block ) );
 		}
 	}
 }

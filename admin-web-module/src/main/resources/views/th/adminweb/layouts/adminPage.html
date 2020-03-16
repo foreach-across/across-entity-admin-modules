@@ -33,7 +33,7 @@
 <div sec:authorize="!isAnonymous()" th:unless="${isLoginPage}">
 
     <!--/* Main menu navigation */-->
-    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark axu-bg-dark">
         <div class="navbar-header admin-navbar-title">
             <a class="navbar-brand" th:if="${@adminWeb.title}" th:href="@{${#webapp.path('/')}}" th:text="${@adminWeb.title}">
                 application name

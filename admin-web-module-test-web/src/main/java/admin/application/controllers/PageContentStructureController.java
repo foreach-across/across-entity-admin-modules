@@ -22,6 +22,7 @@ import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
@@ -73,7 +74,7 @@ public class PageContentStructureController
 				.item( "/one", "One", "#" ).order( 1 ).and()
 				.group( "/advanced", "Advanced settings" )
 				.order( 2 )
-				.attribute( NavComponentBuilder.customizeViewElement( AcrossStyleRule.utility( css.cssFloat.right ) ) )
+				.attribute( NavComponentBuilder.customizeViewElement( AcrossBootstrapStyles.css.cssFloat.right ) )
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 				.and()
 				.item( "/advanced/trash", "Move to trash", "#" )
@@ -82,7 +83,7 @@ public class PageContentStructureController
 				.group( "/two", "Two" ).order( 3 )
 				.attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( DOWNLOAD ) )
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
-				.attribute( NavComponentBuilder.customizeViewElement( AcrossStyleRule.utility( css.cssFloat.right ) ) )
+				.attribute( NavComponentBuilder.customizeViewElement( AcrossBootstrapStyles. css.cssFloat.right ) )
 				.and()
 				.item( "/two/one", "Item 1", "#" ).order( 1 ).and()
 				.item( "/two/two", "Item 2", "#" ).order( 2 ).and()
