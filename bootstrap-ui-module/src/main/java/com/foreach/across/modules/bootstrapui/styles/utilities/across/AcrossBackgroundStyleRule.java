@@ -21,7 +21,7 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 
 /**
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
 public class AcrossBackgroundStyleRule extends AcrossColorStyleRule

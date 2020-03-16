@@ -19,19 +19,19 @@ package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 /**
  * https://getbootstrap.com/docs/4.3/utilities/spacing/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class PaddingStyleRule extends SpacingStyleRule
+public class AcrossPaddingStyleRule extends AcrossSpacingStyleRule
 {
-	public final SpacingStyleRule top = new SpacingStyleRule( "pt" );
-	public final SpacingStyleRule bottom = new SpacingStyleRule( "pb" );
-	public final SpacingStyleRule left = new SpacingStyleRule( "pl" );
-	public final SpacingStyleRule right = new SpacingStyleRule( "pr" );
-	public final SpacingStyleRule horizontal = new SpacingStyleRule( "px" );
-	public final SpacingStyleRule vertical = new SpacingStyleRule( "py" );
+	public final AcrossSpacingStyleRule top = new AcrossSpacingStyleRule( "pt" );
+	public final AcrossSpacingStyleRule bottom = new AcrossSpacingStyleRule( "pb" );
+	public final AcrossSpacingStyleRule left = new AcrossSpacingStyleRule( "pl" );
+	public final AcrossSpacingStyleRule right = new AcrossSpacingStyleRule( "pr" );
+	public final AcrossSpacingStyleRule horizontal = new AcrossSpacingStyleRule( "px" );
+	public final AcrossSpacingStyleRule vertical = new AcrossSpacingStyleRule( "py" );
 
-	public PaddingStyleRule() {
+	public AcrossPaddingStyleRule() {
 		super( "p" );
 	}
 }

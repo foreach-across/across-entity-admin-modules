@@ -16,28 +16,24 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
-
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 
 /**
- * @author Arne Vandamme
+ * https://getbootstrap.com/docs/4.3/utilities/shadows/
+ *
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class RoundedStyleRule implements BootstrapStyleRule
+public class AcrossShadowStyleRule implements BootstrapStyleRule
 {
-	public final BootstrapStyleRule top = of( "rounded-top" );
-	public final BootstrapStyleRule right = of( "rounded-right" );
-	public final BootstrapStyleRule bottom = of( "rounded-bottom" );
-	public final BootstrapStyleRule left = of( "rounded-left" );
-	public final BootstrapStyleRule circle = of( "rounded-circle" );
-	public final BootstrapStyleRule pill = of( "rounded-pill" );
-	public final BootstrapStyleRule none = of( "rounded-0" );
-	public final BootstrapStyleRule small = of( "rounded-sm" );
-	public final BootstrapStyleRule large = of( "rounded-lg" );
+	public final BootstrapStyleRule none = AcrossBootstrapStyleRule.of( BootstrapStyles.css.shadow.none );
+	public final BootstrapStyleRule small = AcrossBootstrapStyleRule.of( BootstrapStyles.css.shadow.small );
+	public final BootstrapStyleRule large = AcrossBootstrapStyleRule.of( BootstrapStyles.css.shadow.large );
 
 	@Override
 	public String[] toCssClasses() {
-		return new String[] { "rounded" };
+		return AcrossBootstrapStyleRule.of( BootstrapStyles.css.shadow ).toCssClasses();
 	}
 }

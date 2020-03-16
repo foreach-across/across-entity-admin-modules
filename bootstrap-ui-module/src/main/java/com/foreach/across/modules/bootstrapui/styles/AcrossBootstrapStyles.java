@@ -16,13 +16,15 @@
 
 package com.foreach.across.modules.bootstrapui.styles;
 
-import com.foreach.across.modules.bootstrapui.styles.utilities.*;
+import com.foreach.across.modules.bootstrapui.styles.utilities.across.*;
 
 /**
- * Wrapper around {@link BootstrapStyleRule} that can prefix bootstrap css classes for oour own
- * implementation.
+ * Framework alternative for {@link BootstrapStyles} that offers customized bootstrap utility classes.
+ * These utility classes are the same as their bootstrap variant, except for:
+ * - having a prefix {@code axu}
+ * - removal of {@code !important}
  *
- * @author Vanhoof Stijn
+ * @author Steven Gentens
  * @since 3.0.0
  */
 @SuppressWarnings("WeakerAccess")
@@ -31,36 +33,23 @@ public class AcrossBootstrapStyles
 	public final static AcrossBootstrapStyles css = new AcrossBootstrapStyles();
 
 	// utilities
-	public final BootstrapStyleRule clearfix = AcrossBootstrapStyleRule.of( BootstrapStyles.css.clearfix );
-	public final BootstrapStyleRule close = AcrossBootstrapStyleRule.of( BootstrapStyles.css.close );
-	public final BootstrapStyleRule fade = AcrossBootstrapStyleRule.of( BootstrapStyles.css.fade );
-	public final BootstrapStyleRule show = AcrossBootstrapStyleRule.of( BootstrapStyles.css.show );
-	public final BootstrapStyleRule active = AcrossBootstrapStyleRule.of( BootstrapStyles.css.active );
-	public final BootstrapStyleRule disabled = AcrossBootstrapStyleRule.of( BootstrapStyles.css.disabled );
-	public final BootstrapStyleRule slide = AcrossBootstrapStyleRule.of( BootstrapStyles.css.slide );
-	public final BootstrapStyleRule lead = AcrossBootstrapStyleRule.of( BootstrapStyles.css.lead );
-	public final BorderStyleRule border = new BorderStyleRule();
-	public final RoundedStyleRule rounded = new RoundedStyleRule();
-	public final TextStyleRule text = new TextStyleRule();
-	public final BackgroundStyleRule background = new BackgroundStyleRule();
-	public final DisplayStyleRule display = new DisplayStyleRule();
-	public final EmbedStyleRule embed = new EmbedStyleRule();
-	public final FlexStyleRule flex = new FlexStyleRule();
-	public final JustifyContentStyleRule justifyContent = new JustifyContentStyleRule();
-	public final AlignStyleRule align = new AlignStyleRule();
-	public final OrderStyleRule order = new OrderStyleRule();
-	public final FloatStyleRule cssFloat = new FloatStyleRule();
-	public final OverflowStyleRule overflow = new OverflowStyleRule();
-	public final PositionStyleRule position = new PositionStyleRule();
-	public final FixedStyleRule fixed = new FixedStyleRule();
-	public final BootstrapStyleRule stickyTop = AcrossBootstrapStyleRule.of( BootstrapStyles.css.stickyTop );
-	public final ScreenReaderOnlyStyleRule screenReaderOnly = new ScreenReaderOnlyStyleRule();
-	public final ShadowStyleRule shadow = new ShadowStyleRule();
-	public final SizeStyleRule size = new SizeStyleRule();
-	public final BootstrapStyleRule stretchedLink = AcrossBootstrapStyleRule.of( BootstrapStyles.css.stretchedLink );
-	public final FontStyleRule font = new FontStyleRule();
+	public final AcrossBorderStyleRule border = new AcrossBorderStyleRule();
+	public final AcrossRoundedStyleRule rounded = new AcrossRoundedStyleRule();
+	public final AcrossTextStyleRule text = new AcrossTextStyleRule();
+	public final AcrossBackgroundStyleRule background = new AcrossBackgroundStyleRule();
+	public final AcrossDisplayStyleRule display = new AcrossDisplayStyleRule();
+	public final AcrossFlexStyleRule flex = new AcrossFlexStyleRule();
+	public final AcrossJustifyContentStyleRule justifyContent = new AcrossJustifyContentStyleRule();
+	public final AcrossAlignStyleRule align = new AcrossAlignStyleRule();
+	public final AcrossOrderStyleRule order = new AcrossOrderStyleRule();
+	public final AcrossFloatStyleRule cssFloat = new AcrossFloatStyleRule();
+	public final AcrossOverflowStyleRule overflow = new AcrossOverflowStyleRule();
+	public final AcrossPositionStyleRule position = new AcrossPositionStyleRule();
+	public final AcrossShadowStyleRule shadow = new AcrossShadowStyleRule();
+	public final AcrossSizeStyleRule size = new AcrossSizeStyleRule();
+	public final AcrossFontStyleRule font = new AcrossFontStyleRule();
 	public final BootstrapStyleRule visible = AcrossBootstrapStyleRule.of( BootstrapStyles.css.visible );
 	public final BootstrapStyleRule invisible = AcrossBootstrapStyleRule.of( BootstrapStyles.css.invisible );
-	public final PaddingStyleRule padding = new PaddingStyleRule();
-	public final MarginStyleRule margin = new MarginStyleRule();
+	public final AcrossPaddingStyleRule padding = new AcrossPaddingStyleRule();
+	public final AcrossMarginStyleRule margin = new AcrossMarginStyleRule();
 }

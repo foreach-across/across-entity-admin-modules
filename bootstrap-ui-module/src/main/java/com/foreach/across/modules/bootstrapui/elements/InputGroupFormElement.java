@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * <p>Represents a bootstrap input group, wrapping a control and allowing left or right addon.

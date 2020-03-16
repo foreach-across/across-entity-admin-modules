@@ -22,7 +22,7 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.bootstrapui.styles.utilities.BorderStyleRule;
 
 /**
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
 public class AcrossBorderStyleRule extends AcrossColorStyleRule implements BootstrapStyleRule
@@ -39,7 +39,7 @@ public class AcrossBorderStyleRule extends AcrossColorStyleRule implements Boots
 
 	@Override
 	public String[] toCssClasses() {
-		return new String[] { "border" };
+		return AcrossBootstrapStyleRule.of( BootstrapStyles.css.border ).toCssClasses();
 	}
 
 	public static class AcrossNoBorderStyleRule implements BootstrapStyleRule

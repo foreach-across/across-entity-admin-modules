@@ -19,38 +19,33 @@ package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.utilities.SimpleBreakpointStyleRule;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
 public class AcrossSimpleBreakpointStyleRule implements BreakpointStyleRule
 {
-	private final String prefix;
-	private final String suffix;
-	private final String[] additionalCss;
+	private final BreakpointStyleRule breakpointStyleRule;
 
 	public AcrossSimpleBreakpointStyleRule( String prefix, String suffix, String... additionalCss ) {
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.additionalCss = additionalCss;
+		breakpointStyleRule = new SimpleBreakpointStyleRule( prefix, suffix, additionalCss );
 	}
 
 	@Override
 	public BootstrapStyleRule on( String breakpoint ) {
-		return AcrossBootstrapStyleRule.of(
-				BootstrapStyleRule.appendOnSet( BootstrapStyleRule.of( additionalCss ), prefix + "-" + breakpoint + ( suffix != null ? "-" + suffix : "" ) ) );
+		return AcrossBootstrapStyleRule.of( breakpointStyleRule.on( breakpoint ) );
 	}
 
 	@Override
 	public String[] toCssClasses() {
-		return ArrayUtils.add( additionalCss, prefix + ( suffix != null ? "-" + suffix : "" ) );
+		return AcrossBootstrapStyleRule.of( breakpointStyleRule ).toCssClasses();
 	}
 
 	@Override
 	public void removeFrom( HtmlViewElement target ) {
-		target.removeCssClass( prefix + ( suffix != null ? "-" + suffix : "" ) );
+		target.removeCssClass( toCssClasses() );
 	}
 }

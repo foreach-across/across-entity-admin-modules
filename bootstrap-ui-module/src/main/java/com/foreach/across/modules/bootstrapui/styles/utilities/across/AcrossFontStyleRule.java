@@ -16,30 +16,30 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
  * https://getbootstrap.com/docs/4.3/utilities/text/#font-weight-and-italics
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class FontStyleRule
+public class AcrossFontStyleRule
 {
 	public final Weight weight = new Weight();
-	public final BootstrapStyleRule italic = of( "font-italic" );
+	public final BootstrapStyleRule italic = AcrossBootstrapStyleRule.of( BootstrapStyles.css.font.italic );
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Weight
 	{
-		public final BootstrapStyleRule bold = of( "font-weight-bold" );
-		public final BootstrapStyleRule bolder = of( "font-weight-bolder" );
-		public final BootstrapStyleRule normal = of( "font-weight-normal" );
-		public final BootstrapStyleRule light = of( "font-weight-light" );
-		public final BootstrapStyleRule lighter = of( "font-weight-lighter" );
+		public final BootstrapStyleRule bold = AcrossBootstrapStyleRule.of( BootstrapStyles.css.font.weight.bold );
+		public final BootstrapStyleRule bolder = AcrossBootstrapStyleRule.of( BootstrapStyles.css.font.weight.bolder );
+		public final BootstrapStyleRule normal = AcrossBootstrapStyleRule.of( BootstrapStyles.css.font.weight.normal );
+		public final BootstrapStyleRule light = AcrossBootstrapStyleRule.of( BootstrapStyles.css.font.weight.light );
+		public final BootstrapStyleRule lighter = AcrossBootstrapStyleRule.of( BootstrapStyles.css.font.weight.lighter );
 	}
 }

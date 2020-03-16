@@ -16,22 +16,18 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
+
 /**
- * https://getbootstrap.com/docs/4.3/utilities/spacing/
+ * https://getbootstrap.com/docs/4.3/utilities/overflow/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class MarginStyleRule extends SpacingStyleRule.WithNegative
+public class AcrossOverflowStyleRule
 {
-	public final WithNegative top = new WithNegative( "mt" );
-	public final WithNegative bottom = new WithNegative( "mb" );
-	public final WithNegative left = new WithNegative( "ml" );
-	public final WithNegative right = new WithNegative( "mr" );
-	public final WithNegative horizontal = new WithNegative( "mx" );
-	public final WithNegative vertical = new WithNegative( "my" );
-
-	public MarginStyleRule() {
-		super( "m" );
-	}
+	public final BootstrapStyleRule auto = AcrossBootstrapStyleRule.of( BootstrapStyles.css.overflow.auto );
+	public final BootstrapStyleRule hidden = AcrossBootstrapStyleRule.of( BootstrapStyles.css.overflow.hidden );
 }

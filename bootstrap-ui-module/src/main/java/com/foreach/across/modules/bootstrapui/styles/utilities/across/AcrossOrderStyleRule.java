@@ -16,22 +16,20 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
-
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
+import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
 
 /**
- * https://getbootstrap.com/docs/4.3/utilities/screen-readers/
+ * https://getbootstrap.com/docs/4.3/utilities/flex/#order
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class ScreenReaderOnlyStyleRule implements BootstrapStyleRule
+public class AcrossOrderStyleRule
 {
-	public final BootstrapStyleRule focusable = of( "sr-only-focusable" );
+	public final BreakpointStyleRule first = new AcrossSimpleBreakpointStyleRule( "order", "first" );
+	public final BreakpointStyleRule last = new AcrossSimpleBreakpointStyleRule( "order", "last" );
 
-	@Override
-	public String[] toCssClasses() {
-		return new String[] { "sr-only" };
+	public BreakpointStyleRule position( int position ) {
+		return new AcrossSimpleBreakpointStyleRule( "order", "" + position );
 	}
 }

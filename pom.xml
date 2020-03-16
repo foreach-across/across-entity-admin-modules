@@ -71,6 +71,7 @@
 		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
 		<webjars.handlebars>4.0.14</webjars.handlebars>
 		<webjars.font-awesome>5.10.1</webjars.font-awesome>
+		<webjars.ax-bootstrap-4-utilities>0.0.1-SNAPSHOT</webjars.ax-bootstrap-4-utilities>
 	</properties>
 
 	<modules>
@@ -91,6 +92,11 @@
 				<artifactId>xmlunit</artifactId>
 				<version>1.6</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>ax-bootstrap-4-utilities</artifactId>
+				<version>${webjars.ax-bootstrap-4-utilities}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

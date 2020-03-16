@@ -16,21 +16,21 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
-
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 
 /**
  * https://getbootstrap.com/docs/4.3/utilities/position/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class PositionStyleRule
+public class AcrossPositionStyleRule
 {
-	public final BootstrapStyleRule cssStatic = of( "position-static" );
-	public final BootstrapStyleRule relative = of( "position-relative" );
-	public final BootstrapStyleRule absolute = of( "position-absolute" );
-	public final BootstrapStyleRule fixed = of( "position-fixed" );
-	public final BootstrapStyleRule sticky = of( "position-sticky" );
+	public final BootstrapStyleRule cssStatic = AcrossBootstrapStyleRule.of( BootstrapStyles.css.position.cssStatic );
+	public final BootstrapStyleRule relative = AcrossBootstrapStyleRule.of( BootstrapStyles.css.position.relative );
+	public final BootstrapStyleRule absolute = AcrossBootstrapStyleRule.of( BootstrapStyles.css.position.absolute );
+	public final BootstrapStyleRule fixed = AcrossBootstrapStyleRule.of( BootstrapStyles.css.position.fixed );
+	public final BootstrapStyleRule sticky = AcrossBootstrapStyleRule.of( BootstrapStyles.css.position.sticky );
 }

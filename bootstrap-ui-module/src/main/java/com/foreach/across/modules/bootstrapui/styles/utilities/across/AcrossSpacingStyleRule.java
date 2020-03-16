@@ -16,13 +16,15 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
+import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
+
 /**
  * https://getbootstrap.com/docs/4.3/utilities/spacing/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class SpacingStyleRule
+public class AcrossSpacingStyleRule
 {
 	public final BreakpointStyleRule none;
 	public final BreakpointStyleRule s1;
@@ -38,34 +40,34 @@ public class SpacingStyleRule
 
 	private final String prefix;
 
-	SpacingStyleRule( String prefix ) {
+	AcrossSpacingStyleRule( String prefix ) {
 		this( prefix, "" );
 	}
 
-	private SpacingStyleRule( String prefix, String direction ) {
+	private AcrossSpacingStyleRule( String prefix, String direction ) {
 		this.prefix = prefix;
 
-		none = new SimpleBreakpointStyleRule( prefix, direction + "0" );
-		extraSmall = s1 = new SimpleBreakpointStyleRule( prefix, direction + "1" );
-		small = s2 = new SimpleBreakpointStyleRule( prefix, direction + "2" );
-		medium = s3 = new SimpleBreakpointStyleRule( prefix, direction + "3" );
-		large = s4 = new SimpleBreakpointStyleRule( prefix, direction + "4" );
-		extraLarge = s5 = new SimpleBreakpointStyleRule( prefix, direction + "5" );
+		none = new AcrossSimpleBreakpointStyleRule( prefix, direction + "0" );
+		extraSmall = s1 = new AcrossSimpleBreakpointStyleRule( prefix, direction + "1" );
+		small = s2 = new AcrossSimpleBreakpointStyleRule( prefix, direction + "2" );
+		medium = s3 = new AcrossSimpleBreakpointStyleRule( prefix, direction + "3" );
+		large = s4 = new AcrossSimpleBreakpointStyleRule( prefix, direction + "4" );
+		extraLarge = s5 = new AcrossSimpleBreakpointStyleRule( prefix, direction + "5" );
 	}
 
 	public BreakpointStyleRule size( int size ) {
-		return new SimpleBreakpointStyleRule( prefix, "" + size );
+		return new AcrossSimpleBreakpointStyleRule( prefix, "" + size );
 	}
 
-	public static class WithNegative extends SpacingStyleRule
+	public static class WithNegative extends AcrossSpacingStyleRule
 	{
 		public final BreakpointStyleRule auto;
-		public final SpacingStyleRule negative;
+		public final AcrossSpacingStyleRule negative;
 
 		WithNegative( String prefix ) {
 			super( prefix );
-			this.negative = new SpacingStyleRule( prefix, "n" );
-			this.auto = new SimpleBreakpointStyleRule( prefix, "auto" );
+			this.negative = new AcrossSpacingStyleRule( prefix, "n" );
+			this.auto = new AcrossSimpleBreakpointStyleRule( prefix, "auto" );
 		}
 	}
 }

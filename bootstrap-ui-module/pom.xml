@@ -57,6 +57,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>ax-bootstrap-4-utilities</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>jquery</artifactId>
 			<version>${webjars.jquery}</version>

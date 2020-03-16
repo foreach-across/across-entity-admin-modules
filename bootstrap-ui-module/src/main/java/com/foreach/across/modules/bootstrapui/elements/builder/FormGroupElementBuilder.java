@@ -19,6 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.FormLayout;
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -129,7 +130,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder helpBlock( String text ) {
-		helpBlock( html.small( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
+		helpBlock( html.small( css.form.text, AcrossBootstrapStyles.css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 
@@ -164,7 +165,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder descriptionBlock( String text ) {
-		descriptionBlock( html.p( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
+		descriptionBlock( html.p( css.form.text, AcrossBootstrapStyles.css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 

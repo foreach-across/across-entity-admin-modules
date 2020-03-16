@@ -16,18 +16,17 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
-
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
+import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
 
 /**
- * https://getbootstrap.com/docs/4.3/utilities/overflow/
+ * https://getbootstrap.com/docs/4.3/utilities/float/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class OverflowStyleRule
+public class AcrossFloatStyleRule
 {
-	public final BootstrapStyleRule auto = of( "overflow-auto" );
-	public final BootstrapStyleRule hidden = of( "overflow-hidden" );
+	public final BreakpointStyleRule left = new AcrossSimpleBreakpointStyleRule( "float", "left" );
+	public final BreakpointStyleRule right = new AcrossSimpleBreakpointStyleRule( "float", "right" );
+	public final BreakpointStyleRule none = new AcrossSimpleBreakpointStyleRule( "float", "none" );
 }

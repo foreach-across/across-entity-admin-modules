@@ -16,23 +16,25 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
+import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
+
 /**
  * https://getbootstrap.com/docs/4.3/utilities/flex/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class FlexStyleRule
+public class AcrossFlexStyleRule
 {
 	public final Direction row = new Direction( "row" );
 	public final Direction column = new Direction( "column" );
-	public final BreakpointStyleRule fill = new SimpleBreakpointStyleRule( "flex", "fill" );
+	public final BreakpointStyleRule fill = new AcrossSimpleBreakpointStyleRule( "flex", "fill" );
 	public final Toggle grow = new Toggle( "grow" );
 	public final Toggle shrink = new Toggle( "shrink" );
 	public final Wrap wrap = new Wrap();
 	public final BreakpointStyleRule nowrap = wrap.none;
 
-	public static class Direction extends SimpleBreakpointStyleRule
+	public static class Direction extends AcrossSimpleBreakpointStyleRule
 	{
 		public final BreakpointStyleRule reverse;
 
@@ -44,7 +46,7 @@ public class FlexStyleRule
 
 	public static class Wrap extends Direction
 	{
-		public final BreakpointStyleRule none = new SimpleBreakpointStyleRule( "flex", "nowrap" );
+		public final BreakpointStyleRule none = new AcrossSimpleBreakpointStyleRule( "flex", "nowrap" );
 
 		private Wrap() {
 			super( "wrap" );
@@ -57,8 +59,8 @@ public class FlexStyleRule
 		public final BreakpointStyleRule disabled;
 
 		private Toggle( String css ) {
-			enabled = new SimpleBreakpointStyleRule( "flex", css + "-1" );
-			disabled = new SimpleBreakpointStyleRule( "flex", css + "-0" );
+			enabled = new AcrossSimpleBreakpointStyleRule( "flex", css + "-1" );
+			disabled = new AcrossSimpleBreakpointStyleRule( "flex", css + "-0" );
 		}
 	}
 }

@@ -17,16 +17,21 @@
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
 /**
- * https://getbootstrap.com/docs/4.3/utilities/flex/#justify-content
+ * https://getbootstrap.com/docs/4.3/utilities/spacing/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class JustifyContentStyleRule
+public class AcrossMarginStyleRule extends AcrossSpacingStyleRule.WithNegative
 {
-	public final BreakpointStyleRule start = new SimpleBreakpointStyleRule( "justify-content", "start" );
-	public final BreakpointStyleRule end = new SimpleBreakpointStyleRule( "justify-content", "end" );
-	public final BreakpointStyleRule center = new SimpleBreakpointStyleRule( "justify-content", "center" );
-	public final BreakpointStyleRule between = new SimpleBreakpointStyleRule( "justify-content", "between" );
-	public final BreakpointStyleRule around = new SimpleBreakpointStyleRule( "justify-content", "around" );
+	public final WithNegative top = new WithNegative( "mt" );
+	public final WithNegative bottom = new WithNegative( "mb" );
+	public final WithNegative left = new WithNegative( "ml" );
+	public final WithNegative right = new WithNegative( "mr" );
+	public final WithNegative horizontal = new WithNegative( "mx" );
+	public final WithNegative vertical = new WithNegative( "my" );
+
+	public AcrossMarginStyleRule() {
+		super( "m" );
+	}
 }

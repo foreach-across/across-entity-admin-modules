@@ -21,10 +21,10 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 /**
  * See https://getbootstrap.com/docs/4.3/utilities/display/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class DisplayStyleRule
+public class AcrossDisplayStyleRule
 {
 	public final DisplayPropertyStyleRule none = new DisplayPropertyStyleRule( "none" );
 	public final DisplayPropertyStyleRule inline = new DisplayPropertyStyleRule( "inline" );
@@ -36,7 +36,7 @@ public class DisplayStyleRule
 	public final DisplayPropertyStyleRule flex = new DisplayPropertyStyleRule( "flex" );
 	public final DisplayPropertyStyleRule inlineFlex = new DisplayPropertyStyleRule( "inline-flex" );
 
-	public static class DisplayPropertyStyleRule extends SimpleBreakpointStyleRule
+	public static class DisplayPropertyStyleRule extends AcrossSimpleBreakpointStyleRule
 	{
 		private DisplayPropertyStyleRule( String display ) {
 			super( "d", display );

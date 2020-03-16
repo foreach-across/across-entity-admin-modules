@@ -16,22 +16,25 @@
 
 package com.foreach.across.modules.bootstrapui.styles;
 
-/**
- * @author Stijn Vanhoof
- */
-
-import com.foreach.across.modules.bootstrapui.styles.utilities.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Wrapper around {@link BootstrapStyleRule} to support easy prefixing with {@code axu}.
+ *
+ * @author Steven Gentens
+ * @since 3.0.0
+ */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AcrossBootstrapStyleRule implements BootstrapStyleRule
 {
 	private final BootstrapStyleRule bootstrapStyleRule;
+
 	@Override
 	public String[] toCssClasses() {
-		return bootstrapStyleRule.prefix( "axu-" ).toCssClasses();
+		return bootstrapStyleRule.prefix( "axu" ).toCssClasses();
 	}
+
 	public static BootstrapStyleRule of( BootstrapStyleRule bootstrapStyleRule ) {
 		return new AcrossBootstrapStyleRule( bootstrapStyleRule );
 	}

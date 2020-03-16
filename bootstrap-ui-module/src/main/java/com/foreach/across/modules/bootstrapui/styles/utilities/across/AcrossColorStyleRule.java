@@ -26,7 +26,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * Builds a Bootstrap color css class. Optionally takes some additional classes which
  * should be added as well (eg "alert" should always be added before the "alert-primary").
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
 public class AcrossColorStyleRule

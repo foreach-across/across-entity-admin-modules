@@ -16,18 +16,17 @@
 
 package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import lombok.NonNull;
-
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
  * https://getbootstrap.com/docs/4.3/utilities/sizing/
  *
- * @author Arne Vandamme
- * @since 3.0.0
+ * @author Arne Vandamme * @author Steven Gentens * @since 3.0.0
  */
-public class SizeStyleRule
+public class AcrossSizeStyleRule
 {
 	public final BootstrapStyleRule width25 = width( 25 );
 	public final BootstrapStyleRule width50 = width( 50 );
@@ -41,15 +40,15 @@ public class SizeStyleRule
 	public final BootstrapStyleRule height100 = height( 100 );
 	public final BootstrapStyleRule autoHeight = height( "auto" );
 
-	public final BootstrapStyleRule maxWidth100 = of( "mw-100" );
-	public final BootstrapStyleRule maxHeight100 = of( "mh-100" );
+	public final BootstrapStyleRule maxWidth100 = AcrossBootstrapStyleRule.of( BootstrapStyles.css.size.maxWidth100 );
+	public final BootstrapStyleRule maxHeight100 = AcrossBootstrapStyleRule.of( BootstrapStyles.css.size.maxHeight100 );
 
 	public BootstrapStyleRule width( int size ) {
 		return width( "" + size );
 	}
 
 	public BootstrapStyleRule width( @NonNull String size ) {
-		return of( "w-" + size );
+		return AcrossBootstrapStyleRule.of( BootstrapStyles.css.size.width( size ) );
 	}
 
 	public BootstrapStyleRule height( int size ) {
@@ -58,6 +57,6 @@ public class SizeStyleRule
 
 	@SuppressWarnings("WeakerAccess")
 	public BootstrapStyleRule height( @NonNull String size ) {
-		return of( "h-" + size );
+		return AcrossBootstrapStyleRule.of( BootstrapStyles.css.size.height( size ) );
 	}
 }

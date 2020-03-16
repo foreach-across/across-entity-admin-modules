@@ -19,6 +19,7 @@ package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
+import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -28,16 +29,50 @@ import lombok.RequiredArgsConstructor;
  * https://getbootstrap.com/docs/4.3/utilities/flex/#align-content
  * https://getbootstrap.com/docs/4.3/utilities/vertical-align/
  *
- * @author Arne Vandamme
+ * @author Steven Gentens
  * @since 3.0.0
  */
 public class AcrossAlignStyleRule
 {
+	public final Items items = new Items();
+	public final Self self = new Self();
+	public final Content content = new Content();
 	public final BootstrapStyleRule baseline = AcrossBootstrapStyleRule.of( BootstrapStyles.css.align.baseline );
 	public final BootstrapStyleRule top = AcrossBootstrapStyleRule.of( BootstrapStyles.css.align.top );
 	public final BootstrapStyleRule middle = AcrossBootstrapStyleRule.of( BootstrapStyles.css.align.middle );
 	public final BootstrapStyleRule bottom = AcrossBootstrapStyleRule.of( BootstrapStyles.css.align.bottom );
 	public final Text text = new Text();
+
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Items
+	{
+		public final BreakpointStyleRule start = new AcrossSimpleBreakpointStyleRule( "align-items", "start" );
+		public final BreakpointStyleRule end = new AcrossSimpleBreakpointStyleRule( "align-items", "end" );
+		public final BreakpointStyleRule center = new AcrossSimpleBreakpointStyleRule( "align-items", "center" );
+		public final BreakpointStyleRule baseline = new AcrossSimpleBreakpointStyleRule( "align-items", "baseline" );
+		public final BreakpointStyleRule stretch = new AcrossSimpleBreakpointStyleRule( "align-items", "stretch" );
+	}
+
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Self
+	{
+		public final BreakpointStyleRule start = new AcrossSimpleBreakpointStyleRule( "align-self", "start" );
+		public final BreakpointStyleRule end = new AcrossSimpleBreakpointStyleRule( "align-self", "end" );
+		public final BreakpointStyleRule center = new AcrossSimpleBreakpointStyleRule( "align-self", "center" );
+		public final BreakpointStyleRule baseline = new AcrossSimpleBreakpointStyleRule( "align-self", "baseline" );
+		public final BreakpointStyleRule stretch = new AcrossSimpleBreakpointStyleRule( "align-self", "stretch" );
+	}
+
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Content
+	{
+		public final BreakpointStyleRule start = new AcrossSimpleBreakpointStyleRule( "align-content", "start" );
+		public final BreakpointStyleRule end = new AcrossSimpleBreakpointStyleRule( "align-content", "end" );
+		public final BreakpointStyleRule center = new AcrossSimpleBreakpointStyleRule( "align-content", "center" );
+		public final BreakpointStyleRule between = new AcrossSimpleBreakpointStyleRule( "align-content", "between" );
+		public final BreakpointStyleRule around = new AcrossSimpleBreakpointStyleRule( "align-content", "around" );
+		public final BreakpointStyleRule stretch = new AcrossSimpleBreakpointStyleRule( "align-content", "stretch" );
+	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Text
