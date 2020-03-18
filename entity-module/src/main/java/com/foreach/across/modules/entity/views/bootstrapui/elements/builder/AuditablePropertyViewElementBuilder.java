@@ -105,16 +105,23 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder, 
 			return null;
 		}
 
-		if ( Auditable.class.isAssignableFrom( currentEntity.getClass() ) ) {
-			return (Auditable) currentEntity;
-		}
-
-		EntityPropertyDescriptor parentDescriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext ).getParentDescriptor();
-		if ( Auditable.class.isAssignableFrom( parentDescriptor.getPropertyType() ) && parentDescriptor.getValueFetcher() != null ) {
+		EntityPropertyDescriptor propertyDescriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
+		EntityPropertyDescriptor parentDescriptor = propertyDescriptor != null ? propertyDescriptor.getParentDescriptor() : null;
+		if ( parentDescriptor != null
+				&& isAuditable( parentDescriptor.getPropertyType() )
+				&& parentDescriptor.getValueFetcher() != null ) {
 			return (Auditable) parentDescriptor.getValueFetcher().getValue( currentEntity );
 		}
 
+		if ( isAuditable( currentEntity.getClass() ) ) {
+			return (Auditable) currentEntity;
+		}
+
 		return null;
+	}
+
+	private boolean isAuditable( Class<?> propertyType ) {
+		return Auditable.class.isAssignableFrom( propertyType );
 	}
 
 	@Override
