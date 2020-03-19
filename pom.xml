@@ -63,7 +63,7 @@
     </properties>
 
     <modules>
-        <module>bootstrap-theme</module>
+        <module>ax-bootstrap-theme</module>
         <module>bootstrap-demo-app</module>
         <module>ax-bootstrap-4-utilities</module>
     </modules>

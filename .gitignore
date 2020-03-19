@@ -21,12 +21,14 @@ hs_err_pid*
 
 ### Custom ignores
 target
-*.iml
 db
-.DS_Store
 local-data
 node_modules
 bootstrap-demo-app/resources/views/static/bootstrapSample/theme
-.idea/$*
+.idea/workspace.xml
+.idea/excludeFromValidation
 .idea/libraries
-.idea/template
+*.iml
+.DS_Store
+
+.flattened-pom.xml
