@@ -24,7 +24,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>admin-web-bootstrap-4-project</artifactId>
+			<artifactId>ax-bootstrap-theme</artifactId>
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
