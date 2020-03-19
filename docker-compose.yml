@@ -13,3 +13,6 @@ services:
 #       scope node_modules to the container
       - /build/ax-bootstrap-theme/src/main/frontend/node_modules
 #      - ./ax-bootstrap-4-utilities/src/main/resources/:/build/src/main/frontend/webjars
+    environment:
+      - BABEL_DISABLE_CACHE= 1
+      - FE_NEXUS_NPM_TOKEN=${FE_NEXUS_NPM_TOKEN}
