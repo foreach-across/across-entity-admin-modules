@@ -28,6 +28,7 @@
 
     <properties>
         <maven.javadoc.skip>false</maven.javadoc.skip>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <licenses>
@@ -82,10 +83,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>

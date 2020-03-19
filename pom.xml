@@ -68,18 +68,6 @@
         <module>ax-bootstrap-4-utilities</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <inherited>true</inherited>
-                <configuration>
-                    <skip>${maven.deploy.skip}</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <scm>
         <url>https://bitbucket.org/beforeach/admin-web-bootstrap-4/src</url>
     </scm>
