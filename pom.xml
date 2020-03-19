@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>com.foreach.across</groupId>
-        <artifactId>across-module-parent</artifactId>
+        <artifactId>across-standard-module-parent</artifactId>
         <version>5.0.0-SNAPSHOT</version>
     </parent>
 
@@ -67,6 +67,49 @@
         <module>bootstrap-demo-app</module>
         <module>ax-bootstrap-4-utilities</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>admin-web-module</artifactId>
+                <version>4.0.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>bootstrap-ui-module</artifactId>
+                <version>3.0.0-SNAPSHOT</version>
+            </dependency>
+
+
+<!--            <dependency>-->
+<!--                <groupId>com.foreach.across</groupId>-->
+<!--                <artifactId>across-web</artifactId>-->
+<!--            </dependency>-->
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>across-hibernate-module</artifactId>
+                <version>4.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>entity-module</artifactId>
+                <version>4.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>properties-module</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>file-manager-module</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 
     <scm>
         <url>https://bitbucket.org/beforeach/admin-web-bootstrap-4/src</url>
