@@ -23,4 +23,4 @@ spring:
 
 acrossModule:
   AdminWebThemesModule:
-    resources: ./bootstrap-theme/src/main/resources
+    resources: ./ax-bootstrap-theme/src/main/resources
