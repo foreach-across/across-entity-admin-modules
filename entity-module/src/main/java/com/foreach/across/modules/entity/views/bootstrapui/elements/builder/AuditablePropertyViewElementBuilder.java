@@ -96,7 +96,7 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder, 
 		Auditable auditable = getAuditableEntity( builderContext );
 		String text = getValue( auditable );
 
-		return text != null ? new TextViewElement( text ) : null;
+		return text != null ? new TextViewElement( text ) : new TextViewElement( "" );
 	}
 
 	private Auditable getAuditableEntity( ViewElementBuilderContext builderContext ) {
