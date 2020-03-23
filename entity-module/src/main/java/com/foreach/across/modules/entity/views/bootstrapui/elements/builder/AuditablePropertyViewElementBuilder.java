@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.entity.config.entities.AuditableEntityUiConfiguration;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -92,10 +93,35 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder, 
 
 	@Override
 	public ViewElement build( ViewElementBuilderContext builderContext ) {
-		Auditable auditable = EntityViewElementUtils.currentEntity( builderContext, Auditable.class );
+		Auditable auditable = getAuditableEntity( builderContext );
 		String text = getValue( auditable );
 
 		return text != null ? new TextViewElement( text ) : null;
+	}
+
+	private Auditable getAuditableEntity( ViewElementBuilderContext builderContext ) {
+		Object currentEntity = EntityViewElementUtils.currentEntity( builderContext );
+		if ( currentEntity == null ) {
+			return null;
+		}
+
+		EntityPropertyDescriptor propertyDescriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
+		EntityPropertyDescriptor parentDescriptor = propertyDescriptor != null ? propertyDescriptor.getParentDescriptor() : null;
+		if ( parentDescriptor != null
+				&& isAuditable( parentDescriptor.getPropertyType() )
+				&& parentDescriptor.getValueFetcher() != null ) {
+			return (Auditable) parentDescriptor.getValueFetcher().getValue( currentEntity );
+		}
+
+		if ( isAuditable( currentEntity.getClass() ) ) {
+			return (Auditable) currentEntity;
+		}
+
+		return null;
+	}
+
+	private boolean isAuditable( Class<?> propertyType ) {
+		return Auditable.class.isAssignableFrom( propertyType );
 	}
 
 	@Override
