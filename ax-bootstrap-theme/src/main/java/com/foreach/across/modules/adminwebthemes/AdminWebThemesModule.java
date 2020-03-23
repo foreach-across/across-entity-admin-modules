@@ -28,5 +28,6 @@ public class AdminWebThemesModule extends AcrossModule
 
 	@Override
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		// This module doesn't need to be bootstrapped
 	}
 }
