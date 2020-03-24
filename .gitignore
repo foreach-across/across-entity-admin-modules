@@ -24,7 +24,8 @@ target
 db
 local-data
 node_modules
-bootstrap-demo-app/resources/views/static/bootstrapSample/theme
+bootstrap-demo-app/src/main/resources/views/static/bootstrapSample/theme
+ax-bootstrap-4-utilities/src/main/resources/META-INF
 .idea/workspace.xml
 .idea/excludeFromValidation
 .idea/libraries
