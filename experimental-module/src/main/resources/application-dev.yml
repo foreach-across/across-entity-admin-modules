@@ -1,0 +1,17 @@
+across:
+  development:
+    active: true
+
+applicationInfo:
+  buildDate: "2020-04-23 12:57:42"
+
+server:
+  error:
+    includeStacktrace: ALWAYS
+  port: 8080
+
+spring:
+  datasource:
+    url: "jdbc:h2:./local-data/db/experimental-db"
+    username: sa
+
