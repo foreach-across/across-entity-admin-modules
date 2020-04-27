@@ -65,7 +65,7 @@ public class BuildPlan {
     private static Plan createPlan(Project project) {
         return new Plan(project, BuildPlan.PLAN_NAME, new BambooKey(BuildPlan.PLAN_KEY))
                 .pluginConfigurations(new ConcurrentBuilds().useSystemWideDefault(false), new AllOtherPluginsConfiguration())
-                .stages(unitTests(), integrationTests(), deploySnapshot())
+                .stages(unitTests(), deploySnapshot())
                 .linkedRepositories(LINKED_REPOSITORY_NAME)
                 .triggers(
                         new RepositoryPollingTrigger().description("Automatic build")

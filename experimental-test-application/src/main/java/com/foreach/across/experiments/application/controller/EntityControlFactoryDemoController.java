@@ -1,6 +1,7 @@
 package com.foreach.across.experiments.application.controller;
 
 import com.foreach.across.experimental.modules.entitycontrols.domain.EntityControlFactory;
+import com.foreach.across.experiments.application.dto.CarResource;
 import com.foreach.across.experiments.application.dto.UserResource;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -43,8 +44,16 @@ public class EntityControlFactoryDemoController {
                 .renderModeForProperties(ViewElementMode.FORM_READ, "lastName")
                 .build(ctx);
 
+        CarResource car = new CarResource("Chevrolet El Camino");
+
+        Map<String, ViewElement> carControls =  entityControlFactory.createControlsForClass(CarResource.class)
+                .forInstance(car)
+                .loadViewProperties("custom")
+                .build(ctx);
+
         NodeViewElement simpleUserForm = HtmlViewElements.html.builders.form()
                 .addAll(userCreateControls.values())
+                .addAll(carControls.values())
                 .build(ctx);
 
         model.addAttribute("simpleUserForm", simpleUserForm);

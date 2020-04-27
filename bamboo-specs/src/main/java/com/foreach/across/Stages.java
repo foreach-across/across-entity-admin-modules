@@ -46,14 +46,6 @@ public class Stages {
                 );
     }
 
-    public static Stage integrationTests() {
-        return new Stage("Run multi-database tests")
-                .jobs(
-                        crossDbTest("H2", "ITH2", "mysql"),
-                        crossDbTest("MySQL", "ITMYSQL", "mysql")
-                );
-    }
-
     public static Stage deploySnapshot() {
         String template =
                 DOCKER_COMPOSE + " run --rm maven-gm mvn -U --batch-mode clean compile assembly:assembly deploy -DskipTests=true -P{profile} -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true";
