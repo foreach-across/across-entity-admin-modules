@@ -51,10 +51,7 @@ public class Stages {
         return new Stage("Run multi-database tests")
                 .jobs(
                         crossDbTest("H2", "ITH2", "mysql"),
-                        crossDbTest("MySQL", "ITMYSQL", "mysql"),
-                        crossDbTest("Oracle", "ITOR", "oracle"),
-                        crossDbTest("Postgres", "ITPOS", "postgres"),
-                        crossDbTest("SQL Server", "ITMSSQL", "mssql")
+                        crossDbTest("MySQL", "ITMYSQL", "mysql")
                 );
     }
 

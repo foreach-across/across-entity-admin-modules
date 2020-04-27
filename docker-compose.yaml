@@ -1,39 +1,41 @@
-maven-base:
-  # 1.) Do not use the alpine image as it fails frontend-maven-plugin:install-node-and-yarn
-  #     https://github.com/eirslett/frontend-maven-plugin/issues/743
-  # 2.) Avoid 3.5.4 or higher for now, surefire fails due to a broken openjdk package
-  #     https://github.com/carlossg/docker-maven/issues/90
-  # 3.) Using > 3.5.0 because of timestamp issues with -SNAPSHOT dependencies
-  #     https://issues.apache.org/jira/browse/MDEPLOY-221
-  image: 'ax-maven-with-build-tools:3.5.2-jdk-8'
-  build:
-    context: .
-    dockerfile: 'docker-build-files/Dockerfile'
-  working_dir: '/usr/src/app'
-  volumes:
-    - '../:/usr/src/app:delegated'
-    - './docker-build-files/wait-for-it.sh:/root/wait-for-it.sh'
-    - './docker-build-files/wait-for-datasource.jar:/root/wait-for-datasource.jar'
-    # TODO: should we map the dev-configs volume or just include it in our repo?
-    - './docker-build-files/dev-configs:/root/dev-configs'
-    # Reuse the maven repository from the host, we could omit it, but it would fetch at each build
-    - '${HOME}/.m2:/root/.m2:delegated'
-    # Reuse embedded mongo db downloads
-    - '${HOME}/.embedmongo:/root/.embedmongo:delegated'
-    # Share our GPG keys with underlying container
-    - '${HOME}/.gnupg:/root/.gnupg:delegated'
-    - '/var/run/docker.sock:/var/run/docker.sock'
-  # WINDOWS USERS using cmd.exe:
-  #- '${USERPROFILE}/.m2:/root/.m2'
-  environment:
-    # Specify the timezone - used by date tests
-    TZ: "Europe/Brussels"
-    # Specify a language - used by LocaleContextHolder
-    LANG: "en_US.UTF-8"
-    # Required by embedded mongo db - across-autoconfigure/test-projects
-    LC_ALL: "C"
-    # Faster maven startup https://jrebel.com/rebellabs/your-maven-build-is-slow-speed-it-up/
-    MAVEN_OPTS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+version: "2.1"
+services:
+  maven-base:
+    # 1.) Do not use the alpine image as it fails frontend-maven-plugin:install-node-and-yarn
+    #     https://github.com/eirslett/frontend-maven-plugin/issues/743
+    # 2.) Avoid 3.5.4 or higher for now, surefire fails due to a broken openjdk package
+    #     https://github.com/carlossg/docker-maven/issues/90
+    # 3.) Using > 3.5.0 because of timestamp issues with -SNAPSHOT dependencies
+    #     https://issues.apache.org/jira/browse/MDEPLOY-221
+    image: 'ax-maven-with-build-tools:3.5.2-jdk-8'
+    build:
+      context: .
+      dockerfile: 'docker-build-files/Dockerfile'
+    working_dir: '/usr/src/app'
+    volumes:
+      - '../:/usr/src/app:delegated'
+      - './docker-build-files/wait-for-it.sh:/root/wait-for-it.sh'
+      - './docker-build-files/wait-for-datasource.jar:/root/wait-for-datasource.jar'
+      # TODO: should we map the dev-configs volume or just include it in our repo?
+      - './docker-build-files/dev-configs:/root/dev-configs'
+      # Reuse the maven repository from the host, we could omit it, but it would fetch at each build
+      - '${HOME}/.m2:/root/.m2:delegated'
+      # Reuse embedded mongo db downloads
+      - '${HOME}/.embedmongo:/root/.embedmongo:delegated'
+      # Share our GPG keys with underlying container
+      - '${HOME}/.gnupg:/root/.gnupg:delegated'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    # WINDOWS USERS using cmd.exe:
+    #- '${USERPROFILE}/.m2:/root/.m2'
+    environment:
+      # Specify the timezone - used by date tests
+      TZ: "Europe/Brussels"
+      # Specify a language - used by LocaleContextHolder
+      LANG: "en_US.UTF-8"
+      # Required by embedded mongo db - across-autoconfigure/test-projects
+      LC_ALL: "C"
+      # Faster maven startup https://jrebel.com/rebellabs/your-maven-build-is-slow-speed-it-up/
+      MAVEN_OPTS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
   ### Sonar ########
   #
