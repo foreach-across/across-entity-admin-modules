@@ -6,6 +6,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.util.ReflectionUtils;
@@ -21,6 +22,7 @@ import java.util.function.Consumer;
  */
 @RequiredArgsConstructor
 public class CustomizeBatchProperties {
+    @Getter
     private final Consumer<EntityPropertyRegistryBuilder> builder;
 
     @SneakyThrows

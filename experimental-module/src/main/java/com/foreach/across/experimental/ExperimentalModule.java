@@ -4,7 +4,6 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.experimental.modules.entitycontrols.EntityControlsModule;
-import org.springframework.context.annotation.Bean;
 
 import java.util.Set;
 

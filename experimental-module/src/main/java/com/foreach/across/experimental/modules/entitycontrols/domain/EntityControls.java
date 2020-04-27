@@ -13,6 +13,7 @@ import com.foreach.across.modules.entity.views.processors.EntityPropertyRegistry
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -36,9 +37,14 @@ public class EntityControls<T> {
     private final EntityViewElementBatch<T> batch;
     private final EntityConfiguration entityConfiguration;
     private final HashMap<String, Object> builderHints = new HashMap<>();
+    @Getter
     private final HashMap<String, ViewElementMode> propertyRenderModes = new HashMap<>();
+
+    @Getter
     private T entity;
+    @Getter
     private CustomizeBatchProperties customizeBatchProperties;
+    @Getter
     private ViewElementMode globalViewElementMode = ViewElementMode.FORM_WRITE;
 
     /**
@@ -133,12 +139,12 @@ public class EntityControls<T> {
      * Build the entityControls controls and return a map with the control name as key and the view element as value
      */
     public Map<String, ViewElement> build(ViewElementBuilderContext builderContext) {
-        if (customizeBatchProperties != null) {
-            customizeBatchProperties.apply(batch);
+        if (getCustomizeBatchProperties() != null) {
+            getCustomizeBatchProperties().apply(batch);
         }
 
-        if (entity != null) {
-            batch.setEntity(entity);
+        if (getEntity() != null) {
+            batch.setEntity(getEntity());
         }
 
         if (batch.getPropertiesBinder().getEntity() == null) {
@@ -148,7 +154,7 @@ public class EntityControls<T> {
         propertyRenderModes.forEach(builderHints::put);
         batch.setBuilderHints(builderHints);
 
-        batch.setViewElementMode(globalViewElementMode);
+        batch.setViewElementMode(getGlobalViewElementMode());
 
         return batch.build(builderContext);
     }
