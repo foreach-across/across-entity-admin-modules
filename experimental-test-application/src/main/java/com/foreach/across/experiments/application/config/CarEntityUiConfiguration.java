@@ -9,11 +9,15 @@ import org.springframework.context.annotation.Configuration;
 public class CarEntityUiConfiguration implements EntityConfigurer {
     @Override
     public void configure(EntitiesConfigurationBuilder entities) {
-        entities.create().entityType(CarResource.class, true).listView("custom", lvb ->
-                lvb.properties(props -> props.property("owner")
-                        .propertyType(Integer.class)
-                        .valueFetcher(f -> 1959)
-                )
-        );
+        entities.create().entityType(CarResource.class, true);
+
+        entities.withType(CarResource.class)
+                .properties(props -> props.property("owner").propertyType(String.class).valueFetcher(f -> "Jef Plessers"))
+                .formView("custom", vb ->
+                        vb.properties(props -> props.property("owner")
+                                .propertyType(Integer.class)
+                                .valueFetcher(f -> 1959)
+                        )
+                );
     }
 }
