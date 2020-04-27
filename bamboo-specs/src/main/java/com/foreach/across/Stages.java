@@ -30,8 +30,7 @@ public class Stages {
                                 defaultRepositoryCheckoutTask(),
                                 runCommands(
                                         cleanAcrossDepsFromLocalRepository(),
-                                        DOCKER_COMPOSE + " run maven-base mvn -U --batch-mode clean verify -Dmaven.javadoc.skip=true",
-                                        "docker-compose run --rm frontend sh -c 'yarn --modules-folder /node_modules run test --ci --reporters=default --reporters=jest-junit && yarn --modules-folder /node_modules run build:prod'"
+                                        DOCKER_COMPOSE + " run maven-base mvn -U --batch-mode clean verify -Dmaven.javadoc.skip=true"
                                 ).description( "Run unit tests" )
                         )
                         .finalTasks(
