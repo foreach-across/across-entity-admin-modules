@@ -36,6 +36,10 @@
             <groupId>com.foreach.across.modules</groupId>
             <artifactId>entity-module</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.foreach.across.modules</groupId>
+            <artifactId>admin-web-module</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
