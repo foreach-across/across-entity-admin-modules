@@ -13,7 +13,7 @@ services:
       dockerfile: 'docker-build-files/Dockerfile'
     working_dir: '/usr/src/app'
     volumes:
-      - '../:/usr/src/app:delegated'
+      - '${PWD}:/usr/src/app:delegated'
       - './docker-build-files/wait-for-it.sh:/root/wait-for-it.sh'
       - './docker-build-files/wait-for-datasource.jar:/root/wait-for-datasource.jar'
       # TODO: should we map the dev-configs volume or just include it in our repo?
