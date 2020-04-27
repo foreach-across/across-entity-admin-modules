@@ -14,6 +14,12 @@
     <artifactId>experimental-module-bamboo-specs</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <sonar.skip>true</sonar.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.atlassian.bamboo</groupId>
