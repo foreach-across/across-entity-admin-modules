@@ -10,7 +10,8 @@ import com.atlassian.bamboo.specs.builders.task.TestParserTask;
 import com.atlassian.bamboo.specs.model.task.TestParserTaskProperties;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.Jobs.*;
+import static com.foreach.across.Jobs.defaultRepositoryCheckoutTask;
+import static com.foreach.across.Jobs.requiresLinux;
 
 public class Stages {
     private static final String DOCKER_COMPOSE = "docker-compose --no-ansi";
@@ -22,16 +23,16 @@ public class Stages {
     }
 
     public static Stage unitTests() {
-        return new Stage( "Run tests" )
-                .description( "Checks that the library can be built and all tests succeed" )
-                .jobs( new Job( "Run unit tests", new BambooKey( "JOB1" ) )
-                        .pluginConfigurations( new AllOtherPluginsConfiguration() )
+        return new Stage("Run tests")
+                .description("Checks that the library can be built and all tests succeed")
+                .jobs(new Job("Run unit tests", new BambooKey("JOB1"))
+                        .pluginConfigurations(new AllOtherPluginsConfiguration())
                         .tasks(
                                 defaultRepositoryCheckoutTask(),
                                 runCommands(
                                         cleanAcrossDepsFromLocalRepository(),
                                         DOCKER_COMPOSE + " run maven-base mvn -U --batch-mode clean verify -Dmaven.javadoc.skip=true"
-                                ).description( "Run unit tests" )
+                                ).description("Run unit tests")
                         )
                         .finalTasks(
                                 testParserTask(),
@@ -39,16 +40,16 @@ public class Stages {
                                         "docker-compose down -v --remove-orphans",
                                         DOCKER_COMPOSE + " down -v --remove-orphans",
                                         DOCKER_COMPOSE + " rm -f -s -v maven-base"
-                                ).description( "Cleanup docker" )
+                                ).description("Cleanup docker")
                         )
-                        .requirements( requiresLinux() )
-                        .cleanWorkingDirectory( true )
+                        .requirements(requiresLinux())
+                        .cleanWorkingDirectory(true)
                 );
     }
 
     public static Stage deploySnapshot() {
         String template =
-                DOCKER_COMPOSE + " run --rm maven-gm mvn -U --batch-mode clean compile assembly:assembly deploy -DskipTests=true -P{profile} -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true";
+                DOCKER_COMPOSE + " run --rm maven-base mvn -U --batch-mode clean compile assembly:assembly deploy -DskipTests=true -P{profile} -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true";
         ScriptTask deployTask = runCommands(cleanAcrossDepsFromLocalRepository(), buildMavenDeployToNexusAndSonatypeCommand(template))
                 .description("Run mvn clean deploy");
 
@@ -81,12 +82,7 @@ public class Stages {
     }
 
     private static String buildMavenDeployToNexusAndSonatypeCommand(String deployCommandTemplate) {
-        return "if test \"${bamboo.deployToSonatype}\" = \"true\"; then\n" +
-                "  echo Deploying to Sonatype\n" +
-                "  " + deployCommandTemplate.replace("{profile}", "sonatype") + "\n" +
-                "fi\n" +
-                "\n" +
-                deployCommandTemplate.replace("{profile}", "foreach") + "\n";
+        return deployCommandTemplate.replace("{profile}", "foreach") + "\n";
     }
 
     private static String cleanAcrossDepsFromLocalRepository() {
@@ -94,7 +90,7 @@ public class Stages {
     }
 
     private static Task testParserTask() {
-        return new TestParserTask( TestParserTaskProperties.TestType.JUNIT ).resultDirectories( "**/target/surefire-reports/*.xml" ).description(
-                "Parse surefire reports" );
+        return new TestParserTask(TestParserTaskProperties.TestType.JUNIT).resultDirectories("**/target/surefire-reports/*.xml").description(
+                "Parse surefire reports");
     }
 }
