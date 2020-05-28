@@ -195,7 +195,7 @@ class EntityQueryTokenConverter
 		}
 
 		if ( !orders.isEmpty() ) {
-			query.setSort( new Sort( orders ) );
+			query.setSort( Sort.by( orders ) );
 		}
 
 		return query;

@@ -21,12 +21,9 @@ import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
-import com.foreach.across.modules.entity.views.ViewElementMode;
 import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
-
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -106,7 +103,7 @@ public class TestEntityQueryFilterConfiguration
 				.properties( pb -> pb.property( "title" ) )
 				.advancedMode( true )
 				.defaultQuery( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.EQ, "john" ) ) )
-				.appendBasePredicate( EntityQuery.all( new Sort( Sort.Direction.DESC, "date" ) ) )
+				.appendBasePredicate( EntityQuery.all( Sort.by( Sort.Direction.DESC, "date" ) ) )
 				.build();
 
 		assertEquals( EntityPropertySelector.of( "name", "title" ), updated.getPropertySelector() );

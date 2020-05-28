@@ -38,16 +38,16 @@ public class TestEntityPropertyDescriptorFactory
 	public void createWithParent() {
 		SimpleEntityPropertyDescriptor one = new SimpleEntityPropertyDescriptor( "address" );
 		one.setDisplayName( "Address" );
-		one.setAttribute( Sort.Order.class, new Sort.Order( "address" ) );
+		one.setAttribute( Sort.Order.class, Sort.Order.by( "address" ) );
 		( (GenericEntityPropertyController) one.getController() ).order( 1000 );
 
 		MutableEntityPropertyDescriptor merged = descriptorFactory.createWithOriginal( "street", one );
-		merged.setAttribute( Sort.Order.class, new Sort.Order( "street" ) );
+		merged.setAttribute( Sort.Order.class, Sort.Order.by( "street" ) );
 
 		assertEquals( 1000, merged.getController().getOrder() );
 		assertEquals( "street", merged.getName() );
 		assertEquals( "Address", merged.getDisplayName() );
-		assertEquals( new Sort.Order( "street" ), merged.getAttribute( Sort.Order.class ) );
+		assertEquals( Sort.Order.by( "street" ), merged.getAttribute( Sort.Order.class ) );
 	}
 
 	@Test

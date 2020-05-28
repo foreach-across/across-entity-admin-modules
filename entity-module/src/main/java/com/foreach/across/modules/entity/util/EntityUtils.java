@@ -133,7 +133,7 @@ public class EntityUtils
 		if ( sort != null ) {
 			Sort modifiedSort = translateSort( sort, propertyRegistry );
 			if ( !sort.equals( modifiedSort ) ) {
-				return new PageRequest( pageable.getPageNumber(), pageable.getPageSize(), modifiedSort );
+				return PageRequest.of( pageable.getPageNumber(), pageable.getPageSize(), modifiedSort );
 			}
 		}
 

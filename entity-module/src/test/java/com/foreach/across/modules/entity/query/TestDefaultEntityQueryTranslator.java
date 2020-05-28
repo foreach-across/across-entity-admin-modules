@@ -334,11 +334,11 @@ public class TestDefaultEntityQueryTranslator
 		when( propertyRegistry.getProperty( "name" ) ).thenReturn( name );
 
 		EntityQuery rawQuery = EntityQuery.all(
-				new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) )
+				Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) )
 		);
 
 		EntityQuery translated = EntityQuery.all(
-				new Sort(
+				Sort.by(
 						new Sort.Order( Sort.Direction.ASC, "translatedName", Sort.NullHandling.NULLS_LAST ).ignoreCase(),
 						new Sort.Order( Sort.Direction.DESC, "city" )
 				)

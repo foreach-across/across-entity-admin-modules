@@ -66,8 +66,8 @@ public class TestUserInstaller
 		      } );
 
 		// verify installed groups
-		Assert.isTrue( userRepository.findByGroup( group, new PageRequest( 0, 30 ) ).getTotalElements() == 60, "should have 60 groups" );
-		Assert.isTrue( userRepository.findByGroupAndNameContaining( group, "j", new PageRequest( 0, 30 ) )
+		Assert.isTrue( userRepository.findByGroup( group, PageRequest.of( 0, 30 ) ).getTotalElements() == 60, "should have 60 groups" );
+		Assert.isTrue( userRepository.findByGroupAndNameContaining( group, "j", PageRequest.of( 0, 30 ) )
 		                             .getTotalElements() == 45, "should have 45 groups containing name 'j'" );
 	}
 

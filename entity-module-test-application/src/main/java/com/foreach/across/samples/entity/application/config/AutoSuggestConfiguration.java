@@ -59,7 +59,7 @@ public class AutoSuggestConfiguration implements EntityConfigurer
 				SimpleAutoSuggestDataSet
 						.builder()
 						.suggestionsLoader(
-								( query, controlName ) -> groupRepository.findByNameContaining( query, new PageRequest( 0, 15, new Sort( "name" ) ) )
+								( query, controlName ) -> groupRepository.findByNameContaining( query, PageRequest.of( 0, 15, Sort.by( "name" ) ) )
 								                                         .getContent()
 								                                         .stream()
 								                                         .map( groupToSuggestion::transformToResult )

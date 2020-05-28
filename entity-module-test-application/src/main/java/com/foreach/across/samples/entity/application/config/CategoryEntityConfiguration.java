@@ -118,7 +118,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .propertyType( String.class )
 						        .attribute( EntityAttributes.CONTROL_NAME, "entity[id]" )
 						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
-						        .attribute( Sort.Order.class, new Sort.Order( "id" ) )
+						        .attribute( Sort.Order.class, Sort.Order.by( "id" ) )
 						        .attribute(
 								        OptionIterableBuilder.class,
 								        builderContext -> categoryRepository.stream()
@@ -139,7 +139,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .propertyType( String.class )
 						        .attribute( EntityAttributes.CONTROL_NAME, "entity[name]" )
 						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
-						        .attribute( Sort.Order.class, new Sort.Order( "name" ) )
+						        .attribute( Sort.Order.class, Sort.Order.by( "name" ) )
 						        .writable( true )
 						        .<Map>valueFetcher( map -> map.get( "name" ) )
 						        .order( 2 )

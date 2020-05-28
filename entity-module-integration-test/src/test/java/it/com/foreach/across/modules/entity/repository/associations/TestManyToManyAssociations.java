@@ -146,7 +146,7 @@ public class TestManyToManyAssociations
 	private void verifyRelatedItems( AssociatedEntityQueryExecutor queryExecutor, Object parent, Object... reps ) {
 		assertNotNull( queryExecutor );
 
-		Page page = queryExecutor.findAll( parent, EntityQuery.all(), new PageRequest( 0, 100 ) );
+		Page page = queryExecutor.findAll( parent, EntityQuery.all(), PageRequest.of( 0, 100 ) );
 		assertNotNull( page );
 		assertEquals( reps.length, page.getTotalElements() );
 		assertTrue( page.getContent().containsAll( Arrays.asList( reps ) ) );

@@ -295,7 +295,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				             ab -> ab.name( "user.group" )
 				                     .associationType( EntityAssociation.Type.EMBEDDED )
 				                     .listView(
-						                     lvb -> lvb.defaultSort( new Sort( "name" ) )
+						                     lvb -> lvb.defaultSort( Sort.by( "name" ) )
 						                               .viewProcessor( vb -> vb.createBean( UserInGroupFilterProcessor.class ) )
 				                     )
 		             )

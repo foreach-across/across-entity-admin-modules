@@ -246,8 +246,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		if ( child.hasAttribute( Sort.Order.class ) ) {
 			Sort.Order order = child.getAttribute( Sort.Order.class );
 
-			Sort.Order nestedOrder = new Sort.Order( parent.getName() + "." + order.getProperty() )
-					.with( order.getNullHandling() );
+			Sort.Order nestedOrder = Sort.Order.by( parent.getName() + "." + order.getProperty() )
+			                                   .with( order.getNullHandling() );
 
 			if ( order.isIgnoreCase() ) {
 				nestedOrder = nestedOrder.ignoreCase();

@@ -17,11 +17,11 @@
 package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
+import com.foreach.across.testmodules.springdata.business.Company;
+import com.foreach.across.testmodules.springdata.business.Representative;
 import org.junit.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import com.foreach.across.testmodules.springdata.business.Company;
-import com.foreach.across.testmodules.springdata.business.Representative;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -51,7 +51,7 @@ public class TestAssociatedEntityQueryExecutor
 
 		assertEquals(
 				new PageImpl<>( Arrays.asList( one, two ) ),
-				executor.findAll( company, EntityQuery.all(), new PageRequest( 0, 2 ) )
+				executor.findAll( company, EntityQuery.all(), PageRequest.of( 0, 2 ) )
 		);
 	}
 }

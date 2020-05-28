@@ -75,8 +75,8 @@ public class TestPageableExtensionViewProcessor
 
 	@Test
 	public void defaultCustomPageableAndExtension() {
-		PageRequest expected = new PageRequest( 10, 30,
-		                                        new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "date" ) ) );
+		PageRequest expected = PageRequest.of( 10, 30,
+		                                       Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "date" ) ) );
 		processor.setDefaultPageable( expected );
 		processor.setExtensionName( "customPageable" );
 
@@ -93,8 +93,8 @@ public class TestPageableExtensionViewProcessor
 		when( webRequest.getParameterValues( "sort" ) )
 				.thenReturn( new String[] { "name,ASC", "date,DESC" } );
 
-		PageRequest expected = new PageRequest(
-				5, 100, new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "date" ) )
+		PageRequest expected = PageRequest.of(
+				5, 100, Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "date" ) )
 		);
 
 		processor.initializeCommandObject( viewRequest, viewCommand, null );
@@ -110,8 +110,8 @@ public class TestPageableExtensionViewProcessor
 		when( webRequest.getParameterValues( "extensions[custom].sort" ) )
 				.thenReturn( new String[] { "name,ASC", "date,DESC" } );
 
-		PageRequest expected = new PageRequest(
-				5, 100, new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "date" ) )
+		PageRequest expected = PageRequest.of(
+				5, 100, Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "date" ) )
 		);
 
 		processor.setRequestParameterPrefix( "extensions[custom]." );
@@ -133,7 +133,7 @@ public class TestPageableExtensionViewProcessor
 		when( webRequest.getParameter( "page" ) ).thenReturn( "5" );
 		when( webRequest.getParameterValues( "sort" ) ).thenReturn( new String[] { "name,ASC" } );
 
-		PageRequest expected = new PageRequest( 5, 2000, new Sort( new Sort.Order( Sort.Direction.ASC, "name" ) ) );
+		PageRequest expected = PageRequest.of( 5, 2000, Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ) ) );
 		processor.initializeCommandObject( viewRequest, viewCommand, null );
 
 		Pageable pageable = viewCommand.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class );
@@ -143,7 +143,7 @@ public class TestPageableExtensionViewProcessor
 		processor.initializeCommandObject( viewRequest, viewCommand, null );
 
 		pageable = viewCommand.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class );
-		assertEquals( new PageRequest( 5, 5000, new Sort( new Sort.Order( Sort.Direction.ASC, "name" ) ) ), pageable );
+		assertEquals( PageRequest.of( 5, 5000, Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ) ) ), pageable );
 	}
 
 	@Test
@@ -153,10 +153,10 @@ public class TestPageableExtensionViewProcessor
 		when( webRequest.getParameterValues( "sort" ) ).thenReturn( new String[] { "name,ASC" } );
 
 		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
-		when( descriptor.getAttribute( Sort.Order.class ) ).thenReturn( new Sort.Order( "title" ).nullsLast() );
+		when( descriptor.getAttribute( Sort.Order.class ) ).thenReturn( Sort.Order.by( "title" ).nullsLast() );
 		when( propertyRegistry.getProperty( "name" ) ).thenReturn( descriptor );
 
-		PageRequest expected = new PageRequest( 5, 2000, new Sort( new Sort.Order( Sort.Direction.ASC, "title" ).nullsLast() ) );
+		PageRequest expected = PageRequest.of( 5, 2000, Sort.by( new Sort.Order( Sort.Direction.ASC, "title" ).nullsLast() ) );
 		processor.initializeCommandObject( viewRequest, viewCommand, null );
 
 		Pageable pageable = viewCommand.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class );
@@ -169,7 +169,7 @@ public class TestPageableExtensionViewProcessor
 		when( webRequest.getParameter( "page" ) ).thenReturn( "5" );
 		when( webRequest.getParameterValues( "sort" ) ).thenReturn( new String[] { "name,ASC" } );
 
-		PageRequest expected = new PageRequest( 5, 1000, new Sort( new Sort.Order( Sort.Direction.ASC, "name" ) ) );
+		PageRequest expected = PageRequest.of( 5, 1000, Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ) ) );
 		processor.setTranslatePageable( false );
 		processor.initializeCommandObject( viewRequest, viewCommand, null );
 
