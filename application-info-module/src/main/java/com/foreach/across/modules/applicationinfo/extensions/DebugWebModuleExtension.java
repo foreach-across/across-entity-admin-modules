@@ -14,21 +14,36 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.applicationinfo.config.modules;
+package com.foreach.across.modules.applicationinfo.extensions;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.applicationinfo.controllers.ApplicationInfoController;
 import com.foreach.across.modules.applicationinfo.controllers.rest.ApplicationInfoRestController;
+import com.foreach.across.modules.debugweb.DebugWebModule;
+import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
- * Replace the default controller for debugweb.
+ * Configuration that sets the default debug web dashboard to the application info controller.
+ *
+ * @author Arne Vandamme
+ * @since 1.0.1
  */
-@AcrossDepends(required = "DebugWebModule")
-@Configuration
-public class DebugWebControllersConfiguration
+@ModuleConfiguration(DebugWebModule.NAME)
+@Slf4j
+class DebugWebModuleExtension
 {
+	@Autowired
+	public void registerDashboardIfNecessary( DebugWebModuleSettings settings ) {
+		if ( StringUtils.equals( settings.getDashboard(), "/" ) ) {
+			LOG.trace( "Registering debug dashboard to application info controller" );
+			settings.setDashboard( ApplicationInfoController.PATH );
+		}
+	}
+
 	@Bean
 	public ApplicationInfoController applicationInfoController() {
 		return new ApplicationInfoController();

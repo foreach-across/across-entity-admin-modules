@@ -17,25 +17,23 @@
 package com.foreach.across.modules.applicationinfo.extensions;
 
 import com.foreach.across.core.annotations.ModuleConfiguration;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.config.RememberMeProperties;
 import com.foreach.common.spring.context.ApplicationInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Set default settings on AdminWebModule based on configured application info.
  */
-@ModuleConfiguration("AdminWebModule")
-public class AdminWebModuleConfiguration
+@ModuleConfiguration(AdminWebModule.NAME)
+@Slf4j
+class AdminWebModuleExtension
 {
-	private static final Logger LOG = LoggerFactory.getLogger( AdminWebModuleConfiguration.class );
-
 	@Autowired
-	public void registerAdminWebTitle( AdminWebModuleSettings adminWebModuleSettings,
-	                                   ApplicationInfo applicationInfo ) {
+	public void registerAdminWebTitle( AdminWebModuleSettings adminWebModuleSettings, ApplicationInfo applicationInfo ) {
 		if ( adminWebModuleSettings.getTitle() == null ) {
 			LOG.trace( "Registering application name as AdminWeb title" );
 			adminWebModuleSettings.setTitle( applicationInfo.getApplicationName() );
@@ -43,8 +41,7 @@ public class AdminWebModuleConfiguration
 	}
 
 	@Autowired
-	public void registerRememberMeCookie( RememberMeProperties rememberMeProperties,
-	                                      ApplicationInfo applicationInfo ) {
+	public void registerRememberMeCookie( RememberMeProperties rememberMeProperties, ApplicationInfo applicationInfo ) {
 		if ( StringUtils.equals( RememberMeProperties.DEFAULT_COOKIE, rememberMeProperties.getCookie() ) ) {
 			LOG.trace( "Registering application id as name for the AdminWeb remember me cookie" );
 			rememberMeProperties.setCookie(

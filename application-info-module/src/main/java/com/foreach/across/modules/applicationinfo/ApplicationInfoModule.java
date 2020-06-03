@@ -18,20 +18,19 @@ package com.foreach.across.modules.applicationinfo;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossRole;
 import com.foreach.across.core.context.AcrossModuleRole;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
+import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
+import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
+import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.context.configurer.PropertySourcesConfigurer;
 import org.springframework.core.Ordered;
 
-import java.util.Date;
+import java.util.Set;
 
 @AcrossRole(value = AcrossModuleRole.INFRASTRUCTURE, order = Ordered.HIGHEST_PRECEDENCE)
 public class ApplicationInfoModule extends AcrossModule
 {
 	public final static String NAME = "ApplicationInfoModule";
-
-	private final Date configurationDate;
-
-	public ApplicationInfoModule() {
-		configurationDate = new Date();
-	}
 
 	@Override
 	public String getName() {
@@ -40,17 +39,23 @@ public class ApplicationInfoModule extends AcrossModule
 
 	@Override
 	public String getDescription() {
-		return "Provides support for configuring both the running application and synchronizing remote application information.";
+		return "Extension module: adds support for basic application information.";
 	}
 
-	/**
-	 * If no startup date is specified, the configuration timestamp for the module will be considered
-	 * the initial startup date.
-	 *
-	 * @return Timestamp when the module was configured.
-	 */
-	@SuppressWarnings("all")
-	public Date getConfigurationDate() {
-		return configurationDate;
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		// don't bootstrap anything yourself
+	}
+
+	@Override
+	public void prepareForBootstrap( ModuleBootstrapConfig currentModule, AcrossBootstrapConfig contextConfig ) {
+		// attach property sources to the context infrastructure module
+		contextConfig.extendModule(
+				AcrossBootstrapConfigurer.CONTEXT_INFRASTRUCTURE_MODULE,
+				currentModule.getApplicationContextConfigurers()
+				             .stream()
+				             .filter( PropertySourcesConfigurer.class::isInstance )
+				             .toArray( ApplicationContextConfigurer[]::new )
+		);
 	}
 }
