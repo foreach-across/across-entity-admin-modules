@@ -21,7 +21,7 @@ import org.springframework.core.convert.ConversionService;
 /**
  * @author Arne Vandamme
  */
-@ConfigurationProperties(prefix = "propertiesModule")
+@ConfigurationProperties(prefix = "properties-module")
 public class PropertiesModuleSettings
 {
 	/**
