@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 
 import java.util.Collections;
 
@@ -27,16 +28,17 @@ import java.util.Collections;
  * @author Arne Vandamme
  */
 @ModuleConfiguration(SpringSecurityModule.NAME)
+@EnableGlobalAuthentication
 public class SecurityConfiguration
 {
 	@Autowired
 	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
 		auth.inMemoryAuthentication()
-		    .withUser( "admin" ).password( "admin" )
+		    .withUser( "admin" ).password( "{noop}admin" )
 		    .authorities( "access administration" ).and()
-		    .withUser( "admin2" ).password( "admin" )
+		    .withUser( "admin2" ).password( "{noop}admin" )
 		    .authorities( "access administration" ).and()
-		    .withUser( "user" ).password( "user" )
+		    .withUser( "user" ).password( "{noop}user" )
 		    .authorities( Collections.emptyList() );
 	}
 }

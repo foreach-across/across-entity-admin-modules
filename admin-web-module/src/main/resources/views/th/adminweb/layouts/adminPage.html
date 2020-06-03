@@ -22,41 +22,40 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${@adminWeb.title}">Administration</title>
-    <across:web-resources bucket="head" />
-    <across:web-resources bucket="javascript" />
-    <across:web-resources bucket="css" />
+    <across:web-resources bucket="head"/>
+    <across:web-resources bucket="javascript"/>
+    <th:block th:if="${isLoginPage}">
+        <link rel="stylesheet" th:href="@{@static:adminweb/css/adminweb-login.css}"/>
+    </th:block>
+    <across:web-resources bucket="css"/>
 </head>
 <body>
 <div sec:authorize="!isAnonymous()" th:unless="${isLoginPage}">
+
     <!--/* Main menu navigation */-->
-    <nav class="navbar navbar-fixed-top" role="navigation">
-        <div class="container-fluid">
-            <div class="navbar-header admin-navbar-title">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#admin-top-navbar" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" th:if="${@adminWeb.title}" th:href="@{${#webapp.path('/')}}" th:text="${@adminWeb.title}">
-                    application name
-                </a>
-            </div>
-            <div id="admin-top-navbar" class="navbar-collapse collapse">
-                <across:view element="${adminWebNavbarNavigation}"/>
-                <across:view element="${adminWebNavbarRightNavigation}"/>
-            </div>
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark axu-bg-dark">
+        <div class="navbar-header admin-navbar-title">
+            <a class="navbar-brand" th:if="${@adminWeb.title}" th:href="@{${#webapp.path('/')}}" th:text="${@adminWeb.title}">
+                application name
+            </a>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#admin-top-navbar" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="admin-top-navbar">
+            <across:view element="${adminWebNavbarNavigation}"/>
+            <across:view element="${adminWebNavbarRightNavigation}"/>
         </div>
     </nav>
 
     <!--/* Content body */-->
     <div th:if="${childPage}" class="content for-navbar-fixed-top">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-2 hidden-sm hidden-xs sidebar no-padding">
+            <div class="row axu-mb-3">
+                <div class="axu-d-none axu-d-md-block col-md-3 col-xl-2 sidebar">
                     <across:view element="${adminWebSidebarNavigation}"/>
                 </div>
-                <div class="col-md-10 main">
+                <div class="col-md-9 col-xl-10 main">
                     <across:view element="${adminWebBreadcrumb}"/>
                     <div th:replace="${childPage} :: content"></div>
                 </div>
@@ -66,11 +65,11 @@
 </div>
 
 <!--/* Login page does not render navigation */-->
-<div th:if="${isLoginPage}">
+<th:block th:if="${isLoginPage}">
     <div th:replace="${childPage} :: content"></div>
-</div>
+</th:block>
 
-<across:web-resources bucket="javascript-page-end" />
+<across:web-resources bucket="javascript-page-end"/>
 
 <th:block th:fragment="bottom-scripts(scripts)" th:if="${scripts}">
     <th:block th:insert="${scripts}"/>

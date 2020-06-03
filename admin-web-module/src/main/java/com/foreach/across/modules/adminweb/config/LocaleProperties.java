@@ -27,7 +27,7 @@ import java.util.Locale;
  * @author Arne Vandamme
  */
 @Component
-@ConfigurationProperties(prefix = "adminWebModule.locale")
+@ConfigurationProperties(prefix = "admin-web-module.locale")
 public class LocaleProperties
 {
 	/**

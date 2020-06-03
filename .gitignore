@@ -4,3 +4,5 @@ target
 .idea/libraries
 *.iml
 .DS_Store
+
+.flattened-pom.xml

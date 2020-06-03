@@ -18,6 +18,8 @@ package com.foreach.across.test.modules.adminweb.it;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.adminweb.AdminWebModuleIcons;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import com.foreach.across.modules.web.resource.WebResourceRegistryInterceptor;
@@ -45,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
-@TestPropertySource(properties = "acrossWebModule.resources.path=/static")
+@TestPropertySource(properties = "across.web.resources.path=/static")
 public class ITAdminWebDefaultSettings
 {
 	@Autowired
@@ -102,6 +104,11 @@ public class ITAdminWebDefaultSettings
 		mvc.perform( get( "/administration/login" ) )
 		   .andExpect( status().isOk() )
 		   .andExpect( content().string( not( containsString( "remember-me" ) ) ) );
+	}
+
+	@Test
+	public void iconsAreAvailable() {
+		assertNotNull( IconSet.iconSet( AdminWebModuleIcons.ICON_SET ).icon( AdminWebModuleIcons.DEVELOPER_TOOLS ) );
 	}
 
 	@AcrossTestConfiguration

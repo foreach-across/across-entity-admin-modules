@@ -36,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @AcrossWebAppConfiguration
 @TestPropertySource(properties = {
-		"adminWebModule.root-path=/",
-		"acrossWebModule.resources.path=/static-resources"
+		"admin-web-module.root-path=/",
+		"across.web.resources.path=/static-resources"
 })
 public class ITAdminWebOnRootPath
 {

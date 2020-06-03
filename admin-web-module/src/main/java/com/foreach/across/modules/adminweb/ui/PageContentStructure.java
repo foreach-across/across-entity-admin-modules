@@ -17,6 +17,7 @@
 package com.foreach.across.modules.adminweb.ui;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
@@ -28,7 +29,11 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.witherFor;
 
 /**
  * Represents the content structure of a single page.
@@ -73,22 +78,17 @@ public class PageContentStructure extends AbstractNodeViewElement
 	public static final String CSS_NAV = "pcs-nav";
 	public static final String CSS_FEEDBACK_SECTION = "pcs-feedback-section";
 	public static final String CSS_BODY_SECTION = "pcs-body-section";
-
+	@Getter
+	private final NodeViewElement header;
+	@Getter
+	private final NodeViewElement feedback;
+	@Getter
+	private final NodeViewElement footer;
+	@Getter
+	private final NodeViewElement nav;
 	@Getter
 	@Setter
 	private boolean renderAsTabs;
-
-	@Getter
-	private final NodeViewElement header;
-
-	@Getter
-	private final NodeViewElement feedback;
-
-	@Getter
-	private final NodeViewElement footer;
-
-	@Getter
-	private final NodeViewElement nav;
 
 	public PageContentStructure() {
 		super( "div" );
@@ -98,7 +98,8 @@ public class PageContentStructure extends AbstractNodeViewElement
 		header.addCssClass( CSS_HEADER );
 
 		footer = new NodeViewElement( "footer" );
-		footer.addCssClass( CSS_FOOTER );
+		footer.set( AcrossBootstrapStyles.css.margin.bottom.s3 )
+		      .addCssClass( CSS_FOOTER );
 
 		nav = new NodeViewElement( "nav" );
 		nav.addCssClass( CSS_NAV );
@@ -207,6 +208,19 @@ public class PageContentStructure extends AbstractNodeViewElement
 	}
 
 	/**
+	 * Get the current page title text set.  Retrieves the value from the child element named
+	 * {@link #ELEMENT_PAGE_TITLE_TEXT}, will return {@code null} if title not set or no page title element.
+	 *
+	 * @return title text if could be found
+	 */
+	public String getPageTitle() {
+		return ContainerViewElementUtils
+				.find( header, ELEMENT_PAGE_TITLE_TEXT, ConfigurableTextViewElement.class )
+				.map( ConfigurableTextViewElement::getText )
+				.orElse( null );
+	}
+
+	/**
 	 * Set the page title text directly. Requires an element named {@link #ELEMENT_PAGE_TITLE_TEXT} to be present,
 	 * else this method will do nothing.
 	 * <p/>
@@ -219,19 +233,6 @@ public class PageContentStructure extends AbstractNodeViewElement
 		ContainerViewElementUtils
 				.find( header, ELEMENT_PAGE_TITLE_TEXT, ConfigurableTextViewElement.class )
 				.ifPresent( t -> t.setText( pageTitle ) );
-	}
-
-	/**
-	 * Get the current page title text set.  Retrieves the value from the child element named
-	 * {@link #ELEMENT_PAGE_TITLE_TEXT}, will return {@code null} if title not set or no page title element.
-	 *
-	 * @return title text if could be found
-	 */
-	public String getPageTitle() {
-		return ContainerViewElementUtils
-				.find( header, ELEMENT_PAGE_TITLE_TEXT, ConfigurableTextViewElement.class )
-				.map( ConfigurableTextViewElement::getText )
-				.orElse( null );
 	}
 
 	/**
@@ -276,6 +277,7 @@ public class PageContentStructure extends AbstractNodeViewElement
 			heading.addChild( new TextViewElement( " " ) );
 
 			NodeViewElement actionsElement = new NodeViewElement( ELEMENT_PAGE_TITLE_SUB_TEXT, "small" );
+			actionsElement.addCssClass( "axu-text-muted" );
 			heading.addChild( actionsElement );
 
 			header.addChild( heading );
@@ -307,18 +309,20 @@ public class PageContentStructure extends AbstractNodeViewElement
 		if ( super.hasChildren() ) {
 			if ( renderAsTabs ) {
 				NodeViewElement tabWrapper = new NodeViewElement( "div" );
-				tabWrapper.addCssClass( "tabbable", "filled" );
+				tabWrapper.set( AcrossBootstrapStyles.css.margin.bottom.s3 )
+				          .addCssClass( "tabbable", "filled" );
 				if ( nav.hasChildren() ) {
-					tabWrapper.addChild( nav );
+					tabWrapper.addChild( nav.set( AcrossBootstrapStyles.css.margin.bottom.s3 )
+					                        .set( witherFor( AbstractNodeViewElement.class, this::useDisplayBlockIfNecessary ) ) );
 				}
 				tabWrapper.addChild( body );
 
 				NodeViewElement tabContent = new NodeViewElement( "div" );
-				tabContent.addCssClass( "tab-content" );
+				tabContent.set( css.tab.content, AcrossBootstrapStyles.css.padding.horizontal.s3 );
 				body.addChild( tabContent );
 
 				NodeViewElement tabPane = new NodeViewElement( "div" );
-				tabPane.addCssClass( "tab-pane", "active" );
+				tabPane.set( css.tab.pane, css.active );
 				tabPane.addChildren( getContentChildren() );
 
 				tabContent.addChild( tabPane );
@@ -340,5 +344,21 @@ public class PageContentStructure extends AbstractNodeViewElement
 		}
 
 		return children;
+	}
+
+	/**
+	 * Checks whether there is an element that should be rendered on the right of the navigation bar.
+	 * If so, the nav will be rendered as display block.
+	 */
+	private void useDisplayBlockIfNecessary( AbstractNodeViewElement menu ) {
+		Optional<ViewElement> navItemToAlignRight = menu.findAll(
+				child -> child instanceof NodeViewElement && ( (NodeViewElement) child ).hasCssClass( "float-right" ) )
+		                                                .findFirst();
+		if ( navItemToAlignRight.isPresent() ) {
+			menu.findAll( child -> child instanceof NodeViewElement && ( (NodeViewElement) child )
+					.hasCssClass( "nav" ) )
+			    .findFirst()
+			    .ifPresent( ul -> ul.set( AcrossBootstrapStyles.css.display.block ) );
+		}
 	}
 }
