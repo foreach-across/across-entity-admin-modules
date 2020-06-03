@@ -189,3 +189,13 @@ body {
 .form-group.is-invalid .invalid-feedback {
     display: block;
 }
+
+.form-signin .help-block {
+    font-size: small;
+    margin-bottom: 15px;
+    padding-left: 10px;
+}
+
+.form-signin .help-block:empty {
+    display: none;
+}

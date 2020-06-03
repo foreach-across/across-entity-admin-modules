@@ -21,7 +21,7 @@
 </head>
 <body>
 <div th:fragment="content">
-	Welcome to the <strong th:if="${@adminWeb.title}" th:text="${@adminWeb.title}">application name</strong> administration section.
+	<span th:utext="#{AdminWebModule.dashboard.welcome(${@adminWeb.title != null}? ${@adminWeb.title}:'')}">Welcome to the <strong th:if="${@adminWeb.title}" th:text="${@adminWeb.title}">application name</strong> administration section.</span>
 </div>
 </body>
 </html>
