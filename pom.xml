@@ -59,7 +59,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <revision>0.0.1.RC1</revision>
+        <revision>0.0.1-SNAPSHOT</revision>
     </properties>
 
     <modules>
@@ -100,6 +100,11 @@
                 <groupId>com.foreach.across.modules</groupId>
                 <artifactId>file-manager-module</artifactId>
                 <version>2.0.0.RC1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.foreach.across.modules</groupId>
+                <artifactId>dynamic-forms-module</artifactId>
+                <version>0.1.0.RC1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

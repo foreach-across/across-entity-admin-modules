@@ -86,6 +86,10 @@
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>admin-web-module</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>dynamic-forms-module</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

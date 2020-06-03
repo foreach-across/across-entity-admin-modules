@@ -26,6 +26,7 @@ local-data
 node_modules
 bootstrap-demo-app/src/main/resources/views/static/bootstrapSample/theme
 ax-bootstrap-4-utilities/src/main/resources/META-INF
+ax-bootstrap-theme/src/main/resources/views/static/adminweb-themes
 .idea/workspace.xml
 .idea/excludeFromValidation
 .idea/libraries
