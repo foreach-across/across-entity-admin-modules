@@ -19,7 +19,7 @@ describe( 'ControlAdapter - Container', function () {
     const selector = '#options-ca-multi-checkbox';
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     it( "adapter exists", function () {

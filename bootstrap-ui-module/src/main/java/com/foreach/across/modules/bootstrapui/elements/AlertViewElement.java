@@ -16,13 +16,21 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Represents a Bootstrap alert.
@@ -30,6 +38,7 @@ import java.util.List;
  * @author Arne Vandamme
  * @since 1.0.0
  */
+@Accessors(chain = true)
 public class AlertViewElement extends AbstractTextNodeViewElement
 {
 	/**
@@ -40,7 +49,14 @@ public class AlertViewElement extends AbstractTextNodeViewElement
 	private static final String CSS_DISMISSIBLE = "alert-dismissible";
 	private static final String CSS_PREFIX = "alert";
 
+	/**
+	 * Set the label for the close button if the alert is dismissible.
+	 */
+	@Getter
+	@Setter
 	private String closeLabel = "Close";
+
+	@Getter
 	private Style style;
 
 	public AlertViewElement() {
@@ -49,7 +65,7 @@ public class AlertViewElement extends AbstractTextNodeViewElement
 		addCssClass( CSS_PREFIX );
 	}
 
-	public void setStyle( Style style ) {
+	public AlertViewElement setStyle( Style style ) {
 		if ( this.style != null ) {
 			removeCssClass( this.style.forPrefix( CSS_PREFIX ) );
 		}
@@ -57,10 +73,7 @@ public class AlertViewElement extends AbstractTextNodeViewElement
 		if ( style != null ) {
 			addCssClass( style.forPrefix( CSS_PREFIX ) );
 		}
-	}
-
-	public Style getStyle() {
-		return style;
+		return this;
 	}
 
 	/**
@@ -68,30 +81,17 @@ public class AlertViewElement extends AbstractTextNodeViewElement
 	 *
 	 * @param dismissible should the button be added
 	 */
-	public void setDismissible( boolean dismissible ) {
+	public AlertViewElement setDismissible( boolean dismissible ) {
 		if ( dismissible ) {
-			addCssClass( CSS_DISMISSIBLE );
+			return addCssClass( CSS_DISMISSIBLE );
 		}
 		else {
-			removeCssClass( CSS_DISMISSIBLE );
+			return removeCssClass( CSS_DISMISSIBLE );
 		}
 	}
 
 	public boolean isDismissible() {
 		return hasCssClass( CSS_DISMISSIBLE );
-	}
-
-	/**
-	 * Set the label for the close button if the alert is dismissible.
-	 *
-	 * @param closeLabel text
-	 */
-	public void setCloseLabel( String closeLabel ) {
-		this.closeLabel = closeLabel;
-	}
-
-	public String getCloseLabel() {
-		return closeLabel;
 	}
 
 	@Override
@@ -123,5 +123,125 @@ public class AlertViewElement extends AbstractTextNodeViewElement
 		button.addChild( span );
 
 		return button;
+	}
+
+	@Override
+	protected AlertViewElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected AlertViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public AlertViewElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> AlertViewElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement setText( String text ) {
+		super.setText( text );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
 	}
 }

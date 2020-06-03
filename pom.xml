@@ -20,16 +20,15 @@
 
 	<parent>
 		<groupId>com.foreach.across</groupId>
-		<artifactId>standard-module-bom</artifactId>
-		<version>3.2.1.RELEASE</version>
+		<artifactId>across-standard-module-parent</artifactId>
+		<version>5.0.0.RC1</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>bootstrap-ui-module-project</artifactId>
-	<version>2.2.2.RELEASE</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 
-	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
 		Provides a ViewElement model implementation for Twitter Bootstrap.
 	</description>
@@ -43,7 +42,7 @@
 
 	<developers>
 		<developer>
-			<name>Arne Vandamme</name>
+			<name>Foreach</name>
 			<organization>Foreach</organization>
 			<organizationUrl>https://www.foreach.be</organizationUrl>
 		</developer>
@@ -51,15 +50,28 @@
 
 	<repositories>
 		<repository>
-			<id>foreach-nexus</id>
-			<name>Foreach repository</name>
-			<url>http://repository.foreach.be/nexus/repository/public/</url>
+			<id>across</id>
+			<name>Across Repository</name>
+			<url>https://repository.foreach.be/nexus/repository/public/</url>
 		</repository>
 	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<revision>3.0.0.RC1</revision>
+		<!-- webjar specific properties -->
+		<webjars.jquery>3.4.1</webjars.jquery>
+		<webjars.bootstrap>4.3.1</webjars.bootstrap>
+		<webjars.autosize>4.0.2</webjars.autosize>
+		<webjars.autonumeric>4.5.4</webjars.autonumeric>
+		<webjars.momentjs>2.24.0</webjars.momentjs>
+		<webjars.tempus-dominus-datetimepicker>5.1.2</webjars.tempus-dominus-datetimepicker>
+		<webjars.bootstrap-select>1.13.11</webjars.bootstrap-select>
+		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
+		<webjars.handlebars>4.0.14</webjars.handlebars>
+		<webjars.font-awesome>5.10.1</webjars.font-awesome>
+		<webjars.ax-bootstrap-4-utilities>0.0.1.RC1</webjars.ax-bootstrap-4-utilities>
 	</properties>
 
 	<modules>
@@ -75,60 +87,39 @@
 				<version>1.11.2</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>xmlunit</groupId>
+				<artifactId>xmlunit</artifactId>
+				<version>1.6</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>ax-bootstrap-4-utilities</artifactId>
+				<version>${webjars.ax-bootstrap-4-utilities}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.16.8</version>
-			<scope>provided</scope>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.5.5</version>
-				<inherited>false</inherited>
-				<configuration>
-					<finalName>${project.artifactId}</finalName>
-					<descriptors>
-						<descriptor>site.xml</descriptor>
-					</descriptors>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
-
 	<scm>
-		<connection>scm:git:https://bitbucket.org/beforeach/bootstrap-ui-module.git</connection>
-		<developerConnection>scm:git:https://bitbucket.org/beforeach/bootstrap-ui-module.git</developerConnection>
 		<url>https://bitbucket.org/beforeach/bootstrap-ui-module</url>
 	</scm>
 

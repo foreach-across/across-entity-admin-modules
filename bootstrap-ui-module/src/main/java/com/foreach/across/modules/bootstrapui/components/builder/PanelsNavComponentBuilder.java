@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,18 @@
 
 package com.foreach.across.modules.bootstrapui.components.builder;
 
+import com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Renders a {@link com.foreach.across.modules.web.menu.Menu} into a panels structure with list-group items.
@@ -37,6 +41,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 	 * Holds the CSS class that determines the panel styling.  If set, the default <strong>panel-default</strong> class will be omitted.
 	 * Only relevant on group menu items that would result in a panel being rendered.
 	 */
+	@Deprecated
 	public static final String ATTR_PANEL_STYLE = "nav:panelStyle";
 
 	/**
@@ -45,6 +50,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 	 * <p/>
 	 * Note that non-panel lists do not support groups as items, these will be ignored.
 	 */
+	@Deprecated
 	public static final String ATTR_RENDER_AS_PANEL = "nav:renderAsPanel";
 
 	private String subMenuBaseId = UUID.randomUUID().toString();
@@ -63,8 +69,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement container = apply( new NodeViewElement( "nav" ), builderContext );
-		container.addCssClass( "nav", "nav-panels" );
+		NodeViewElement container = apply( html.nav().set( css.nav, css.of( "nav-panels" ), AcrossBootstrapStyles.css.flex.column ), builderContext );
 
 		NodeViewElement nonPanelList = null;
 		AtomicInteger subMenuCount = new AtomicInteger( 0 );
@@ -76,18 +81,18 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 					if ( itemToRender != null ) {
 						if ( itemToRender.isGroup() ) {
 							nonPanelList = null;
-							if ( Boolean.FALSE.equals( itemToRender.getAttribute( ATTR_RENDER_AS_PANEL ) ) ) {
+							/*if ( Boolean.FALSE.equals( itemToRender.getAttribute( ATTR_RENDER_AS_PANEL ) ) ) {
 								addSidebarList( container, itemToRender, builderContext, subMenuCount );
 							}
-							else {
-								addPanel( container, itemToRender, builderContext, subMenuCount );
-							}
+							else {*/
+							addPanel( container, itemToRender, builderContext, subMenuCount );
+							//}
 						}
 						else {
-							nonPanelList = nonPanelList != null ? nonPanelList : createList( container );
-							NodeViewElement li = new NodeViewElement( "li" );
-							addItemLink( li, item, true, false, builderContext );
-							nonPanelList.addChild( li );
+							nonPanelList = nonPanelList != null ? nonPanelList : createList( container ).set( AcrossBootstrapStyles.css.margin.bottom.s3 );
+							addItemLink( nonPanelList, item, true, false, builderContext )
+									.remove( css.nav.link )
+									.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( item, null ) );
 						}
 					}
 				}
@@ -97,43 +102,28 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		return container;
 	}
 
-	private void addSidebarList( NodeViewElement container, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
-		NodeViewElement list = createList( container );
-
-		if ( item.hasTitle() ) {
-			NodeViewElement title = new NodeViewElement( "li" );
-			title.addCssClass( "nav-title" );
-			title.addChild( resolveTextElement( item.getTitle(), builderContext ) );
-			list.addChild( title );
-		}
-
-		includedItems( item ).forEach( child -> addMenuItem( list, child, builderContext, false, subMenuCount ) );
-	}
-
 	private void addPanel( NodeViewElement container, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
-		NodeViewElement panel = new NodeViewElement( "div" );
-		panel.addCssClass( "panel", StringUtils.defaultString( item.getAttribute( ATTR_PANEL_STYLE ), "panel-default" ) );
+		NodeViewElement panel = html.div( css.card, AcrossBootstrapStyles.css.margin.bottom.s3 );
+		//panel.addCssClass( "panel", StringUtils.defaultString( item.getAttribute( ATTR_PANEL_STYLE ), "panel-default" ) );
 
 		if ( item.hasTitle() ) {
-			NodeViewElement heading = new NodeViewElement( "div" );
-			heading.addCssClass( "panel-heading" );
-			NodeViewElement title = new NodeViewElement( "h3" );
-			title.addCssClass( "panel-title" );
-			addIconAndText( title, item, builderContext.resolveText( item.getTitle() ), true, false, builderContext );
-			heading.addChild( title );
+			NodeViewElement heading = html.div( css.card.header );
+			addIconAndText( heading, item, builderContext.resolveText( item.getTitle() ), true, false, builderContext );
 			panel.addChild( heading );
 		}
 
-		NodeViewElement list = createList( panel );
-		list.addCssClass( "list-group" );
+		NodeViewElement list = createList( panel ).set( css.listGroup, css.listGroup.flush );
 
 		includedItems( item ).forEach( child -> addMenuItem( list, child, builderContext, true, subMenuCount ) );
+
+		panel.set( witherAttribute( item, null ) );
+
 		container.addChild( panel );
 	}
 
 	private NodeViewElement createList( NodeViewElement container ) {
-		NodeViewElement list = new NodeViewElement( "ul" );
-		list.addCssClass( "nav", "nav-sidebar" );
+		NodeViewElement list = html.div( css.listGroup );
+		//list.addCssClass( "nav", "nav-sidebar" );
 		container.addChild( list );
 		return list;
 	}
@@ -158,17 +148,17 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 					addHtmlAttributes( li, item.getAttributes() );
 
 					if ( itemToRender.isGroup() ) {
-						addSubMenu( li, itemToRender, builderContext, subMenuCount );
+						addSubMenu( list, itemToRender, builderContext, subMenuCount );
 					}
 					else {
 						if ( itemToRender.isSelected() ) {
 							li.addCssClass( "active" );
 						}
 
-						addItemLink( li, itemToRender, true, iconOnly, builderContext );
+						addItemLink( list, itemToRender, true, iconOnly, builderContext )
+								.remove( css.nav.link )
+								.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( itemToRender, item ) );
 					}
-
-					list.addChild( li );
 				}
 			}
 		}
@@ -178,27 +168,36 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		String subMenuId = subMenuBaseId + "-" + subMenuCount.incrementAndGet();
 
 		LinkViewElement link = new LinkViewElement();
-		link.setUrl( "#" + subMenuId );
+		link.setUrl( "#a" + subMenuId );
 		link.setAttribute( "data-toggle", "collapse" );
+		link.set( css.listGroup.item.action, css.listGroup.suffix( "subgroup-toggle" ), witherAttribute( item, null ) );
+
 		String resolvedTitle = builderContext.resolveText( item.getTitle() );
 		link.setText( resolvedTitle );
 		link.setTitle( resolvedTitle );
 		li.addChild( link );
 
-		NodeViewElement list = createList( li );
-		list.addCssClass( "submenu", "list-group" );
-		list.setHtmlId( subMenuId );
+		NodeViewElement list = html.div().setHtmlId( "a" + subMenuId ).set( css.listGroup.suffix( "subgroup" ) );
+		//list.addCssClass( "submenu", "list-group" );
+		//list.setHtmlId( subMenuId );
 
 		if ( !item.isSelected() ) {
-			link.addCssClass( "collapsed" );
-			list.addCssClass( "collapse" );
+			list.set( css.collapse );
+			link.set( css.collapsed );
+			//link.addCssClass( "collapsed" );
+			//list.addCssClass( "collapse" );
 		}
 		else {
-			link.setAttribute( "aria-expanded", "true" );
-			list.addCssClass( "in" );
-			list.setAttribute( "aria-expanded", "true" );
+			link.set( BootstrapAttributes.attribute.aria.expanded( true ) );
+			list.set( css.collapse, css.show );
+			//link.setAttribute( "aria-expanded", "true" );
+			//list.addCssClass( "in" );
+			list.set( BootstrapAttributes.attribute.aria.expanded( true ) );
+			//list.setAttribute( "aria-expanded", "true" );
 		}
 
 		includedItems( item ).forEach( child -> addMenuItem( list, child, builderContext, true, subMenuCount ) );
+
+		li.addChild( list );
 	}
 }

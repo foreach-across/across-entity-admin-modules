@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package com.foreach.across.modules.bootstrapui;
 
 import com.foreach.across.config.EnableAcrossContext;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
@@ -32,7 +32,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Arne Vandamme
@@ -43,24 +43,23 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration
 public class ITBootstrapUiModule
 {
-	@Autowired(required = false)
-	private BootstrapUiFactory bootstrapUiFactory;
-
 	@Autowired
 	private Collection<WebResourcePackageManager> packageManagers;
 
 	@Test
-	public void exposedBeans() {
-		assertNotNull( bootstrapUiFactory );
+	public void webResourcesShouldBeRegistered() {
+		packageManagers.forEach( mgr -> {
+			assertThat( mgr.getPackage( BootstrapUiWebResources.NAME ) ).isNotNull();
+			assertThat( mgr.getPackage( JQueryWebResources.NAME ) ).isNotNull();
+			assertThat( mgr.getPackage( BootstrapUiFormElementsWebResources.NAME ) ).isNotNull();
+		} );
 	}
 
 	@Test
-	public void webResourcesShouldBeRegistered() {
-		packageManagers.forEach( mgr -> {
-			assertNotNull( mgr.getPackage( BootstrapUiWebResources.NAME ) );
-			assertNotNull( mgr.getPackage( JQueryWebResources.NAME ) );
-			assertNotNull( mgr.getPackage( BootstrapUiFormElementsWebResources.NAME ) );
-		} );
+	public void iconSetsShouldBeAvailable() {
+		assertThat( IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_BRANDS ).icon( "500px" ) ).isNotNull();
+		assertThat( IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_REGULAR ).icon( "angry" ) ).isNotNull();
+		assertThat( IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID ).icon( "ad" ) ).isNotNull();
 	}
 
 	@Configuration

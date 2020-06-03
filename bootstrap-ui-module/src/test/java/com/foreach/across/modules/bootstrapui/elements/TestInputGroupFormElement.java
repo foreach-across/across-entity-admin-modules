@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.*;
 
 /**
@@ -58,19 +61,18 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void simpleAddonBefore() {
-		inputGroup.setAddonBefore( new GlyphIcon( GlyphIcon.CALENDAR ) );
+		inputGroup.setPrepend( html.i( css.fa.solid( "calendar" ) ) );
 
-		assertNull( inputGroup.getAddonAfter() );
-		assertNotNull( inputGroup.getAddonBefore() );
-		assertNotNull( inputGroup.getAddonBefore( GlyphIcon.class ) );
-		assertNull( inputGroup.getAddonBefore( FaIcon.class ) );
+		assertNull( inputGroup.getAppend() );
+		assertNotNull( inputGroup.getPrepend() );
+		assertNotNull( inputGroup.getPrepend( NodeViewElement.class ) );
 
 		renderAndExpect(
 				inputGroup,
 				"<div class='input-group'>"
-						+ "<span class='input-group-addon'>"
-						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
-						+ "</span>"
+						+ "<div class='input-group-prepend'>"
+						+ "<i class='fas fa-calendar'></i>"
+						+ "</div>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "</div>"
 		);
@@ -78,60 +80,74 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void simpleAddonAfter() {
-		inputGroup.setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
+		inputGroup.setAppend( html.i( css.fa.solid( "calendar" ) ) );
 
-		assertNull( inputGroup.getAddonBefore() );
-		assertNotNull( inputGroup.getAddonAfter() );
-		assertNotNull( inputGroup.getAddonAfter( GlyphIcon.class ) );
-		assertNull( inputGroup.getAddonAfter( FaIcon.class ) );
+		assertNull( inputGroup.getPrepend() );
+		assertNotNull( inputGroup.getAppend() );
+		assertNotNull( inputGroup.getAppend( NodeViewElement.class ) );
 
 		renderAndExpect(
 				inputGroup,
 				"<div class='input-group'>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
-						+ "<span class='input-group-addon'>"
-						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
-						+ "</span>"
+						+ "<div class='input-group-append'>"
+						+ "<i class='fas fa-calendar'></i>"
+						+ "</div>"
+						+ "</div>"
+		);
+	}
+
+	@Test
+	public void textAddonIsWrapped() {
+		inputGroup.setPrepend( html.text( "before" ) );
+		inputGroup.setAppend( html.text( "after" ) );
+
+		renderAndExpect(
+				inputGroup,
+				"<div class='input-group'>"
+						+ "<div class='input-group-prepend'><span class='input-group-text'>before</span></div>"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
+						+ "<div class='input-group-append'><span class='input-group-text'>after</span></div>"
 						+ "</div>"
 		);
 	}
 
 	@Test
 	public void buttonBefore() {
-		inputGroup.setAddonBefore( new ButtonViewElement() );
-		inputGroup.setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
+		inputGroup.setPrepend( new ButtonViewElement() );
+		inputGroup.setAppend( html.i( css.fa.solid( "calendar" ) ) );
 		inputGroup.setControl( new TextboxFormElement() );
 
 		renderAndExpect(
 				inputGroup,
 				"<div class='input-group'>"
-						+ "<span class='input-group-btn'>"
-						+ "<button type='button' class='btn btn-default' />"
-						+ "</span>"
+						+ "<div class='input-group-prepend'>"
+						+ "<button type='button' class='btn' />"
+						+ "</div>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
-						+ "<span class='input-group-addon'>"
-						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
-						+ "</span>"
+						+ "<div class='input-group-append'>"
+						+ "<i class='fas fa-calendar'></i>"
+						+ "</div>"
 						+ "</div>"
 		);
 	}
 
 	@Test
 	public void buttonAfter() {
-		inputGroup.setAddonAfter( new ButtonViewElement() );
-		inputGroup.setAddonBefore( new GlyphIcon( GlyphIcon.CALENDAR ) );
+		inputGroup.setAppend( new ButtonViewElement() );
+		inputGroup.setPrepend( html.i( css.fa.solid( "calendar" ) ) );
 		inputGroup.setControl( new TextboxFormElement() );
 
 		renderAndExpect(
 				inputGroup,
 				"<div class='input-group'>"
-						+ "<span class='input-group-addon'>"
-						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
-						+ "</span>"
+						+ "<div class='input-group-prepend'>"
+						+ "<i class='fas fa-calendar'></i>"
+						+ "</div>"
 						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
-						+ "<span class='input-group-btn'>"
-						+ "<button type='button' class='btn btn-default' />"
-						+ "</span>"
+						+ "<div class='input-group-append'>"
+						+ "<button type='button' class='btn' />"
+						+ "</div>"
 						+ "</div>"
 		);
 	}

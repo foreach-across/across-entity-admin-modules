@@ -21,23 +21,14 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>bootstrap-ui-module-project</artifactId>
-		<version>2.2.2.RELEASE</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>bootstrap-ui-module</artifactId>
 
-	<name>${project.groupId}:${project.artifactId}</name>
-
 	<properties>
-		<webjars.jquery>1.11.3</webjars.jquery>
-		<webjars.bootstrap>3.3.7</webjars.bootstrap>
-		<webjars.autosize>3.0.20</webjars.autosize>
-		<webjars.autonumeric>1.9.30</webjars.autonumeric>
-		<webjars.momentjs>2.10.6</webjars.momentjs>
-		<webjars.eonasdan-bootstrap-datetimepicker>4.14.30</webjars.eonasdan-bootstrap-datetimepicker>
-		<webjars.bootstrap-select>1.12.2</webjars.bootstrap-select>
-		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
-		<webjars.handlebars>4.0.14</webjars.handlebars>
+		<maven.javadoc.skip>false</maven.javadoc.skip>
+		<maven.deploy.skip>false</maven.deploy.skip>
 	</properties>
 
 	<dependencies>
@@ -66,6 +57,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>ax-bootstrap-4-utilities</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>jquery</artifactId>
 			<version>${webjars.jquery}</version>
@@ -91,23 +86,23 @@
 			<version>${webjars.handlebars}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>autoNumeric</artifactId>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>autonumeric</artifactId>
 			<version>${webjars.autonumeric}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.webjars.bower</groupId>
+					<groupId>org.webjars.npm</groupId>
 					<artifactId>jquery</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
-			<artifactId>Eonasdan-bootstrap-datetimepicker</artifactId>
-			<version>${webjars.eonasdan-bootstrap-datetimepicker}</version>
+			<artifactId>tempusdominus-bootstrap-4</artifactId>
+			<version>${webjars.tempus-dominus-datetimepicker}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.webjars</groupId>
+			<groupId>org.webjars.npm</groupId>
 			<artifactId>bootstrap-select</artifactId>
 			<version>${webjars.bootstrap-select}</version>
 		</dependency>
@@ -122,6 +117,36 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>font-awesome</artifactId>
+			<version>${webjars.font-awesome}</version>
+		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<!-- This defines how a specific module will be flattened -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

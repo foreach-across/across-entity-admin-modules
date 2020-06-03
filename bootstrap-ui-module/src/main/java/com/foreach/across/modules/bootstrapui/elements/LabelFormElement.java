@@ -18,6 +18,11 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author Arne Vandamme
@@ -40,16 +45,19 @@ public class LabelFormElement extends AbstractNodeViewElement implements Configu
 	}
 
 	@Override
-	public void setText( String text ) {
+	public LabelFormElement setText( String text ) {
 		this.text = text;
+		return this;
 	}
 
-	public void setTarget( String fixedId ) {
+	public LabelFormElement setTarget( String fixedId ) {
 		forTarget = fixedId;
+		return this;
 	}
 
-	public void setTarget( ViewElement viewElement ) {
+	public LabelFormElement setTarget( ViewElement viewElement ) {
 		forTarget = viewElement;
+		return this;
 	}
 
 	/**
@@ -70,5 +78,119 @@ public class LabelFormElement extends AbstractNodeViewElement implements Configu
 
 	public ViewElement getTargetAsElement() {
 		return (ViewElement) forTarget;
+	}
+
+	@Override
+	public LabelFormElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected LabelFormElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public LabelFormElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> LabelFormElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected LabelFormElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
 	}
 }

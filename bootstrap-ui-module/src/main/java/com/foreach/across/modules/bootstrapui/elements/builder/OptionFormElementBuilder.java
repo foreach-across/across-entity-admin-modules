@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
-import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
-import com.foreach.across.modules.bootstrapui.elements.RadioFormElement;
-import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -87,6 +84,10 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 
 	public OptionFormElementBuilder<T> radio() {
 		return type( RADIO );
+	}
+
+	public OptionFormElementBuilder<T> toggle() {
+		return type( TOGGLE );
 	}
 
 	public OptionFormElementBuilder<T> type( OptionsFormElementBuilder.Type type ) {
@@ -235,6 +236,11 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 	}
 
 	@Override
+	public OptionFormElementBuilder<T> with( ViewElement.WitherSetter... setters ) {
+		return super.with( setters );
+	}
+
+	@Override
 	public int compareTo( OptionFormElementBuilder o ) {
 		int comparison = ObjectUtils.compare( getLabel(), o.getLabel() );
 
@@ -286,6 +292,13 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 				radio.setChecked( selected );
 				radio.setWrapped( wrapped );
 				return radio;
+			case TOGGLE:
+				ToggleFormElement toggle = new ToggleFormElement();
+				toggle.setText( builderContext.resolveText( label != null ? label : text ) );
+				toggle.setValue( value );
+				toggle.setChecked( selected );
+				toggle.setWrapped( wrapped );
+				return toggle;
 			default:
 				SelectFormElement.Option option = new SelectFormElement.Option();
 				option.setLabel( builderContext.resolveText( label ) );

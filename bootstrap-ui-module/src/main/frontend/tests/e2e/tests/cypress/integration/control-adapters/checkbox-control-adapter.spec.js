@@ -146,7 +146,7 @@ describe( 'ControlAdapter - Checkbox', function () {
     };
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     describe( 'Checkbox tests', function () {
@@ -157,7 +157,7 @@ describe( 'ControlAdapter - Checkbox', function () {
 
         describe( 'unwrapped checkbox', function () {
             checkboxTests( '#ca-checkbox-unwrapped', wrappedElementFetcher );
-            wrappedCheckboxTests( '#ca-checkbox-unwrapped' );
+            unwrappedCheckboxTests( '#ca-checkbox-unwrapped' );
         } );
 
         describe( 'unwrapped checkbox without label', function () {
@@ -179,7 +179,7 @@ describe( 'ControlAdapter - Checkbox', function () {
 
         describe( 'unwrapped radio', function () {
             checkboxTests( '#ca-radio-unwrapped', wrappedElementFetcher );
-            wrappedCheckboxTests( '#ca-radio-unwrapped' );
+            unwrappedCheckboxTests( '#ca-radio-unwrapped' );
         } );
 
         describe( 'unwrapped radio without label', function () {

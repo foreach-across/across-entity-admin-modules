@@ -16,11 +16,11 @@
 
 package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -34,8 +34,6 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.script;
 
 /**
  * Will create an autosuggest component backed by a Typeahead JS implementation.
@@ -255,7 +253,7 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 	}
 
 	private ViewElementBuilder createTemplateElement( String key, ViewElementBuilder template ) {
-		return script()
+		return BootstrapViewElements.bootstrap.builders.script()
 				.data( "template", key )
 				.type( MediaType.TEXT_HTML )
 				.add( template );
@@ -277,7 +275,7 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 	private TextboxFormElement createTextbox( ViewElementBuilderContext context ) {
 		TextboxFormElement textbox = textboxBuilder != null
 				? textboxBuilder.build( context )
-				: BootstrapUiBuilders.textbox().type( TextboxFormElement.Type.SEARCH ).attribute( "autocomplete", "off" ).build( context );
+				: BootstrapViewElements.bootstrap.builders.textbox().type( TextboxFormElement.Type.SEARCH ).attribute( "autocomplete", "off" ).build( context );
 		textbox.addCssClass( CSS_TYPEAHEAD );
 
 		return textbox;

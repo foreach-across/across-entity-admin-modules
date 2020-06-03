@@ -17,12 +17,15 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.AbstractVoidNodeViewElement;
 
+import java.util.Map;
+
 /**
  * Represents a simple icon element that does not support child elements.
  *
  * @author Arne Vandamme
  * @see GlyphIcon
  */
+@Deprecated
 public abstract class IconViewElement extends AbstractVoidNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.ICON;
@@ -41,15 +44,77 @@ public abstract class IconViewElement extends AbstractVoidNodeViewElement
 	}
 
 	@Override
-	public void setTagName( String tagName ) {
+	public IconViewElement setTagName( String tagName ) {
 		super.setTagName( tagName );
+		return this;
 	}
 
 	public String getIconCss() {
 		return iconCss;
 	}
 
-	protected void setIconCss( String iconCss ) {
+	protected IconViewElement setIconCss( String iconCss ) {
 		this.iconCss = iconCss;
+		return this;
+	}
+
+	@Override
+	public IconViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public IconViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public IconViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public IconViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public IconViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public IconViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public IconViewElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public IconViewElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public IconViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected IconViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
 	}
 }

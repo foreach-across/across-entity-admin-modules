@@ -17,12 +17,20 @@
 package com.foreach.across.samples.bootstrapui.application.web.ui;
 
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
+import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.LayoutTemplateProcessorAdapterBean;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * @author Arne Vandamme
@@ -48,5 +56,23 @@ public class DefaultLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 	@Override
 	protected void registerWebResources( WebResourceRegistry registry ) {
 		registry.addPackage( BootstrapUiWebResources.NAME );
+	}
+
+	@Override
+	public void applyTemplate( HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView ) {
+		Menu navMenu = (Menu) request.getAttribute( "navMenu" );
+		List<Menu> selectedItemPath = navMenu.getSelectedItemPath();
+
+		if ( selectedItemPath.size() > 2 ) {
+			Menu topNav = selectedItemPath.get( 2 );
+			if ( !topNav.isEmpty() ) {
+				modelAndView.addObject(
+						"topNav",
+						bootstrap.builders.nav().menu( topNav ).tabs().build()
+				);
+			}
+		}
+
+		super.applyTemplate( request, response, handler, modelAndView );
 	}
 }
