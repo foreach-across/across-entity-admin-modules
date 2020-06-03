@@ -74,13 +74,13 @@ public class TestManyToOneAssociations
 			two = new Company( "two", 2 );
 			three = new Company( "three", 3 );
 
-			companyRepository.save( Arrays.asList( one, two, three ) );
+			companyRepository.saveAll( Arrays.asList( one, two, three ) );
 
 			john = new Client( "john", one );
 			joe = new Client( "joe", two );
 			peter = new Client( "peter", two );
 
-			clientRepository.save( Arrays.asList( john, joe, peter ) );
+			clientRepository.saveAll( Arrays.asList( john, joe, peter ) );
 		}
 	}
 

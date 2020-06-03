@@ -56,7 +56,7 @@ public class TestUserInstaller
 		cal.set( DAY_OF_MONTH, 1 );
 		cal.set( HOUR_OF_DAY, 10 );
 
-		Group group = groupRepository.findOne( -1L );
+		Group group = groupRepository.findById( -1L ).orElse( null );
 
 		Stream.of( "john", "joey", "jane", "paul" )
 		      .forEach( s -> {

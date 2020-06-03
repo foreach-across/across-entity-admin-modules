@@ -18,7 +18,8 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -42,7 +43,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Adds a header component to embedded associations.
@@ -83,8 +84,9 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
 
-		NodeViewElementBuilder contentHeaderBuilder = div().css( "tab-pane-header" )
-		                                                   .add( associatedContentTitle( entityViewContext ) );
+		NodeViewElementBuilder contentHeaderBuilder = html.builders.div().css( "tab-pane-header" )
+		                                                           .with( AcrossBootstrapStyles.css.margin.bottom.s3 )
+		                                                           .add( associatedContentTitle( entityViewContext ) );
 
 		if ( addEntityMenu ) {
 			contentHeaderBuilder.add( associatedContentMenu( entityViewContext ) );
@@ -101,9 +103,10 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 					entityAdminMenu.getItems().size() == 1 ) {
 				return null;
 			}
-			return BootstrapUiBuilders.nav( entityAdminMenu )
-			                          .pills()
-			                          .replaceGroupBySelectedItem();
+			return BootstrapViewElements.bootstrap.builders.nav( AcrossBootstrapStyles.css.flex.row )
+			                                               .menu( entityAdminMenu )
+			                                               .pills()
+			                                               .replaceGroupBySelectedItem();
 		}
 		return null;
 	}
@@ -116,14 +119,14 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 	private ViewElementBuilder associatedContentTitle( EntityViewContext entityViewContext ) {
 		EntityMessages entityMessages = entityViewContext.getEntityMessages();
 
-		NodeViewElementBuilder header = node( "h4" ).name( "tab-pane-title" );
+		NodeViewElementBuilder header = html.builders.h4().name( "tab-pane-title" );
 
 		Optional.ofNullable( StringUtils.defaultIfEmpty( entityMessages.withNameSingular( titleMessageCode, entityViewContext.getEntityLabel() ), null ) )
-		        .ifPresent( title -> header.add( text( title ) )
-		                                   .add( text( " " ) ) );
+		        .ifPresent( title -> header.add( html.builders.text( title ) )
+		                                   .add( html.builders.text( " " ) ) );
 		Optional.ofNullable(
 				StringUtils.defaultIfEmpty( entityMessages.withNameSingular( titleMessageCode + ".subText", entityViewContext.getEntityLabel() ), null ) )
-		        .ifPresent( subText -> header.add( node( "small" ).name( "tab-pane-title-subtext" ).add( html( subText ) ) ) );
+		        .ifPresent( subText -> header.add( html.builders.small().name( "tab-pane-title-subtext" ).add( html.builders.unescapedText( subText ) ) ) );
 		return header;
 	}
 }

@@ -21,12 +21,15 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>entity-module-project</artifactId>
-		<version>3.4.1-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>entity-module</artifactId>
 
-	<name>${project.groupId}:${project.artifactId}</name>
+	<properties>
+		<maven.javadoc.skip>false</maven.javadoc.skip>
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -57,7 +60,7 @@
 			<artifactId>hibernate-jpa-2.1-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 		<dependency>
@@ -119,6 +122,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.foreach.libs</groupId>
 			<artifactId>common-test</artifactId>
 			<scope>test</scope>
@@ -135,7 +148,6 @@
 			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
-				<version>1.16.18.0</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -153,10 +165,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
 				<configuration>
 					<failOnError>false</failOnError>
-					<additionalparam>-Xdoclint:none</additionalparam>
+					<doclint>none</doclint>
 					<sourcepath>
 						target/delombok;target/generated-sources
 					</sourcepath>
@@ -172,13 +183,34 @@
 						<inherited>true</inherited>
 						<id>aggregate</id>
 						<goals>
-							<goal>aggregate</goal>
+							<goal>aggregate-no-fork</goal>
 						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
 							<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
 							<destDir>${project.version}/javadoc</destDir>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- This defines how a specific module will be flattened -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

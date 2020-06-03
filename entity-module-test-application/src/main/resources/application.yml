@@ -19,7 +19,7 @@ spring:
     username: sa
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration
-  http:
+  servlet:
     multipart:
       max-file-size: 10MB
 
@@ -49,6 +49,4 @@ entityModule:
 server:
   error:
     include-stacktrace: always
-security:
-  basic:
-    enabled: false
+  port: 8081

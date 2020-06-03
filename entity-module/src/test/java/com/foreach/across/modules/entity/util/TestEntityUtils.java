@@ -258,7 +258,7 @@ public class TestEntityUtils
 				merged
 		);
 
-		assertNull( EntityUtils.combineSortSpecifiers( null, null ) );
+		assertEquals( Sort.unsorted(), EntityUtils.combineSortSpecifiers( null, null ) );
 		assertEquals( one, EntityUtils.combineSortSpecifiers( one, null ) );
 		assertEquals( two, EntityUtils.combineSortSpecifiers( null, two ) );
 	}

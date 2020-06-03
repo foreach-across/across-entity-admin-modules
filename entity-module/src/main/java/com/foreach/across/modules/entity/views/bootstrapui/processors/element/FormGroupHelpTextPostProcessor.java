@@ -26,8 +26,8 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.helpBlock;
-import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_HELP;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Post-processor that resolves a help text for a current property and a {@link FormGroupElement}.
@@ -36,8 +36,8 @@ import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupE
  * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
  * @author Arne Vandamme
- * @since 3.0.0
  * @see FieldsetHelpTextPostProcessor
+ * @since 3.0.0
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,9 +56,9 @@ public class FormGroupHelpTextPostProcessor<T extends ViewElement> extends Abstr
 
 			if ( !StringUtils.isEmpty( text ) ) {
 				element.setHelpBlock(
-						helpBlock().css( CSS_FORM_TEXT_HELP )
-						           .add( new TextViewElement( text, escapeHtml ) )
-						           .build( builderContext )
+						html.builders.small( css.form.text )
+						             .add( new TextViewElement( text, escapeHtml ) )
+						             .build( builderContext )
 				);
 			}
 		}

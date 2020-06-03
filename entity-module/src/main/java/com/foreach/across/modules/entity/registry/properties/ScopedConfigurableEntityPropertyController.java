@@ -19,6 +19,9 @@ package com.foreach.across.modules.entity.registry.properties;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -48,6 +51,27 @@ class ScopedConfigurableEntityPropertyController<T, U> implements ConfigurableEn
 	public ConfigurableEntityPropertyController<T, U> valueFetcher( Function<T, U> valueFetcher ) {
 		Function<EntityPropertyBindingContext, Object> wrapper = ctx -> valueFetcher.apply( (T) bindingContextTranslator.apply( ctx ) );
 		parent.valueFetcher( wrapper );
+		return this;
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<T, U> bulkValueFetcher( Function<Collection<T>, Map<T, U>> bulkValueFetcher ) {
+		parent.bulkValueFetcher( bindingContexts -> {
+			IdentityHashMap<T, EntityPropertyBindingContext> input = new IdentityHashMap<>( bindingContexts.size() );
+			bindingContexts.forEach( bindingContext -> input.put( (T) bindingContextTranslator.apply( bindingContext ), bindingContext ) );
+
+			Map<T, U> mappedValues = bulkValueFetcher.apply( input.keySet() );
+
+			IdentityHashMap<EntityPropertyBindingContext, Object> output = new IdentityHashMap<>( mappedValues.size() );
+			mappedValues.forEach( ( mappedKey, value ) -> output.put( input.get( mappedKey ), value ) );
+			return output;
+		} );
+		return this;
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<T, U> optimizedForBulkValueFetching( boolean enabled ) {
+		parent.optimizedForBulkValueFetching( enabled );
 		return this;
 	}
 

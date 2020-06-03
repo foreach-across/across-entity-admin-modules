@@ -17,14 +17,13 @@
 package com.foreach.across.modules.entity.controllers.admin;
 
 import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
@@ -36,12 +35,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
+
 /**
- * Lists all entity types registered in the context.
+ * Lists all entity types registered in the context for which the user has read access.
+ * Deprecated as of 4.0.0 as the general value was limited. Developers are encouraged to
+ * create their own overview pages.
  *
  * @author Arne Vandamme
+ * @deprecated since 4.0.0
  */
-@AdminWebController
+@Deprecated
+@ConditionalOnBootstrapUI
 @RequiredArgsConstructor
 public class EntityOverviewController
 {
@@ -57,41 +64,34 @@ public class EntityOverviewController
 				.filter( c -> !c.isHidden() && c.getAllowableActions().contains( AllowableAction.READ ) )
 				.collect( Collectors.groupingBy( this::determineGroupName ) );
 
-		NodeViewElementBuilder row = BootstrapUiBuilders.row();
+		NodeViewElementBuilder row = bootstrap.builders.row();
 
 		entitiesByGroup.forEach( ( groupName, entities ) -> {
-			NodeViewElementBuilder body = BootstrapUiBuilders.div().css( "panel-body" );
+			NodeViewElementBuilder body = html.builders.div().with( css.listGroup, css.listGroup.flush );
 
 			entities.forEach( entityConfiguration -> {
-				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+				EntityViewLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityViewLinkBuilder.class );
 				EntityMessageCodeResolver codeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 				body.add(
-						BootstrapUiBuilders.paragraph().add(
-								BootstrapUiBuilders.link()
-								                   .text( codeResolver.getNameSingular() )
-								                   .url( linkBuilder.overview() )
-						)
+						bootstrap.builders.link()
+						                  .text( codeResolver.getNameSingular() )
+						                  .url( linkBuilder.toUriString() )
+						                  .with( css.listGroup.item, css.listGroup.item.action )
 				);
 			} );
 
 			row.add(
-					BootstrapUiBuilders.column( Grid.Device.MD.width( 3 ) )
-					                   .add(
-							                   BootstrapUiBuilders.div()
-							                                      .css( "panel", "panel-primary" )
-							                                      .add(
-									                                      BootstrapUiBuilders
-											                                      .div()
-											                                      .css( "panel-heading" )
-											                                      .add(
-													                                      BootstrapUiBuilders.node( "h3" )
-													                                                         .css( "panel-title" )
-													                                                         .add( TextViewElement.text( groupName ) )
-											                                      )
-							                                      )
-							                                      .add( body )
-					                   )
+					bootstrap.builders.column( Grid.Device.MD.width( 3 ) )
+					                  .add( html.builders.div()
+					                                     .with( css.card )
+					                                     .add( html.builders
+							                                           .div()
+							                                           .with( css.card.header )
+							                                           .add( TextViewElement.text( groupName ) )
+					                                     )
+					                                     .add( body )
+					                  )
 			);
 		} );
 

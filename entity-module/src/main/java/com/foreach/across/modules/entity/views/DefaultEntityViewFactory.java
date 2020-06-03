@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.support.EntityViewMessageSource;
@@ -44,6 +43,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.WebDataBinder;
 
 import java.util.Optional;
+
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Base implementation for a {@link EntityViewFactory} that supports {@link com.foreach.across.modules.web.ui.ViewElement} rendering,
@@ -105,7 +106,7 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 				processorRegistry.dispatch( p -> p.preRender( entityViewRequest, entityView ) );
 
 				// create a container builder
-				ContainerViewElementBuilder containerBuilder = BootstrapUiBuilders.container();
+				ContainerViewElementBuilder containerBuilder = html.builders.container();
 				entityView.addAttribute( ATTRIBUTE_CONTAINER_BUILDER, containerBuilder );
 
 				// do the initial render

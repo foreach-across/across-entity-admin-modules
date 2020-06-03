@@ -22,6 +22,7 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_HELP;
+import java.util.Arrays;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -41,6 +44,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestFormGroupHelpTextPostProcessor
 {
+	private static final String CSS_FORM_TEXT_HELP = "form-text-help";
+
 	@Mock
 	private EntityPropertyDescriptor descriptor;
 
@@ -80,7 +85,8 @@ public class TestFormGroupHelpTextPostProcessor
 		postProcessor.postProcess( builderContext, group );
 		assertThat( group.getHelpBlock( NodeViewElement.class ) )
 				.satisfies( node -> {
-					assertThat( node.hasCssClass( CSS_FORM_TEXT_HELP ) ).isTrue();
+					Assertions.assertThat( node.getAttribute( "class", String.class ).split( " " ) )
+					          .containsAll( Arrays.asList( css.form.text.toCssClasses()) );
 					TextViewElement text = node.findAll( TextViewElement.class )
 					                           .findFirst()
 					                           .orElseThrow( AssertionError::new );

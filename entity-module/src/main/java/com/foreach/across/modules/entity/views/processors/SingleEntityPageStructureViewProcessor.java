@@ -17,9 +17,9 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -28,6 +28,7 @@ import com.foreach.across.modules.entity.views.processors.support.EntityPageStru
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -42,6 +43,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Builds the default page structure for a single entity page.  Adds page title, sets page layout and optionally adds the entity menu.
@@ -78,6 +81,12 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	 */
 	@Setter
 	private String titleMessageCode = EntityMessages.PAGE_TITLE_VIEW;
+
+	/**
+	 * Should the {@link Menu#getPath()} be included on the entity navigation items.
+	 */
+	@Setter
+	private boolean includeNavPathAsDataAttribute;
 
 	@Override
 	protected void render( EntityViewRequest entityViewRequest,
@@ -133,10 +142,12 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		menuFactory.buildMenu( entityMenu );
 
 		page.addToNav(
-				BootstrapUiBuilders.nav( entityMenu )
-				                   .tabs()
-				                   .replaceGroupBySelectedItem()
-				                   .build( builderContext )
+				bootstrap.builders.nav()
+				                  .menu( entityMenu )
+				                  .tabs()
+				                  .replaceGroupBySelectedItem()
+				                  .includePathAsDataAttribute(includeNavPathAsDataAttribute  )
+				                  .build( builderContext )
 		);
 	}
 
@@ -158,5 +169,10 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	@Autowired
 	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
 		this.eventPublisher = eventPublisher;
+	}
+
+	@Autowired
+	void setDevelopmentMode( AcrossDevelopmentMode acrossDevelopmentMode ){
+		includeNavPathAsDataAttribute = acrossDevelopmentMode.isActive();
 	}
 }

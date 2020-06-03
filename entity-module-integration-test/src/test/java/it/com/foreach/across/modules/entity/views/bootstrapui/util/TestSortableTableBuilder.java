@@ -19,8 +19,10 @@ package it.com.foreach.across.modules.entity.views.bootstrapui.util;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
+import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -32,9 +34,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.util.PagingMessages;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.modules.web.ui.elements.*;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
@@ -51,6 +51,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.views.support.EntityMessages.RESULTS_FOUND;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -64,7 +65,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	private static final String TABLE_WITH_RESULT_NUMBER = "<div class='table-responsive'>" +
 			"<table class='em-sortableTable-table table table-hover' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 			"<thead>" +
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
@@ -77,7 +78,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	private static final String TABLE_WITH_RESULT_NUMBER_AND_FORM = "<div class='table-responsive'>" +
 			"<table class='em-sortableTable-table table table-hover' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0' data-tbl-form='my-form'>" +
+			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1' data-tbl-form='my-form'>" +
 			"<thead>" +
 			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
@@ -90,7 +91,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	private static final String TABLE_WITHOUT_RESULT_NUMBER = "<div class='table-responsive'>" +
 			"<table class='em-sortableTable-table table table-hover' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 			"<thead>" +
 			"<tr><th data-tbl-field='propertyOne'>Property name</th></tr>" +
 			"</thead>" +
@@ -162,9 +163,9 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	@Test
 	public void simpleTable() {
 		expect(
-				"<div class='panel panel-default em-sortableTable-panel'>" +
-						"<div class='panel-heading'>xx results</div>" +
-						"<div class='panel-body'>" +
+				"<div class='card em-sortableTable-panel'>" +
+						"<div class='card-header'>xx results</div>" +
+						"<div class='card-body'>" +
 						TABLE_WITH_RESULT_NUMBER +
 						"</div>" +
 						"</div>"
@@ -182,9 +183,9 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.pagingMessages( null );
 
 		expect(
-				"<div class='panel panel-default em-sortableTable-panel'>" +
-						"<div class='panel-heading'>custom results</div>" +
-						"<div class='panel-body'>" +
+				"<div class='card em-sortableTable-panel'>" +
+						"<div class='card-header'>custom results</div>" +
+						"<div class='card-body'>" +
 						TABLE_WITH_RESULT_NUMBER +
 						"</div>" +
 						"</div>"
@@ -196,9 +197,9 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.showResultNumber( false );
 
 		expect(
-				"<div class='panel panel-default em-sortableTable-panel'>" +
-						"<div class='panel-heading'>xx results</div>" +
-						"<div class='panel-body'>" +
+				"<div class='card em-sortableTable-panel'>" +
+						"<div class='card-header'>xx results</div>" +
+						"<div class='card-body'>" +
 						TABLE_WITHOUT_RESULT_NUMBER +
 						"</div>" +
 						"</div>"
@@ -218,10 +219,14 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 		tableBuilder.tableName( "entityList" ).items( page );
 
+		SimpleIconSet iconSet = new SimpleIconSet();
+		iconSet.setDefaultIconResolver( ( name ) -> HtmlViewElements.html.i().set( HtmlViewElement.Functions.css( name ) ) );
+		IconSetRegistry.addIconSet( EntityModule.NAME, iconSet );
+
 		expect(
-				"<div class='panel panel-default em-sortableTable-panel'>" +
-						"<div class='panel-heading'>xx results</div>" +
-						"<div class='panel-body'>" +
+				"<div class='card em-sortableTable-panel'>" +
+						"<div class='card-header'>xx results</div>" +
+						"<div class='card-body'>" +
 						"<div class='table-responsive'>" +
 						"<table class='em-sortableTable-table table table-hover' " +
 						"data-tbl='entityList' data-tbl-type='paged' data-tbl-entity-type='entity' " +
@@ -237,22 +242,22 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"</table>" +
 						"</div>" +
 						"</div>" +
-						"<div class=\"panel-footer\">" +
-						"<div class=\"pager-form form-inline text-center\">" +
+						"<div class=\"card-footer\">" +
+						"<div class=\"pager-form form-inline axu-flex-row axu-justify-content-center\">" +
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"0\" class=\"btn btn-link\">" +
-						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-step-backward\"></span>" +
+						"<i class=\"previous-page\"></i>" +
 						"</a>" +
-						"<label class=\"control-label\"><span></span><input data-bootstrapui-adapter-type=\"basic\" type=\"text\"\n" +
+						"<label><span></span><input data-bootstrapui-adapter-type=\"basic\" type=\"text\"\n" +
 						"\t\tclass=\"form-control\" value=\"2\" data-tbl=\"entityList\" data-tbl-page-selector=\"selector\" /></label>" +
 						"<span></span>" +
 						"<a data-tbl=\"entityList\" href=\"#\" class=\"total-pages-link\" data-tbl-page=\"2\">3</a>" +
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"2\" class=\"btn btn-link\">" +
-						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-step-forward\"></span>" +
+						"<i class=\"next-page\"></i>" +
 						"</a>" +
 						"</div></div>" +
 						"</div>"
 		);
-
+		IconSetRegistry.removeIconSet( EntityModule.NAME );
 	}
 
 	@Test
@@ -265,8 +270,8 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 		tableBuilder.pagingMessages( messages );
 
-		expect( "<div class='panel panel-warning'>" +
-				        "<div class='panel-body text-warning'>Geen resultaten gevonden</div>" +
+		expect( "<div class='card axu-border-warning'>" +
+				        "<div class='card-body axu-text-warning'>Geen resultaten gevonden</div>" +
 				        "</div>" );
 	}
 
@@ -369,7 +374,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		expect( "<div class='table-responsive'>" +
 				        "<table class='em-sortableTable-table table table-hover' " +
 				        "data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 				        "<thead>" +
 				        "<tr><th class='result-number'>#</th>" +
 				        "<th data-tbl-field='propertyOne' class='sortable' data-tbl-sort-property='sortOnMe' data-tbl='sortableTable'>" +
@@ -387,7 +392,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		expect( "<div class='table-responsive'>" +
 				        "<table class='em-sortableTable-table table table-hover' " +
 				        "data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
-				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
+				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='1'>" +
 				        "<thead>" +
 				        "<tr><th class='result-number'>#</th>" +
 				        "<th data-tbl-field='propertyOne' class='sortable' data-tbl-sort-property='sortOnMe' data-tbl='sortableTable'>" +
@@ -403,10 +408,10 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 	@Test
 	public void tableStyle() {
-		tableBuilder.tableStyles( Style.Table.CONDENSED ).tableOnly( true );
+		tableBuilder.tableStyles( css.table.small ).tableOnly( true );
 
 		expect(
-				TABLE_WITH_RESULT_NUMBER.replace( "table-hover", "table-condensed" )
+				TABLE_WITH_RESULT_NUMBER.replace( "table table-hover", "table table-sm" )
 		);
 	}
 

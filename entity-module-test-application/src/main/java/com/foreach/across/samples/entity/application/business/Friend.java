@@ -20,11 +20,15 @@ import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Stijn Vanhoof
@@ -47,11 +51,20 @@ public class Friend extends SettableIdBasedEntity<Friend>
 			}
 	)
 	private Long id;
-	
+
 	@NotBlank
 	@Length(max = 250)
 	private String name;
 
-	@ManyToOne
-	private User user;
+	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+	@ManyToMany(fetch = FetchType.EAGER)
+	@BatchSize(size = 50)
+	@JoinTable(
+			name = "test_friend_user",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "friend_id"))
+	private Set<User> users = new TreeSet<>();
+
+	@Column
+	private Long hobbyId;
 }

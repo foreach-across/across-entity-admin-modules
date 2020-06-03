@@ -115,6 +115,15 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	@Setter
 	private ConversionService conversionService;
 
+	/**
+	 * Optionally set a {@link EntityPropertiesBinderCache} that dealt out this instance.
+	 * If a cache is set, properties will be inspected for optimized bulk fetching and will
+	 * be fetched for all items in the cache.
+	 */
+	@Setter(value = AccessLevel.PACKAGE)
+	@Getter(value = AccessLevel.PACKAGE)
+	private EntityPropertiesBinderCache cache;
+
 	@Getter
 	private boolean bindingEnabled;
 

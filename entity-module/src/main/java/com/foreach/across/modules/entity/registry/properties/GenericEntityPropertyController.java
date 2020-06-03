@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.validation.Errors;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -53,6 +55,11 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	private Function<EntityPropertyBindingContext, Object> valueFetcher;
 
 	@Getter
+	private Function<Collection<EntityPropertyBindingContext>, Map<EntityPropertyBindingContext, Object>> bulkValueFetcher;
+
+	private Boolean optimizedForBulkValueFetching;
+
+	@Getter
 	private Function<EntityPropertyBindingContext, Object> createValueFunction;
 
 	@Getter
@@ -74,6 +81,38 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	public GenericEntityPropertyController( EntityPropertyController original ) {
 		this.original = original;
 		this.order = null;
+	}
+
+	@Override
+	public boolean isOptimizedForBulkValueFetching() {
+		if ( optimizedForBulkValueFetching != null ) {
+			return optimizedForBulkValueFetching;
+		}
+
+		return original != null && original.isOptimizedForBulkValueFetching();
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> bulkValueFetcher( Function<Collection<EntityPropertyBindingContext>, Map<EntityPropertyBindingContext, Object>> valueFetcher ) {
+		bulkValueFetcher = valueFetcher;
+		optimizedForBulkValueFetching( bulkValueFetcher != null );
+		return this;
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> optimizedForBulkValueFetching( boolean optimized ) {
+		optimizedForBulkValueFetching = optimized;
+		return this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map<EntityPropertyBindingContext, Object> fetchValues( Collection collection ) {
+		if ( bulkValueFetcher != null ) {
+			return bulkValueFetcher.apply( collection );
+		}
+
+		return original != null ? original.fetchValues( collection ) : EntityPropertyController.super.fetchValues( collection );
 	}
 
 	@Override

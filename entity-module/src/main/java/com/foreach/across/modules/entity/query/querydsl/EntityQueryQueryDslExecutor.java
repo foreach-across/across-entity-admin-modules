@@ -23,19 +23,19 @@ import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /**
- * Implementation of {@link EntityQueryExecutor} that runs against a {@link QueryDslPredicateExecutor} instance.
+ * Implementation of {@link EntityQueryExecutor} that runs against a {@link QuerydslPredicateExecutor} instance.
  *
  * @author Arne Vandamme
  */
 public class EntityQueryQueryDslExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
-	private final QueryDslPredicateExecutor<T> queryDslPredicateExecutor;
+	private final QuerydslPredicateExecutor<T> queryDslPredicateExecutor;
 	private final EntityConfiguration entityConfiguration;
 
-	public EntityQueryQueryDslExecutor( QueryDslPredicateExecutor<T> queryDslPredicateExecutor,
+	public EntityQueryQueryDslExecutor( QuerydslPredicateExecutor<T> queryDslPredicateExecutor,
 	                                    EntityConfiguration entityConfiguration ) {
 		this.queryDslPredicateExecutor = queryDslPredicateExecutor;
 		this.entityConfiguration = entityConfiguration;

@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -25,6 +24,8 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Creates a text value element for a given property.
@@ -45,8 +46,8 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 	@Override
 	protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                       ViewElementMode viewElementMode, String viewElementType ) {
-		return BootstrapUiBuilders
-				.text()
+		return html.builders
+				.text( "" )
 				.postProcessor( builderFactoryHelper.createDefaultValueTextPostProcessor( propertyDescriptor ) );
 	}
 

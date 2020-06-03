@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@ConfigurationProperties("entityModule")
+@ConfigurationProperties("entity-module")
 public class EntityMessageCodeProperties
 {
 	/**

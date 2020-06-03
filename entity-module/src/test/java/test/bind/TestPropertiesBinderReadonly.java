@@ -140,6 +140,6 @@ public class TestPropertiesBinderReadonly extends AbstractEntityPropertyBindingC
 		MapEntityPropertyBinder addressMap = (MapEntityPropertyBinder) binder.get( "addressMap" );
 		MapEntityPropertyBinder.Entry template = addressMap.getTemplate();
 		assertThat( template.getKey().getValue() ).isEqualTo( "some key" );
-		assertThat( template.getValue().getValue() ).isEqualTo( new Address() );
+		assertThat( template.getValue().getValue() ).isEqualTo( new Address("Some street") );
 	}
 }

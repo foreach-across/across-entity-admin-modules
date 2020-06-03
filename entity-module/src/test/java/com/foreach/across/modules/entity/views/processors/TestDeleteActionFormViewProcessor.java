@@ -16,8 +16,10 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
+import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -34,12 +36,14 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,7 +79,7 @@ public class TestDeleteActionFormViewProcessor
 	public void setUp() {
 		deleteActionFormViewProcessor = new DeleteActionFormViewProcessor();
 
-		ContainerViewElementBuilderSupport buttonsContainer = BootstrapUiBuilders.container()
+		ContainerViewElementBuilderSupport buttonsContainer = html.builders.container()
 		                                                                         .name( "buttons" );
 		when( builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS, ContainerViewElementBuilderSupport.class ) )
 				.thenReturn( buttonsContainer );
@@ -93,6 +97,15 @@ public class TestDeleteActionFormViewProcessor
 
 		EntityMessages entityMessages = mock( EntityMessages.class );
 		when( entityViewContext.getEntityMessages() ).thenReturn( entityMessages );
+
+		SimpleIconSet mutableIconSet = new SimpleIconSet();
+		mutableIconSet.setDefaultIconResolver( ( iconName ) -> html.i() );
+		IconSetRegistry.addIconSet( EntityModule.NAME, mutableIconSet );
+	}
+
+	@After
+	public void cleanUp(){
+		IconSetRegistry.removeIconSet( EntityModule.NAME );
 	}
 
 	@Test
@@ -149,8 +162,7 @@ public class TestDeleteActionFormViewProcessor
 		assertThat( viewElement ).isInstanceOf( ButtonViewElement.class );
 		assertThat( viewElement.getName() ).isEqualTo( "btn-delete" );
 		ButtonViewElement buttonViewElement = (ButtonViewElement) viewElement;
-		assertThat( buttonViewElement.getUrl() ).contains( "from=" )
-		                                        .endsWith( "/update" );
+		assertThat( buttonViewElement.getUrl() ).contains( "from=" ).endsWith( "update" );
 	}
 
 	@Test

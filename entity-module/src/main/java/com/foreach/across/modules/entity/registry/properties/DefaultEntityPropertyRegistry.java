@@ -71,12 +71,36 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		setDefaultFilter( entityPropertyDescriptor -> !entityPropertyDescriptor.isHidden() );
 	}
 
+	/**
+	 * Create a simple new registry based on property reflection of the class.
+	 *
+	 * @param type class
+	 * @return registry
+	 */
+	public static MutableEntityPropertyRegistry forClass( Class<?> type ) {
+		return DefaultEntityPropertyRegistryProvider.INSTANCE.create( type );
+	}
+
 	@Override
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
 		MutableEntityPropertyDescriptor descriptor = getLocalProperty( propertyName );
 
 		if ( descriptor == null ) {
-			if ( propertyName.endsWith( INDEXER ) ) {
+			String longestPrefix = StringUtils.substringBeforeLast( propertyName, "." );
+
+			if ( StringUtils.isNotEmpty( longestPrefix ) && !StringUtils.equals( longestPrefix, propertyName ) ) {
+				EntityPropertyDescriptor parentDescriptor = getProperty( longestPrefix );
+				EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( parentDescriptor );
+
+				if ( subRegistry != null ) {
+					EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( StringUtils.substringAfterLast( propertyName, "." ) );
+
+					if ( childDescriptor != null ) {
+						descriptor = buildNestedDescriptor( propertyName, parentDescriptor, childDescriptor );
+					}
+				}
+			}
+			else if ( propertyName.endsWith( INDEXER ) ) {
 				return buildMemberDescriptor( propertyName, INDEXER, this::resolveMemberType );
 			}
 			else if ( propertyName.endsWith( MAP_KEY ) ) {
@@ -84,22 +108,6 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			}
 			else if ( propertyName.endsWith( MAP_VALUE ) ) {
 				return buildMemberDescriptor( propertyName, MAP_VALUE, this::resolveMapValueType );
-			}
-			else {
-				String longestPrefix = StringUtils.substringBeforeLast( propertyName, "." );
-
-				if ( StringUtils.isNotEmpty( longestPrefix ) && !StringUtils.equals( longestPrefix, propertyName ) ) {
-					EntityPropertyDescriptor parentDescriptor = getProperty( longestPrefix );
-					EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( parentDescriptor );
-
-					if ( subRegistry != null ) {
-						EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( StringUtils.substringAfterLast( propertyName, "." ) );
-
-						if ( childDescriptor != null ) {
-							descriptor = buildNestedDescriptor( propertyName, parentDescriptor, childDescriptor );
-						}
-					}
-				}
 			}
 		}
 
@@ -226,7 +234,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		}
 */
 		// todo: fixme decently
-		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+		ViewElementLookupRegistryImpl existingLookupRegistry = child.getAttribute( ViewElementLookupRegistry.class );
 		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
 		if ( existingLookupRegistry != null ) {
 			existingLookupRegistry.mergeInto( lookupRegistry );
@@ -253,15 +261,5 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		register( descriptor );
 
 		return descriptor;
-	}
-
-	/**
-	 * Create a simple new registry based on property reflection of the class.
-	 *
-	 * @param type class
-	 * @return registry
-	 */
-	public static MutableEntityPropertyRegistry forClass( Class<?> type ) {
-		return DefaultEntityPropertyRegistryProvider.INSTANCE.create( type );
 	}
 }

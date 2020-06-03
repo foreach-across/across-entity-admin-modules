@@ -18,6 +18,8 @@ package com.foreach.across.modules.entity.registry.properties;
 
 import org.springframework.validation.Errors;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -50,6 +52,29 @@ public interface ConfigurableEntityPropertyController<T, U>
 	 * @return self
 	 */
 	ConfigurableEntityPropertyController<T, U> valueFetcher( Function<T, U> valueFetcher );
+
+	/**
+	 * Set the value fetching function that should be used for retrieving this property value in bulk
+	 * from a collection of entities. Setting a non-null bulk fetcher should automatically also
+	 * set {@link #optimizedForBulkValueFetching(boolean)} to {@code true}.
+	 * <p/>
+	 * Custom implementations should preferably return an {@link java.util.IdentityHashMap} to ensure
+	 * that all input items have a corresponding value entry. Even if they are equals, separate entries
+	 * are still expected. The order of the items returned is not important.
+	 *
+	 * @param valueFetcher to use
+	 * @return self
+	 */
+	ConfigurableEntityPropertyController<T, U> bulkValueFetcher( Function<Collection<T>, Map<T, U>> valueFetcher );
+
+	/**
+	 * Explicitly flag that this controller is optimized for bulk value fetching.
+	 * This is usually done automatically if a non-null {@link #bulkValueFetcher(Function)} was configured.
+	 *
+	 * @param optimized true if {@link EntityPropertyController#isOptimizedForBulkValueFetching()} should return {@code true}
+	 * @return self
+	 */
+	ConfigurableEntityPropertyController<T, U> optimizedForBulkValueFetching( boolean optimized );
 
 	/**
 	 * Set a supplier for creating a new property value using {@link EntityPropertyController#createValue(EntityPropertyBindingContext)}.

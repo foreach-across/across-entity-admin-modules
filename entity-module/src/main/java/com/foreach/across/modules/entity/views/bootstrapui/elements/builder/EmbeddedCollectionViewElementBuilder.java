@@ -16,7 +16,11 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
+import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
@@ -37,8 +41,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Experimental.
@@ -125,7 +132,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		List<EntityPropertyBinder> items = binder.getItemList();
 
 		if ( readonly && items.isEmpty() ) {
-			return paragraph().css( "form-control-static" ).build( builderContext );
+			return html.builders.p().css( "form-control-static" ).build( builderContext );
 		}
 
 		NodeViewElement list = super.createElement( builderContext );
@@ -188,16 +195,16 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		builderContext.setAttribute( EntityPropertyBinder.class, templateBinder );
 		builderContext.setAttribute( EntityPropertyControlName.class, controlName.withInitializedValue() );
 
-		return script( MediaType.TEXT_HTML )
-				.data( ROLE, "edit-item-template" )
-				.data( "next-item-index", System.currentTimeMillis() )
-				.data( "template-prefix", controlName.toItemPath() )
-				.add( createItemRowBuilder( controlName, null, Integer.MAX_VALUE, removeItemMessage ) )
-				.postProcessor(
-						( bc, element ) -> element.findAll( FormGroupElement.class )
-						                          .forEach( group -> group.setDetectFieldErrors( false ) )
-				)
-				.build( builderContext );
+		return bootstrap.builders.script().attribute( "type", MediaType.TEXT_HTML )
+		                         .data( ROLE, "edit-item-template" )
+		                         .data( "next-item-index", System.currentTimeMillis() )
+		                         .data( "template-prefix", controlName.toItemPath() )
+		                         .add( createItemRowBuilder( controlName, null, Integer.MAX_VALUE, removeItemMessage ) )
+		                         .postProcessor(
+				                         ( bc, element ) -> element.findAll( FormGroupElement.class )
+				                                                   .forEach( group -> group.setDetectFieldErrors( false ) )
+		                         )
+		                         .build( builderContext );
 
 	}
 
@@ -235,71 +242,76 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	                                                     String itemKey,
 	                                                     long sortIndex,
 	                                                     String removeItemMessage ) {
-		return div()
-				.data( ROLE, "item" )
-				.data( "item-key", itemKey )
-				.css( "embedded-collection-item" )
-				.add(
-						sortable && !readonly ?
-								div()
-										.name( "itemHandle" )
-										.data( ROLE, "item-handle" )
-										.css( "embedded-collection-item-handle" )
-										.add( BootstrapUiBuilders.glyphIcon( GlyphIcon.MENU_HAMBURGER ) )
-								: null
-				)
-				.add(
-						div()
-								.name( "itemData" )
-								.data( ROLE, "item-data" )
-								.css( "embedded-collection-item-data" )
-								.add( itemTemplate )
-								.add(
-										!readonly ?
-												hidden()
-														.controlName( propertyControlName.toSortIndex() )
-														.value( sortIndex )
-												: null
-								)
-				)
-				.add(
-						enableRemovingItem && !readonly ?
-								div()
-										.name( "itemActions" )
-										.data( ROLE, "item-actions" )
-										.css( "embedded-collection-item-actions" )
-										.add(
-												link()
-														.data( ACTION, "remove-item" )
-														.title( removeItemMessage )
-														.add( glyphIcon( GlyphIcon.REMOVE ) )
-										)
-								: null
-				)
-				.postProcessor( ( builderContext, element ) -> {
-					List<FormGroupElement> formGroups = element.findAll( FormGroupElement.class ).collect( Collectors.toList() );
+		return html.builders.div()
+		                    .data( ROLE, "item" )
+		                    .data( "item-key", itemKey )
+		                    .with( AcrossBootstrapStyles.css.display.flex, AcrossBootstrapStyles.css.border.top, AcrossBootstrapStyles.css.padding.top.s2 )
+		                    .css( "embedded-collection-item" )
+		                    .add(
+				                    sortable && !readonly ?
+						                    html.builders.div()
+						                                 .name( "itemHandle" )
+						                                 .data( ROLE, "item-handle" )
+						                                 .css( "embedded-collection-item-handle" )
+						                                 .add( entityModuleIcons.embeddedCollection.itemHandle() )
+						                    : null
+		                    )
+		                    .add(
+				                    html.builders.div()
+				                                 .name( "itemData" )
+				                                 .data( ROLE, "item-data" )
+				                                 .css( "embedded-collection-item-data" )
+				                                 .with( AcrossBootstrapStyles.css.flex.grow.enabled, AcrossBootstrapStyles.css.margin.right.s2 )
+				                                 .add( itemTemplate )
+				                                 .add(
+						                                 !readonly ?
+								                                 bootstrap.builders.hidden()
+								                                                   .controlName( propertyControlName.toSortIndex() )
+								                                                   .value( sortIndex )
+								                                 : null
+				                                 )
+		                    )
+		                    .add(
+				                    enableRemovingItem && !readonly ?
+						                    html.builders.div()
+						                                 .name( "itemActions" )
+						                                 .data( ROLE, "item-actions" )
+						                                 .css( "embedded-collection-item-actions" )
+						                                 .add(
+								                                 bootstrap.builders.link()
+								                                                   .data( "em-button-role", "remove-item" )
+								                                                   .data( ACTION, "remove-item" )
+								                                                   .title( removeItemMessage )
+								                                                   .add( entityModuleIcons.embeddedCollection.removeItem() )
+						                                 )
+						                    : null
+		                    )
+		                    .postProcessor( ( builderContext, element ) -> {
+			                    List<FormGroupElement> formGroups = element.findAll( FormGroupElement.class ).collect( Collectors.toList() );
 
-					if ( formGroups.size() == 1 ) {
-						element.addCssClass( "embedded-collection-item-style-compact" );
-						formGroups.get( 0 ).setLabel( null );
-					}
-				} );
+			                    if ( formGroups.size() == 1 ) {
+				                    element.addCssClass( "embedded-collection-item-style-compact" );
+				                    formGroups.get( 0 ).setLabel( null );
+			                    }
+		                    } );
 	}
 
 	private NodeViewElement addItemAction( ViewElementBuilderContext builderContext, String addItemMessage ) {
-		return div()
-				.data( ROLE, "actions" )
-				.css( "embedded-collection-actions" )
-				.add(
-						button()
-								.data( ACTION, "add-item" )
-								.style( Style.DEFAULT )
-								.iconLeft()
-								.icon( glyphIcon( GlyphIcon.PLUS ) )
-								.title( addItemMessage )
-								.text( StringUtils.isEmpty( addItemMessage ) ? "" : " " + addItemMessage )
+		return html.builders.div()
+		                    .data( ROLE, "actions" )
+		                    .css( "embedded-collection-actions" )
+		                    .add(
+				                    bootstrap.builders.button()
+				                                      .data( "em-button-role", "add-item" )
+				                                      .data( ACTION, "add-item" )
+				                                      .style( Style.DEFAULT )
+				                                      .with( css.button.outline.secondary, AcrossBootstrapStyles.css.size.width100 )
+				                                      .iconLeft()
+				                                      .icon( entityModuleIcons.embeddedCollection.addItem() )
+				                                      .title( addItemMessage )
+				                                      .text( StringUtils.isEmpty( addItemMessage ) ? "" : " " + addItemMessage )
 
-				)
-				.build( builderContext );
+		                    )
+		                    .build( builderContext );
 	}
 }

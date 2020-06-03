@@ -41,23 +41,43 @@ class RepositoryEntityAssociationsBuilder
 	private final Collection<EntityAssociationBuilder> entityAssociationBuilders;
 	private final MappingContextRegistry mappingContextRegistry;
 
-	public <T> void buildAssociations( final MutableEntityRegistry entityRegistry,
-	                                   final MutableEntityConfiguration entityConfiguration ) {
-		final RepositoryFactoryInformation<T, ?> repositoryFactoryInformation
+	<T> void buildAssociations( MutableEntityRegistry entityRegistry, MutableEntityConfiguration entityConfiguration ) {
+		RepositoryFactoryInformation<T, ?> repositoryFactoryInformation
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 
 		if ( repositoryFactoryInformation != null ) {
-			final PersistentEntity persistentEntity = repositoryFactoryInformation.getPersistentEntity();
+			PersistentEntity persistentEntity = repositoryFactoryInformation.getPersistentEntity();
 			handleAssociations( entityRegistry, entityConfiguration, persistentEntity, "" );
 		}
 	}
 
 	private void handleAssociations(
-			MutableEntityRegistry entityRegistry, MutableEntityConfiguration entityConfiguration, PersistentEntity persistentEntity, String prefix ) {
+			MutableEntityRegistry entityRegistry, MutableEntityConfiguration entityConfiguration, PersistentEntity<?, ?> persistentEntity, String prefix ) {
 		persistentEntity.doWithAssociations(
 				(SimpleAssociationHandler) association -> {
 					PersistentProperty property = association.getInverse();
 
+					for ( EntityAssociationBuilder builder : entityAssociationBuilders ) {
+						if ( builder.supports( property ) ) {
+							builder.buildAssociation(
+									entityRegistry,
+									entityConfiguration,
+									property,
+									prefix
+							);
+						}
+					}
+				}
+		);
+
+		handleAssociationsOnEmbeddedEntities( entityRegistry, entityConfiguration, persistentEntity, prefix );
+	}
+
+	private void handleAssociationsOnEmbeddedEntities( MutableEntityRegistry entityRegistry,
+	                                                   MutableEntityConfiguration entityConfiguration,
+	                                                   PersistentEntity<?, ?> persistentEntity, String prefix ) {
+		persistentEntity.forEach(
+				property -> {
 					if ( property.isAnnotationPresent( Embedded.class ) || property.isAnnotationPresent( EmbeddedId.class ) ) {
 						// For embedded entities - handle the associations of the embedded entity as well
 						if ( property.isEntity() ) {
@@ -66,18 +86,6 @@ class RepositoryEntityAssociationsBuilder
 									.ifPresent(
 											entity -> handleAssociations( entityRegistry, entityConfiguration, entity, prefix + property.getName() + "." )
 									);
-						}
-					}
-					else {
-						for ( EntityAssociationBuilder builder : entityAssociationBuilders ) {
-							if ( builder.supports( property ) ) {
-								builder.buildAssociation(
-										entityRegistry,
-										entityConfiguration,
-										property,
-										prefix
-								);
-							}
 						}
 					}
 				}

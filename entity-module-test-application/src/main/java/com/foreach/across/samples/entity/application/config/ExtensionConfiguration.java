@@ -16,12 +16,12 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -36,16 +36,15 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.Partner;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.formGroup;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.textbox;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 
@@ -64,9 +63,12 @@ public class ExtensionConfiguration implements EntityConfigurer
 		        .formView(
 				        "extension",
 				        basicSettings()
-						        .adminMenu( "/extension", item -> item.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.CALENDAR ) ) )
+						        .adminMenu( "/extension",
+						                    item -> item.attribute( NavComponentBuilder.ATTR_ICON,
+						                                            IconSet.iconSet( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID )
+						                                                   .icon( "external-link-alt" ) ) )
 						        .andThen( formSettings().forExtension( true ).formLayout( Grid.create( 12 ) ) )
-						        .andThen( builder -> builder.viewProcessor( new PartnerExtensionViewProcessor() ) )
+						        .andThen( builder -> builder.viewProcessor( vp -> vp.createBean( PartnerExtensionViewProcessor.class ) ) )
 		        );
 	}
 
@@ -87,7 +89,7 @@ public class ExtensionConfiguration implements EntityConfigurer
 			if ( !bindingResult.hasErrors() ) {
 				entityViewRequest.getPageContentStructure()
 				                 .addToFeedback(
-						                 BootstrapUiBuilders.alert().success().dismissible().text( "Updated url with: " + extension.getUrl() ).build()
+						                 bootstrap.builders.alert().success().dismissible().text( "Updated url with: " + extension.getUrl() ).build()
 				                 );
 			}
 		}
@@ -99,14 +101,15 @@ public class ExtensionConfiguration implements EntityConfigurer
 		                                          ViewElementBuilderMap builderMap ) {
 			builderMap.get( SingleEntityFormViewProcessor.LEFT_COLUMN, ColumnViewElementBuilder.class )
 			          .add(
-					          formGroup()
-							          .label( "URL" )
-							          .control( textbox().controlName( controlPrefix() + ".url" ).text( extension.url ) )
+					          bootstrap.builders.formGroup()
+					                            .label( "URL" )
+					                            .control( bootstrap.builders.textbox().controlName( controlPrefix() + ".url" ).text( extension.url ) )
 			          )
 			          .add(
-					          formGroup()
-							          .label( "Creation year" )
-							          .control( textbox().controlName( controlPrefix() + ".creationYear" ).text( "" + extension.creationYear ) )
+					          bootstrap.builders.formGroup()
+					                            .label( "Creation year" )
+					                            .control( bootstrap.builders.textbox().controlName( controlPrefix() + ".creationYear" )
+					                                                        .text( "" + extension.creationYear ) )
 			          );
 		}
 

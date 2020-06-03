@@ -16,38 +16,55 @@
 
 package com.foreach.across.samples.entity.application.config;
 
-import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
-import com.foreach.across.modules.spring.security.actions.AllowableActions;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.samples.entity.application.business.Friend;
+import com.foreach.across.samples.entity.application.business.Hobby;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * @author Stijn Vanhoof
- * @since 3.3.0
- */
 @Configuration
+@RequiredArgsConstructor
 public class FriendConfiguration implements EntityConfigurer
 {
+	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
+	private final EntityPropertyRegistrationHelper proxyPropertyRegistrar;
+
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Friend.class )
-		        .allowableActionsBuilder(
-				        new EntityConfigurationAllowableActionsBuilder()
-				        {
-					        @Override
-					        public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
-						        return new AllowableActionSet();
-					        }
+		        .properties(
+				        props -> props.property( proxyPropertyRegistrar.entityIdProxy( "hobby" )
+				                                                       .entityType( Hobby.class )
+				                                                       .targetPropertyName( "hobbyId" ) )
+				                      .and()
+				                      .property( "hobbyId" )
+				                      .hidden( true )
+				                      .and()
+				                      .property( "users" )
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+				                      .attribute( autoSuggestData.entityQuery( "name ilike '%{0}%'" ) )
+		        )
+		        .listView(
+				        lvb -> lvb.showProperties( ".", "~hobby" )
+		        );
 
-					        @Override
-					        public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
-						        return new AllowableActionSet();
-					        }
-				        }
+		entities.withType( Hobby.class )
+		        .association(
+				        ab -> ab.name( "users" )
+				                .associationType( EntityAssociation.Type.EMBEDDED )
+				                .targetEntityType( Friend.class )
+				                .targetProperty( "hobby" )
+				                .listView()
+				                .detailView()
+				                .updateFormView()
+				                .createFormView()
+				                .show()
 		        );
 	}
 }

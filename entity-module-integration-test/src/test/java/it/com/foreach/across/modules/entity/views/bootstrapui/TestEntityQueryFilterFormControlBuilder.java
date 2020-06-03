@@ -19,7 +19,6 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterFormControlBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
@@ -34,6 +33,8 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+
 /**
  * @author Steven Gentens
  * @since 2.2.0
@@ -45,40 +46,40 @@ public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElement
 {
 	private static final String FILTER_ADVANCED = "<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\">" +
 			"<div class=\"entity-query-filter-form-advanced\"><div class=\"form-group\"><input name=\"extensions[eqFilter]\" id=\"extensions[eqFilter]\" placeholder=\"entityQueryFilter.eqlPlaceholder\" type=\"text\" class=\"form-control\" value=\"name = &#39;john&#39;\" aria-describedby=\"extensions[eqFilter].help\"></input><span class=\"help-block\" id=\"extensions[eqFilter].help\">entityQueryFilter.eqlDescription</span></div>" +
-			"<div class='list-header-actions'><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
+			"<div class='list-header-actions'><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
 			"</div>";
 	private static final String FILTER_BASIC = "<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\">" +
 			"<div class=\"entity-query-filter-form-basic\">" +
 			"<input data-entity-query-control=\"marker\" name=\"extensions[myName]\" data-entity-query-operand=\"LIKE\" id=\"extensions[myName]\" type=\"text\" class=\"form-control\" data-entity-query-property=\"myName\"></input>" +
 			"<div data-entity-query-control=\"marker\" data-entity-query-operand=\"IN\" id=\"extensions[myOption]\" data-entity-query-property=\"myOption\"><div class=\"checkbox\"><input name=\"extensions[myOption]\" id=\"extensions[myOption]1\" type=\"checkbox\" value=\"myOption\"></input><input name=\"_extensions[myOption]\" type=\"hidden\" value=\"on\"></input></div></div>" +
-			"<button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div>" +
+			"<button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div>" +
 			"<input name=\"extensions[eqFilter]\" type=\"hidden\"  value=\"\" />" +
 			"</div>";
 	private static final String FILTER_BASIC_ADVANCED_WITH_BASIC = "<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\">" +
 			"<div class=\"entity-query-filter-form-basic\">" +
 			"<input data-entity-query-control=\"marker\" name=\"extensions[myName]\" data-entity-query-operand=\"LIKE\" id=\"extensions[myName]\" type=\"text\" class=\"form-control\" data-entity-query-property=\"myName\"></input>" +
 			"<div data-entity-query-control=\"marker\" data-entity-query-operand=\"IN\" id=\"extensions[myOption]\" data-entity-query-property=\"myOption\"><div class=\"checkbox\"><input name=\"extensions[myOption]\" id=\"extensions[myOption]1\" type=\"checkbox\" value=\"myOption\"></input><input name=\"_extensions[myOption]\" type=\"hidden\" value=\"on\"></input></div></div>" +
-			"<a data-entity-query-filter-form-link=\"advanced\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToAdvancedMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div>" +
+			"<a data-entity-query-filter-form-link=\"advanced\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToAdvancedMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div>" +
 			"<div class=\"entity-query-filter-form-advanced hidden\"><div class=\"form-group\"><input name=\"extensions[eqFilter]\" id=\"extensions[eqFilter]\" placeholder=\"entityQueryFilter.eqlPlaceholder\" type=\"text\" class=\"form-control\" value=\"\" aria-describedby=\"extensions[eqFilter].help\"></input><span class=\"help-block\" id=\"extensions[eqFilter].help\">entityQueryFilter.eqlDescription</span></div>" +
-			"<div class='list-header-actions'><a data-entity-query-filter-form-link=\"basic\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToBasicMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
+			"<div class='list-header-actions'><a data-entity-query-filter-form-link=\"basic\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToBasicMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
 			"<input class='js-entity-query-filter-form-show-basic-filter' name=\"extensions[entityQueryRequest].showBasicFilter\" type=\"hidden\" value=\"true\" /></div>";
 	private static final String FILTER_BASIC_ADVANCED_WITH_ADVANCED = "<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\">" +
 			"<div class=\"entity-query-filter-form-basic hidden\">" +
 			"<input data-entity-query-control=\"marker\" name=\"extensions[myName]\" data-entity-query-operand=\"LIKE\" id=\"extensions[myName]\" type=\"text\" class=\"form-control\" data-entity-query-property=\"myName\"></input>" +
 			"<div data-entity-query-control=\"marker\" data-entity-query-operand=\"IN\" id=\"extensions[myOption]\" data-entity-query-property=\"myOption\"><div class=\"checkbox\"><input name=\"extensions[myOption]\" id=\"extensions[myOption]1\" type=\"checkbox\" value=\"myOption\"></input><input name=\"_extensions[myOption]\" type=\"hidden\" value=\"on\"></input></div></div>" +
-			"<a data-entity-query-filter-form-link=\"advanced\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToAdvancedMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div>" +
+			"<a data-entity-query-filter-form-link=\"advanced\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToAdvancedMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div>" +
 			"<div class=\"entity-query-filter-form-advanced\"><div class=\"form-group\"><input name=\"extensions[eqFilter]\" id=\"extensions[eqFilter]\" placeholder=\"entityQueryFilter.eqlPlaceholder\" type=\"text\" class=\"form-control\" value=\"\" aria-describedby=\"extensions[eqFilter].help\"></input><span class=\"help-block\" id=\"extensions[eqFilter].help\">entityQueryFilter.eqlDescription</span></div>" +
-			"<div class='list-header-actions'><a data-entity-query-filter-form-link=\"basic\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToBasicMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
+			"<div class='list-header-actions'><a data-entity-query-filter-form-link=\"basic\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToBasicMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
 			"<input class='js-entity-query-filter-form-show-basic-filter' name=\"extensions[entityQueryRequest].showBasicFilter\" type=\"hidden\" value=\"false\" /></div>";
 	private static final String FILTER_NOTHING = "<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\"></div>";
 	private static final String FILTER_BASIC_ADVANCED_NOT_CONVERTIBLE_TO_BASIC =
 			"<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\">" +
-					"<div class=\"entity-query-filter-form-basic hidden\">" +
+					"<div class=\"entity-query-filter-form-basic d-none\">" +
 					"<input data-entity-query-control=\"marker\" name=\"extensions[myName]\" data-entity-query-operand=\"LIKE\" id=\"extensions[myName]\" type=\"text\" class=\"form-control\" data-entity-query-property=\"myName\"></input>" +
 					"<div data-entity-query-control=\"marker\" data-entity-query-operand=\"IN\" id=\"extensions[myOption]\" data-entity-query-property=\"myOption\"><div class=\"checkbox\"><input name=\"extensions[myOption]\" id=\"extensions[myOption]1\" type=\"checkbox\" value=\"myOption\"></input><input name=\"_extensions[myOption]\" type=\"hidden\" value=\"on\"></input></div></div>" +
-					"<a data-entity-query-filter-form-link=\"advanced\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToAdvancedMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div>" +
+					"<a data-entity-query-filter-form-link=\"advanced\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToAdvancedMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div>" +
 					"<div class=\"entity-query-filter-form-advanced\"><div class=\"form-group\"><input name=\"extensions[eqFilter]\" id=\"extensions[eqFilter]\" placeholder=\"entityQueryFilter.eqlPlaceholder\" type=\"text\" class=\"form-control\" value=\"\" aria-describedby=\"extensions[eqFilter].help\"></input><span class=\"help-block\" id=\"extensions[eqFilter].help\">entityQueryFilter.eqlDescription</span></div>" +
-					"<div class='list-header-actions'><div title=\"entityQueryFilter.linkToBasicMode[impossibleTooltip]\" class=\"disabled-button-wrapper\"><a data-entity-query-filter-form-link=\"basic\" role=\"button\" href=\"#\" class=\"btn btn-link disabled\">entityQueryFilter.linkToBasicMode</a></div><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
+					"<div class='list-header-actions'><div title=\"entityQueryFilter.linkToBasicMode[impossibleTooltip]\" class=\"disabled-button-wrapper\"><a data-entity-query-filter-form-link=\"basic\" role=\"button\" href=\"#\" class=\"btn btn-link disabled\">entityQueryFilter.linkToBasicMode</a></div><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div></div>" +
 					"<input class='js-entity-query-filter-form-show-basic-filter' name=\"extensions[entityQueryRequest].showBasicFilter\" type=\"hidden\" value=\"false\" /></div>";
 
 	private EntityQueryFilterFormControlBuilder queryFilterFormControlBuilder;
@@ -93,22 +94,22 @@ public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElement
 		queryFilterFormControlBuilder = new EntityQueryFilterFormControlBuilder().eqlControlName( "extensions[eqFilter]" );
 
 		viewElementControlItems = new ArrayList<>();
-		viewElementControlItems.add( BootstrapUiBuilders.textbox()
-		                                                .controlName( "extensions[myName]" )
-		                                                .htmlId( "extensions[myName]" )
-		                                                .attribute( "data-entity-query-property", "myName" )
-		                                                .attribute( "data-entity-query-operand", "LIKE" )
-		                                                .attribute( "data-entity-query-control", "marker" )
-		                                                .build( builderContext ) );
+		viewElementControlItems.add( bootstrap.builders.textbox()
+		                                               .controlName( "extensions[myName]" )
+		                                               .htmlId( "extensions[myName]" )
+		                                               .attribute( "data-entity-query-property", "myName" )
+		                                               .attribute( "data-entity-query-operand", "LIKE" )
+		                                               .attribute( "data-entity-query-control", "marker" )
+		                                               .build( builderContext ) );
 
-		viewElementControlItems.add( BootstrapUiBuilders.options().checkbox()
-		                                                .controlName( "extensions[myOption]" )
-		                                                .htmlId( "extensions[myOption]" )
-		                                                .attribute( "data-entity-query-property", "myOption" )
-		                                                .attribute( "data-entity-query-operand", "IN" )
-		                                                .attribute( "data-entity-query-control", "marker" )
-		                                                .add( BootstrapUiBuilders.option().checkbox().value( "myOption" ) )
-		                                                .build( builderContext ) );
+		viewElementControlItems.add( bootstrap.builders.checkboxList()
+		                                               .controlName( "extensions[myOption]" )
+		                                               .htmlId( "extensions[myOption]" )
+		                                               .attribute( "data-entity-query-property", "myOption" )
+		                                               .attribute( "data-entity-query-operand", "IN" )
+		                                               .attribute( "data-entity-query-control", "marker" )
+		                                               .add( bootstrap.builders.checkbox().value( "myOption" ) )
+		                                               .build( builderContext ) );
 	}
 
 	@Test

@@ -59,7 +59,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 	@Before
 	@SuppressWarnings("unchecked")
 	public void createRegistries() {
-		EntityPropertyRegistryProvider registryProvider = DefaultEntityPropertyRegistryProvider.INSTANCE;
+		EntityPropertyRegistryProvider registryProvider = DefaultEntityPropertyRegistryProvider.newInstance();
 		addressProperties = registryProvider.get( Address.class );
 		userProperties = registryProvider.get( User.class );
 		cityProperties = registryProvider.get( City.class );
@@ -68,7 +68,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 
 		collectionsProperties.getProperty( "cities[]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new City( "Some city" ) );
 		collectionsProperties.getProperty( "addressMap[key]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> "some key" );
-		collectionsProperties.getProperty( "addressMap[value]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new Address() );
+		collectionsProperties.getProperty( "addressMap[value]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new Address("Some street") );
 
 		userWithCityAddressProperties = registryProvider.get( UserWithCityAddress.class );
 
@@ -106,7 +106,6 @@ abstract class AbstractEntityPropertyBindingContextTest
 	}
 
 	@Data
-	@NoArgsConstructor
 	@EqualsAndHashCode(exclude = "updateCount")
 	public static class Address
 	{

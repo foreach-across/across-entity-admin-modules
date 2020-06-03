@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.registry.properties.binding;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContextResolver;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.NonNull;
 
@@ -32,15 +32,32 @@ import java.util.Map;
  * @see SimpleEntityPropertyBindingContext
  * @since 3.2.0
  */
-abstract class AbstractEntityPropertyBindingContext implements EntityPropertyBindingContext
+abstract class AbstractEntityPropertyBindingContext implements EntityPropertyBindingContextResolver
 {
 	private final Map<String, EntityPropertyBindingContext> propertyContextMap = new HashMap<>();
 
 	@Override
 	public EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull EntityPropertyDescriptor propertyDescriptor ) {
-		EntityPropertyController controller = propertyDescriptor.getController();
-		return propertyContextMap.computeIfAbsent( propertyDescriptor.getTargetPropertyName(), key ->
-				controller != null ? new ChildEntityPropertyBindingContext( this, controller ) : null
-		);
+		return resolvePropertyBindingContext( propertyDescriptor, true );
+	}
+
+	@Override
+	public EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull EntityPropertyDescriptor propertyDescriptor, boolean createIfPossible ) {
+		EntityPropertyBindingContext propertyBindingContext = propertyContextMap.get( propertyDescriptor.getTargetPropertyName() );
+
+		if ( propertyBindingContext == null && createIfPossible && propertyDescriptor.getController() != null ) {
+			propertyBindingContext = new ChildEntityPropertyBindingContext( this, propertyDescriptor.getController() );
+			propertyContextMap.put( propertyDescriptor.getTargetPropertyName(), propertyBindingContext );
+		}
+
+		return propertyBindingContext;
+	}
+
+	@Override
+	public EntityPropertyBindingContext registerPropertyBindingContext( @NonNull EntityPropertyDescriptor propertyDescriptor, Object propertyValue ) {
+		ChildEntityPropertyBindingContext propertyBindingContext
+				= new ChildEntityPropertyBindingContext( this, propertyDescriptor.getController() ).setCachedValue( propertyValue );
+		propertyContextMap.put( propertyDescriptor.getTargetPropertyName(), propertyBindingContext );
+		return propertyBindingContext;
 	}
 }

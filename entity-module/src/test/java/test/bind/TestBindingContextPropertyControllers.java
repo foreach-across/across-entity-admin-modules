@@ -18,11 +18,18 @@ package test.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext.forReading;
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext.forUpdating;
+import static com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor.builder;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * @author Arne Vandamme
@@ -40,6 +47,83 @@ public class TestBindingContextPropertyControllers extends AbstractEntityPropert
 		assertThat( addressStreet.getController().fetchValue( forReading( otherAddress ) ) ).isEqualTo( "street updated" );
 
 		assertThat( userAddress.getController().fetchValue( forReading( user ) ) ).isEqualTo( new Address( "street one" ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void defaultSimpleBulkFetching() {
+		assertThat( addressStreet.getController().isOptimizedForBulkValueFetching() ).isFalse();
+		assertThat( userAddress.getController().isOptimizedForBulkValueFetching() ).isFalse();
+
+		EntityPropertyBindingContext addressOne = forReading( new Address( "street one" ) );
+		EntityPropertyBindingContext addressTwo = forReading( new Address( "street two" ) );
+		assertThat( addressStreet.getController().fetchValues( Arrays.asList( addressOne, addressTwo ) ) )
+				.containsOnly( entry( addressOne, "street one" ), entry( addressTwo, "street two" ) );
+
+		EntityPropertyBindingContext userOne = forReading( new User( new Address( "street one" ) ) );
+		EntityPropertyBindingContext userTwo = forReading( new User( new Address( "street two" ) ) );
+		assertThat( userAddress.getController().fetchValues( Arrays.asList( userOne, userTwo ) ) )
+				.containsOnly( entry( userOne, new Address( "street one" ) ), entry( userTwo, new Address( "street two" ) ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void defaultNestedBulkFetching() {
+		assertThat( userAddressStreet.getController().isOptimizedForBulkValueFetching() ).isFalse();
+
+		EntityPropertyBindingContext userOne = forReading( new User( new Address( "street one" ) ) );
+		EntityPropertyBindingContext userTwo = forReading( new User( new Address( "street two" ) ) );
+		assertThat( userAddressStreet.getController().fetchValues( Arrays.asList( userOne, userTwo ) ) )
+				.containsOnly( entry( userOne, "street one" ), entry( userTwo, "street two" ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void bulkFetchingOnFirstLevelIsUsedForChildren() {
+		builder( userAddress.getName() )
+				.controller(
+						ctl -> ctl.withTarget( User.class, Address.class )
+						          .bulkValueFetcher( users -> users.stream().collect(
+								          toMap( identity(), u -> new Address( "user-bulk:" + u.getAddress().getStreet() ) ) ) )
+				)
+				.apply( (MutableEntityPropertyDescriptor) userAddress );
+
+		assertThat( userAddress.getController().isOptimizedForBulkValueFetching() ).isTrue();
+		assertThat( addressStreet.getController().isOptimizedForBulkValueFetching() ).isFalse();
+		assertThat( userAddressStreet.getController().isOptimizedForBulkValueFetching() ).isTrue();
+
+		EntityPropertyBindingContext userOne = forReading( new User( new Address( "street one" ) ) );
+		EntityPropertyBindingContext userTwo = forReading( new User( new Address( "street two" ) ) );
+		assertThat( userAddress.getController().fetchValues( Arrays.asList( userOne, userTwo ) ) )
+				.containsOnly( entry( userOne, new Address( "user-bulk:street one" ) ), entry( userTwo, new Address( "user-bulk:street two" ) ) );
+		assertThat( userAddressStreet.getController().fetchValues( Arrays.asList( userOne, userTwo ) ) )
+				.containsOnly( entry( userOne, "user-bulk:street one" ), entry( userTwo, "user-bulk:street two" ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void bulkFetchingOnChildLevelIsUsedForParent() {
+		builder( addressStreet.getName() )
+				.controller(
+						ctl -> ctl.withTarget( Address.class, String.class )
+						          .bulkValueFetcher( addresses -> addresses.stream().collect( toMap( identity(), a -> "bulk:" + a.getStreet() ) ) )
+				)
+				.apply( (MutableEntityPropertyDescriptor) addressStreet );
+		assertThat( addressStreet.getController().isOptimizedForBulkValueFetching() ).isTrue();
+		assertThat( userAddress.getController().isOptimizedForBulkValueFetching() ).isFalse();
+		assertThat( userAddressStreet.getController().isOptimizedForBulkValueFetching() ).isTrue();
+
+		EntityPropertyBindingContext addressOne = forReading( new Address( "street one" ) );
+		EntityPropertyBindingContext addressTwo = forReading( new Address( "street two" ) );
+		assertThat( addressStreet.getController().fetchValues( Arrays.asList( addressOne, addressTwo ) ) )
+				.containsOnly( entry( addressOne, "bulk:street one" ), entry( addressTwo, "bulk:street two" ) );
+
+		EntityPropertyBindingContext userOne = forReading( new User( new Address( "street one" ) ) );
+		EntityPropertyBindingContext userTwo = forReading( new User( new Address( "street two" ) ) );
+		assertThat( userAddress.getController().fetchValues( Arrays.asList( userOne, userTwo ) ) )
+				.containsOnly( entry( userOne, new Address( "street one" ) ), entry( userTwo, new Address( "street two" ) ) );
+		assertThat( userAddressStreet.getController().fetchValues( Arrays.asList( userOne, userTwo ) ) )
+				.containsOnly( entry( userOne, "bulk:street one" ), entry( userTwo, "bulk:street two" ) );
 	}
 
 	@Test

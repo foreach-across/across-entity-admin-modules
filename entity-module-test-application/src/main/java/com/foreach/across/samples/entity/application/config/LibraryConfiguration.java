@@ -25,13 +25,13 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -69,8 +69,7 @@ public class LibraryConfiguration implements EntityConfigurer
 		bookTemplate.setTitle( "My Book" );
 		bookTemplate.setAuthors( Collections.singletonList( bookTemplateAuthor ) );
 
-		entities.create()
-		        .entityType( Library.class, true )
+		entities.withType( Library.class )
 		        .displayName( "Library" )
 		        .entityModel(
 				        model -> model.entityFactory( LIBRARY_FACTORY )

@@ -8,3 +8,4 @@ db
 local-data
 .DS_Store
 node_modules
+.flattened-pom.xml

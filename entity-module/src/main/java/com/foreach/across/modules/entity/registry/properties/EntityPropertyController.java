@@ -19,6 +19,10 @@ package com.foreach.across.modules.entity.registry.properties;
 import org.springframework.core.Ordered;
 import org.springframework.validation.Errors;
 
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 /**
  * Generic controller for a single property on an entity.
  * Allows reading and writing a property value, as well as validating a value.
@@ -65,6 +69,22 @@ public interface EntityPropertyController<T> extends Ordered
 	int AFTER_ENTITY = Ordered.LOWEST_PRECEDENCE - 1000;
 
 	/**
+	 * Fetches the value of the property for a collection of owning entities.
+	 * Default implementation does a sequential {@link #fetchValue(EntityPropertyBindingContext)} but custom
+	 * implementations should provide a more optimal fetching approach.
+	 *
+	 * @param bindingContexts collection of binding contexts
+	 * @return property values mapped by binding context
+	 * @see #fetchValue(EntityPropertyBindingContext)
+	 * @see #isOptimizedForBulkValueFetching()
+	 */
+	default Map<EntityPropertyBindingContext, Object> fetchValues( Collection<EntityPropertyBindingContext> bindingContexts ) {
+		Map<EntityPropertyBindingContext, Object> values = new IdentityHashMap<>( bindingContexts.size() );
+		bindingContexts.forEach( bindingContext -> values.put( bindingContext, fetchValue( bindingContext ) ) );
+		return values;
+	}
+
+	/**
 	 * Fetches the current value of the property for the owning entity.
 	 * Depending on the type of property this might be a simple getter being called,
 	 * or something like a database retrieval happening.
@@ -77,6 +97,17 @@ public interface EntityPropertyController<T> extends Ordered
 	}
 
 	/**
+	 * Check if this control has optimized support for bulk value fetching.
+	 * If {@code true} calling {@link #fetchValues(Collection)} will usually execute a
+	 * custom implementation. Can be used to determine eager loading of property values.
+	 *
+	 * @return true if this controller has optimal bulk value fetching
+	 */
+	default boolean isOptimizedForBulkValueFetching() {
+		return false;
+	}
+
+	/**
 	 * Create a DTO object for the property value. The default implementation returns the same instance.
 	 * This method can be used to create detached transfer objects that should be updated instead of
 	 * the existing instance. When available this should improve the reliability of {@link EntityPropertyValue#getOldValue()}
@@ -84,7 +115,7 @@ public interface EntityPropertyController<T> extends Ordered
 	 * and the latter the DTO.
 	 *
 	 * @param context binding context
-	 * @param value property value to create a DTO for
+	 * @param value   property value to create a DTO for
 	 * @return property value DTO
 	 */
 	default Object createDto( EntityPropertyBindingContext context, Object value ) {

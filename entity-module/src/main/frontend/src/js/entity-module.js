@@ -35,7 +35,6 @@ $( document ).ready( function() {
 
 window.EntityModule = entityModule;
 
-
 /**
  * Expose JQuery plugin emSortableTable, creates a SortableTable when called.
  */

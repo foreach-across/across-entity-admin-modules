@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package it.com.foreach.across.modules.entity.registry.properties;
+package test;
 
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;

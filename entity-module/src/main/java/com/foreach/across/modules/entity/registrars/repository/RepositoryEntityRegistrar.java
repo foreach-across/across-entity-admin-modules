@@ -44,7 +44,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
@@ -62,6 +62,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -168,13 +169,13 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			Repositories repositories,
 			RepositoryInvokerFactory repositoryInvokerFactory ) {
 		String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
-		Object repository = repositories.getRepositoryFor( entityType );
+		Optional<Object> repository = repositories.getRepositoryFor( entityType ).filter( Repository.class::isInstance );
 
-		if ( entityTypeName != null && repository instanceof Repository ) {
+		if ( entityTypeName != null && repository.isPresent() ) {
 			EntityConfigurationImpl entityConfiguration = new EntityConfigurationImpl<>( entityTypeName, entityType );
 			entityConfiguration.setAttribute( AcrossModuleInfo.class, moduleInfo );
 			entityConfiguration.setAttribute( RepositoryFactoryInformation.class, repositoryFactoryInformation );
-			entityConfiguration.setAttribute( Repository.class, (Repository) repository );
+			entityConfiguration.setAttribute( Repository.class, (Repository) repository.get() );
 			entityConfiguration.setAttribute( PersistentEntity.class, repositoryFactoryInformation.getPersistentEntity() );
 			entityConfiguration.setAttribute( RepositoryInvoker.class, repositoryInvokerFactory.getInvokerFor( entityType ) );
 
@@ -267,8 +268,8 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 
 		// Because of some bugs related to JPA - Hibernate integration, favour the use of QueryDsl if possible,
 		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
-		if ( repository instanceof QueryDslPredicateExecutor ) {
-			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QueryDslPredicateExecutor) repository, entityConfiguration );
+		if ( repository instanceof QuerydslPredicateExecutor ) {
+			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QuerydslPredicateExecutor) repository, entityConfiguration );
 		}
 		else if ( repository instanceof JpaSpecificationExecutor ) {
 			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );

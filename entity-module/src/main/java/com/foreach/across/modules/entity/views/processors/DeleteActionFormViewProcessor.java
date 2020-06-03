@@ -16,10 +16,10 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -33,6 +33,8 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 
 /**
  * Adds a delete button to the existing {@link SingleEntityFormViewProcessor#FORM_BUTTONS} if the {@link AllowableAction#DELETE} is present.
@@ -58,7 +60,8 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 			                                                                      ContainerViewElementBuilderSupport.class );
 
 			if ( buttonsContainer != null ) {
-				buttonsContainer.add( createDeleteButton( entityViewContext, entityViewRequest.getViewName() ).css( "pull-right" ) );
+				buttonsContainer.add(
+						createDeleteButton( entityViewContext, entityViewRequest.getViewName() ).with( AcrossBootstrapStyles.css.cssFloat.right ) );
 			}
 		}
 	}
@@ -88,11 +91,12 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 			linkToDeleteView = linkToDeleteView.withFromUrl( links.toUriString() );
 		}
 
-		return BootstrapUiBuilders.button()
-		                          .name( "btn-delete" )
-		                          .link( linkToDeleteView.toUriString() )
-		                          .style( Style.DANGER )
-		                          .icon( new GlyphIcon( GlyphIcon.TRASH ) )
-		                          .title( messages.messageWithFallback( "buttons.delete" ) );
+		return BootstrapViewElements.bootstrap.builders.button()
+		                                               .name( "btn-delete" )
+		                                               .data( "em-button-role", "delete" )
+		                                               .link( linkToDeleteView.toUriString() )
+		                                               .style( Style.DANGER )
+		                                               .icon( entityModuleIcons.formView.delete() )
+		                                               .title( messages.messageWithFallback( "buttons.delete" ) );
 	}
 }

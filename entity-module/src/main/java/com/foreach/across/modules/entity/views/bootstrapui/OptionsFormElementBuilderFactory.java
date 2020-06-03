@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
@@ -47,8 +46,8 @@ import org.springframework.util.ClassUtils;
 import java.util.EnumSet;
 import java.util.function.Consumer;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.*;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.EntityAttributes.OPTIONS_ENHANCER;
 import static com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.*;
 import static com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder.wrap;
@@ -75,6 +74,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		return StringUtils.equals( OPTIONS, viewElementType )
 				|| StringUtils.equals( SELECT, viewElementType )
 				|| StringUtils.equals( RADIO, viewElementType )
+				|| StringUtils.equals( MULTI_TOGGLE, viewElementType )
 				|| StringUtils.equals( MULTI_CHECKBOX, viewElementType );
 	}
 
@@ -92,23 +92,24 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		SelectFormElementConfiguration selectFormElementConfiguration = descriptor.getAttribute( SelectFormElementConfiguration.class );
 		String actualType = determineActualType( viewElementType, selectFormElementConfiguration, typeDescriptor.isCollection() );
 
-		OptionsFormElementBuilder options
-				= BootstrapUiBuilders.options()
-				                     .name( descriptor.getName() )
-				                     .controlName( descriptor.getName() )
-				                     .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
-				                     .postProcessor(
-						                     ( ( builderContext, element ) -> {
-							                     if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
-								                     ViewElementBuilderSupport.ElementOrBuilder wrappedElement = wrap( element );
-								                     configureControlSettings( wrappedElement, descriptor );
-								                     if ( viewElementMode.isForMultiple() ) {
-									                     setAttribute( wrappedElement, FilterControlAttributes.TYPE, EQGroup.class.getSimpleName() );
-								                     }
-								                     element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
-							                     }
-						                     } )
-				                     );
+		OptionsFormElementBuilder options =
+				bootstrap.builders
+						.options()
+						.name( descriptor.getName() )
+						.controlName( descriptor.getName() )
+						.postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
+						.postProcessor(
+								( ( builderContext, element ) -> {
+									if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+										ViewElementBuilderSupport.ElementOrBuilder wrappedElement = wrap( element );
+										configureControlSettings( wrappedElement, descriptor );
+										if ( viewElementMode.isForMultiple() ) {
+											setAttribute( wrappedElement, FilterControlAttributes.TYPE, EQGroup.class.getSimpleName() );
+										}
+										element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+									}
+								} )
+						);
 
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, typeDescriptor.getSimpleTargetType(), optionConfiguration, viewElementMode );
@@ -125,6 +126,9 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		else if ( MULTI_CHECKBOX.equals( actualType ) ) {
 			options.checkbox();
 		}
+		else if ( MULTI_TOGGLE.equals( actualType ) ) {
+			options.toggle();
+		}
 		else {
 			options.radio();
 		}
@@ -135,7 +139,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		boolean isFilterControl = ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() );
 		boolean nullValuePossible = !typeDescriptor.getSimpleTargetType().isPrimitive()
-				&& !( OptionsFormElementBuilder.Type.RADIO.equals( options.getType() ) && EntityAttributes.isRequired( descriptor ) );
+				&& !( isRadioOrToggleElement( options ) && EntityAttributes.isRequired( descriptor ) );
 
 		if ( isFilterControl ) {
 			optionGenerator.setEmptyOption(
@@ -169,6 +173,11 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		       .add( optionGenerator );
 
 		return options;
+	}
+
+	private boolean isRadioOrToggleElement( OptionsFormElementBuilder options ) {
+		return OptionsFormElementBuilder.Type.RADIO.equals( options.getType() )
+				|| OptionsFormElementBuilder.Type.TOGGLE.equals( options.getType() );
 	}
 
 	private SelectFormElementConfiguration createFilterSelectFormElementConfiguration() {
@@ -300,14 +309,16 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@SuppressWarnings("unchecked")
 	private OptionIterableBuilder createBooleanOptionIterableBuilder( EntityPropertyDescriptor descriptor ) {
 		return FixedOptionIterableBuilder.sorted(
-				option().rawValue( Boolean.TRUE )
-				        .text( "#{properties." + descriptor.getName() + ".value[true]=Yes}" )
-				        .value( Boolean.TRUE )
-				        .postProcessor( LocalizedTextPostProcessor.INSTANCE ),
-				option().rawValue( Boolean.FALSE )
-				        .text( "#{properties." + descriptor.getName() + ".value[false]=No}" )
-				        .value( Boolean.FALSE )
-				        .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+				bootstrap.builders
+						.option().rawValue( Boolean.TRUE )
+						.text( "#{properties." + descriptor.getName() + ".value[true]=Yes}" )
+						.value( Boolean.TRUE )
+						.postProcessor( LocalizedTextPostProcessor.INSTANCE ),
+				bootstrap.builders
+						.option().rawValue( Boolean.FALSE )
+						.text( "#{properties." + descriptor.getName() + ".value[false]=No}" )
+						.value( Boolean.FALSE )
+						.postProcessor( LocalizedTextPostProcessor.INSTANCE )
 		);
 	}
 

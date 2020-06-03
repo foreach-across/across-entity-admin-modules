@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+
 /**
  * Represents a fieldset of other {@link ViewElement} objects. A fieldset has for {@link ContainerViewElement} properties:
  * <ul>
@@ -200,18 +202,21 @@ public class ViewElementFieldset extends ContainerViewElement
 	}
 
 	@Override
-	public void addChild( ViewElement element ) {
+	public ViewElementFieldset addChild( ViewElement element ) {
 		getBody().addChild( element );
+		return this;
 	}
 
 	@Override
-	public void addChildren( Collection<? extends ViewElement> elements ) {
+	public ViewElementFieldset addChildren( Collection<? extends ViewElement> elements ) {
 		getBody().addChildren( elements );
+		return this;
 	}
 
 	@Override
-	public void addFirstChild( ViewElement element ) {
+	public ViewElementFieldset addFirstChild( ViewElement element ) {
 		getBody().addFirstChild( element );
+		return this;
 	}
 
 	@Override
@@ -220,8 +225,9 @@ public class ViewElementFieldset extends ContainerViewElement
 	}
 
 	@Override
-	public void clearChildren() {
+	public ViewElementFieldset clearChildren() {
 		super.clearChildren();
+		return this;
 	}
 
 	@Override
@@ -235,7 +241,7 @@ public class ViewElementFieldset extends ContainerViewElement
 	 * {@code descriptor.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.template( fields -> new ContainerViewElement() ) )}.
 	 *
 	 * @param template function (not null)
-	 * @param <U> output view element type
+	 * @param <U>      output view element type
 	 * @return template function
 	 */
 	public static <U extends ViewElement> Function<ViewElementFieldset, U> template( @NonNull Function<ViewElementFieldset, U> template ) {
@@ -375,17 +381,19 @@ public class ViewElementFieldset extends ContainerViewElement
 	public static Function<ViewElementFieldset, NodeViewElement> panelTemplate( @NonNull String cssClassName, @NonNull Style style ) {
 		return fieldset -> {
 			NodeViewElement wrapper = new NodeViewElement( "div" );
-			wrapper.addCssClass( "element-fieldset", cssClassName, "panel", style.forPrefix( "panel" ) );
+			// todo what to do with Style objects? In current case this is also applied for "default"
+			wrapper.addCssClass( "element-fieldset", cssClassName, style.forPrefix( "axu-border" ) )
+			       .set( css.card );
 
 			if ( fieldset.getTitle().hasChildren() ) {
 				NodeViewElement panelHeading = new NodeViewElement( "div" );
-				panelHeading.addCssClass( "element-fieldset-title", "panel-heading" );
+				panelHeading.addCssClass( "element-fieldset-title", style.forPrefix( "axu-bg" ) ).set( css.card.header );
 				panelHeading.addChild( fieldset.getTitle() );
 				wrapper.addChild( panelHeading );
 			}
 
 			NodeViewElement panelBody = new NodeViewElement( "div" );
-			panelBody.addCssClass( "element-fieldset-content", "panel-body" );
+			panelBody.addCssClass( "element-fieldset-content" ).set( css.card.body );
 
 			if ( fieldset.getHeader().hasChildren() ) {
 				NodeViewElement header = new NodeViewElement( "div" );
@@ -400,7 +408,7 @@ public class ViewElementFieldset extends ContainerViewElement
 			panelBody.addChild( b );
 
 			NodeViewElement panelFooter = new NodeViewElement( "div" );
-			panelFooter.addCssClass( "element-fieldset-footer", "panel-footer" );
+			panelFooter.addCssClass( "element-fieldset-footer", style.forPrefix( "axu-bg" ) ).set( css.card.footer );
 			panelFooter.addChild( fieldset.getFooter() );
 
 			wrapper.addChild( panelBody );

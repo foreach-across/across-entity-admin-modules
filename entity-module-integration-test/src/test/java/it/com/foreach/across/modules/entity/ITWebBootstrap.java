@@ -129,11 +129,11 @@ public class ITWebBootstrap
 		company.setId( "123" );
 
 		assertEquals(
-				"/hidden/entities/client/55?from=/hidden/entities/company/123/associations/client.company",
+				"/hidden/entities/client/55?from=%2Fhidden%2Fentities%2Fcompany%2F123%2Fassociations%2Fclient.company",
 				entityViewLinks.linkTo( company ).association( client ).toUriString()
 		);
 		assertEquals(
-				"/hidden/entities/client/55?from=/hidden/entities/company/123/associations/client.company",
+				"/hidden/entities/client/55?from=%2Fhidden%2Fentities%2Fcompany%2F123%2Fassociations%2Fclient.company",
 				associatedLinkBuilder.asAssociationFor( companyLinkBuilder, company ).view( client )
 		);
 	}

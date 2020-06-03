@@ -95,6 +95,20 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
+	public void controlNamePrefixingToggle() {
+		simulateEntityViewForm();
+
+		ContainerViewElement container = assemble( "singleValue", ViewElementMode.CONTROL, BootstrapUiElements.MULTI_TOGGLE );
+
+		assertEquals(
+				3,
+				container.findAll( ToggleFormElement.class )
+				         .filter( e -> e.getControlName().startsWith( "entity." ) && e.getHtmlId().startsWith( "entity." ) )
+				         .count()
+		);
+	}
+
+	@Test
 	public void selectInsteadOfCheckboxDueToSelectFormElementConfiguration() {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
 
@@ -156,6 +170,19 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
+	public void singleValueNotRequiredAsToggle() {
+		simulateEntityViewForm();
+
+		ContainerViewElement container = assemble( "singleValue", ViewElementMode.CONTROL, BootstrapUiElements.MULTI_TOGGLE );
+		List<ToggleFormElement> toggleFormElements = container.findAll( ToggleFormElement.class ).collect( Collectors.toList() );
+
+		assertEquals( 3, toggleFormElements.size() );
+		assertFalse( toggleFormElements.stream().anyMatch( FormControlElementSupport::isRequired ) );
+		assertEquals( 1, toggleFormElements.stream().filter( ToggleFormElement::isChecked ).count() );
+		assertEquals( "", toggleFormElements.stream().filter( ToggleFormElement::isChecked ).findFirst().get().getText() );
+	}
+
+	@Test
 	public void singleValueNotRequiredAsSelect() {
 		SelectFormElement select = assembleAndVerify( "singleValue" );
 
@@ -178,6 +205,19 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		assertEquals( 2, radioElements.size() );
 		assertTrue( radioElements.stream().allMatch( FormControlElementSupport::isRequired ) );
 		assertEquals( 0, radioElements.stream().filter( RadioFormElement::isChecked ).count() );
+	}
+
+	@Test
+	public void singleValueRequiredAsToggle() {
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
+		simulateEntityViewForm();
+
+		ContainerViewElement container = assemble( "singleValue", ViewElementMode.CONTROL, BootstrapUiElements.MULTI_TOGGLE );
+		List<ToggleFormElement> toggleFormElements = container.findAll( ToggleFormElement.class ).collect( Collectors.toList() );
+
+		assertEquals( 2, toggleFormElements.size() );
+		assertTrue( toggleFormElements.stream().allMatch( FormControlElementSupport::isRequired ) );
+		assertEquals( 0, toggleFormElements.stream().filter( ToggleFormElement::isChecked ).count() );
 	}
 
 	@Test

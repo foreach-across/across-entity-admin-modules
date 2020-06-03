@@ -15,7 +15,6 @@
  */
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
@@ -30,6 +29,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -55,8 +56,8 @@ public class TestFilterFormGroupElementBuilderFactory extends ViewElementBuilder
 	public void formGroupOfLabelAndFilterControlIsBuilt() {
 		EntityPropertyDescriptor descriptor = properties.get( "text" );
 
-		ViewElementBuilder label = BootstrapUiBuilders.text( "label" );
-		ViewElementBuilder control = BootstrapUiBuilders.text( "control" );
+		ViewElementBuilder label = html.builders.text( "label" );
+		ViewElementBuilder control = html.builders.text( "control" );
 
 		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.FILTER_CONTROL ) ).thenReturn( control );
 		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.LABEL ) ).thenReturn( label );
@@ -70,8 +71,8 @@ public class TestFilterFormGroupElementBuilderFactory extends ViewElementBuilder
 	public void multipleParameterIsPassedToControl() {
 		EntityPropertyDescriptor descriptor = properties.get( "text" );
 
-		ViewElementBuilder label = BootstrapUiBuilders.text( "label" );
-		ViewElementBuilder control = BootstrapUiBuilders.text( "control" );
+		ViewElementBuilder label = html.builders.text( "label" );
+		ViewElementBuilder control = html.builders.text( "control" );
 
 		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.FILTER_CONTROL.forMultiple() ) ).thenReturn( control );
 		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.LABEL ) ).thenReturn( label );
@@ -85,7 +86,7 @@ public class TestFilterFormGroupElementBuilderFactory extends ViewElementBuilder
 	public void labelIsNotAddedForCheckbox() {
 		EntityPropertyDescriptor descriptor = properties.get( "text" );
 
-		ViewElementBuilder control = BootstrapUiBuilders.checkbox();
+		ViewElementBuilder control = bootstrap.builders.checkbox();
 		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.FILTER_CONTROL ) ).thenReturn( control );
 
 		FormGroupElement formGroup = assembleAndVerify( "text", ViewElementMode.FILTER_FORM );

@@ -77,14 +77,14 @@ public abstract class AbstractQueryTest
 
 			groupOne = new Group( "groupOne" );
 			groupTwo = new Group( "groupTwo" );
-			groupRepository.save( Arrays.asList( groupOne, groupTwo ) );
+			groupRepository.saveAll( Arrays.asList( groupOne, groupTwo ) );
 
 			john = new Representative( "john", "John % Surname" );
 			joe = new Representative( "joe", "Joe ' Surname" );
 			peter = new Representative( "peter", "Peter \\ Surname" );
 			weirdo = new Representative( "weirdo", "!\"#%-_&/()=;?´`|/\\'" );
 
-			representativeRepository.save( Arrays.asList( john, joe, peter, weirdo ) );
+			representativeRepository.saveAll( Arrays.asList( john, joe, peter, weirdo ) );
 
 			one = new Company( "one", 1, asDate( "2015-01-17 13:30" ) );
 			one.setStatus( CompanyStatus.IN_BUSINESS );
@@ -101,11 +101,11 @@ public abstract class AbstractQueryTest
 			one.setRepresentatives( Collections.singleton( john ) );
 			two.setRepresentatives( new HashSet<>( Arrays.asList( john, joe, peter ) ) );
 
-			companyRepository.save( Arrays.asList( one, two, three ) );
+			companyRepository.saveAll( Arrays.asList( one, two, three ) );;
 
 			carOne = new Car( "one", one, true );
 			carTwo = new Car( "two", two, true );
-			carRepository.save( Arrays.asList( carOne, carTwo ) );
+			carRepository.saveAll( Arrays.asList( carOne, carTwo ) );
 		}
 	}
 

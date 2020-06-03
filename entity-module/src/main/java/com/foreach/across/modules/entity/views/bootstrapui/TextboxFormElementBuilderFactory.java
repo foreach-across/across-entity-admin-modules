@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
@@ -33,15 +32,17 @@ import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProce
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.Map;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Builds a {@link TextboxFormElement} for a given {@link EntityPropertyDescriptor}.
@@ -77,7 +78,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                          ViewElementMode viewElementMode,
 	                                                          String viewElementType ) {
-		return BootstrapUiBuilders
+		return bootstrap.builders
 				.textbox()
 				.name( propertyDescriptor.getName() )
 				.controlName( propertyDescriptor.getName() )

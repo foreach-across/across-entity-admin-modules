@@ -40,6 +40,7 @@ import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderConte
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -60,8 +61,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.alert;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.text;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_ELEMENT;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
@@ -265,9 +265,9 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 				if ( !StringUtils.isBlank( errorMessage ) ) {
 					container.addChild(
-							alert().danger()
-							       .add( text( errorMessage ) )
-							       .build( builderContext )
+							bootstrap.builders.alert().danger()
+							                  .add( HtmlViewElements.html.text( errorMessage ) )
+							                  .build( builderContext )
 					);
 				}
 			} );

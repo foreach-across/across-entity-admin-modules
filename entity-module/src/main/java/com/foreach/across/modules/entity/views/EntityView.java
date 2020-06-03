@@ -126,7 +126,7 @@ public class EntityView implements Model
 	 */
 	public void setRedirectUrl( String redirectUrl ) {
 		this.redirectUrl = redirectUrl;
-		shouldRender = redirectUrl == null;
+		shouldRender = redirectUrl == null && !isCustomView();
 	}
 
 	/**

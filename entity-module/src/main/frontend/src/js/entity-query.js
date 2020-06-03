@@ -35,8 +35,8 @@ function initializeEntityQueryForm( node ) {
 
   function toggleFilters( event ) {
     event.preventDefault();
-    $( node ).find( ".entity-query-filter-form-basic" ).toggleClass( "hidden" );
-    $( node ).find( ".entity-query-filter-form-advanced" ).toggleClass( "hidden" );
+    $( node ).find( ".entity-query-filter-form-basic" ).toggleClass( "d-none" );
+    $( node ).find( ".entity-query-filter-form-advanced" ).toggleClass( "d-none axu-d-flex" );
 
     let inputShowBasicFilter = findShowBasicFilterElement();
     if ( $( inputShowBasicFilter ).attr( "value" ) === "true" ) {
@@ -53,7 +53,7 @@ function initializeEntityQueryForm( node ) {
     if ( $( findShowBasicFilterElement() ).attr( "value" ) === "true" ) {
       entityQueryFilterControl.resetEntityQuery();
     }
-    $( this ).find( 'span' ).removeClass( 'glyphicon glyphicon-search' ).addClass( 'fa fa-spin fa-spinner' );
+    $( this ).find( 'span' ).removeClass( 'fas fa-search' ).addClass( 'fa fa-spin fa-spinner' );
   } );
 
   // After submit ajax

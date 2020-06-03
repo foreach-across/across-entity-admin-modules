@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
@@ -28,6 +28,7 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
+import com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
@@ -37,6 +38,8 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -44,6 +47,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
+
+import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted.ENTITY_DELETED;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Responsible for rendering the actual delete entity page, and performing the delete action if necessary.
@@ -61,6 +70,20 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 
 	private ApplicationEventPublisher eventPublisher;
 	private EntityViewPageHelper entityViewPageHelper;
+
+	/**
+	 * Should the form state be published as an event for modification (defaults to {@code true}).
+	 */
+	@Setter
+	@Getter
+	private boolean publishFormState;
+
+	/**
+	 * Set a consumer to apply to the form state after it has been built and published as an event.
+	 */
+	@Setter
+	@Getter
+	private Consumer<EntityFormStateCompleted<?>> formStateConsumer;
 
 	@Override
 	protected void doControl( EntityViewRequest entityViewRequest,
@@ -81,16 +104,61 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 			try {
 				EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 				EntityModel entityModel = entityViewContext.getEntityModel();
-				entityModel.delete( entityViewContext.getEntity( Object.class ) );
+				Object entityToDelete = entityViewContext.getEntity( Object.class );
+				entityModel.delete( entityToDelete );
 
-				entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS, "feedback.entityDeleted" );
-
-				entityView.setRedirectUrl( entityViewContext.getLinkBuilder().overview() );
+				publishAndApplyEntityFormState( entityViewRequest, entityView, entityToDelete );
 			}
 			catch ( RuntimeException e ) {
 				entityViewPageHelper.throwOrAddExceptionFeedback( entityViewRequest, "feedback.entityDeleteFailed", e );
 			}
 		}
+	}
+
+	private void publishAndApplyEntityFormState( EntityViewRequest entityViewRequest, EntityView entityView, Object deletedEntity ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		EntityFormStateCompleted<?> entityState = new EntityFormStateCompleted<>( ENTITY_DELETED, deletedEntity, entityViewRequest, entityView );
+
+		entityState.addFeedbackMessage(
+				EntityFormStateCompleted
+						.feedback( Style.SUCCESS )
+						.messageCode( "feedback.entityDeleted" )
+						.message( entityViewContext.getEntityMessages().withNameSingular( "feedback.entityDeleted", entityViewContext.getEntityLabel() ) )
+						.build()
+		);
+
+		entityState.setRedirectUrl( entityViewContext.getLinkBuilder().listView().toUriString() );
+
+		// view specific handling
+		if ( formStateConsumer != null ) {
+			formStateConsumer.accept( entityState );
+		}
+
+		// event based public modifications
+		if ( publishFormState ) {
+			eventPublisher.publishEvent( entityState );
+		}
+
+		// apply the form state values
+		boolean isRedirect = entityView.isRedirect();
+
+		entityState.getFeedbackMessages()
+		           .stream()
+		           .filter( fm -> !isRedirect || !fm.isOnlyForRedirect() )
+		           .forEach( fm -> {
+			           if ( isRedirect ) {
+				           entityViewPageHelper.addGlobalFeedbackMessageAfterRedirect( entityViewRequest, fm.getStyle(), fm.getMessageOrCode() );
+			           }
+			           else {
+				           // todo: centralize this
+				           PageContentStructure page = entityViewRequest.getPageContentStructure();
+				           page.addToFeedback( bootstrap.builders.alert()
+				                                                 .style( fm.getStyle() )
+				                                                 .dismissible()
+				                                                 .text( fm.getMessageOrCode() )
+				                                                 .build() );
+			           }
+		           } );
 	}
 
 	@Override
@@ -110,10 +178,10 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 		builderMap.get( "entityForm-column-0", ContainerViewElementBuilderSupport.class )
 		          .add( deleteConfiguration.messages() )
 		          .add(
-				          BootstrapUiBuilders
-						          .paragraph()
+				          html.builders
+						          .p()
 						          .css( deleteConfiguration.isDeleteDisabled() ? Style.DANGER.forPrefix( "text" ) : "" )
-						          .add( BootstrapUiBuilders.text( confirmationMessage ) )
+						          .add( html.builders.text( confirmationMessage ) )
 		          );
 	}
 
@@ -132,12 +200,13 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 					ContainerViewElementUtils.remove( buttons, "btn-save" );
 					if ( !deleteConfiguration.isDeleteDisabled() ) {
 						buttons.addFirstChild(
-								BootstrapUiBuilders.button()
-								                   .name( "btn-delete" )
-								                   .style( Style.DANGER )
-								                   .submit()
-								                   .text( messages.messageWithFallback( "buttons.delete" ) )
-								                   .build( builderContext )
+								bootstrap.builders.button()
+								                  .name( "btn-delete" )
+								                  .data( "em-button-role", "delete" )
+								                  .style( Style.DANGER )
+								                  .submit()
+								                  .text( messages.messageWithFallback( "buttons.delete" ) )
+								                  .build( builderContext )
 						);
 					}
 					else {
@@ -154,21 +223,21 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 				= new BuildEntityDeleteViewEvent<>( entityViewContext.getEntity(), builderContext );
 		event.setDeleteDisabled( false );
 
-		ContainerViewElement associations = BootstrapUiBuilders.node( "ul" ).build( builderContext );
+		ContainerViewElement associations = html.builders.ul().build( builderContext );
 
 		event.setAssociations( associations );
 		EntityMessages entityMessages = entityViewContext.getEntityMessages();
 		event.setMessages(
-				BootstrapUiBuilders
+				html.builders
 						.container()
 						.add(
-								BootstrapUiBuilders
+								html.builders
 										.container()
 										.name( "associations" )
 										.add(
-												BootstrapUiBuilders
-														.paragraph()
-														.add( BootstrapUiBuilders.text( entityMessages.withNameSingular( "delete.associations" ) ) )
+												html.builders
+														.p()
+														.add( html.builders.text( entityMessages.withNameSingular( "delete.associations" ) ) )
 										)
 										.add( associations )
 						)
@@ -227,14 +296,13 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 		String title = messages.withNamePlural( "delete.associatedResults", itemCount );
 
 		viewConfiguration.associations().addChild(
-				BootstrapUiBuilders
-						.node( "li" )
-						.name( association.getName() )
-						.add( BootstrapUiBuilders
-								      .link()
-								      .url( linkBuilder.overview() )
-								      .text( title ) )
-						.build( viewConfiguration.getBuilderContext() )
+				html.builders.li()
+				             .name( association.getName() )
+				             .add( bootstrap.builders
+						                   .link()
+						                   .url( linkBuilder.overview() )
+						                   .text( title ) )
+				             .build( viewConfiguration.getBuilderContext() )
 		);
 	}
 

@@ -19,12 +19,13 @@ package com.foreach.across.testmodules.springdata.business;
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
+@Table(name = "cl")
 public class Client extends SettableIdBasedEntity<Client>
 {
 	@Id

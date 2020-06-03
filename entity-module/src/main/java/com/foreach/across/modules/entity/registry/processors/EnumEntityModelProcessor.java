@@ -31,6 +31,8 @@ import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Function;
+
 /**
  * Checks if the entity type is an enum, and if so, builds a default entity model if there is none yet.
  *
@@ -60,7 +62,15 @@ final class EnumEntityModelProcessor implements DefaultEntityConfigurationProvid
 			if ( !mutableEntityConfiguration.hasEntityModel() ) {
 				DefaultEntityModel model = new DefaultEntityModel();
 				model.setEntityInformation( new EnumEntityInformation( enumType ) );
-				model.setFindOneMethod( name -> Enum.valueOf( enumType, (String) name ) );
+
+				// A plain lambda gives a unexpected compiler error, so this code is written as a function
+				model.setFindOneMethod( new Function<String, Enum>()
+				{
+					@Override
+					public Enum apply( String name ) {
+						return Enum.valueOf( enumType, name );
+					}
+				} );
 				model.setLabelPrinter( createLabelPrinter( mutableEntityConfiguration.getPropertyRegistry() ) );
 
 				mutableEntityConfiguration.setEntityModel( model );

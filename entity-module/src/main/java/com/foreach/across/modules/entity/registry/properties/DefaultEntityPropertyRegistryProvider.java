@@ -46,12 +46,7 @@ public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegi
 	/**
 	 * A shared global instance, supporting only simple class introspection.
 	 */
-	public static final EntityPropertyRegistryProvider INSTANCE = new DefaultEntityPropertyRegistryProvider( new EntityPropertyDescriptorFactoryImpl() );
-
-	static {
-		DefaultEntityPropertyRegistryProvider provider = (DefaultEntityPropertyRegistryProvider) INSTANCE;
-		provider.setPropertiesRegistrars( Collections.singleton( new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ) ) );
-	}
+	public static final EntityPropertyRegistryProvider INSTANCE = newInstance();
 
 	private final EntityPropertyDescriptorFactory descriptorFactory;
 	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new HashMap<>();
@@ -62,6 +57,18 @@ public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegi
 	@Autowired
 	public DefaultEntityPropertyRegistryProvider( EntityPropertyDescriptorFactory descriptorFactory ) {
 		this.descriptorFactory = descriptorFactory;
+	}
+
+	/**
+	 * Creates a new - separate registry provider, configured with class introspection but allowing further customization.
+	 * Use the shared {@link #INSTANCE} if you require jvm/class level introspection.
+	 *
+	 * @return a new registry provider instance
+	 */
+	public static DefaultEntityPropertyRegistryProvider newInstance() {
+		DefaultEntityPropertyRegistryProvider registryProvider = new DefaultEntityPropertyRegistryProvider( new EntityPropertyDescriptorFactoryImpl() );
+		registryProvider.setPropertiesRegistrars( Collections.singleton( new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ) ) );
+		return registryProvider;
 	}
 
 	@RefreshableCollection(includeModuleInternals = true, incremental = true)

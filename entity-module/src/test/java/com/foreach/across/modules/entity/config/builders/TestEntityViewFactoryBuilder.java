@@ -22,39 +22,40 @@ import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class TestEntityViewFactoryBuilder
+class TestEntityViewFactoryBuilder
 {
-	@Mock
+	@Mock(lenient = true)
 	private AutowireCapableBeanFactory beanFactory;
 
-	@Mock
+	@Mock(lenient = true)
 	private DispatchingEntityViewFactory dispatchingViewFactory;
 
 	private EntityViewFactoryBuilder builder;
 	private EntityViewProcessorRegistry processors;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void before() {
 		processors = new EntityViewProcessorRegistry();
 
 		when( dispatchingViewFactory.getProcessorRegistry() ).thenReturn( processors );
@@ -64,19 +65,20 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void andAppliesAdditionalConsumer() {
+	void andAppliesAdditionalConsumer() {
 		Consumer<EntityViewFactoryBuilder> consumer = mock( Consumer.class );
 		assertSame( builder, builder.and( consumer ) );
 		verify( consumer ).accept( builder );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void buildRequiresAFactoryToBeSet() {
-		builder.factoryType( null ).build();
+	@Test
+	void buildRequiresAFactoryToBeSet() {
+		Assertions.assertThatExceptionOfType( IllegalArgumentException.class )
+		          .isThrownBy( () -> builder.factoryType( null ).build() );
 	}
 
 	@Test
-	public void defaultCreatesSingleEntityViewFactory() {
+	void defaultCreatesSingleEntityViewFactory() {
 		builder.factoryType( EntityViewFactory.class );
 
 		EntityViewFactory factory = mock( EntityViewFactory.class );
@@ -86,7 +88,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void attributesAreRegistered() {
+	void attributesAreRegistered() {
 		builder.attribute( "key", "value" )
 		       .attribute( String.class, "my string" )
 		       .attribute( ( ( entityViewFactory, attributes ) -> {
@@ -105,7 +107,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void postProcessHasNullRegistryIfFactoryTypeNotDispatching() {
+	void postProcessHasNullRegistryIfFactoryTypeNotDispatching() {
 		AtomicReference<EntityViewFactory> factoryRef = new AtomicReference<>();
 		AtomicReference<EntityViewProcessorRegistry> registryRef = new AtomicReference<>();
 
@@ -124,7 +126,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void postProcessSingleProcessor() {
+	void postProcessSingleProcessor() {
 		AtomicReference<EntityViewProcessor> postProcessed = new AtomicReference<>();
 
 		EntityViewProcessor viewProcessor = mock( EntityViewProcessor.class );
@@ -136,7 +138,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void postProcessSingleProcessorNotCalledIfProcessorNotPresent() {
+	void postProcessSingleProcessorNotCalledIfProcessorNotPresent() {
 		EntityViewProcessor viewProcessor = mock( EntityViewProcessor.class );
 		builder
 				.postProcess( viewProcessor.getClass(), p -> {
@@ -146,7 +148,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void postProcessSingleProcessorNotCalledIfNotDispatching() {
+	void postProcessSingleProcessorNotCalledIfNotDispatching() {
 		EntityViewProcessor viewProcessor = mock( EntityViewProcessor.class );
 		builder.factory( mock( EntityViewFactory.class ) )
 		       .viewProcessor( viewProcessor )
@@ -157,7 +159,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void templateValue() {
+	void templateValue() {
 		assertSame( builder, builder.template( "templateName" ) );
 		assertSame( dispatchingViewFactory, builder.build() );
 
@@ -172,7 +174,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void messagePrefixes() {
+	void messagePrefixes() {
 		assertSame( builder, builder.messagePrefix( "one", "two" ) );
 		assertSame( dispatchingViewFactory, builder.build() );
 
@@ -189,7 +191,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void allowableAction() {
+	void allowableAction() {
 		assertSame( builder, builder.requiredAllowableAction( AllowableAction.ADMINISTER ) );
 		assertSame( dispatchingViewFactory, builder.build() );
 
@@ -206,7 +208,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void propertyRegistry() {
+	void propertyRegistry() {
 		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
 		assertSame( builder, builder.propertyRegistry( propertyRegistry ) );
 		assertSame( dispatchingViewFactory, builder.build() );
@@ -218,7 +220,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void configureProperties() {
+	void configureProperties() {
 		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
 		assertSame( dispatchingViewFactory, builder.propertyRegistry( propertyRegistry ).build() );
 		assertSame( builder, builder.properties( props -> props.property( "name" ).displayName( "test" ) ) );
@@ -228,7 +230,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void propertiesToShowAndViewElementMode() {
+	void propertiesToShowAndViewElementMode() {
 		PropertyRenderingViewProcessor renderingViewProcessor = new PropertyRenderingViewProcessor();
 		when( beanFactory.createBean( PropertyRenderingViewProcessor.class ) ).thenReturn( renderingViewProcessor );
 
@@ -255,7 +257,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void processors() {
+	void processors() {
 		EntityViewProcessor one = mock( EntityViewProcessor.class );
 		EntityViewProcessor two = mock( SimpleEntityViewProcessorAdapter.class );
 
@@ -298,7 +300,7 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void factoryInstanceTakePrecedence() {
+	void factoryInstanceTakePrecedence() {
 		EntityViewFactory expected = mock( EntityViewFactory.class );
 
 		builder.factoryType( DispatchingEntityViewFactory.class )

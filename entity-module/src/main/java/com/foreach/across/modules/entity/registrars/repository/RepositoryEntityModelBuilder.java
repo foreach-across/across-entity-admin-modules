@@ -60,14 +60,15 @@ class RepositoryEntityModelBuilder implements BeanClassLoaderAware
 
 		DefaultEntityModel<T, Serializable> entityModel = new DefaultEntityModel<>();
 		RepositoryInvoker repositoryInvoker = entityConfiguration.getAttribute( RepositoryInvoker.class );
-		entityModel.setFindOneMethod( repositoryInvoker::invokeFindOne );
+		// todo: rework signature to optional
+		entityModel.setFindOneMethod( id -> (T) repositoryInvoker.invokeFindById( id ).orElse( null ) );
 		entityModel.setSaveMethod( repositoryInvoker::invokeSave );
 
 		if ( repository instanceof CrudRepository ) {
 			entityModel.setDeleteMethod( ( (CrudRepository) repository )::delete );
 		}
 		else {
-			entityModel.setDeleteMethod( entity -> repositoryInvoker.invokeDelete( entityModel.getId( entity ) ) );
+			entityModel.setDeleteMethod( entity -> repositoryInvoker.invokeDeleteById( entityModel.getId( entity ) ) );
 		}
 
 		entityModel.setEntityFactory( createEntityFactory( repositoryFactoryInformation.getPersistentEntity() ) );

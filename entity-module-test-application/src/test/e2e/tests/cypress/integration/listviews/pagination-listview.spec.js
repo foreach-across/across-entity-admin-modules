@@ -32,7 +32,7 @@ describe( 'List view: pagination', () => {
         cy.server();
         cy.route('/admin/entities/note?*').as("listViewAjax");
 
-        cy.get( '.pager-form .glyphicon-step-forward' ).click();
+        cy.get( '.pager-form .fa-step-forward' ).click();
         //cy.wait('@listViewAjax');
 
         cy.assertListViewResults( 10, 22 );

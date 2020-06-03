@@ -134,6 +134,14 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	/**
+	 * Used by the {@link EntitiesConfigurationBuilder} to determine if an entity type
+	 * should be attached automatically on the initial build.
+	 */
+	boolean hasEntityType() {
+		return entityType != null;
+	}
+
+	/**
 	 * Customize the property registry builder.
 	 *
 	 * @param registryConsumer to customize the registry builder

@@ -19,7 +19,6 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.EQValue;
@@ -32,8 +31,11 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.DateTimeFormElementBuilderFactory;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -51,9 +53,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -102,6 +107,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void withoutAnnotations() {
 		LocaleContextHolder.setLocale( Locale.UK );
 
@@ -109,7 +115,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 			DateTimeFormElement datetime = assembleAndVerify( "withoutAnnotations", false );
 			assertEquals( Format.DATETIME, datetime.getConfiguration().getFormat() );
 			assertEquals( "en-GB", datetime.getConfiguration().get( "locale" ) );
-			assertEquals( true, datetime.getConfiguration().get( "showClear" ) );
+			assertEquals( true, ( (Map<String, Boolean>) datetime.getConfiguration().get( "buttons" ) ).get( "showClear" ) );
 		}
 		finally {
 			LocaleContextHolder.resetLocaleContext();
@@ -120,7 +126,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	public void required() {
 		DateTimeFormElement datetime = assembleAndVerify( "required", true );
 		assertEquals( Format.DATETIME, datetime.getConfiguration().getFormat() );
-		assertEquals( false, datetime.getConfiguration().get( "showClear" ) );
+		assertEquals( false, ( (Map<String, Boolean>) datetime.getConfiguration().get( "buttons" ) ).get( "showClear" ) );
 	}
 
 	@Test
@@ -133,7 +139,8 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	public void timeWithPastAnnotation() {
 		DateTimeFormElement datetime = assembleAndVerify( "timeWithPast", false );
 		assertEquals( Format.TIME, datetime.getConfiguration().getFormat() );
-		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.TIME ) );
+		assertDateTimeControlIcon( datetime, "clock" );
+//		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.TIME ) );
 		assertNull( datetime.getConfiguration().get( "minDate" ) );
 		assertNotNull( datetime.getConfiguration().get( "maxDate" ) );
 	}
@@ -142,7 +149,8 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	public void datetimeWithFutureAnnotation() {
 		DateTimeFormElement datetime = assembleAndVerify( "datetimeWithFuture", false );
 		assertEquals( Format.DATETIME, datetime.getConfiguration().getFormat() );
-		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.CALENDAR ) );
+		assertDateTimeControlIcon( datetime, "calendar" );
+//		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.CALENDAR ) );
 		assertNotNull( datetime.getConfiguration().get( "minDate" ) );
 		assertNull( datetime.getConfiguration().get( "maxDate" ) );
 	}
@@ -155,7 +163,8 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		DateTimeFormElement datetime = assembleAndVerify( "timeWithPast", false );
 		assertEquals( Format.DATE, datetime.getConfiguration().getFormat() );
-		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.CALENDAR ) );
+		assertDateTimeControlIcon( datetime, "calendar" );
+//		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.CALENDAR ) );
 		assertNull( datetime.getConfiguration().get( "minDate" ) );
 		assertNotNull( datetime.getConfiguration().get( "maxDate" ) );
 	}
@@ -171,10 +180,22 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		DateTimeFormElement datetime = assembleAndVerify( "datetimeWithFuture", false );
 		assertEquals( Format.TIME, datetime.getConfiguration().getFormat() );
-		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.TIME ) );
+		assertDateTimeControlIcon( datetime, "clock" );
+//		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.TIME ) );
 		assertNull( datetime.getConfiguration().get( "minDate" ) );
 		assertNull( datetime.getConfiguration().get( "maxDate" ) );
-		assertEquals( true, datetime.getConfiguration().get( "showClear" ) );
+		assertEquals( true, ( (Map<String, Boolean>) datetime.getConfiguration().get( "buttons" ) ).get( "showClear" ) );
+	}
+
+	private void assertDateTimeControlIcon( DateTimeFormElement dateTime, String iconName ) {
+		AbstractNodeViewElement icon = dateTime.getAppend( AbstractNodeViewElement.class );
+		assertEquals( 1, icon.getChildren().size() );
+		if ( StringUtils.equalsIgnoreCase( "div", icon.getTagName() ) ) {
+			icon = (AbstractNodeViewElement) icon.getChildren().get( 0 );
+		}
+		String[] cssClasses = css.fa.solid( iconName ).toCssClasses();
+		Assertions.assertThat( icon.getAttribute( "class", String.class ).split( " " ) )
+		          .containsAll( Arrays.asList( cssClasses ) );
 	}
 
 	@Test

@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -26,8 +27,8 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.helpBlock;
-import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_DESCRIPTION;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Post-processor that resolves a description text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
@@ -56,10 +57,9 @@ public class FieldsetDescriptionTextPostProcessor<T extends ViewElement> extends
 		if ( !StringUtils.isEmpty( text ) ) {
 			element.getHeader()
 			       .addChild(
-					       helpBlock()
-							       .css( CSS_FORM_TEXT_DESCRIPTION )
-							       .add( new TextViewElement( text, escapeHtml ) )
-							       .build( builderContext )
+					       html.builders.div( css.form.text, AcrossBootstrapStyles.css.margin.bottom.s1 )
+					                    .add( new TextViewElement( text, escapeHtml ) )
+					                    .build( builderContext )
 			       );
 		}
 	}

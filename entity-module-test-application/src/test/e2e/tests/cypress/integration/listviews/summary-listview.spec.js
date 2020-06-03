@@ -23,9 +23,9 @@ describe( 'List view: summary views', () => {
     it( 'Clicking on the rows opens up the summary view', () => {
         cy.goToMenuItem( "User" );
 
-        cy.get('[data-ax-dev-view-element="itemsTable"] [data-ax-dev-view-element="formGroup-name"] > .control-label').should("not.be.visible");
+        cy.get('[data-em-view="listSummaryView"] [data-em-property="name"] > label').should("not.be.visible");
         cy.get('[data-summary-url]').first().click();
 
-        cy.get('[data-ax-dev-view-element="itemsTable"] [data-ax-dev-view-element="formGroup-name"] > .control-label').should("be.visible");
+        cy.get('[data-em-view="listSummaryView"] [data-em-property="name"] > label').should("be.visible");
     } );
 } );

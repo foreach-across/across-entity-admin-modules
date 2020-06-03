@@ -129,6 +129,12 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	}
 
 	Object fetchOriginalValue() {
+		EntityPropertiesBinderCache cache = binder.getCache();
+
+		if ( cache != null && controller.isOptimizedForBulkValueFetching() ) {
+			return cache.retrieveCachedValue( controller, binder.asBindingContext() );
+		}
+
 		return controller.fetchValue( binder.getValueBindingContext() );
 	}
 

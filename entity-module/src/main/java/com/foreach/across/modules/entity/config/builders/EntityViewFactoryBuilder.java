@@ -28,8 +28,6 @@ import com.foreach.across.modules.entity.views.processors.support.EntityViewProc
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +40,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder.BEAN_NAME;
 
@@ -73,7 +72,7 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
-	private final Collection<ProcessorEntry> processors = new ArrayDeque<>();
+	private final Collection<Consumer<EntityViewProcessorConfigurer<?>>> processorConfigurers = new ArrayDeque<>();
 	private final Collection<BiConsumer<EntityViewFactory, EntityViewProcessorRegistry>> postProcessors = new ArrayDeque<>();
 
 	private Class<? extends EntityViewFactory> factoryType;
@@ -284,15 +283,35 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	}
 
 	/**
+	 * Configure a new or customize an existing {@link EntityViewProcessor}.
+	 * Allows detailed setting of how the processor configuration should be applied.
+	 * <p/>
+	 * The initial {@link EntityViewProcessorConfigurer} will be configured with
+	 * an appropriate {@link AutowireCapableBeanFactory}.
+	 *
+	 * @param processorConfigurer to customize
+	 * @return current builder
+	 * @see EntityViewProcessorConfigurer
+	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
+	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 */
+	public EntityViewFactoryBuilder viewProcessor( @NonNull Consumer<EntityViewProcessorConfigurer<? extends EntityViewProcessor>> processorConfigurer ) {
+		processorConfigurers.add( processorConfigurer );
+		return this;
+	}
+
+	/**
 	 * Add a processor object that should be applied to the view factory.
 	 *
 	 * @param processor instance - should not be null
 	 * @return current builder
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 * @deprecated since 4.0.0 - use {@link #viewProcessor(Consumer)} for improved specification instead
 	 */
+	@Deprecated
 	public EntityViewFactoryBuilder viewProcessor( @NonNull EntityViewProcessor processor ) {
-		return viewProcessor( viewProcessorName( processor.getClass() ), processor );
+		return viewProcessor( vp -> vp.provideBean( processor ) );
 	}
 
 	/**
@@ -303,13 +322,11 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	 * @return current builder
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 * @deprecated since 4.0.0 - use {@link #viewProcessor(Consumer)} for improved specification instead
 	 */
+	@Deprecated
 	public EntityViewFactoryBuilder viewProcessor( @NonNull EntityViewProcessor processor, int order ) {
-		return viewProcessor( viewProcessorName( processor.getClass() ), processor, order );
-	}
-
-	private String viewProcessorName( Class<?> processorType ) {
-		return ClassUtils.getUserClass( processorType ).getName();
+		return viewProcessor( vp -> vp.provideBean( processor ).order( order ) );
 	}
 
 	/**
@@ -322,10 +339,11 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	 * @see #postProcess(BiConsumer)
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 * @deprecated since 4.0.0 - use {@link #viewProcessor(Consumer)} for improved specification instead
 	 */
+	@Deprecated
 	public EntityViewFactoryBuilder viewProcessor( @NonNull String processorName, @NonNull EntityViewProcessor processor ) {
-		processors.add( new ProcessorEntry( processorName, processor ) );
-		return this;
+		return viewProcessor( vp -> vp.withName( processorName ).withType( processor.getClass() ).provideBean( processor ) );
 	}
 
 	/**
@@ -339,12 +357,11 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	 * @see #postProcess(BiConsumer)
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 * @deprecated since 4.0.0 - use {@link #viewProcessor(Consumer)} for improved specification instead
 	 */
+	@Deprecated
 	public EntityViewFactoryBuilder viewProcessor( @NonNull String processorName, @NonNull EntityViewProcessor processor, int order ) {
-		ProcessorEntry entry = new ProcessorEntry( processorName, processor );
-		entry.setOrder( order );
-		processors.add( entry );
-		return this;
+		return viewProcessor( vp -> vp.withName( processorName ).withType( processor.getClass() ).provideBean( processor ).order( order ) );
 	}
 
 	/**
@@ -386,43 +403,46 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	 * @return current builder
 	 */
 	public EntityViewFactoryBuilder removeViewProcessor( @NonNull String processorName ) {
-		processors.add( new ProcessorEntry( processorName, null ) );
-		return this;
+		return viewProcessor( vp -> vp.withName( processorName ).remove() );
 	}
 
 	/**
 	 * Add a post processor for a single {@link EntityViewProcessor} with the default name determined by its implementing class.
 	 * Shortcut for easy post-processing of the default {@link EntityViewProcessor}s.
+	 * <p/>
+	 * <strong>Deprecated method</strong>: use
+	 * {@code viewProcessor( vp -> vp.withType( viewProcessorType ).deferred().skipIfMissing()} instead.
 	 *
 	 * @param viewProcessorType type of the view processor (will determine its name)
 	 * @param postProcessor     post processor
 	 * @param <U>               type of the view processor
 	 * @return current builder
+	 * @deprecated since 4.0.0 - use {@link #viewProcessor(Consumer)} instead
 	 */
+	@Deprecated
 	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( @NonNull Class<U> viewProcessorType, @NonNull Consumer<U> postProcessor ) {
-		return postProcess( viewProcessorName( viewProcessorType ), viewProcessorType, postProcessor );
+		return viewProcessor( vp -> vp.withType( viewProcessorType ).deferred().skipIfMissing().configure( postProcessor ) );
 	}
 
 	/**
 	 * Add a post processor for a single {@link EntityViewProcessor}.
 	 * Shortcut for easy post-processing of the default {@link EntityViewProcessor}s.
+	 * <p/>
+	 * <strong>Deprecated method</strong>: use
+	 * {@code viewProcessor( vp -> vp.withName( viewProcessorName ).withType( viewProcessorType ).deferred().skipIfMissing()} instead.
 	 *
 	 * @param viewProcessorName name of the view processor
 	 * @param viewProcessorType expected type of the view processor
 	 * @param postProcessor     post processor
 	 * @param <U>               type of the view processor
 	 * @return current builder
+	 * @deprecated since 4.0.0 - use {@link #viewProcessor(Consumer)} instead
 	 */
+	@Deprecated
 	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( @NonNull String viewProcessorName,
 	                                                                             @NonNull Class<U> viewProcessorType,
 	                                                                             @NonNull Consumer<U> postProcessor ) {
-		postProcessors.add( ( factory, registry ) -> {
-			if ( registry != null ) {
-				registry.getProcessor( viewProcessorName, viewProcessorType )
-				        .ifPresent( postProcessor );
-			}
-		} );
-		return this;
+		return viewProcessor( vp -> vp.withName( viewProcessorName ).withType( viewProcessorType ).deferred().skipIfMissing().configure( postProcessor ) );
 	}
 
 	/**
@@ -503,20 +523,29 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	}
 
 	private void buildViewProcessors( EntityViewProcessorRegistry processorRegistry ) {
-		processors.forEach( entry -> {
-			if ( entry.isRemove() ) {
-				processorRegistry.remove( entry.name );
-			}
-			else {
-				processorRegistry.addProcessor( entry.name, entry.processor, entry.order );
-			}
-		} );
+		List<EntityViewProcessorConfigurer> configurers = processorConfigurers.stream()
+		                                                                      .map( this::toViewProcessorConfigurer )
+		                                                                      .collect( Collectors.toList() );
+
+		configurers.stream()
+		           .filter( c -> !c.isDeferred() )
+		           .forEach( c -> c.applyTo( processorRegistry ) );
 
 		configureTemplateProcessor( processorRegistry );
 		configureMessagePrefixingProcessor( processorRegistry );
 		configureAuthorizationProcessor( processorRegistry );
 		configurePropertyRegistryProcessor( processorRegistry );
 		configureRenderingProcessors( processorRegistry, propertiesToShow, viewElementMode );
+
+		configurers.stream()
+		           .filter( EntityViewProcessorConfigurer::isDeferred )
+		           .forEach( c -> c.applyTo( processorRegistry ) );
+	}
+
+	private EntityViewProcessorConfigurer toViewProcessorConfigurer( Consumer<EntityViewProcessorConfigurer<?>> consumer ) {
+		EntityViewProcessorConfigurer configurer = new EntityViewProcessorConfigurer( beanFactory );
+		consumer.accept( configurer );
+		return configurer;
 	}
 
 	protected void configureRenderingProcessors( EntityViewProcessorRegistry processorRegistry,
@@ -604,20 +633,6 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 		if ( template != null ) {
 			processorRegistry.remove( TemplateViewProcessor.class.getName() );
 			processorRegistry.addProcessor( new TemplateViewProcessor( template ) );
-		}
-	}
-
-	@RequiredArgsConstructor
-	private static class ProcessorEntry
-	{
-		private final String name;
-		private final EntityViewProcessor processor;
-
-		@Setter
-		private int order = EntityViewProcessorRegistry.DEFAULT_ORDER;
-
-		public boolean isRemove() {
-			return processor == null;
 		}
 	}
 }

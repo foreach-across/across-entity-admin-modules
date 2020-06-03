@@ -17,8 +17,8 @@
 package com.foreach.across.samples.entity.application.controllers;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -42,6 +42,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+
 /**
  * Generates some tables using the {@link SortableTableBuilder} and includes the client-side support
  * for paging and sorting.
@@ -51,6 +53,7 @@ import java.util.Map;
  * @since 2.0.0
  */
 @AdminWebController
+@ConditionalOnBootstrapUI
 @RequestMapping("/sortableTableWithPaging")
 public class SortableTableWithPagingController
 {
@@ -116,7 +119,7 @@ public class SortableTableWithPagingController
 	                                       ViewElementBuilderContext builderContext ) {
 		// selected partners that should be checked
 		Collection<Partner> selectedPartners
-				= Arrays.asList( partnerRepository.findOne( -1L ), partnerRepository.findOne( -3L ) );
+				= Arrays.asList( partnerRepository.findById( -1L ).orElse( null ), partnerRepository.findById( -3L ).orElse( null ) );
 
 		return builderHelper.createSortableTableBuilder( Partner.class )
 		                    .items( partners )
@@ -127,7 +130,7 @@ public class SortableTableWithPagingController
 			                    cell.setHeading( true );
 			                    cell.addChild(
 					                    // the checkbox should be unwrapped in order to render correctly
-					                    BootstrapUiBuilders.checkbox()
+					                    bootstrap.builders.checkbox()
 					                                       .unwrapped()
 					                                       .htmlId( "select-all-partners" )
 					                                       .build( builderCtx )
@@ -139,7 +142,7 @@ public class SortableTableWithPagingController
 
 			                    TableViewElement.Cell cell = new TableViewElement.Cell();
 			                    cell.addChild(
-					                    BootstrapUiBuilders.checkbox()
+					                    bootstrap.builders.checkbox()
 					                                       .unwrapped()
 					                                       .controlName( "partners" )
 					                                       .selected( selectedPartners.contains( partner ) )

@@ -15,7 +15,11 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
+import lombok.NonNull;
+
 import java.util.Comparator;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -47,4 +51,17 @@ public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 	void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder );
 
 	void setDefaultFilter( Predicate<EntityPropertyDescriptor> filter );
+
+	/**
+	 * Apply some configuration to this registry.
+	 *
+	 * @param consumer configuration to apply
+	 * @return current registry
+	 */
+	default MutableEntityPropertyRegistry configure( @NonNull Consumer<EntityPropertyRegistryBuilder> consumer ) {
+		EntityPropertyRegistryBuilder registryBuilder = new EntityPropertyRegistryBuilder();
+		consumer.accept( registryBuilder );
+		registryBuilder.apply( this );
+		return this;
+	}
 }

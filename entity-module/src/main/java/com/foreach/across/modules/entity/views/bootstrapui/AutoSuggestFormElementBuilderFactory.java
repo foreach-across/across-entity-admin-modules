@@ -17,15 +17,16 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.core.support.ReadableAttributes;
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
+import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
-import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
-import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.query.EQGroup;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -57,11 +58,14 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.DEFAULT_DATASET;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.entity.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.setAttribute;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Creates an auto-suggest control for a property value.
@@ -106,8 +110,7 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 			}
 		}
 
-		AutoSuggestFormElementBuilder autoSuggestControl
-				= createSingleValueControl( propertyDescriptor, viewElementMode, controlSettings, controlConfiguration );
+		AutoSuggestFormElementBuilder autoSuggestControl = createSingleValueControl( propertyDescriptor, controlConfiguration );
 
 		if ( controlSettings.multiValue || viewElementMode.isForMultiple() ) {
 			return createMultiValueControl( propertyDescriptor, autoSuggestControl, controlSettings, viewElementMode );
@@ -131,61 +134,55 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 	                                                    AutoSuggestFormElementBuilder autoSuggestControl,
 	                                                    Settings controlSettings,
 	                                                    ViewElementMode viewElementMode ) {
-		return div()
-				.data( "bootstrapui-adapter-type", "multi-value-autosuggest" )
-				.css( "multi-value-autosuggest", "js-multi-value-autosuggest" )
-				.add( autoSuggestControl.data( "role", "control" ) )
-				.postProcessor( addEntityQueryAttributes( propertyDescriptor, viewElementMode ) )
-				.postProcessor( ( ( builderContext, wrapper ) -> {
-					String removeItemMessage = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[removeItem]", "" );
-					Collection<?> items = retrieveItems( builderContext );
+		return html.builders.div()
+		                    .data( "bootstrapui-adapter-type", "multi-value-autosuggest" )
+		                    .css( "multi-value-autosuggest", "js-multi-value-autosuggest" )
+		                    .add( autoSuggestControl.data( "role", "control" ) )
+		                    .postProcessor( addEntityQueryAttributes( propertyDescriptor, viewElementMode ) )
+		                    .postProcessor( ( ( builderContext, wrapper ) -> {
+			                    String removeItemMessage = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[removeItem]", "" );
+			                    Collection<?> items = retrieveItems( builderContext );
 
-					AutoSuggestDataSet.ResultTransformer resultTransformer = controlSettings.resultTransformer;
+			                    AutoSuggestDataSet.ResultTransformer resultTransformer = controlSettings.resultTransformer;
 
-					AutoSuggestFormElement autoSuggest = wrapper.find( propertyDescriptor.getName(), AutoSuggestFormElement.class )
-					                                            .orElseThrow( () -> new IllegalStateException(
-							                                            "Multi-value auto-suggest requires an AutoSuggestFormElement" ) );
-					String controlName = autoSuggest.getControlName();
-					autoSuggest.setControlName( "_" + controlName );
+			                    AutoSuggestFormElement autoSuggest = wrapper.find( propertyDescriptor.getName(), AutoSuggestFormElement.class )
+			                                                                .orElseThrow( () -> new IllegalStateException(
+					                                                                "Multi-value auto-suggest requires an AutoSuggestFormElement" ) );
+			                    String controlName = autoSuggest.getControlName();
+			                    autoSuggest.setControlName( "_" + controlName );
 
-					TableViewElement table = new TableViewElement();
-					table.setStyles( Collections.singleton( Style.Table.STRIPED ) );
-					table.addCssClass( "multi-value-autosuggest-selected" );
-					table.setAttribute( "data-role", "items" );
+			                    TableViewElement table = new TableViewElement()
+					                    .set( css.table.striped, css.of( "multi-value-autosuggest-selected" ) )
+					                    .set( attribute.data( "role", "items" ) );
 
-					if ( items.isEmpty() ) {
-						table.addCssClass( "hidden" );
-					}
+			                    if ( items.isEmpty() ) {
+				                    table.set( css.display.none );
+			                    }
 
-					TableViewElement.Row hidden = new TableViewElement.Row();
-					hidden.addCssClass( "hidden" );
-					table.addChild( hidden );
+			                    TableViewElement.Row hidden = new TableViewElement.Row();
+			                    hidden.set( css.display.none );
+			                    table.addChild( hidden );
 
-					items.forEach( item -> {
-						AutoSuggestDataSet.Result result = resultTransformer.transformToResult( item );
-						table.addChild( createResultRow( controlName, result.getId(), result.getLabel(), removeItemMessage ) );
-					} );
+			                    items.forEach( item -> {
+				                    AutoSuggestDataSet.Result result = resultTransformer.transformToResult( item );
+				                    table.addChild( createResultRow( controlName, result.getId(), result.getLabel(), removeItemMessage ) );
+			                    } );
 
-					wrapper.addChild( table );
+			                    wrapper.addChild( table );
 
-					wrapper.addChild(
-							BootstrapUiBuilders.script( MediaType.TEXT_HTML )
-							                   .data( "role", "edit-item-template" )
-							                   .data( "next-item-index", System.currentTimeMillis() )
-							                   .add( createResultRow( controlName, "{{id}}", "{{label}}", removeItemMessage ) )
-							                   .build( builderContext )
-					);
-				} ) );
+			                    wrapper.addChild(
+					                    bootstrap.builders.script()
+					                                      .type( MediaType.TEXT_HTML )
+					                                      .data( "role", "edit-item-template" )
+					                                      .data( "next-item-index", System.currentTimeMillis() )
+					                                      .add( createResultRow( controlName, "{{id}}", "{{label}}", removeItemMessage ) )
+					                                      .build( builderContext )
+			                    );
+		                    } ) );
 	}
 
 	@SuppressWarnings("SuspiciousSystemArraycopy")
 	private Collection retrieveItems( ViewElementBuilderContext builderContext ) {
-		EntityPropertyBinder binder = EntityViewElementUtils.currentPropertyBinder( builderContext );
-
-		if ( binder instanceof ListEntityPropertyBinder ) {
-			return ( (ListEntityPropertyBinder) binder ).getItemList().stream().map( EntityPropertyBinder::getValue ).collect( Collectors.toList() );
-		}
-
 		Object items = EntityViewElementUtils.currentPropertyValue( builderContext );
 
 		if ( items instanceof Collection ) {
@@ -218,7 +215,7 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 		LinkViewElement link = new LinkViewElement();
 		link.setAttribute( "data-action", "remove-item" );
 		link.setTitle( removeItemMessage );
-		link.addChild( glyphIcon( GlyphIcon.REMOVE ) );
+		link.addChild( entityModuleIcons.controls.autoSuggest.removeItem() );
 		actions.addChild( link );
 
 		row.addChild( actions );
@@ -226,16 +223,14 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 	}
 
 	private AutoSuggestFormElementBuilder createSingleValueControl( EntityPropertyDescriptor propertyDescriptor,
-	                                                                ViewElementMode viewElementMode,
-	                                                                Settings controlSettings,
 	                                                                AutoSuggestFormElementConfiguration controlConfiguration ) {
-		return autosuggest()
-				.name( propertyDescriptor.getName() )
-				.controlName( propertyDescriptor.getName() )
-				.configuration( controlConfiguration )
-				.postProcessor( new RequiredControlPostProcessor<>() )
-				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
-				.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) );
+		return bootstrap.builders.autoSuggest()
+		                         .name( propertyDescriptor.getName() )
+		                         .controlName( propertyDescriptor.getName() )
+		                         .configuration( controlConfiguration )
+		                         .postProcessor( new RequiredControlPostProcessor<>() )
+		                         .postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
+		                         .postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) );
 	}
 
 	private <U extends AbstractNodeViewElement> ViewElementPostProcessor<U> addEntityQueryAttributes( EntityPropertyDescriptor propertyDescriptor,

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {EntityModule} from './modules/EntityModule';
+
 function makeExpandable( node: JQuery )
 {
     let lastTarget;
@@ -50,6 +52,7 @@ function makeExpandable( node: JQuery )
                     target.toggleClass( 'summary-expanded' );
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
+                    (<any>window).EntityModule.initializeFormElements( newTd );
                 } );
             }
             else if ( entityId ) {
@@ -57,6 +60,7 @@ function makeExpandable( node: JQuery )
                     target.toggleClass( 'summary-expanded' );
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
+                    (<any>window).EntityModule.initializeFormElements( newTd );
                 } );
             }
         }

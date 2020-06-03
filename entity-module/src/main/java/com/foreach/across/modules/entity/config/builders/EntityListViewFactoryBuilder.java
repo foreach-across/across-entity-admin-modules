@@ -93,21 +93,25 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		return (EntityListViewFactoryBuilder) super.attribute( attributeRegistrar );
 	}
 
+	@Deprecated
 	@Override
 	public EntityListViewFactoryBuilder viewProcessor( EntityViewProcessor processor, int order ) {
 		return (EntityListViewFactoryBuilder) super.viewProcessor( processor, order );
 	}
 
+	@Deprecated
 	@Override
 	public EntityListViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor, int order ) {
 		return (EntityListViewFactoryBuilder) super.viewProcessor( processorName, processor, order );
 	}
 
+	@Deprecated
 	@Override
 	public <U extends EntityViewProcessor> EntityListViewFactoryBuilder postProcess( Class<U> viewProcessorType, Consumer<U> postProcessor ) {
 		return (EntityListViewFactoryBuilder) super.postProcess( viewProcessorType, postProcessor );
 	}
 
+	@Deprecated
 	@Override
 	public <U extends EntityViewProcessor> EntityListViewFactoryBuilder postProcess( String viewProcessorName,
 	                                                                                 Class<U> viewProcessorType,
@@ -145,9 +149,15 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		return (EntityListViewFactoryBuilder) super.showProperties( propertyNames );
 	}
 
+	@Deprecated
 	@Override
 	public EntityListViewFactoryBuilder viewProcessor( EntityViewProcessor processor ) {
 		return (EntityListViewFactoryBuilder) super.viewProcessor( processor );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder viewProcessor( @NonNull Consumer<EntityViewProcessorConfigurer<? extends EntityViewProcessor>> processorConfigurer ) {
+		return (EntityListViewFactoryBuilder) super.viewProcessor( processorConfigurer );
 	}
 
 	@Override

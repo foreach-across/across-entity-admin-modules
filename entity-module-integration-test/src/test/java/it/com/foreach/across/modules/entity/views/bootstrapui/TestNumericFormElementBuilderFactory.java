@@ -111,7 +111,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 
 		NumericFormElementConfiguration configuration = numeric.getConfiguration();
 		assertNotNull( configuration );
-		assertEquals( 0, configuration.get( "mDec" ) );
+		assertEquals( 0, configuration.get( "decimalPlaces" ) );
 		assertEquals( Currency.getInstance( "EUR" ), configuration.getCurrency() );
 	}
 
@@ -126,7 +126,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 
 		NumericFormElementConfiguration configuration = numeric.getConfiguration();
 		assertNotNull( configuration );
-		assertEquals( 0, configuration.get( "mDec" ) );
+		assertEquals( 0, configuration.get( "decimalPlaces" ) );
 		assertEquals( NumericFormElementConfiguration.Format.PERCENT, configuration.getFormat() );
 		assertEquals( 1, configuration.getMultiplier() );
 	}
@@ -153,7 +153,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 		NumericFormElement numeric = assembleControl( "currency", false );
 		NumericFormElementConfiguration configuration = numeric.getConfiguration();
 		assertNotNull( configuration );
-		assertEquals( 2, configuration.get( "mDec" ) );
+		assertEquals( 2, configuration.get( "decimalPlaces" ) );
 		assertEquals( Currency.getInstance( "EUR" ), configuration.getCurrency() );
 	}
 
@@ -164,7 +164,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 		NumericFormElement numeric = assembleControl( "percent", false );
 		NumericFormElementConfiguration configuration = numeric.getConfiguration();
 		assertNotNull( configuration );
-		assertEquals( 2, configuration.get( "mDec" ) );
+		assertEquals( 2, configuration.get( "decimalPlaces" ) );
 		assertEquals( NumericFormElementConfiguration.Format.PERCENT, configuration.getFormat() );
 		assertEquals( 100, configuration.getMultiplier() );
 	}

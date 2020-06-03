@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.registry.properties.registrars;
 
 import com.foreach.across.core.annotations.OrderInModule;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import org.springframework.stereotype.Component;
@@ -31,14 +32,17 @@ import org.springframework.stereotype.Component;
 public class LabelPropertiesRegistrar implements DefaultEntityPropertyRegistryProvider.PropertiesRegistrar
 {
 	public static void copyPropertyToLabel( EntityPropertyDescriptor property, MutableEntityPropertyDescriptor label ) {
+		label.setPropertyTypeDescriptor( property.getPropertyTypeDescriptor() );
 		label.setValueFetcher( property.getValueFetcher() );
 		label.setAttributes( property.attributeMap() );
+		label.setAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, property.getName() );
 	}
 
 	@Override
 	public void accept( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
 		SimpleEntityPropertyDescriptor label = new SimpleEntityPropertyDescriptor( EntityPropertyRegistry.LABEL );
 		label.setDisplayName( "Label" );
+		label.setPropertyType( String.class );
 		label.setValueFetcher( new SpelValueFetcher( "toString()" ) );
 		label.setReadable( true );
 		label.setWritable( false );

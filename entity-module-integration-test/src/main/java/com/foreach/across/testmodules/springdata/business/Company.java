@@ -18,12 +18,12 @@ package com.foreach.across.testmodules.springdata.business;
 
 import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +33,7 @@ import java.util.Set;
  */
 @Entity
 @EqualsAndHashCode(of = "id")
+@Table(name = "comp")
 public class Company implements Persistable<String>
 {
 	@Transient
@@ -41,7 +42,7 @@ public class Company implements Persistable<String>
 	@Id
 	@NotBlank
 	@Length(max = 20)
-	@Column(name = "company_id")
+	@Column(name = "comp_id", length = 20)
 	private String id;
 
 	@Column
@@ -56,6 +57,7 @@ public class Company implements Persistable<String>
 	private Date created;
 
 	@ManyToMany
+	@JoinTable(name = "comprs")
 	private Set<Representative> representatives = new HashSet<>();
 
 	@ManyToOne

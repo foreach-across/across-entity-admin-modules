@@ -18,9 +18,8 @@ package com.foreach.across.samples.entity.application.controllers;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -40,8 +39,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.foreach.across.modules.bootstrapui.elements.Style.Table.BORDERED;
-import static com.foreach.across.modules.bootstrapui.elements.Style.Table.CONDENSED;
+import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
 /**
@@ -57,6 +58,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @since 2.0.0
  */
 @AdminWebController
+@ConditionalOnBootstrapUI
 @RequestMapping("/sortableTable")
 public class SortableTableSimpleController
 {
@@ -161,7 +163,7 @@ public class SortableTableSimpleController
 		return builderHelper.createSortableTableBuilder( Partner.class )
 		                    .items( partners )
 		                    .properties( "id", "url", "name" )      // specify the properties in order
-		                    .tableStyles( CONDENSED, BORDERED )     // add some bootstrap table styles
+		                    .tableStyles( css.table.bordered, css.table.small )     // add some bootstrap table styles
 		                    .tableOnly()                            // only render the table - not the surrounding panel with paging/results information
 		                    .noSorting()                            // disable sorting on all properties
 		                    .hideResultNumber()                     // hide the result number column
@@ -220,20 +222,20 @@ public class SortableTableSimpleController
 				.properties( "*" )
 				.headerRowProcessor( ( ctx, element ) -> {
 					// add cell to the header
-					element.addChild( BootstrapUiBuilders.table().heading().build( ctx ) );
+					element.addChild( bootstrap.builders.table().heading().build( ctx ) );
 				} )
 				.valueRowProcessor( ( ctx, element ) -> {
 					Partner partner = EntityViewElementUtils.currentEntity( ctx, Partner.class );
 
 					// add cell linking to the url of the partner
 					element.addChild(
-							BootstrapUiBuilders.table().cell().add(
-									BootstrapUiBuilders.button()
-									                   .link( partner.getUrl() )
-									                   .icon( new GlyphIcon( GlyphIcon.NEW_WINDOW ) )
-									                   .iconOnly()
-									                   .attribute( "target", "_blank" )
-									                   .text( "Visit partner website" )
+							bootstrap.builders.table().cell().add(
+									bootstrap.builders.button()
+									                  .link( partner.getUrl() )
+									                  .icon( iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "new-window" ) )
+									                  .iconOnly()
+									                  .attribute( "target", "_blank" )
+									                  .text( "Visit partner website" )
 							).build( ctx )
 					);
 				} )

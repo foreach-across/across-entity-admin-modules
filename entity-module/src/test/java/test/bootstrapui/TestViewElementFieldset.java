@@ -109,49 +109,65 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_INFO, "panel-info" );
 		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_SUCCESS, "panel-success" );
 		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_WARNING, "panel-warning" );
+		Map<Function<ViewElementFieldset, ? extends ViewElement>, Map<String, String>> testCases2 = new HashMap<>();
 
-		testCases.forEach(
+		testCases2.put( ViewElementFieldset.TEMPLATE_PANEL_DEFAULT, getCssClassesForType( "default" ) );
+		testCases2.put( ViewElementFieldset.TEMPLATE_PANEL_DANGER, getCssClassesForType( "danger" ) );
+		testCases2.put( ViewElementFieldset.TEMPLATE_PANEL_PRIMARY, getCssClassesForType( "primary" ) );
+		testCases2.put( ViewElementFieldset.TEMPLATE_PANEL_INFO, getCssClassesForType( "info" ) );
+		testCases2.put( ViewElementFieldset.TEMPLATE_PANEL_SUCCESS, getCssClassesForType( "success" ) );
+		testCases2.put( ViewElementFieldset.TEMPLATE_PANEL_WARNING, getCssClassesForType( "warning" ) );
+
+		testCases2.forEach(
 				( template, panelStyle ) -> {
-					String expected = StringUtils.replace(
-							"<div class='element-fieldset element-fieldset-panel-default panel panel-default'>" +
-									"<div class='element-fieldset-title panel-heading'>title</div>" +
-									"<div class='element-fieldset-content panel-body'>" +
+					String expected = String.format(
+							"<div class='element-fieldset %s card'>" +
+									"<div class='element-fieldset-title %s card-header'>title</div>" +
+									"<div class='element-fieldset-content card-body'>" +
 									"<div class='element-fieldset-header'>header</div>" +
 									"<div class='element-fieldset-body'>body</div>" +
 									"</div>" +
-									"<div class='element-fieldset-footer panel-footer'>footer</div>" +
-									"</div>", "panel-default", panelStyle );
+									"<div class='element-fieldset-footer %s card-footer'>footer</div>" +
+									"</div>", panelStyle.get( "wrapper" ), panelStyle.get( "header" ), panelStyle.get( "footer" ) );
 					fieldset.setTemplate( template );
 					renderAndExpect( fieldset, expected );
 				}
 		);
 	}
 
+	private Map<String, String> getCssClassesForType( String type ) {
+		Map<String, String> cssClassesForType = new HashMap<>();
+		cssClassesForType.put( "wrapper", "element-fieldset-panel-{} axu-border-{}".replace( "{}", type ) );
+		cssClassesForType.put( "header", "axu-bg-" + type );
+		cssClassesForType.put( "footer", "axu-bg-" + type );
+		return cssClassesForType;
+	}
+
 	@Test
 	public void customPanelTemplateFormat() {
 		fieldset.setTemplate( ViewElementFieldset.panelTemplate( "x", Style.DANGER ) );
-		renderAndExpect( fieldset, "<div class='element-fieldset x panel panel-danger'>" +
-				"<div class='element-fieldset-title panel-heading'>title</div>" +
-				"<div class='element-fieldset-content panel-body'>" +
+		renderAndExpect( fieldset, "<div class='element-fieldset x axu-border-danger card'>" +
+				"<div class='element-fieldset-title axu-bg-danger card-header'>title</div>" +
+				"<div class='element-fieldset-content card-body'>" +
 				"<div class='element-fieldset-header'>header</div>" +
 				"<div class='element-fieldset-body'>body</div>" +
 				"</div>" +
-				"<div class='element-fieldset-footer panel-footer'>footer</div>" +
+				"<div class='element-fieldset-footer axu-bg-danger card-footer'>footer</div>" +
 				"</div>" );
 
 		fieldset.setTemplate( ViewElementFieldset.panelTemplate( "y", Style.PRIMARY ) );
 		fieldset.getFooter().clearChildren();
-		renderAndExpect( fieldset, "<div class='element-fieldset y panel panel-primary'>" +
-				"<div class='element-fieldset-title panel-heading'>title</div>" +
-				"<div class='element-fieldset-content panel-body'>" +
+		renderAndExpect( fieldset, "<div class='element-fieldset y axu-border-primary card'>" +
+				"<div class='element-fieldset-title axu-bg-primary card-header'>title</div>" +
+				"<div class='element-fieldset-content card-body'>" +
 				"<div class='element-fieldset-header'>header</div>" +
 				"<div class='element-fieldset-body'>body</div>" +
 				"</div>" +
 				"</div>" );
 
 		fieldset.getTitle().clearChildren();
-		renderAndExpect( fieldset, "<div class='element-fieldset y panel panel-primary'>" +
-				"<div class='element-fieldset-content panel-body'>" +
+		renderAndExpect( fieldset, "<div class='element-fieldset y axu-border-primary card'>" +
+				"<div class='element-fieldset-content card-body'>" +
 				"<div class='element-fieldset-header'>header</div>" +
 				"<div class='element-fieldset-body'>body</div>" +
 				"</div>" +

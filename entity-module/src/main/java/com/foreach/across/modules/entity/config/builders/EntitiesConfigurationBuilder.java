@@ -23,10 +23,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -41,8 +38,6 @@ import java.util.function.Predicate;
  *
  * @author Arne Vandamme
  */
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntitiesConfigurationBuilder
 {
 	private final List<EntityConfigurationBuilder<?>> newConfigurationBuilders = new ArrayList<>();
@@ -53,11 +48,26 @@ public class EntitiesConfigurationBuilder
 
 	private EntityConfigurationBuilder<Object> allBuilder;
 
-	private BeanFactory beanFactory;
+	private final BeanFactory beanFactory;
 
-	@Autowired
-	public EntitiesConfigurationBuilder( BeanFactory beanFactory ) {
+	EntitiesConfigurationBuilder( @NonNull AutowireCapableBeanFactory beanFactory ) {
 		this.beanFactory = beanFactory;
+	}
+
+	/**
+	 * Configure a builder for a new {@link EntityConfiguration} for the class specified.
+	 * This will automatically introspect the class and create the initial property registry.
+	 * Use {@link #create()} if you want a blank entity configuration builder.
+	 * <p/>
+	 * Note: functionally this is the same as calling {@link #withType(Class)}. This method is
+	 * provided for readability to indicate explicit registration of a new type.
+	 *
+	 * @return configuration builder
+	 * @see #create()
+	 * @see #withType(Class)
+	 */
+	public <U> EntityConfigurationBuilder<U> register( @NonNull Class<U> entityType ) {
+		return create().entityType( entityType, true );
 	}
 
 	/**
@@ -140,7 +150,7 @@ public class EntitiesConfigurationBuilder
 	 * @param entityRegistry to modify
 	 */
 	@SuppressWarnings("unchecked")
-	public void apply( @NonNull MutableEntityRegistry entityRegistry ) {
+	void apply( @NonNull MutableEntityRegistry entityRegistry ) {
 		List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders = new ArrayList<>();
 
 		// First create manual new entities
@@ -215,14 +225,22 @@ public class EntitiesConfigurationBuilder
 			MutableEntityRegistry entityRegistry,
 			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders ) {
 		typeBuilders.forEach(
-				( type, builder ) ->
-						applyEntityConfigurationBuilder(
-								forCreation,
-								entityRegistry,
-								appliedBuilders,
-								entityRegistry.getEntityConfiguration( type ),
-								builder
-						)
+				( type, builder ) -> {
+					MutableEntityConfiguration existing = entityRegistry.getEntityConfiguration( type );
+
+					if ( forCreation && existing == null && !builder.hasEntityType() ) {
+						// assign type automatically so creation does not fail
+						builder.entityType( type, true );
+					}
+
+					applyEntityConfigurationBuilder(
+							forCreation,
+							entityRegistry,
+							appliedBuilders,
+							existing,
+							builder
+					);
+				}
 		);
 	}
 

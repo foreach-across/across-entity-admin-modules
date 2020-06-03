@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors.support;
 
 import com.foreach.across.core.development.AcrossDevelopmentMode;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -34,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.FEEDBACK_ATTRIBUTE_KEY;
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.addFeedbackMessage;
 
@@ -62,17 +62,20 @@ public class EntityViewPageHelper
 	 * @param viewRequest   view being requested
 	 * @param feedbackStyle style for the feedback message
 	 * @param messageCode   that should be resolved when rendering the message
+	 * @deprecated use {@link #addGlobalFeedbackMessageAfterRedirect(EntityViewRequest, Style, String)} with full message
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public void addGlobalFeedbackAfterRedirect( @NonNull EntityViewRequest viewRequest, @NonNull Style feedbackStyle, @NonNull String messageCode ) {
-		RedirectAttributes redirectAttributes = viewRequest.getRedirectAttributes();
-		Map<String, Object> model = (Map<String, Object>) redirectAttributes.getFlashAttributes();
-
 		EntityViewContext entityViewContext = viewRequest.getEntityViewContext();
 		EntityMessages messages = entityViewContext.getEntityMessages();
+		addGlobalFeedbackMessageAfterRedirect( viewRequest, feedbackStyle, messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) );
+	}
 
-		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) ->
-				addFeedbackMessage( (Map<String, Style>) value, feedbackStyle, messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) ) );
+	public void addGlobalFeedbackMessageAfterRedirect( @NonNull EntityViewRequest viewRequest, @NonNull Style feedbackStyle, @NonNull String message ) {
+		RedirectAttributes redirectAttributes = viewRequest.getRedirectAttributes();
+		Map<String, Object> model = (Map<String, Object>) redirectAttributes.getFlashAttributes();
+		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) -> addFeedbackMessage( (Map<String, Style>) value, feedbackStyle, message ) );
 	}
 
 	/**
@@ -83,7 +86,7 @@ public class EntityViewPageHelper
 	 *
 	 * @param viewRequest to which to add the message
 	 * @param messageCode for the message
-	 * @param exception that was thrown
+	 * @param exception   that was thrown
 	 */
 	public void throwOrAddExceptionFeedback( EntityViewRequest viewRequest, String messageCode, Throwable exception ) {
 		if ( developmentMode.isActive() ) {
@@ -113,7 +116,7 @@ public class EntityViewPageHelper
 		}
 
 		viewRequest.getPageContentStructure().addToFeedback(
-				BootstrapUiBuilders
+				bootstrap.builders
 						.alert()
 						.danger()
 						.dismissible()

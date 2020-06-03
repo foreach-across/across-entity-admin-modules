@@ -1,0 +1,10 @@
+entity-module:
+  priority: 2
+  exposed:
+    - org.springframework.data.repository.core.support.RepositoryFactoryInformation
+    - org.springframework.data.mapping.context.MappingContext
+    - org.springframework.plugin.core.Plugin
+    - org.springframework.hateoas.ResourceProcessor
+    - org.springframework.hateoas.ResourceAssembler
+    - org.springframework.hateoas.LinkBuilderFactory
+    - org.springframework.hateoas.LinkBuilder

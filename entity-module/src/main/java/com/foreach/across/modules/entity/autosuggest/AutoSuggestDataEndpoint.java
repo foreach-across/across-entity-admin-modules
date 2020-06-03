@@ -124,7 +124,7 @@ public final class AutoSuggestDataEndpoint
 		private final AutoSuggestDataSet dataSet;
 
 		public String suggestionsUrl() {
-			return suggestionsUriComponents().build( false ).toUriString();
+			return suggestionsUriComponents().build().toUriString();
 		}
 
 		public UriComponentsBuilder suggestionsUriComponents() {
@@ -132,7 +132,7 @@ public final class AutoSuggestDataEndpoint
 		}
 
 		public String prefetchUrl() {
-			return prefetchUriComponents().build( false ).toUriString();
+			return prefetchUriComponents().build().toUriString();
 		}
 
 		public UriComponentsBuilder prefetchUriComponents() {
