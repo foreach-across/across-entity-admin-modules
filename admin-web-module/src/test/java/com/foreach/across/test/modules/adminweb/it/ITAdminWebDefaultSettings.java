@@ -91,6 +91,8 @@ public class ITAdminWebDefaultSettings
 	public void staticResourcesShouldNotBeSecured() throws Exception {
 		mvc.perform( get( "/static/static/adminweb/css/adminweb.css" ) )
 		   .andExpect( status().isOk() );
+		mvc.perform( get( "/webjars/toastr/2.1.2/toastr.min.js" ) )
+		   .andExpect( status().isOk() );
 	}
 
 	@Test

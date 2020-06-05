@@ -48,6 +48,8 @@ public class ITAdminWebOnRootPath
 	public void staticResourcesShouldNotBeSecured() throws Exception {
 		mvc.perform( get( "/static-resources/static/adminweb/css/adminweb.css" ) )
 		   .andExpect( status().isOk() );
+		mvc.perform( get( "/webjars/toastr/2.1.2/toastr.min.js" ) )
+		   .andExpect( status().isOk() );
 	}
 
 	@Test
