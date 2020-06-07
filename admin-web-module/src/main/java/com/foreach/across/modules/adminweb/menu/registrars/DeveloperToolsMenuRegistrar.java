@@ -17,15 +17,19 @@
 package com.foreach.across.modules.adminweb.menu.registrars;
 
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
+
+import static com.foreach.across.modules.adminweb.AdminWebModuleIcons.DEVELOPER_TOOLS;
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * If development mode is active, registers the Developer tools section in the administration UI.
@@ -40,16 +44,16 @@ public final class DeveloperToolsMenuRegistrar
 	public static final String PATH = "/ax/developer";
 
 	@EventListener
-	void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
+	public void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
 		menuEvent.builder()
 		         .group( PATH, "Developer tools" )
 		         .attribute(
 				         AdminMenu.ATTR_NAV_POSITION,
 				         new String[] { AdminWebLayoutTemplate.NAVBAR_RIGHT, AdminWebLayoutTemplate.SIDEBAR }
 		         )
-		         .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.WRENCH ) )
+		         .attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( DEVELOPER_TOOLS ) )
+		         .attribute( customizeViewElement( css.of( "admin-nav-developer-tools" ) ) )
 		         .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
-		         .attribute( PanelsNavComponentBuilder.ATTR_PANEL_STYLE, "panel-warning" )
 		         .order( Ordered.LOWEST_PRECEDENCE - 1 );
 	}
 }

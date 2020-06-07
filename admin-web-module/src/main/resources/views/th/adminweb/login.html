@@ -17,49 +17,52 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title th:text="'Login: ' + ${@adminWeb.title}">Login page</title>
+    <title th:text="'Login: ' + ${@adminWeb.title}">Login page</title>
 </head>
 <body>
-<div class="container" th:fragment="content">
-	<div class="text-right" th:unless="${localeOptions.empty}">
+<div class="container axu-h-100" th:fragment="content">
+    <div class="axu-text-right" th:unless="${localeOptions.empty}">
 		<span th:each="option : ${localeOptions}">
 			<a th:href="@{${@adminWeb.path('/')}(locale=${option.locale})}">
 				<strong th:remove="${option.selected} ? none : tag" th:text="${option.label}">language</strong>
 			</a>
 		</span>
-	</div>
-	<div class="row">
-		<div class="col-md-4 col-md-offset-4">
-			<form name="loginForm" th:action="@{${@adminWeb.path('/login')}}" method="post" role="form" class="form-signin center-block">
-				<div class="text-center page-header">
-					<h2 th:text="${@adminWeb.title}">Application name</h2>
-				</div>
-				<div th:if="${param.error}" class="alert alert-danger" th:utext="#{AdminWebModule.login.feedback.invalidUsernameOrPassword}">
-					Invalid username or password.
-				</div>
-				<div th:if="${param.logout}" class="alert alert-success" th:utext="#{AdminWebModule.login.feedback.logoutSuccess}">
-					You have been signed out.
-				</div>
-				<div th:unless="${param.error != null or param.logout != null}" class="alert text-center" th:utext="#{AdminWebModule.login.text}">
-					Please sign in.
-				</div>
-				<label for="username" class="sr-only" th:text="#{AdminWebModule.login.form.username}">Username</label>
-				<input type="text" id="username" name="username" class="form-control" th:placeholder="#{AdminWebModule.login.form.username[placeholder]}"
-				       required="required" autofocus="autofocus"/>
-				<span class="help-block" th:utext="#{AdminWebModule.login.form.username[help]}"></span>
-				<label for="password" class="sr-only" th:text="#{AdminWebModule.login.form.password}">Password</label>
-				<input type="password" id="password" name="password" class="form-control" th:placeholder="#{AdminWebModule.login.form.password[placeholder]}"/>
-				<span class="help-block" th:utext="#{AdminWebModule.login.form.password[help]}"></span>
+    </div>
+    <div class="row axu-h-75 axu-justify-content-center axu-align-items-center">
+        <div class="col-md-4">
+            <form name="loginForm" th:action="@{${@adminWeb.path('/login')}}" method="post" role="form" class="form-signin center-block">
+                <div class="axu-text-center page-header">
+                    <h2 th:text="${@adminWeb.title}">Application name</h2>
+                </div>
+                <div th:if="${param.error}" class="alert alert-danger" th:utext="#{AdminWebModule.login.feedback.invalidUsernameOrPassword}">
+                    Invalid username and password.
+                </div>
+                <div th:if="${param.logout}" class="alert alert-success" th:utext="#{AdminWebModule.login.feedback.logoutSuccess}">
+                    You have been signed out.
+                </div>
+                <div th:unless="${param.error != null or param.logout != null}" class="alert text-center" th:utext="#{AdminWebModule.login.text}">
+                    Please sign in.
+                </div>
+                <div class="axu-mb-2">
+                    <label for="username" class="sr-only" th:text="#{AdminWebModule.login.form.username}">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" th:placeholder="#{AdminWebModule.login.form.username[placeholder]}"
+                           required="required" autofocus="autofocus"/>
+                    <div class="help-block axu-mt-1 small" th:utext="#{AdminWebModule.login.form.username[help]}"></div>
+                </div>
+                <div class="axu-mb-2">
+                    <label for="password" class="sr-only" th:text="#{AdminWebModule.login.form.password}">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" th:placeholder="#{AdminWebModule.login.form.password[placeholder]}"/>
+                    <div class="help-block axu-mt-1 small" th:utext="#{AdminWebModule.login.form.password[help]}"></div>
+                </div>
 
-				<div th:if="${isRememberMeEnabled}" class="checkbox">
-					<label for="remember-me">
-						<input type="checkbox" id="remember-me" name="remember-me"/> [[#{AdminWebModule.login.form.remember-me}]]
-					</label>
-				</div>
-				<button type="submit" class="btn btn-lg btn-primary btn-block" th:text="#{AdminWebModule.login.form.submit}">Sign in</button>
-			</form>
-		</div>
-	</div>
+                <div th:if="${isRememberMeEnabled}" class="custom-control custom-checkbox axu-mb-2">
+                    <input class="custom-control-input" type="checkbox" id="remember-me" name="remember-me"/>
+                    <label class="custom-control-label" for="remember-me">[[#{AdminWebModule.login.form.remember-me}]]</label>
+                </div>
+                <button type="submit" class="btn btn-lg btn-primary btn-block" th:text="#{AdminWebModule.login.form.submit}">Sign in</button>
+            </form>
+        </div>
+    </div>
 </div>
 </body>
 </html>

@@ -36,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @AcrossWebAppConfiguration
 @TestPropertySource(properties = {
-		"adminWebModule.root-path=/",
-		"acrossWebModule.resources.path=/static-resources"
+		"admin-web-module.root-path=/",
+		"across.web.resources.path=/static-resources"
 })
 public class ITAdminWebOnRootPath
 {
@@ -47,6 +47,8 @@ public class ITAdminWebOnRootPath
 	@Test
 	public void staticResourcesShouldNotBeSecured() throws Exception {
 		mvc.perform( get( "/static-resources/static/adminweb/css/adminweb.css" ) )
+		   .andExpect( status().isOk() );
+		mvc.perform( get( "/webjars/toastr/2.1.2/toastr.min.js" ) )
 		   .andExpect( status().isOk() );
 	}
 

@@ -16,112 +16,178 @@
 
 @charset "UTF-8";
 
-/* todo: to bootstrap ui css! */
-table td .btn {
-    padding: 0px 3px;
+body {
+    padding-top: 5rem;
 }
 
-.btn .glyphicon-remove {
-    color: orangered;
+/* Navbar styling - icon */
+.navbar-header .navbar-brand {
+    background: url("../images/across-logo.svg") no-repeat left center;
+    background-size: 32px 32px;
+    padding-left: 45px;
 }
 
-label.control-label > sup.required {
-    margin-left: 3px;
+/* Top nav user context menu */
+.nav-item.admin-nav-user-context.with-thumbnail > a {
+    padding-left: 40px;
+    margin-left: 0.5rem;
 }
 
-.pager-form {
-    color: black;
+.admin-nav-user-context .admin-nav-user-context-thumbnail {
+    border-radius: 5px;
+    position: absolute;
+    display: block;
+    top: calc(50% - 17px);
+    left: 0.5rem;
+    max-height: 34px;
 }
 
-.pager-form label {
-    font-weight: normal;
+/* Table within card */
+.card-body .table:first-child tr th {
+    border-top: 0;
 }
 
-.pager-form .btn {
-    padding: 0 10px;
+.card-body .table:last-child {
+    margin-bottom: 0;
 }
 
-.pager-form .form-control {
-    width: 34px;
-    padding: 2px;
-    text-align: center;
-    vertical-align: middle;
+/*!* todo: to bootstrap ui css! *!*/
+/*table td .btn {*/
+/*    padding: 0px 3px;*/
+/*}*/
+
+/*.btn .fa-times {*/
+/*    color: orangered;*/
+/*}*/
+
+/*label.control-label > sup.required {*/
+/*    margin-left: 3px;*/
+/*}*/
+
+/*.pager-form {*/
+/*    color: black;*/
+/*}*/
+
+/*.pager-form label {*/
+/*    font-weight: normal;*/
+/*}*/
+
+/*.pager-form .btn {*/
+/*    padding: 0 10px;*/
+/*}*/
+
+/*.pager-form .form-control {*/
+/*    width: 34px;*/
+/*    padding: 2px;*/
+/*    text-align: center;*/
+/*    vertical-align: middle;*/
+/*}*/
+
+/*.pager-form .form-control.has-error {*/
+/*    border-color: red;*/
+/*}*/
+
+/*.pager-form > span, .pager-form label > span {*/
+/*    margin-left: 6px;*/
+/*    margin-right: 6px;*/
+/*    vertical-align: middle;*/
+/*    color: gray;*/
+/*}*/
+
+/*.pager-form .no-btn {*/
+/*    display: inline-block;*/
+/*    width: 24px;*/
+/*}*/
+
+/*.pager-form .total-pages-link {*/
+/*    font-weight: bold;*/
+/*    font-size: 14px;*/
+/*    vertical-align: middle;*/
+/*    color: black;*/
+/*    margin-right: 8px;*/
+/*}*/
+
+/*.form-horizontal .control-label.text-left {*/
+/*    text-align: left;*/
+/*}*/
+
+/*th.result-number {*/
+/*    width: 40px;*/
+/*    text-align: center;*/
+/*}*/
+
+/*td.result-number {*/
+/*    text-align: center;*/
+/*}*/
+
+/*th[data-tbl-field='day'] {*/
+/*    text-align: right;*/
+/*}*/
+
+/*td[data-tbl-field='day'] {*/
+/*    width: 110px;*/
+/*    text-align: right;*/
+/*}*/
+
+/*.toast {*/
+/*    top: 70px;*/
+/*}*/
+
+
+/* These styles should be overridden by a theme */
+
+/* Developer tools nav item */
+.nav-panels .admin-nav-developer-tools .card-header i {
+    float: right;
+    margin-top: 0.25rem;
 }
 
-.pager-form .form-control.has-error {
-    border-color: red;
+.nav-panels .admin-nav-developer-tools.card {
+    border-color: var(--warning);
 }
 
-.pager-form > span, .pager-form label > span {
-    margin-left: 6px;
-    margin-right: 6px;
-    vertical-align: middle;
-    color: gray;
+.nav-panels .admin-nav-developer-tools .card-header {
+    background-color: var(--warning);
 }
 
-.pager-form .no-btn {
-    display: inline-block;
-    width: 24px;
+/* Page header */
+.page-header {
+    margin-bottom: 1.5rem;
 }
 
-.pager-form .total-pages-link {
-    font-weight: bold;
-    font-size: 14px;
-    vertical-align: middle;
-    color: black;
-    margin-right: 8px;
+/* Dismissible alerts are displayed as toasts */
+.alert-dismissible:not(.no-toast) {
+    display: none;
 }
 
-.form-horizontal .control-label.text-left {
-    text-align: left;
-}
-
-th.result-number {
-    width: 40px;
-    text-align: center;
-}
-
-td.result-number {
-    text-align: center;
-}
-
-th[data-tbl-field='day'] {
-    text-align: right;
-}
-
-td[data-tbl-field='day'] {
-    width: 110px;
-    text-align: right;
-}
-
+/* Toasts */
 .toast {
-    top: 70px;
+    top: 4rem;
 }
 
 .toast-message button.close {
     display: none;
 }
 
-li.admin-nav-user-context.with-thumbnail > a {
-    padding-bottom: 8px;
-    padding-top: 12px;
+.toast-error {
+    background-color: var(--danger);
 }
 
-.admin-nav-user-context .admin-nav-user-context-thumbnail {
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
+.toast-success {
+    background-color: var(--success);
 }
 
-.panel-heading {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+.toast-info {
+    background-color: var(--info);
 }
 
-.form-signin .help-block {
-    font-size: small;
-    margin-bottom: 15px;
-    padding-left: 10px;
+.toast-warning {
+    background-color: var(--warning);
+}
+
+/* Show invalid feedback inside form groups */
+.form-group.is-invalid .invalid-feedback {
+    display: block;
 }
 
 .form-signin .help-block:empty {

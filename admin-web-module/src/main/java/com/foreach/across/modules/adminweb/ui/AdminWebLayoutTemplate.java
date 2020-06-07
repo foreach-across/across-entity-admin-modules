@@ -16,10 +16,10 @@
 
 package com.foreach.across.modules.adminweb.ui;
 
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.resource.WebResource;
@@ -27,18 +27,22 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.template.LayoutTemplateProcessorAdapterBean;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Represents the admin web layout with top and left navigation.
@@ -66,7 +70,13 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 	public static final String MODEL_ATTR_SIDEBAR = "adminWebSidebarNavigation";
 	public static final String MODEL_ATTR_BREADCRUMB = "adminWebBreadcrumb";
 
-	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
+	/**
+	 * Should the {@link Menu#getPath()} value be included as data attribute on nav components.
+	 * By default this will be enabled if {@link AcrossDevelopmentMode} is active.
+	 */
+	@Setter
+	@Getter
+	private boolean includeNavPathAsDataAttribute = false;
 
 	/**
 	 * Create a default template.
@@ -90,6 +100,11 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 		adminWebTemplateRegistry.register( this );
 	}
 
+	@Autowired
+	void activateDevelopmentMode( AcrossDevelopmentMode acrossDevelopmentMode ) {
+		includeNavPathAsDataAttribute = acrossDevelopmentMode.isActive();
+	}
+
 	@Override
 	protected void registerWebResources( WebResourceRegistry registry ) {
 		registry.apply(
@@ -100,6 +115,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 
 	@Override
 	protected void buildMenus( MenuFactory menuFactory ) {
+		// todo only build the menu if a user is authenticated
 		menuFactory.buildMenu( AdminMenu.NAME, AdminMenu.class );
 	}
 
@@ -115,34 +131,43 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 			if ( adminMenu != null ) {
 				model.computeIfAbsent(
 						MODEL_ATTR_NAVBAR,
-						key -> bootstrapUiComponentFactory.nav( adminMenu )
-						                                  .navbar()
-						                                  .keepGroupsAsGroup( true )
-						                                  .replaceGroupBySelectedItem( false )
-						                                  .filter( navPosition( NAVBAR, true ) )
-						                                  .build()
+						key -> bootstrap.builders.nav()
+						                         .menu( adminMenu )
+						                         .navbar()
+						                         .keepGroupsAsGroup( true )
+						                         .replaceGroupBySelectedItem( false )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
+						                         .filter( navPosition( NAVBAR, true ) )
+						                         .css( "navbar-nav axu-mr-auto" )
+						                         .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_NAVBAR_RIGHT,
-						key -> bootstrapUiComponentFactory.nav( adminMenu )
-						                                  .navbar()
-						                                  .css( "navbar-right" )
-						                                  .keepGroupsAsGroup( true )
-						                                  .replaceGroupBySelectedItem( false )
-						                                  .filter( navPosition( NAVBAR_RIGHT, false ) )
-						                                  .build()
+						key -> bootstrap.builders.nav()
+						                         .menu( adminMenu )
+						                         .navbar()
+						                         .css( "navbar-nav" )
+						                         .keepGroupsAsGroup( true )
+						                         .replaceGroupBySelectedItem( false )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
+						                         .filter( navPosition( NAVBAR_RIGHT, false ) )
+						                         .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_SIDEBAR,
-						key -> bootstrapUiComponentFactory.panels( adminMenu )
-						                                  .keepGroupsAsGroup( true )
-						                                  .filter( navPosition( SIDEBAR, true ) )
-						                                  .build()
+						key -> bootstrap.builders.panels()
+						                         .menu( adminMenu )
+						                         .keepGroupsAsGroup( true )
+						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
+						                         .filter( navPosition( SIDEBAR, true ) )
+						                         .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_BREADCRUMB,
-						key -> bootstrapUiComponentFactory
-								.breadcrumb( adminMenu )
+						key -> bootstrap.builders
+								.breadcrumb()
+								.menu( adminMenu )
+								.includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 								.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
 								.build()
 				);
@@ -162,11 +187,6 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 								        : position.equals( value )
 				        )
 				        .orElse( defaultInclude || menu.getLevel() > 1 );
-	}
-
-	@Autowired
-	void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
-		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
 	}
 }
 

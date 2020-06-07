@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright 2014 the original author or authors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!--/* list all iconSets */-->
+<div th:fragment="listIconSets(iconSets)">
+    <div class="card">
+        <div class="card-header">[[${iconSets.size()}]] icon sets registered</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th class="result-number">#</th>
+                        <th>Icon set name</th>
+                        <th class="row-actions"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="iconSet,iconSetStat : ${iconSets}" th:class="${iconSetStat.even} ? 'even' : 'odd'">
+                        <td class="axu-align-middle result-number">[[${iconSetStat.count}]]</td>
+                        <td class="axu-align-middle">
+                            <a th:href="@{@adminWeb:/ax/developer/iconSets/{id}(id=${iconSet.key})}">[[${iconSet.key}]]</a>
+                        </td>
+                        <td class="axu-align-middle row-actions axu-text-center">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--/* list all icons for an icon set */-->
+<div th:fragment="listIcons(iconSetName, icons)">
+    <div class="card">
+        <div class="card-header axu-mb-2">[[${icons.size()}]] icons registered for icon set <strong>[[${iconSetName}]]</strong></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th class="result-number">#</th>
+                        <th>Icon name</th>
+                        <th>Icon</th>
+                        <th class="row-actions"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="icon,iconStat : ${icons}" th:class="${iconStat.even} ? 'even' : 'odd'">
+                        <td class="axu-align-middle result-number">[[${iconStat.count}]]</td>
+                        <td class="axu-align-middle" data-th-text="${icon.key}">...</td>
+                        <td class="axu-align-middle">
+                            <across:view element="${icon.value}"/>
+                        </td>
+                        <td class="axu-align-middle row-actions axu-text-center"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
