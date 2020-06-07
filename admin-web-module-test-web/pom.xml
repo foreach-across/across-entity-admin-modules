@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>bootstrap-ui-module</artifactId>
-			<version>3.0.0.RC1</version>
+			<version>3.0.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
