@@ -26,11 +26,11 @@ public interface FormControlElement extends FormInputElement
 {
 	boolean isReadonly();
 
-	void setReadonly( boolean readonly );
+	FormControlElement setReadonly( boolean readonly );
 
 	boolean isRequired();
 
-	void setRequired( boolean required );
+	FormControlElement setRequired( boolean required );
 
 	/**
 	 * Marks the implementation as being a proxy for the actual control that is

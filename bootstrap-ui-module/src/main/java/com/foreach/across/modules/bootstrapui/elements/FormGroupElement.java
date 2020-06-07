@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,15 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -31,6 +37,7 @@ import java.util.stream.Stream;
  */
 @Getter
 @Setter
+@Accessors(chain = true)
 public class FormGroupElement extends AbstractNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM_GROUP;
@@ -43,8 +50,6 @@ public class FormGroupElement extends AbstractNodeViewElement
 	 * -- SETTER --
 	 * Set a tooltip element. This will be inserted inside the label, after the label text.
 	 */
-	@Getter
-	@Setter
 	private ViewElement tooltip;
 
 	/**
@@ -52,8 +57,6 @@ public class FormGroupElement extends AbstractNodeViewElement
 	 * Set the description block that should be rendered above the control,
 	 * usually between the label and the control.
 	 */
-	@Getter
-	@Setter
 	private ViewElement descriptionBlock;
 
 	private FormLayout formLayout;
@@ -61,11 +64,14 @@ public class FormGroupElement extends AbstractNodeViewElement
 
 	/**
 	 * -- SETTER --
-	 * When rendering, should field errors be detected from the bound object.
+	 * When rendering, should field errors be detected from the bound object based on the control in this form group.
 	 * If {@code true} (default) the controlName of the form control will be used as property name of the bound
 	 * object, if no such property, an exception will occur when rendering.
 	 */
 	private boolean detectFieldErrors = true;
+
+	@Setter(value = AccessLevel.NONE)
+	private String[] fieldErrorsToShow = new String[0];
 
 	public FormGroupElement() {
 		super( "div" );
@@ -90,6 +96,21 @@ public class FormGroupElement extends AbstractNodeViewElement
 
 	public <V extends ViewElement> V getTooltip( Class<V> elementType ) {
 		return returnIfType( tooltip, elementType );
+	}
+
+	/**
+	 * Additional field names for which errors should be detected from the bound object.
+	 * These errors will be rendered no matter the setting of {@link #isDetectFieldErrors()}.
+	 * The latter will only auto-detect the field errors for the attached control.
+	 * <p/>
+	 * The {@link org.springframework.validation.Errors} object attached to the bound object
+	 * will be queried for the field errors with the given names.
+	 *
+	 * @param fieldNames field names
+	 */
+	public FormGroupElement setFieldErrorsToShow( String... fieldNames ) {
+		this.fieldErrorsToShow = fieldNames;
+		return this;
 	}
 
 	@Override
@@ -141,5 +162,119 @@ public class FormGroupElement extends AbstractNodeViewElement
 			}
 		}
 		return removed || super.removeChild( element );
+	}
+
+	@Override
+	public FormGroupElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected FormGroupElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public FormGroupElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> FormGroupElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected FormGroupElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
 	}
 }

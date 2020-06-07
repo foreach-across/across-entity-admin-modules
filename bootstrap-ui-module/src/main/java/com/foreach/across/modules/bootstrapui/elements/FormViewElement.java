@@ -15,13 +15,20 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.HORIZONTAL;
 import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.INLINE;
@@ -32,6 +39,7 @@ import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.IN
  *
  * @author Arne Vandamme
  */
+@Accessors(chain = true)
 public class FormViewElement extends AbstractNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM;
@@ -83,7 +91,7 @@ public class FormViewElement extends AbstractNodeViewElement
 	 *
 	 * @param formLayout instance
 	 */
-	public void setFormLayout( FormLayout formLayout ) {
+	public FormViewElement setFormLayout( FormLayout formLayout ) {
 		this.formLayout = formLayout;
 
 		removeCssClass( "form-horizontal", "form-inline" );
@@ -95,6 +103,7 @@ public class FormViewElement extends AbstractNodeViewElement
 				addCssClass( "form-inline" );
 			}
 		}
+		return this;
 	}
 
 	public String getCommandAttribute() {
@@ -108,35 +117,37 @@ public class FormViewElement extends AbstractNodeViewElement
 	 *
 	 * @param commandAttribute instance
 	 */
-	public void setCommandAttribute( String commandAttribute ) {
+	public FormViewElement setCommandAttribute( String commandAttribute ) {
 		this.commandAttribute = commandAttribute;
+		return this;
 	}
 
 	public HttpMethod getMethod() {
 		return HttpMethod.valueOf( StringUtils.upperCase( (String) getAttribute( "method" ) ) );
 	}
 
-	public void setMethod( HttpMethod httpMethod ) {
+	public FormViewElement setMethod( HttpMethod httpMethod ) {
 		Assert.isTrue( httpMethod == HttpMethod.GET || httpMethod == HttpMethod.POST,
 		               "Method POST or GET is required." );
-		setAttribute( "method", StringUtils.lowerCase( httpMethod.toString() ) );
+		return setAttribute( "method", StringUtils.lowerCase( httpMethod.toString() ) );
 	}
 
 	public String getAction() {
 		return getAttribute( "action", String.class );
 	}
 
-	public void setAction( String url ) {
-		setAttribute( "action", url );
+	public FormViewElement setAction( String url ) {
+		return setAttribute( "action", url );
 	}
 
 	@Override
-	public void setName( String name ) {
+	public FormViewElement setName( String name ) {
 		super.setName( name );
 
 		if ( getFormName() == null ) {
 			setFormName( name );
 		}
+		return this;
 	}
 
 	/**
@@ -151,8 +162,8 @@ public class FormViewElement extends AbstractNodeViewElement
 	 *
 	 * @param name attribute to use
 	 */
-	public void setFormName( String name ) {
-		setAttribute( "name", name );
+	public FormViewElement setFormName( String name ) {
+		return setAttribute( "name", name );
 	}
 
 	public String getEncType() {
@@ -164,39 +175,145 @@ public class FormViewElement extends AbstractNodeViewElement
 	 *
 	 * @param encType value
 	 */
-	public void setEncType( String encType ) {
-		setAttribute( "enctype", encType );
+	public FormViewElement setEncType( String encType ) {
+		return setAttribute( "enctype", encType );
 	}
 
 	public String getAcceptCharSet() {
 		return getAttribute( "accept-charset", String.class );
 	}
 
-	public void setAcceptCharSet( String charSet ) {
-		setAttribute( "accept-charset", charSet );
+	public FormViewElement setAcceptCharSet( String charSet ) {
+		return setAttribute( "accept-charset", charSet );
 	}
 
 	public boolean isAutoComplete() {
 		return !hasAttribute( "autocomplete" ) || StringUtils.equals( (String) getAttribute( "autocomplete" ), "on" );
 	}
 
-	public void setAutoComplete( boolean autoComplete ) {
-		setAttribute( "autocomplete", autoComplete ? "on" : "off" );
+	public FormViewElement setAutoComplete( boolean autoComplete ) {
+		return setAttribute( "autocomplete", autoComplete ? "on" : "off" );
 	}
 
 	public boolean isNoValidate() {
 		return hasAttribute( "novalidate" );
 	}
 
-	public void setNoValidate( boolean noValidate ) {
+	public FormViewElement setNoValidate( boolean noValidate ) {
 		if ( noValidate ) {
 			setAttribute( "novalidate", "novalidate" );
 		}
 		else {
 			removeAttribute( "novalidate" );
 		}
+		return this;
 	}
 
-	//form-inline
-	//form-horizontal
+	@Override
+	public FormViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public FormViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public FormViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public FormViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public FormViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public FormViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public FormViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected FormViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public FormViewElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public FormViewElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public FormViewElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public FormViewElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public FormViewElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> FormViewElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected FormViewElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public FormViewElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public FormViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public FormViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

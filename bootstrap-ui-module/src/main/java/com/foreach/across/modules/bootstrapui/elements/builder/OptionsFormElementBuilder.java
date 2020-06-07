@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,14 @@ import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWe
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
- * Responsible for building option lists as SELECT, RADIO or MULTI CHECKBOX.
+ * Responsible for building option lists as SELECT, RADIO, TOGGLE or MULTI CHECKBOX.
  * Takes a collection of {@link OptionFormElementBuilder}s and will apply the global type to them, no matter what
  * type they were originally defined with.
  *
@@ -118,6 +120,16 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 	}
 
 	/**
+	 * Will generate a toggle button list. Toggle always allows multiple values.
+	 *
+	 * @return current builder
+	 */
+	public OptionsFormElementBuilder toggle() {
+		type = Type.TOGGLE;
+		return this;
+	}
+
+	/**
 	 * Will generate a select box.
 	 *
 	 * @return current builder
@@ -181,8 +193,9 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 		try {
 			AbstractNodeViewElement control;
 
-			if ( type == Type.CHECKBOX || type == Type.RADIO ) {
+			if ( type == Type.CHECKBOX || type == Type.RADIO || type == Type.TOGGLE ) {
 				control = createBoxDiv();
+				control.set( Functions.css( StringUtils.lowerCase( type.toString() ) + "-list" ) );
 				control.setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" );
 
 				if ( controlName != null ) {
@@ -230,6 +243,7 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 	{
 		SELECT,
 		CHECKBOX,
-		RADIO
+		RADIO,
+		TOGGLE;
 	}
 }

@@ -15,12 +15,19 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author Arne Vandamme
  */
-public class StaticFormElement extends AbstractNodeViewElement
+public class StaticFormElement extends AbstractNodeViewElement implements ConfigurableTextViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.STATIC_CONTROL;
 
@@ -31,11 +38,128 @@ public class StaticFormElement extends AbstractNodeViewElement
 		setElementType( ELEMENT_TYPE );
 	}
 
+	@Override
 	public String getText() {
 		return text;
 	}
 
-	public void setText( String text ) {
+	@Override
+	public StaticFormElement setText( String text ) {
 		this.text = text;
+		return this;
+	}
+
+	@Override
+	public StaticFormElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected StaticFormElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public StaticFormElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> StaticFormElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected StaticFormElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
 	}
 }

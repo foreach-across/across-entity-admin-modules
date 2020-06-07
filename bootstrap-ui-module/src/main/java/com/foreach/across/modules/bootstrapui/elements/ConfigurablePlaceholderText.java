@@ -20,7 +20,7 @@ package com.foreach.across.modules.bootstrapui.elements;
  */
 public interface ConfigurablePlaceholderText
 {
-	void setPlaceholder( String placeholder );
+	ConfigurablePlaceholderText setPlaceholder( String placeholder );
 
 	String getPlaceholder();
 }

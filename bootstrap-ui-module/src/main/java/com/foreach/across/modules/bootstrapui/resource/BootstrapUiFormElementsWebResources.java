@@ -30,10 +30,11 @@ import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage
  * Adds resources for the following:
  * <ul>
  * <li><a href="http://momentjs.com">moment js</a></li>
- * <li><a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a></li>
- * <li><a href="https://github.com/BobKnothe/autoNumeric">autoNumeric</a></li>
+ * <li><a href="https://tempusdominus.github.io/bootstrap-4/">Tempus Dominus Bootstrap 4 datepicker</a></li>
+ * <li><a href="http://autonumeric.org/">autoNumeric</a></li>
  * <li><a href="http://www.jacklmoore.com/autosize/">Autosize</a></li>
  * <li><a href="https://github.com/corejavascript/typeahead.js">Twitter Typeahead</a></li>
+ * <li><a href="https://developer.snapappointments.com/bootstrap-select/">Bootstrap select</a></li>
  * </ul>
  *
  * @author Arne Vandamme
@@ -44,18 +45,18 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 {
 	public static final String NAME = "bootstrapui-formelements";
 	public static final String MOMENTJS = "momentjs";
-	public static final String EONASDAN_DATETIME = "eonasdan-datetime";
+	public static final String TEMPUS_DOMINUS_DATETIME = "tempus-dominus-datetime";
 	public static final String AUTO_NUMERIC = "autoNumeric";
 	public static final String AUTOSIZE = "autosize";
 	public static final String BOOTSTRAP_SELECT = "bootstrap-select";
 	public static final String TYPEAHEAD = "typeahead";
 	public static final String HANDLEBARS = "handlebars";
 
-	private static final String MOMENT_VERSION = "2.10.6";
-	private static final String EONASDAN_VERSION = "4.14.30";
-	private static final String AUTO_NUMERIC_VERSION = "1.9.30";
-	private static final String AUTOSIZE_VERSION = "3.0.20";
-	private static final String BOOTSTRAP_SELECT_VERSION = "1.12.2";
+	private static final String MOMENT_VERSION = "2.24.0";
+	private static final String TEMPUS_DOMINUS_VERSION = "5.1.2";
+	private static final String AUTO_NUMERIC_VERSION = "4.5.4";
+	private static final String AUTOSIZE_VERSION = "4.0.2";
+	private static final String BOOTSTRAP_SELECT_VERSION = "1.13.11";
 	private static final String TYPEAHEAD_VERSION = "1.2.1";
 	private static final String HANDLEBARS_VERSION = "4.0.14";
 
@@ -71,17 +72,18 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.withKey( MOMENTJS )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
-				// Eonasdan - datetimepicker
+				// Tempus Dominus - datetimepicker
 				add( WebResource.javascript(
-						"@webjars:/Eonasdan-bootstrap-datetimepicker/" + EONASDAN_VERSION + "/bootstrap-datetimepicker.min.js" ) )
-						.withKey( EONASDAN_DATETIME )
+						"@webjars:/tempusdominus-bootstrap-4/" + TEMPUS_DOMINUS_VERSION + "/js/tempusdominus-bootstrap-4" + minified( ".js" ) ) )
+						.withKey( TEMPUS_DOMINUS_DATETIME )
 						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.css( "@webjars:/Eonasdan-bootstrap-datetimepicker/" + EONASDAN_VERSION + "/bootstrap-datetimepicker.min.css" ) )
-						.withKey( EONASDAN_DATETIME )
+				add( WebResource
+						     .css( "@webjars:/tempusdominus-bootstrap-4/" + TEMPUS_DOMINUS_VERSION + "/css/tempusdominus-bootstrap-4" + minified( ".css" ) ) )
+						.withKey( TEMPUS_DOMINUS_DATETIME )
 						.toBucket( CSS ),
 
 				// autoNumeric
-				add( WebResource.javascript( "@webjars:org.webjars.bower/autoNumeric/" + AUTO_NUMERIC_VERSION + "/autoNumeric.js" ) )
+				add( WebResource.javascript( "@webjars:org.webjars.npm/autonumeric/" + AUTO_NUMERIC_VERSION + "/dist/autoNumeric" + minified( ".js" ) ) )
 						.withKey( AUTO_NUMERIC )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
@@ -91,10 +93,12 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
 				// bootstrap select
-				add( WebResource.javascript( "@webjars:/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/js/bootstrap-select" + minified( ".js" ) ) )
+				add( WebResource.javascript(
+						"@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/js/bootstrap-select" + minified( ".js" ) ) )
 						.withKey( BOOTSTRAP_SELECT )
 						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.css( "@webjars:/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/css/bootstrap-select" + minified( ".css" ) ) )
+				add( WebResource.css( "@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/css/bootstrap-select" + minified(
+						".css" ) ) )
 						.withKey( BOOTSTRAP_SELECT )
 						.toBucket( CSS ),
 
@@ -109,10 +113,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 				// BootstrapUiModule specific
 				add( WebResource.javascript( "@static:/" + BootstrapUiModule.NAME + "/js/bootstrapui-formelements.js" ) )
 						.withKey( NAME )
-						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.css( "@static:/" + BootstrapUiModule.NAME + "/css/bootstrapui.css" ) )
-						.withKey( NAME )
-						.toBucket( CSS )
+						.toBucket( JAVASCRIPT_PAGE_END )
 		);
 	}
 

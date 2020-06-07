@@ -20,17 +20,43 @@
  * @since 2.2.0
  */
 function initializeDateTimePickers( node: any ): void {
+    $.fn.datetimepicker.Constructor.Default = $.extend( {}, $.fn.datetimepicker.Constructor.Default, {
+        icons: {
+            time: 'far fa-clock',
+            date: 'far fa-calendar',
+            up: 'fas fa-arrow-up',
+            down: 'fas fa-arrow-down',
+            previous: 'fas fa-chevron-left',
+            next: 'fas fa-chevron-right',
+            today: 'far fa-calendar-check',
+            clear: 'fas fa-trash',
+            close: 'fas fa-times',
+        },
+    } );
+
     $( '[data-bootstrapui-datetimepicker]', node ).each( function () {
-        const configuration = $.extend( {}, $( this ).data( 'bootstrapui-datetimepicker' ) );
+        const configuration = $.extend( true, {}, $( this ).data( 'bootstrapui-datetimepicker' ) );
         const exportFormat = configuration.exportFormat;
 
         delete configuration.exportFormat;
 
-        $( this ).datetimepicker( configuration )
-            .on( 'dp.change', function ( e: any ) {
-                const exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
-                $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
-            } );
+        const formatAndSetDate = ( currentDate: any ) => {
+            const formattedValue = currentDate ? moment( currentDate ).format( exportFormat ) : '';
+            $( 'input[type=hidden]', $( this ) ).attr( 'value', formattedValue );
+        };
+
+        $( this ).datetimepicker( configuration );
+        $( this ).on( 'change.datetimepicker', ( e: any ) => formatAndSetDate( e.date ) );
+        $( this ).find( 'input[type="text"]' ).on( 'blur focusout', () => {
+            const datetimepicker = $( this ).data( 'datetimepicker' );
+            datetimepicker.hide();
+            // when inserting a value without using the calendar picker, the viewDate is updated but the date itself isn't
+            datetimepicker.date( datetimepicker.viewDate() );
+            formatAndSetDate( datetimepicker.date() );
+        } );
+
+        const initialDate = $( this ).data( 'datetimepicker' ).date();
+        formatAndSetDate( initialDate );
     } );
 }
 

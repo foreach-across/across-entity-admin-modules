@@ -16,14 +16,13 @@
 
 package com.foreach.across.modules.bootstrapui.extensions;
 
-import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.core.annotations.PostRefresh;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryImpl;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.*;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
@@ -32,9 +31,9 @@ import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import com.foreach.across.modules.web.ui.thymeleaf.ViewElementModelWriterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Optional;
 
 /**
@@ -63,6 +62,8 @@ class BootstrapUiConfiguration
 			                                         new CheckboxFormElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( RadioFormElement.class,
 			                                         new RadioFormElementModelWriter() );
+			modelWriterRegistry.registerModelWriter( ToggleFormElement.class,
+			                                         new ToggleFormElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( SelectFormElement.class,
 			                                         new SelectFormElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( SelectFormElement.Option.class,
@@ -88,6 +89,11 @@ class BootstrapUiConfiguration
 		} );
 	}
 
+	@PostConstruct
+	void registerIconSets() {
+		BootstrapUiModuleIcons.registerFontAwesomeIconSets();
+	}
+
 	@PostRefresh
 	void registerWebResourcePackages( AcrossContextBeanRegistry contextBeanRegistry, AcrossDevelopmentMode developmentMode ) {
 		contextBeanRegistry.getBeansOfType( WebResourcePackageManager.class ).forEach(
@@ -99,17 +105,8 @@ class BootstrapUiConfiguration
 		);
 	}
 
-	@Bean
-	@Lazy
-	@Exposed
-	public BootstrapUiFactory bootstrapUiFactory() {
-		return new BootstrapUiFactoryImpl();
-	}
-
-	@Bean
-	@Lazy
-	@Exposed
-	public BootstrapUiComponentFactory bootstrapUiComponentFactory() {
-		return new BootstrapUiComponentFactoryImpl();
+	@PreDestroy
+	void clearIconSets() {
+		IconSetRegistry.removeAllIconSets();
 	}
 }

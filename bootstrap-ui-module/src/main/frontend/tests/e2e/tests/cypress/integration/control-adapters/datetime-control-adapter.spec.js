@@ -20,7 +20,7 @@ describe( 'ControlAdapter - Datepicker', function () {
     const initialFormattedDate = '2019-01-23 00:00';
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     it( "adapter exists", function () {
@@ -55,10 +55,10 @@ describe( 'ControlAdapter - Datepicker', function () {
         adapterUtils.assertHasUnderlyingControlAdapters( selector, 0 );
     } );
 
-    it( "bootstrapui.change event is fired on dp.change", function () {
+    it( "bootstrapui.change event is fired on change.datetimepicker", function () {
         cy.get( selector )
                 .then( ( datepicker ) => {
-                    adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( datepicker, 'dp.change' );
+                    adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( datepicker, 'change.datetimepicker' );
                 } );
     } );
 } );

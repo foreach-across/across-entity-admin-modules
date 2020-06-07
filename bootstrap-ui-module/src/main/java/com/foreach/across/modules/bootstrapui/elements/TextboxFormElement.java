@@ -15,15 +15,25 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author Arne Vandamme
  */
+@Accessors(chain = true)
+@Getter
+@Setter
 public class TextboxFormElement extends FormControlElementSupport implements ConfigurableTextViewElement, ConfigurablePlaceholderText
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.TEXTBOX;
@@ -86,9 +96,6 @@ public class TextboxFormElement extends FormControlElementSupport implements Con
 	private Type type = Type.TEXT;
 	private String placeholder, text;
 	private Integer maxLength;
-
-	@Getter
-	@Setter
 	private boolean disableLineBreaks;
 
 	public TextboxFormElement() {
@@ -97,38 +104,140 @@ public class TextboxFormElement extends FormControlElementSupport implements Con
 	}
 
 	@Override
-	public String getPlaceholder() {
-		return placeholder;
+	public TextboxFormElement setDisabled( boolean disabled ) {
+		super.setDisabled( disabled );
+		return this;
 	}
 
 	@Override
-	public void setPlaceholder( String placeholder ) {
-		this.placeholder = placeholder;
-	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public void setType( Type type ) {
-		this.type = type;
+	public TextboxFormElement setReadonly( boolean readonly ) {
+		super.setReadonly( readonly );
+		return this;
 	}
 
 	@Override
-	public String getText() {
-		return text;
+	public TextboxFormElement setRequired( boolean required ) {
+		super.setRequired( required );
+		return this;
 	}
 
 	@Override
-	public void setText( String text ) {
-		this.text = text;
+	public TextboxFormElement setName( String name ) {
+		super.setName( name );
+		return this;
 	}
 
-	public Integer getMaxLength() {
-		return maxLength;
+	@Override
+	public TextboxFormElement setControlName( String controlName ) {
+		super.setControlName( controlName );
+		return this;
 	}
 
-	public void setMaxLength( Integer maxLength ) {
-		this.maxLength = maxLength;
+	@Override
+	public TextboxFormElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected TextboxFormElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> TextboxFormElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected TextboxFormElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
 	}
 }

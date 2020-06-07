@@ -32,14 +32,14 @@ public class RadioFormElementModelWriter extends CheckboxFormElementModelWriter
 
 	@Override
 	protected void writeCloseElement( CheckboxFormElement control, ThymeleafModelBuilder model ) {
-		// close label if there is one
-		if ( control.getText() != null || control.hasChildren() ) {
-			model.addCloseElement();
-		}
-
-		// close wrapper
+		// radio button does not have hidden value holder
 		if ( control.isWrapped() ) {
 			model.addCloseElement();
 		}
+	}
+
+	@Override
+	protected String customControlCss() {
+		return "custom-radio";
 	}
 }

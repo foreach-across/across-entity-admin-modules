@@ -15,7 +15,7 @@
  */
 
 /**
- * Find and activate all <a href="https://silviomoreto.github.io/bootstrap-select/">bootstrap-select</a> elements.
+ * Find and activate all <a href="https://developer.snapappointments.com/bootstrap-select/">bootstrap-select</a> elements.
  */
 function selectInitializer( node: any ): void {
     $( '[data-bootstrapui-select]', node ).each( function () {

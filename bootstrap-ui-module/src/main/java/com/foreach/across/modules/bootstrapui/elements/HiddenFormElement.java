@@ -20,6 +20,7 @@ import com.foreach.across.modules.web.ui.elements.AbstractVoidNodeViewElement;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
@@ -39,8 +40,8 @@ public class HiddenFormElement extends AbstractVoidNodeViewElement implements Fo
 	}
 
 	@Override
-	public void setControlName( String controlName ) {
-		setAttribute( "name", controlName );
+	public HiddenFormElement setControlName( String controlName ) {
+		return setAttribute( "name", controlName );
 	}
 
 	@Override
@@ -49,13 +50,26 @@ public class HiddenFormElement extends AbstractVoidNodeViewElement implements Fo
 	}
 
 	@Override
-	public void setDisabled( boolean disabled ) {
+	public HiddenFormElement setDisabled( boolean disabled ) {
 		if ( disabled ) {
 			setAttribute( "disabled", "disabled" );
 		}
 		else {
 			removeAttribute( "disabled" );
 		}
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
 	}
 
 	public Object getValue() {
@@ -66,8 +80,8 @@ public class HiddenFormElement extends AbstractVoidNodeViewElement implements Fo
 		return getAttribute( "value", expectedType );
 	}
 
-	public void setValue( Object value ) {
-		setAttribute( "value", value );
+	public HiddenFormElement setValue( Object value ) {
+		return setAttribute( "value", value );
 	}
 
 	/**
@@ -81,6 +95,72 @@ public class HiddenFormElement extends AbstractVoidNodeViewElement implements Fo
 	 */
 	public FormControlElement toFormControl() {
 		return new FormControl( this );
+	}
+
+	@Override
+	public HiddenFormElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	protected HiddenFormElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected HiddenFormElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
 	}
 
 	private static class FormControl extends FormControlElementSupport

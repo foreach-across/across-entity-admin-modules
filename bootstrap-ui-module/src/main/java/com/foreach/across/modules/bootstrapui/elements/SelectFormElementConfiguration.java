@@ -25,11 +25,11 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 /**
- * Configuration class for <a href="https://silviomoreto.github.io/bootstrap-select/">bootstrap-select</a>.
+ * Configuration class for <a href="https://developer.snapappointments.com/bootstrap-select/">bootstrap-select</a>.
  * Instances of this class can be set on a {@link SelectFormElement}, in which case it will be converted to a
  * bootstrap-select if the {@link com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources} are registered.
  * <p/>
- * See <a href="https://silviomoreto.github.io/bootstrap-select/options/">bootstrap-select Options</a> for the different properties that this class exposes.
+ * See <a href="https://developer.snapappointments.com/bootstrap-select/options/">bootstrap-select Options</a> for the different properties that this class exposes.
  *
  * @author Arne Vandamme
  * @see SelectFormElement
@@ -54,7 +54,7 @@ public class SelectFormElementConfiguration extends TreeMap<String, Object>
 	}
 
 	public SelectFormElementConfiguration() {
-		setDropupAuto( false );
+		setDropupAuto( true );
 	}
 
 	/**

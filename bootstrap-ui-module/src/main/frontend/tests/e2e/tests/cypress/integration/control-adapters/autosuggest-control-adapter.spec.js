@@ -29,7 +29,7 @@ describe( 'ControlAdapter - Autosuggest', function () {
     };
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     afterEach( 'reset adapter', function () {

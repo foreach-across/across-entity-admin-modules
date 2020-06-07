@@ -33,7 +33,7 @@ export default class NumericControlAdapter extends BaseControlAdapter
 
     constructor( target: any ) {
         super( target );
-        this.initialValue = $( this.getTarget() ).autoNumeric( 'get' );
+        this.initialValue = this.getAutoNumeric().get();
 
         $( target ).on( 'change', event => this.triggerChange() );
 
@@ -48,7 +48,7 @@ export default class NumericControlAdapter extends BaseControlAdapter
 
     getValue(): BootstrapUiControlValueHolder[] {
         const label: string = $( this.getTarget() ).val().toString();
-        const value: any = $( this.getTarget() ).autoNumeric( 'get' );
+        const value: any = this.getAutoNumeric().get();
         return [createControlValueHolder( label, value, this.getTarget() )];
     }
 
@@ -57,7 +57,11 @@ export default class NumericControlAdapter extends BaseControlAdapter
     }
 
     selectValue( newValue: any ): void {
-        $( this.getTarget() ).autoNumeric( 'set', newValue );
+        this.getAutoNumeric().set( newValue );
+    }
+
+    private getAutoNumeric(): any {
+        return $( this.getTarget() ).data( 'autoNumeric' );
     }
 }
 
