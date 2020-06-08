@@ -16,9 +16,9 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.FileUploadFormElement;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -65,22 +65,22 @@ public class FileUploadFormController
 	}
 
 	private FileUploadFormElement singeFIle() {
-		return BootstrapUiBuilders.file()
-		                          .controlName( "singleFile" )
-		                          .build();
+		return BootstrapViewElements.bootstrap.builders.fileUpload()
+		                                               .controlName( "singleFile" )
+		                                               .build();
 	}
 
 	private FileUploadFormElement multiFile() {
-		return BootstrapUiBuilders.file()
-		                          .controlName( "multiFIle" )
-		                          .multiple( true )
-		                          .build();
+		return BootstrapViewElements.bootstrap.builders.fileUpload()
+		                                               .controlName( "multiFIle" )
+		                                               .multiple( true )
+		                                               .build();
 	}
 
 	private FileUploadFormElement pdfUploadOnly() {
-		return BootstrapUiBuilders.file()
-		                          .controlName( "singleFile" )
-		                          .accept( ".pdf" )
-		                          .build();
+		return BootstrapViewElements.bootstrap.builders.fileUpload()
+		                                               .controlName( "singleFile" )
+		                                               .accept( ".pdf" )
+		                                               .build();
 	}
 }

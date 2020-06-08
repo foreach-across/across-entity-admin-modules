@@ -16,12 +16,15 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons;
+import com.foreach.across.modules.bootstrapui.elements.FileUploadFormElement;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
@@ -54,20 +57,20 @@ public class IconElementController
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "GlyphIcon", simpleIcon() );
-		generatedElements.put( "Favicon", simpleFavicon() );
+		generatedElements.put( "searchIcon", searchIcon() );
+		generatedElements.put( "bookIcon", bookIcon() );
 
 		model.addAttribute( "generatedElements", generatedElements );
 
 		return "th/bootstrapUiTest/elementsRendering";
 	}
 
-	private IconViewElement simpleIcon(){
-		return BootstrapUiBuilders.glyphIcon( GlyphIcon.ZOOM_IN );
+	private HtmlViewElement searchIcon() {
+		return BootstrapViewElements.bootstrap.icon( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID, "search-plus" );
 	}
 
-	private IconViewElement simpleFavicon(){
-		return BootstrapUiBuilders.faIcon( FaIcon.WebApp.BOOK );
+	private HtmlViewElement bookIcon() {
+		return BootstrapViewElements.bootstrap.icon( BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID, "book" );
 	}
 
 }
