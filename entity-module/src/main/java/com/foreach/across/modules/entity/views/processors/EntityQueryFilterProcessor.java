@@ -212,11 +212,15 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				message += " ; position " + pe.getErrorExpressionPosition();
 			}
 
+			LOG.error( message, pe );
+
 			entityView.addAttribute( "filterError", message );
 
 		}
 		catch ( Exception e ) {
-			entityView.addAttribute( "filterError", ExceptionUtils.getRootCauseMessage( e ) );
+			String message = ExceptionUtils.getRootCauseMessage( e );
+			LOG.error( message, e );
+			entityView.addAttribute( "filterError", message );
 		}
 
 		// Explicitly return null to avoid "0 users found" along with an exception
