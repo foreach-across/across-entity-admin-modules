@@ -25,6 +25,7 @@
     </parent>
 
     <artifactId>ax-bootstrap-theme</artifactId>
+    <name>Across Bootstrap Theme</name>
 
     <properties>
         <maven.javadoc.skip>false</maven.javadoc.skip>
@@ -82,6 +83,15 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <pomElements>
+                        <name>keep</name>
+                        <description>resolve</description>
+                        <developers>resolve</developers>
+                        <scm>resolve</scm>
+                        <url>resolve</url>
+                    </pomElements>
+                </configuration>
             </plugin>
         </plugins>
     </build>
