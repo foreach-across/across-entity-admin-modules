@@ -15,21 +15,22 @@
   limitations under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>properties-module-project</artifactId>
-        <version>${revision}</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>properties-module</artifactId>
+	<name>Properties Module</name>
 
-    <properties>
-        <maven.javadoc.skip>false</maven.javadoc.skip>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
+	<properties>
+		<maven.javadoc.skip>false</maven.javadoc.skip>
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -103,17 +104,26 @@
                         <phase>process-resources</phase>
                         <goals>
                             <goal>flatten</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>flatten.clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<pomElements>
+						<name>keep</name>
+						<description>resolve</description>
+						<developers>resolve</developers>
+						<scm>resolve</scm>
+						<url>resolve</url>
+					</pomElements>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 </project>
