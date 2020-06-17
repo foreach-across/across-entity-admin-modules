@@ -21,8 +21,11 @@ import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.support.AttributeWitherFunction;
 
 /**
+ * Customization of {@link AttributeWitherFunction} which sets a default attribute value.
+ * The {@link java.util.function.Predicate} implementation still only checks for the presence of the attribute.
+ *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class DefaultValueAttributeWitherFunction<T> extends AttributeWitherFunction<T> implements ViewElement.WitherSetter<HtmlViewElement>
 {

@@ -25,7 +25,6 @@
 	</parent>
 
 	<artifactId>bootstrap-ui-module</artifactId>
-	<name>Bootstrap UI Module</name>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>
@@ -56,6 +55,10 @@
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>ax-bootstrap-4-utilities</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
@@ -143,15 +146,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<pomElements>
-						<name>keep</name>
-						<description>resolve</description>
-						<developers>resolve</developers>
-						<scm>resolve</scm>
-						<url>resolve</url>
-					</pomElements>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

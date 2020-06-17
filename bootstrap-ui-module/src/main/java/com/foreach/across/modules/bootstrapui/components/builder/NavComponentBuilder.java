@@ -22,10 +22,7 @@ import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.modules.web.ui.elements.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -36,8 +33,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.wither;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -150,6 +147,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	private Menu menu;
 	private String menuName;
 
+	private boolean includePathAsDataAttribute;
 	private boolean keepGroupsAsGroup = false;
 
 	private Predicate<Menu> predicate = menu -> true;
@@ -176,6 +174,17 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	 */
 	public SELF menu( Menu menu ) {
 		this.menu = menu;
+		return (SELF) this;
+	}
+
+	/**
+	 * Should the {@link Menu#getPath()} be included as {@code data-ax-menu-path} attribute on the list item.
+	 *
+	 * @param shouldInclude true if data attribute should be set
+	 * @return current builder
+	 */
+	public SELF includePathAsDataAttribute( boolean shouldInclude ) {
+		includePathAsDataAttribute = shouldInclude;
 		return (SELF) this;
 	}
 
@@ -376,6 +385,10 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 			ViewElement.WitherSetter setter = itemToRender.getAttribute( ATTR_VIEW_ELEMENT_WITHER );
 			if ( setter != null ) {
 				setter.applyTo( element );
+			}
+
+			if ( includePathAsDataAttribute && !StringUtils.isEmpty( itemToRender.getPath() ) ) {
+				element.set( HtmlViewElement.Functions.data( "ax-menu-path", itemToRender.getPath() ) );
 			}
 		};
 	}

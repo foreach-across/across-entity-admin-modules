@@ -25,7 +25,7 @@ import static com.foreach.across.modules.bootstrapui.styles.TestBootstrapStylesU
  * See https://getbootstrap.com/docs/4.3/content/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 class TestBootstrapStylesContent
 {
@@ -72,11 +72,11 @@ class TestBootstrapStylesContent
 		assertStyle( css.table ).is( "table" );
 		assertStyle( css.table.head.dark ).is( "thead-dark" );
 		assertStyle( css.table.head.light ).is( "thead-light" );
-		assertStyle( css.table.striped ).is( "table", "table-striped" );
-		assertStyle( css.table.bordered ).is( "table", "table-bordered" );
-		assertStyle( css.table.borderless ).is( "table", "table-borderless" );
-		assertStyle( css.table.hover ).is( "table", "table-hover" );
-		assertStyle( css.table.small ).is( "table", "table-sm" );
+		assertStyle( css.table.striped ).is( "table", "table-striped" ).removes( "table-striped" );
+		assertStyle( css.table.bordered ).is( "table", "table-bordered" ).removes( "table-bordered" );
+		assertStyle( css.table.borderless ).is( "table", "table-borderless" ).removes( "table-borderless" );
+		assertStyle( css.table.hover ).is( "table", "table-hover" ).removes( "table-hover" );
+		assertStyle( css.table.small ).is( "table", "table-sm" ).removes( "table-sm" );
 
 		// contextual classes
 		assertStyle( css.table.active ).is( "table-active" );

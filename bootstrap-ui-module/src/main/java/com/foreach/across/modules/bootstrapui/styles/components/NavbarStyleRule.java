@@ -22,22 +22,23 @@ import com.foreach.across.modules.bootstrapui.styles.utilities.SimpleBreakpointS
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
  * https://getbootstrap.com/docs/4.3/components/navbar/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class NavbarStyleRule implements BootstrapStyleRule
 {
 	public final BootstrapStyleRule brand = of( "navbar-brand" );
 	public final BootstrapStyleRule nav = of( "navbar-nav" );
 	public final BootstrapStyleRule text = of( "navbar-text" );
-	public final BootstrapStyleRule collapse = of( "collapse", "navbar-collapse" );
-	public final BootstrapStyleRule light = of( "navbar", "navbar-light" );
-	public final BootstrapStyleRule dark = of( "navbar", "navbar-dark" );
+	public final BootstrapStyleRule collapse = appendOnSet( of( "collapse" ), "navbar-collapse" );
+	public final BootstrapStyleRule light = appendOnSet( this, "navbar-light" );
+	public final BootstrapStyleRule dark = appendOnSet( this, "navbar-dark" );
 	public final Toggler toggler = new Toggler();
 	public final BreakpointStyleRule expand = new SimpleBreakpointStyleRule( "navbar-expand", null );
 

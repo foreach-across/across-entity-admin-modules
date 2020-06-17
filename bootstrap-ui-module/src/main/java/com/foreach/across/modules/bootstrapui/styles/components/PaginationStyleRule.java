@@ -20,19 +20,20 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
  * https://getbootstrap.com/docs/4.3/components/pagination/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class PaginationStyleRule implements BootstrapStyleRule
 {
 	public final Page page = new Page();
-	public final BootstrapStyleRule small = of( "pagination", "pagination-sm" );
-	public final BootstrapStyleRule large = of( "pagination", "pagination-lg" );
+	public final BootstrapStyleRule small = appendOnSet( this, "pagination-sm" );
+	public final BootstrapStyleRule large = appendOnSet( this, "pagination-lg" );
 
 	@Override
 	public String[] toCssClasses() {

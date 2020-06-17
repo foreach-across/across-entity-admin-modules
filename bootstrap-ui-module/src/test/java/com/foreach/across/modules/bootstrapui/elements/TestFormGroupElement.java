@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.*;
 
@@ -660,6 +660,46 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		);
 	}
 
+	@Test
+	public void additionalFieldErrors() {
+		TestClass target = new TestClass( "test value" );
+		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+		errors.rejectValue( "control", "broken", "broken" );
+		errors.rejectValue( "otherProperty", "dontshow", "broken" );
+		errors.rejectValue( "values", "broken", "also broken" );
+
+		FormViewElement form = new FormViewElement();
+		form.setErrors( errors );
+		form.addChild( group );
+
+		group.setFieldErrorsToShow( "otherProperty", "values" );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post'>" +
+						"<div class='form-group is-invalid'>" +
+						"<label for='control'>title</label>" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control is-invalid' name='control' id='control' value='test value' />" +
+						"<div class='invalid-feedback'>broken also broken</div>" +
+						"</div>" +
+						"</form>"
+		);
+
+		group.setFieldErrorsToShow( "values" );
+		group.setDetectFieldErrors( false );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post'>" +
+						"<div class='form-group is-invalid'>" +
+						"<label for='control'>title</label>" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control is-invalid' name='control' id='control' />" +
+						"<div class='invalid-feedback'>also broken</div>" +
+						"</div>" +
+						"</form>"
+		);
+	}
+
 	private void sampleModelWithError( ModelMap model ) {
 		TestClass target = new TestClass( "test value" );
 		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
@@ -707,6 +747,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	{
 		private final Map<String, Object> values = Collections.singletonMap( "sub.item", new NamedItem() );
 		private String control;
+		private String otherProperty;
 
 		TestClass( String control ) {
 			this.control = control;

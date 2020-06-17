@@ -18,31 +18,33 @@ package com.foreach.across.modules.bootstrapui.ui.factories;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
-import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapFieldSetElementFactoryHelper;
-import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapSelectElementFactoryHelper;
-import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapTableElementFactoryHelper;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.elements.BootstrapFieldSetElementFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.elements.BootstrapSelectElementFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.elements.BootstrapTableElementFactoryHelper;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 
 /**
- * Entry point for creating a bootstrap {@link ViewElement}. An equivalent {@link BootstrapViewElementBuilders} class has been provided
+ * Entry point for creating a bootstrap {@link ViewElement} control. An equivalent {@link BootstrapViewElementBuilders} class has been provided
  * to create {@link com.foreach.across.modules.web.ui.ViewElementBuilder} and this is available as {@link BootstrapViewElements#builders}.
  * <p>
- * For example to create a select element you can use: {@code Bootstrap.bootstrap.select()}
+ * For example to create a select element you can use: {@code BootstrapViewElements.bootstrap.select()} for a {@code ViewElement},
+ * or {@code BootstrapViewElements.bootstrap.builders.options()} to configure a {@code ViewElementBuilder}.
  * </p>
  *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
+@SuppressWarnings("WeakerAccess")
 public class BootstrapViewElements
 {
 	/**
 	 * Static import handle for the {@link BootstrapViewElements} implementations.
 	 */
-	public static BootstrapViewElements bootstrap = new BootstrapViewElements();
+	public static final BootstrapViewElements bootstrap = new BootstrapViewElements();
 
 	/**
 	 * Import handle for the equivalent element builders.
@@ -85,20 +87,20 @@ public class BootstrapViewElements
 		return checkbox().set( setters );
 	}
 
-	public DateTimeFormElement dateTime() {
+	public DateTimeFormElement datetime() {
 		return new DateTimeFormElement();
 	}
 
-	public DateTimeFormElement dateTime( ViewElement.WitherSetter... setters ) {
-		return dateTime().set( setters );
+	public DateTimeFormElement datetime( ViewElement.WitherSetter... setters ) {
+		return datetime().set( setters );
 	}
 
-	public FieldsetFormElement fieldSet() {
+	public FieldsetFormElement fieldset() {
 		return new FieldsetFormElement();
 	}
 
-	public FieldsetFormElement fieldSet( ViewElement.WitherSetter... setters ) {
-		return fieldSet().set( setters );
+	public FieldsetFormElement fieldset( ViewElement.WitherSetter... setters ) {
+		return fieldset().set( setters );
 	}
 
 	public FileUploadFormElement fileUpload() {
@@ -139,12 +141,15 @@ public class BootstrapViewElements
 		return hidden().set( setters );
 	}
 
-	public AbstractNodeViewElement icon( String iconSetName, String iconName ) {
+	/**
+	 * Directly resolve an icon from the {@link IconSet}.
+	 *
+	 * @param iconSetName name of the icon set which contains the icon
+	 * @param iconName    name of the icon
+	 * @return icon element
+	 */
+	public HtmlViewElement icon( String iconSetName, String iconName ) {
 		return IconSet.iconSet( iconSetName ).icon( iconName );
-	}
-
-	public AbstractNodeViewElement icon( String iconSetName, String iconName, ViewElement.WitherSetter... setters ) {
-		return icon( iconSetName, iconSetName ).set( setters );
 	}
 
 	public InputGroupFormElement inputGroup() {
@@ -219,12 +224,12 @@ public class BootstrapViewElements
 		return table().set( setters );
 	}
 
-	public TextareaFormElement textArea() {
+	public TextareaFormElement textarea() {
 		return new TextareaFormElement();
 	}
 
-	public TextareaFormElement textArea( ViewElement.WitherSetter... setters ) {
-		return textArea().set( setters );
+	public TextareaFormElement textarea( ViewElement.WitherSetter... setters ) {
+		return textarea().set( setters );
 	}
 
 	public TextboxFormElement textbox() {

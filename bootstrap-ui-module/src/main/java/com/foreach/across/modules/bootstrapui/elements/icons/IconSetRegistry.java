@@ -24,12 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Is used to add,remove or get an {@link MutableIconSet} from the {@link IconSetRegistry} collection.
+ * Is used to add, remove or get an {@link IconSet} from the {@link IconSetRegistry} collection.
  * If you are looking for an easy way to render or get an immutable icon, you can use the {@link IconSet#icon(String)}
  *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
+@SuppressWarnings("WeakerAccess")
 public class IconSetRegistry
 {
 	private static final Map<String, MutableIconSet> iconSets = new HashMap<>();
@@ -54,7 +55,7 @@ public class IconSetRegistry
 	/**
 	 * Get all registered {@link MutableIconSet} by name
 	 *
-	 * @return an {@link Collections.UnmodifiableMap} of the registered {@link MutableIconSet}
+	 * @return an unmodifiable map of the registered {@link MutableIconSet}
 	 */
 	public static Map<String, MutableIconSet> getAllIconSets() {
 		return Collections.unmodifiableMap( iconSets );

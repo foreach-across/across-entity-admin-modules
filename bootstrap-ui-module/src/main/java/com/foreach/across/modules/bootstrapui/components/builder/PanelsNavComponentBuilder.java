@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -68,7 +69,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement container = apply( html.nav().set( css.nav, css.of( "nav-panels" ), css.flex.column ), builderContext );
+		NodeViewElement container = apply( html.nav().set( css.nav, css.of( "nav-panels" ), AcrossBootstrapStyles.css.flex.column ), builderContext );
 
 		NodeViewElement nonPanelList = null;
 		AtomicInteger subMenuCount = new AtomicInteger( 0 );
@@ -88,7 +89,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 							//}
 						}
 						else {
-							nonPanelList = nonPanelList != null ? nonPanelList : createList( container ).set( css.margin.bottom.s3 );
+							nonPanelList = nonPanelList != null ? nonPanelList : createList( container ).set( AcrossBootstrapStyles.css.margin.bottom.s3 );
 							addItemLink( nonPanelList, item, true, false, builderContext )
 									.remove( css.nav.link )
 									.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( item, null ) );
@@ -102,7 +103,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 	}
 
 	private void addPanel( NodeViewElement container, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
-		NodeViewElement panel = html.div( css.card, css.margin.bottom.s3 );
+		NodeViewElement panel = html.div( css.card, AcrossBootstrapStyles.css.margin.bottom.s3 );
 		//panel.addCssClass( "panel", StringUtils.defaultString( item.getAttribute( ATTR_PANEL_STYLE ), "panel-default" ) );
 
 		if ( item.hasTitle() ) {
@@ -169,7 +170,8 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		LinkViewElement link = new LinkViewElement();
 		link.setUrl( "#a" + subMenuId );
 		link.setAttribute( "data-toggle", "collapse" );
-		link.set( css.listGroup.item.action, css.listGroup.suffix( "subgroup-toggle" ) );
+		link.set( css.listGroup.item.action, css.listGroup.suffix( "subgroup-toggle" ), witherAttribute( item, null ) );
+
 		String resolvedTitle = builderContext.resolveText( item.getTitle() );
 		link.setText( resolvedTitle );
 		link.setTitle( resolvedTitle );

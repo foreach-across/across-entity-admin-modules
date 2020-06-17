@@ -87,13 +87,13 @@ class Select extends ExampleController
 		                                                     .name( "internalName" )
 		                                                     .readonly( false );
 		if ( addEmptyOption ) {
-			select.add( bootstrap.builders.select.option().value( "-1" ).text( " " ) );
+			select.add( bootstrap.builders.option().value( "-1" ).text( " " ) );
 		}
 
 		select
-				.add( bootstrap.builders.select.option().value( "one" ).text( "Inner text" ) )
-				.add( bootstrap.builders.select.option().value( "two" ).text( "Inner text 2" )
-				);
+				.add( bootstrap.builders.option().value( "one" ).text( "Inner text" ) )
+				.add( bootstrap.builders.option().value( "two" ).text( "Inner text 2" ) );
+
 		return select;
 	}
 
@@ -105,21 +105,21 @@ class Select extends ExampleController
 		SelectFormElement.OptionGroup group = new SelectFormElement.OptionGroup();
 		group.setLabel( "Group label" );
 		group.addChild(
-				bootstrap.builders.select.option()
-				                         .value( "two" )
-				                         .text( "Inner text 2" )
-				                         .build()
+				bootstrap.builders.option()
+				                  .value( "two" )
+				                  .text( "Inner text 2" )
+				                  .build()
 		);
 		group.addChild(
-				bootstrap.builders.select.option()
-				                         .value( "Short two" )
-				                         .text( "Some text" )
-				                         .build()
+				bootstrap.builders.option()
+				                  .value( "Short two" )
+				                  .text( "Some text" )
+				                  .build()
 		);
 
 		OptionsFormElementBuilder select = bootstrap.builders.select();
 		if ( addEmptyOption ) {
-			select.add( bootstrap.builders.select.option().value( "-1" ).text( " " ) );
+			select.add( bootstrap.builders.option().value( "-1" ).text( " " ) );
 		}
 		return select
 				.add( group )

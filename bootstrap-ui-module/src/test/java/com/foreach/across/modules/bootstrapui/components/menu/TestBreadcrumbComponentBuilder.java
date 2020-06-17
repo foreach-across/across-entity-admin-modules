@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,17 @@ import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.CTX_CURRENT_MENU_ITEM;
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.remove;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
@@ -73,6 +79,22 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
 				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
 				"<li class=\"breadcrumb-item active\">two</li>" +
+				"</ol>" );
+	}
+
+	@Test
+	public void simpleBreadcrumbWithPathAsDataAttribute() {
+		menu.item( "one", "#{code.one=one}" ).and()
+		    .item( "one/two", "two" );
+
+		Menu built = menu.build();
+		built.setTitle( "Root" );
+		built.select( MenuSelector.byTitle( "two" ) );
+
+		renderAndExpect( builder.menu( built ).includePathAsDataAttribute( true ), "<ol class='breadcrumb'>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\" data-ax-menu-path='one'><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
+				"<li class=\"breadcrumb-item active\" data-ax-menu-path='one/two'>two</li>" +
 				"</ol>" );
 	}
 
@@ -175,6 +197,49 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 				"<li class=\"breadcrumb-item\"><a href='group-one' title='one' class=\"active\">one</a></li>" +
 				"<li class=\"breadcrumb-item\"><a href=\"one/two/three\" title=\"two\" class=\"active\">two</a></li>" +
 				"<li class=\"breadcrumb-item active\">three</li>" +
+				"</ol>" );
+	}
+
+	@Test
+	public void customizeViewElements() {
+		menu.item( "one", "one" )
+		    .attribute( customizeViewElement( css.of( "custom-item-css" ) ) )
+		    .and()
+		    .item( "one/two", "two" )
+		    .attribute( customizeViewElement( remove( css.of( "breadcrumb-item" ) ), attribute.data( "value", "123" ) ) );
+
+		Menu built = menu.build();
+		built.setTitle( "Root" );
+		built.select( MenuSelector.byTitle( "two" ) );
+
+		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item custom-item-css\"><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
+				"<li class=\"active\" data-value=\"123\">two</li>" +
+				"</ol>" );
+	}
+
+	@Test
+	public void customViewElements() {
+		ViewElementBuilder<?> itemBuilder = ctx
+				-> new TextViewElement( ctx.getAttribute( CTX_CURRENT_MENU_ITEM, Menu.class ).getPath() );
+		ViewElementBuilder<?> linkBuilder = ctx
+				-> html.span( html.text( ctx.getAttribute( CTX_CURRENT_MENU_ITEM, Menu.class ).getTitle() ) );
+
+		menu.item( "one", "one" )
+		    .attribute( NavComponentBuilder.ATTR_ITEM_VIEW_ELEMENT, itemBuilder )
+		    .and()
+		    .item( "one/two", "two", "url" )
+		    .attribute( NavComponentBuilder.ATTR_LINK_VIEW_ELEMENT, linkBuilder );
+
+		Menu built = menu.build();
+		built.setTitle( "Root" );
+		built.select( MenuSelector.byTitle( "two" ) );
+
+		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"one" +
+				"<li class=\"breadcrumb-item active\"><span>two</span></li>" +
 				"</ol>" );
 	}
 

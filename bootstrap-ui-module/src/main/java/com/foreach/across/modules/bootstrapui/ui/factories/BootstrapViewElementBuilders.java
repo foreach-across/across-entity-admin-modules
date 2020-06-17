@@ -23,30 +23,25 @@ import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElementBuilder;
-import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapFieldSetBuilderFactoryHelper;
-import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapOptionsBuilderFactoryHelper;
-import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapSelectBuilderFactoryHelper;
-import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapTableBuilderFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.builders.BootstrapTableBuilderFactoryHelper;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ViewElementGeneratorBuilder;
 
 /**
- * A helper class for creating a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for all main bootstrap 4 components.
+ * A helper class for creating a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for all main Bootstrap 4 components.
  * This class should not be used directly but instead use the provided  {@link BootstrapViewElements#builders}.
  * <p>
- * For example to create a button element you can use: {@code BootstrapViewElements.builders.button()}
+ * For example to create a button element you can use: {@code BootstrapViewElements.builders.button()}.
  * </p>
  *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
+@SuppressWarnings("WeakerAccess")
 public class BootstrapViewElementBuilders
 {
-	public final BootstrapOptionsBuilderFactoryHelper option = new BootstrapOptionsBuilderFactoryHelper();
-	public final BootstrapSelectBuilderFactoryHelper select = new BootstrapSelectBuilderFactoryHelper();
 	public final BootstrapTableBuilderFactoryHelper table = new BootstrapTableBuilderFactoryHelper();
-	public final BootstrapFieldSetBuilderFactoryHelper fieldset = new BootstrapFieldSetBuilderFactoryHelper();
 
 	public AlertViewElementBuilder alert() {
 		return new AlertViewElementBuilder();
@@ -56,12 +51,12 @@ public class BootstrapViewElementBuilders
 		return alert().with( setters );
 	}
 
-	public AutoSuggestFormElementBuilder autosuggest() {
+	public AutoSuggestFormElementBuilder autoSuggest() {
 		return new AutoSuggestFormElementBuilder();
 	}
 
-	public AutoSuggestFormElementBuilder autosuggest( ViewElement.WitherSetter... setters ) {
-		return autosuggest().with( setters );
+	public AutoSuggestFormElementBuilder autoSuggest( ViewElement.WitherSetter... setters ) {
+		return autoSuggest().with( setters );
 	}
 
 	public BreadcrumbNavComponentBuilder breadcrumb() {
@@ -85,7 +80,7 @@ public class BootstrapViewElementBuilders
 	 */
 	@SuppressWarnings("unchecked")
 	public OptionFormElementBuilder<CheckboxFormElement> checkbox() {
-		return option.option().checkbox();
+		return option().checkbox();
 	}
 
 	public OptionFormElementBuilder<CheckboxFormElement> checkbox( ViewElement.WitherSetter... setters ) {
@@ -93,24 +88,25 @@ public class BootstrapViewElementBuilders
 	}
 
 	/**
-	 * Builds a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for a list of {@link CheckboxFormElement}
+	 * Creates a {@link OptionsFormElementBuilder} for a list of {@link CheckboxFormElement}.
 	 *
 	 * <pre>
 	 * {@code
 	 * BootstrapViewElementBuilders.builders.checkboxList()
-	 *  .add( BootstrapViewElementBuilders.builders.options.option( ))
-	 *  .add( BootstrapViewElementBuilders.builders.options.option( ))
+	 *  .add( BootstrapViewElementBuilders.builders.option() )
+	 *  .add( BootstrapViewElementBuilders.builders.option() )
 	 * }
 	 * </pre>
 	 */
 	public OptionsFormElementBuilder checkboxList() {
-		return option.options().checkbox();
+		return options().checkbox();
 	}
 
 	public OptionsFormElementBuilder checkboxList( ViewElement.WitherSetter... setters ) {
 		return checkboxList().with( setters );
 	}
 
+	@Deprecated
 	public ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts ) {
 		return new ColumnViewElementBuilder().layout( layouts );
 	}
@@ -131,12 +127,12 @@ public class BootstrapViewElementBuilders
 		return fieldset().with( setters );
 	}
 
-	public FileUploadFormElementBuilder file() {
+	public FileUploadFormElementBuilder fileUpload() {
 		return new FileUploadFormElementBuilder();
 	}
 
-	public FileUploadFormElementBuilder file( ViewElement.WitherSetter... setters ) {
-		return file().with( setters );
+	public FileUploadFormElementBuilder fileUpload( ViewElement.WitherSetter... setters ) {
+		return fileUpload().with( setters );
 	}
 
 	public FormViewElementBuilder form() {
@@ -155,6 +151,7 @@ public class BootstrapViewElementBuilders
 		return formGroup().with( setters );
 	}
 
+	@SuppressWarnings("unused")
 	public <ITEM, VIEW_ELEMENT extends ViewElement> ViewElementGeneratorBuilder<ITEM, VIEW_ELEMENT> generator(
 			Class<ITEM> itemClass, Class<VIEW_ELEMENT> viewElementClass ) {
 		return new ViewElementGeneratorBuilder<>();
@@ -232,35 +229,35 @@ public class BootstrapViewElementBuilders
 		return panels().with( setters );
 	}
 
-	/**
-	 * Builds a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for a single {@link RadioFormElement}
-	 */
-	@SuppressWarnings("unchecked")
-	public OptionFormElementBuilder<RadioFormElement> radio() {
-		return option.option().radio();
-	}
-
 	public OptionFormElementBuilder<RadioFormElement> radio( ViewElement.WitherSetter... setters ) {
 		return radio().with( setters );
 	}
 
 	/**
-	 * Builds a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for a list of {@link RadioFormElement}
-	 *
-	 * <pre>
-	 * {@code
-	 * BootstrapViewElementBuilders.builders.radioList()
-	 *  .add( BootstrapViewElementBuilders.builders.options.option( ))
-	 *  .add( BootstrapViewElementBuilders.builders.options.option( ))
-	 * }
-	 * </pre>
+	 * Builds a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for a single {@link RadioFormElement}
 	 */
-	public OptionsFormElementBuilder radioList() {
-		return option.options().radio();
+	@SuppressWarnings("unchecked")
+	public OptionFormElementBuilder<RadioFormElement> radio() {
+		return option().radio();
 	}
 
 	public OptionsFormElementBuilder radioList( ViewElement.WitherSetter... setters ) {
 		return radioList().with( setters );
+	}
+
+	/**
+	 * Creates a {@link OptionsFormElementBuilder} for a list of {@link RadioFormElement}.
+	 *
+	 * <pre>
+	 * {@code
+	 * BootstrapViewElementBuilders.builders.radioList()
+	 *  .add( BootstrapViewElementBuilders.builders.option() )
+	 *  .add( BootstrapViewElementBuilders.builders.option() )
+	 * }
+	 * </pre>
+	 */
+	public OptionsFormElementBuilder radioList() {
+		return options().radio();
 	}
 
 	public NodeViewElementBuilder row() {
@@ -272,17 +269,17 @@ public class BootstrapViewElementBuilders
 	}
 
 	/**
-	 * Builds a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for a single {@link SelectFormElement}
+	 * Creates a {@link OptionsFormElementBuilder} for a {@link SelectFormElement}.
 	 *
 	 * <pre>
 	 * {@code
 	 * BootstrapViewElementBuilders.builders.select()
-	 *  .add( BootstrapViewElementBuilders.builders.select.option( ))
+	 *  .add( BootstrapViewElementBuilders.builders.option() )
 	 * }
 	 * </pre>
 	 */
 	public OptionsFormElementBuilder select() {
-		return option.options();
+		return options().select();
 	}
 
 	public OptionsFormElementBuilder select( ViewElement.WitherSetter... setters ) {
@@ -325,18 +322,18 @@ public class BootstrapViewElementBuilders
 	}
 
 	/**
-	 * Builds a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for a list of {@link ToggleFormElement}
+	 * Creates a {@link OptionsFormElementBuilder} for a list of {@link ToggleFormElement}.
 	 *
 	 * <pre>
 	 * {@code
 	 * BootstrapViewElementBuilders.builders.toggleList()
-	 *  .add( BootstrapViewElementBuilders.builders.options.option( ))
-	 *  .add( BootstrapViewElementBuilders.builders.options.option( ))
+	 *  .add( BootstrapViewElementBuilders.builders.option() )
+	 *  .add( BootstrapViewElementBuilders.builders.option() )
 	 * }
 	 * </pre>
 	 */
 	public OptionsFormElementBuilder toggleList() {
-		return option.options().toggle();
+		return options().toggle();
 	}
 
 	public OptionsFormElementBuilder toggleList( ViewElement.WitherSetter... setters ) {
@@ -351,4 +348,61 @@ public class BootstrapViewElementBuilders
 		return tooltip().with( setters );
 	}
 
+	/**
+	 * Create a new options list. Options can be visualized as select, checkbox, radio or toggle controls.
+	 *
+	 * @return options builder
+	 * @see OptionsFormElementBuilder
+	 * @see #radioList()
+	 * @see #select()
+	 * @see #checkboxList()
+	 * @see #toggleList()
+	 * @see #option()
+	 */
+	public OptionsFormElementBuilder options() {
+		return new OptionsFormElementBuilder();
+	}
+
+	/**
+	 * Create a new options list. Options can be visualized as select, checkbox, radio or toggle controls.
+	 *
+	 * @return options builder
+	 * @see OptionsFormElementBuilder
+	 * @see #radioList()
+	 * @see #select()
+	 * @see #checkboxList()
+	 * @see #toggleList()
+	 * @see #option()
+	 */
+	public OptionsFormElementBuilder options( ViewElement.WitherSetter... setters ) {
+		return new OptionsFormElementBuilder().with( setters );
+	}
+
+	/**
+	 * Create a new option to add to an {@link OptionsFormElementBuilder}.
+	 *
+	 * @return option builder
+	 * @see #options()
+	 * @see #select()
+	 * @see #checkboxList()
+	 * @see #radioList()
+	 * @see #toggleList()
+	 */
+	public OptionFormElementBuilder option() {
+		return new OptionFormElementBuilder();
+	}
+
+	/**
+	 * Create a new option to add to an {@link OptionsFormElementBuilder}.
+	 *
+	 * @return option builder
+	 * @see #options()
+	 * @see #select()
+	 * @see #checkboxList()
+	 * @see #radioList()
+	 * @see #toggleList()
+	 */
+	public OptionFormElementBuilder option( ViewElement.WitherSetter... setters ) {
+		return new OptionFormElementBuilder().with( setters );
+	}
 }

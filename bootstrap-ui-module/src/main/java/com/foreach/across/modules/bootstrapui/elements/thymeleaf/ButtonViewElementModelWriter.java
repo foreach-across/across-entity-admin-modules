@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.EnumSet;
 
 import static com.foreach.across.modules.bootstrapui.elements.ButtonViewElement.Type.*;
-import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.BootstrapModelWriterUtils.addSizeForPrefix;
-import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.BootstrapModelWriterUtils.addStyleForPrefix;
 
 /**
  * @author Arne Vandamme
@@ -41,7 +39,6 @@ public class ButtonViewElementModelWriter extends AbstractHtmlViewElementModelWr
 
 		writer.addAttribute( "title", button.getTitle() );
 
-		addButtonStyleAttributes( button, writer );
 		addButtonStateAttributes( button, writer );
 		addButtonUrl( button, writer );
 
@@ -96,17 +93,13 @@ public class ButtonViewElementModelWriter extends AbstractHtmlViewElementModelWr
 		else if ( button.getState() == ButtonViewElement.State.DISABLED ) {
 			if ( button.getType() == ButtonViewElement.Type.LINK ) {
 				writer.addAttributeValue( "class", "disabled" );
+				writer.addAttribute( "aria-disabled", true );
+				writer.addAttribute( "tabindex", "-1" );
 			}
 			else {
 				writer.addBooleanAttribute( "disabled", true );
 			}
 		}
-	}
-
-	private void addButtonStyleAttributes( ButtonViewElement button, ThymeleafModelBuilder writer ) {
-		writer.addAttributeValue( "class", "btn" );
-		addStyleForPrefix( writer, button.getStyle(), "btn" );
-		addSizeForPrefix( writer, button.getSize(), "btn" );
 	}
 
 	private void changeButtonTypeElement( ButtonViewElement button, ThymeleafModelBuilder writer ) {

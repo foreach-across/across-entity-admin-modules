@@ -23,7 +23,7 @@ import static com.foreach.across.modules.bootstrapui.attributes.TestBootstrapAtt
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 class TestBootstrapDataAttributes
 {

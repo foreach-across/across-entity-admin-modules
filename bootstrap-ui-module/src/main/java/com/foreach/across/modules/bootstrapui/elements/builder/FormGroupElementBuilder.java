@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,15 @@ import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.FormLayout;
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
-import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<FormGroupElement, FormGroupElementBuilder>
@@ -35,6 +36,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	private FormLayout formLayout;
 	private Boolean required;
 	private Boolean detectFieldErrors;
+	private String[] fieldErrorsToShow;
 
 	public Boolean isRequired() {
 		return required;
@@ -128,7 +130,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder helpBlock( String text ) {
-		helpBlock( html.small( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
+		helpBlock( html.small( css.form.text, AcrossBootstrapStyles.css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 
@@ -163,7 +165,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder descriptionBlock( String text ) {
-		descriptionBlock( html.p( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
+		descriptionBlock( html.p( css.form.text, AcrossBootstrapStyles.css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 
@@ -252,6 +254,18 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 		return this;
 	}
 
+	/**
+	 * Display the field errors for the given names as validation feedback.
+	 * This will inspect the attached {@link org.springframework.validation.Errors} object.
+	 *
+	 * @param fieldNames to show the errors for
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder fieldErrorsToShow( String... fieldNames ) {
+		this.fieldErrorsToShow = fieldNames;
+		return this;
+	}
+
 	@Override
 	protected FormGroupElement createElement( ViewElementBuilderContext builderContext ) {
 		FormGroupElement group = new FormGroupElement();
@@ -266,6 +280,10 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 
 		if ( control != null ) {
 			group.setControl( control.get( builderContext ) );
+		}
+
+		if ( fieldErrorsToShow != null ) {
+			group.setFieldErrorsToShow( fieldErrorsToShow );
 		}
 
 		if ( detectFieldErrors != null ) {

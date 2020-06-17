@@ -24,7 +24,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * FontAwesome 5 css rules.
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class FontAwesomeStyleRule
 {

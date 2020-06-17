@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -82,7 +83,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder stacked() {
-		navStyle = combine( css.nav.pills, css.flex.column );
+		navStyle = combine( css.nav.pills, AcrossBootstrapStyles.css.flex.column );
 		dropDownWither = css.dropdown.direction.right;
 		return this;
 	}

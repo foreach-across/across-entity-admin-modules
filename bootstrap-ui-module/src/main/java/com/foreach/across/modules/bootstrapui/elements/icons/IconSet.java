@@ -17,14 +17,21 @@
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**
  * An immutable IconSet that is registered in the {@link IconSetRegistry} and that represents a collection of icons.
- * You can get a registered {@link IconSet} using {@link IconSet#iconSet(String)}
+ * You can get a registered {@link IconSet} using {@link IconSet#iconSet(String)}.
+ * An icon should be a a {@link com.foreach.across.modules.web.ui.elements.HtmlViewElement}.
+ *
+ * @author Stijn Vanhoof
+ * @see MutableIconSet
+ * @see SimpleIconSet
+ * @see IconSetRegistry
+ * @since 3.0.0
  */
 public interface IconSet
 {
@@ -35,13 +42,14 @@ public interface IconSet
 	 * @param name of the icon in the {@link SimpleIconSet}
 	 * @return The icon as a {@link AbstractNodeViewElement}
 	 */
-	public AbstractNodeViewElement icon( String name );
+	HtmlViewElement icon( @NotNull String name );
 
 	/**
-	 * Gets all registered icons on an {@link IconSet}
+	 * Gets a map of all registered icons on the {@link IconSet}.
+	 *
 	 * @return a {@code Map<String, AbstractNodeViewElement>} that holds all icons by name
 	 */
-	public Map<String, AbstractNodeViewElement> getAllRegisteredIcons();
+	Map<String, HtmlViewElement> getAllRegisteredIcons();
 
 	/**
 	 * Shorthand method to get an {@link IconSet} from the {@link IconSetRegistry}
@@ -49,7 +57,7 @@ public interface IconSet
 	 * @param name of the iconSet
 	 * @return an {@link IconSet}
 	 */
-	public static IconSet iconSet( @NotNull String name ) {
+	static IconSet iconSet( @NotNull String name ) {
 		return IconSetRegistry.getIconSet( name );
 	}
 }

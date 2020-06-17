@@ -28,7 +28,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * https://getbootstrap.com/docs/4.3/components/dropdowns/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class DropdownStyleRule implements BootstrapStyleRule
 {

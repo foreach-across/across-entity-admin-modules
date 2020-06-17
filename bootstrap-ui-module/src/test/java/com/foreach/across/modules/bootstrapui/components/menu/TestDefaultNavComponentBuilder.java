@@ -62,7 +62,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	public void renderingModes() {
 		renderAndExpect( builder.tabs(), "<ul class='nav nav-tabs'></ul>" );
 		renderAndExpect( builder.pills(), "<ul class='nav nav-pills'></ul>" );
-		renderAndExpect( builder.stacked(), "<ul class='nav nav-pills flex-column'></ul>" );
+		renderAndExpect( builder.stacked(), "<ul class='nav nav-pills axu-flex-column'></ul>" );
 		renderAndExpect( builder.navbar(), "<ul class='navbar-nav'></ul>" );
 		renderAndExpect( builder.simple(), "<ul class='nav'></ul>" );
 	}
@@ -159,6 +159,31 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 						"</li>" +
 						"<li class='nav-item dropdown'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='two' class='nav-link dropdown-toggle'>two </a>" +
 						"<div class='dropdown-menu'><a href='/two/sub' title='sub two' class='dropdown-item'>sub two</a><a href='/two/sub2' title='sub two 2' class='dropdown-item'>sub two 2</a></div>" +
+						"</li>" +
+						"</ul>"
+		);
+	}
+
+	@Test
+	public void includePathAsDataAttribute() {
+		menu.item( "/one", "one" ).group( true ).and()
+		    .item( "/one/sub", "sub one" ).and()
+		    .item( "/one/sub2", "sub one 2" ).and()
+		    .group( "/two", "two" ).and()
+		    .item( "/two/sub", "sub two" ).and()
+		    .item( "/two/sub2", "sub two 2" );
+
+		Menu built = menu.build();
+		built.select( MenuSelector.byTitle( "sub one 2" ) );
+
+		renderAndExpect(
+				builder.menu( built ).includePathAsDataAttribute( true ),
+				"<ul class='nav'>" +
+						"<li class='nav-item dropdown' data-ax-menu-path='/one'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one' class='nav-link dropdown-toggle active'>one </a>" +
+						"<div class='dropdown-menu'><a  data-ax-menu-path='/one/sub' href='/one/sub' title='sub one' class='dropdown-item'>sub one</a><a  data-ax-menu-path='/one/sub2' href='/one/sub2' title='sub one 2' class='dropdown-item active'>sub one 2</a></div>" +
+						"</li>" +
+						"<li class='nav-item dropdown' data-ax-menu-path='/two'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='two' class='nav-link dropdown-toggle'>two </a>" +
+						"<div class='dropdown-menu'><a  data-ax-menu-path='/two/sub' href='/two/sub' title='sub two' class='dropdown-item'>sub two</a><a  data-ax-menu-path='/two/sub2' href='/two/sub2' title='sub two 2' class='dropdown-item'>sub two 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);

@@ -20,13 +20,14 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
  * https://getbootstrap.com/docs/4.3/components/modal/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class ModalStyleRule implements BootstrapStyleRule
 {
@@ -50,9 +51,9 @@ public class ModalStyleRule implements BootstrapStyleRule
 	{
 		public final BootstrapStyleRule scrollable = of( "modal-dialog-scrollable" );
 		public final BootstrapStyleRule centered = of( "modal-dialog-centered" );
-		public final BootstrapStyleRule small = of( "modal-dialog", "modal-sm" );
-		public final BootstrapStyleRule large = of( "modal-dialog", "modal-lg" );
-		public final BootstrapStyleRule extraLarge = of( "modal-dialog", "modal-xl" );
+		public final BootstrapStyleRule small = appendOnSet( this, "modal-sm" );
+		public final BootstrapStyleRule large = appendOnSet( this, "modal-lg" );
+		public final BootstrapStyleRule extraLarge = appendOnSet( this, "modal-xl" );
 
 		@Override
 		public String[] toCssClasses() {

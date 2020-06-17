@@ -20,13 +20,13 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.appendOnSet;
 
 /**
  * https://getbootstrap.com/docs/4.3/components/progress/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class ProgressStyleRule implements BootstrapStyleRule
 {
@@ -40,8 +40,8 @@ public class ProgressStyleRule implements BootstrapStyleRule
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Bar implements BootstrapStyleRule
 	{
-		public final BootstrapStyleRule striped = of( "progress-bar", "progress-bar-striped" );
-		public final BootstrapStyleRule animated = of( "progress-bar", "progress-bar-striped", "progress-bar-animated" );
+		public final BootstrapStyleRule striped = appendOnSet( this, "progress-bar-striped" );
+		public final BootstrapStyleRule animated = appendOnSet( striped, "progress-bar-animated" );
 
 		@Override
 		public String[] toCssClasses() {

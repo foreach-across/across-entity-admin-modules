@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 
 	@Test
 	public void defaultIcon() {
-		AbstractNodeViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "edit" );
+		HtmlViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "edit" );
 		renderAndExpect( icon, "<i class=\"fas fa-edit\"></i>" );
 	}
 
@@ -56,7 +56,7 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 
 	@Test
 	public void customIcon() {
-		AbstractNodeViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "save" );
+		HtmlViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "save" );
 		renderAndExpect( icon, "<i class=\"fas fa-save\"></i>" );
 
 		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "save", ( iconName ) -> html.i( css( "fas fa-floppy" ) ) );
@@ -69,14 +69,14 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 	public void overrideIcon() {
 		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-override-1", ( iconName ) -> html.i( css( "icon-override-v1" ) ) );
 		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-override-1", ( iconName ) -> html.i( css( "icon-override-v2" ) ) );
-		AbstractNodeViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-override-1" );
+		HtmlViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-override-1" );
 		renderAndExpect( icon, "<i class=\"icon-override-v2\"></i>" );
 	}
 
 	@Test
 	public void removeIcon() {
 		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-remove", ( iconName ) -> html.i( css( "icon-remove" ) ) );
-		AbstractNodeViewElement icon = IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );
+		HtmlViewElement icon = IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );
 		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
 
 		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).remove( "icon-remove" );
@@ -91,7 +91,7 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 		IconSetRegistry.addIconSet( "other-icons", otherIconSEt );
 
 		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-remove", ( iconName ) -> html.i( css( "icon-remove" ) ) );
-		AbstractNodeViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );
+		HtmlViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );
 		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
 		IconSetRegistry.getIconSet( "other-icons" ).remove( "icon-remove" );
 		icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );

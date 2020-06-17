@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.ui.factories.support;
+package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
-import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
-import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.bootstrapui.styles.utilities.BreakpointStyleRule;
 
 /**
- * @author Stijn Vanhoof
+ * https://getbootstrap.com/docs/4.3/utilities/flex/#order
+ *
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class BootstrapSelectElementFactoryHelper
+public class AcrossOrderStyleRule
 {
-	public SelectFormElement.Option option() {
-		return new SelectFormElement.Option();
-	}
+	public final BreakpointStyleRule first = new AcrossSimpleBreakpointStyleRule( "order", "first" );
+	public final BreakpointStyleRule last = new AcrossSimpleBreakpointStyleRule( "order", "last" );
 
-	public SelectFormElement.Option option( ViewElement.WitherSetter... setters ) {
-		return option().set( setters );
+	public BreakpointStyleRule position( int position ) {
+		return new AcrossSimpleBreakpointStyleRule( "order", "" + position );
 	}
 }

@@ -16,8 +16,7 @@
 
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -35,15 +34,16 @@ public class SimpleIconSet implements MutableIconSet
 	/**
 	 * The defaultIconResolver is used as a fallback default resolver when requesting an icon that has no
 	 * specific {@link SimpleIconSet#registeredIconResolvers} associated with it.
-	 * Each {@link SimpleIconSet} requires a {@link SimpleIconSet#defaultIconResolver} to resolve a sensible default {@link AbstractNodeViewElement} for the icon
+	 * <p/>
+	 * Each {@link SimpleIconSet} requires a {@link SimpleIconSet#defaultIconResolver} to resolve a sensible default {@link HtmlViewElement} for the icon
 	 * that has been specified.
 	 */
-	private Function<String, AbstractNodeViewElement> defaultIconResolver;
-	private final Map<String, Function<String, AbstractNodeViewElement>> registeredIconResolvers = new HashMap<>();
+	private Function<String, HtmlViewElement> defaultIconResolver;
+	private final Map<String, Function<String, HtmlViewElement>> registeredIconResolvers = new HashMap<>();
 
 	@Override
-	public AbstractNodeViewElement icon( String name ) {
-		Function<String, AbstractNodeViewElement> registeredIconResolver = registeredIconResolvers.get( name );
+	public HtmlViewElement icon( String name ) {
+		Function<String, HtmlViewElement> registeredIconResolver = registeredIconResolvers.get( name );
 		if ( registeredIconResolver != null ) {
 			return registeredIconResolver.apply( name );
 		}
@@ -56,16 +56,16 @@ public class SimpleIconSet implements MutableIconSet
 	}
 
 	@Override
-	public Map<String, AbstractNodeViewElement> getAllRegisteredIcons() {
-		Map<String, AbstractNodeViewElement> allIconsInTheIconSet = new HashMap<>();
+	public Map<String, HtmlViewElement> getAllRegisteredIcons() {
+		Map<String, HtmlViewElement> allIconsInTheIconSet = new HashMap<>();
 		registeredIconResolvers.forEach(
-				( iconName, functionToGenerateIcon ) -> allIconsInTheIconSet.put( iconName, functionToGenerateIcon.apply( iconName ) ) );
-
+				( iconName, functionToGenerateIcon ) -> allIconsInTheIconSet.put( iconName, functionToGenerateIcon.apply( iconName ) )
+		);
 		return allIconsInTheIconSet;
 	}
 
 	@Override
-	public void add( @NotNull String name, Function<String, AbstractNodeViewElement> iconResolver ) {
+	public void add( @NotNull String name, Function<String, HtmlViewElement> iconResolver ) {
 		registeredIconResolvers.put( name, iconResolver );
 	}
 
@@ -79,7 +79,7 @@ public class SimpleIconSet implements MutableIconSet
 		registeredIconResolvers.clear();
 	}
 
-	public void setDefaultIconResolver( Function<String, AbstractNodeViewElement> defaultIconResolver ) {
+	public void setDefaultIconResolver( Function<String, HtmlViewElement> defaultIconResolver ) {
 		this.defaultIconResolver = defaultIconResolver;
 	}
 }

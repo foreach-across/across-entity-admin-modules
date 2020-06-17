@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -111,5 +112,11 @@ public class TestFormGroupElementBuilder extends AbstractViewElementBuilderTest<
 	public void detectFieldErrors() {
 		assertTrue( builder.build( builderContext ).isDetectFieldErrors() );
 		assertFalse( builder.detectFieldErrors( false ).build( builderContext ).isDetectFieldErrors() );
+	}
+
+	@Test
+	public void fieldErrorsToShow() {
+		Assertions.assertThat( builder.build( builderContext ).getFieldErrorsToShow() ).isEmpty();
+		Assertions.assertThat( builder.fieldErrorsToShow( "one", "two" ).build( builderContext ).getFieldErrorsToShow() ).containsExactly( "one", "two" );
 	}
 }

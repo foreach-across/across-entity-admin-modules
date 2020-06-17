@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,15 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.NotReadablePropertyException;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.*;
 import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.spring5.util.FieldUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.FormViewElementModelWriter.VAR_CURRENT_BOOTSTRAP_FORM;
 
@@ -76,9 +75,9 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		boolean isWrappedBoxGroup = boxGroup && ( (CheckboxFormElement) control ).isWrapped();
 
 		if ( formControl != null ) {
-			errorBuilder = group.isDetectFieldErrors()
-					? createFieldErrorsBuilder( formControl, model.getTemplateContext() )
-					: null;
+			errorBuilder = createFieldErrorsBuilder(
+					group.isDetectFieldErrors() ? formControl : null, group.getFieldErrorsToShow(), model.getTemplateContext()
+			);
 		}
 
 		IModel controlModel = control != null ? model.createViewElementModel( group.getControl() ) : null;
@@ -389,53 +388,50 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 	}
 
 	private Consumer<ThymeleafModelBuilder> createFieldErrorsBuilder( FormControlElement formControl,
+	                                                                  String[] fieldErrors,
 	                                                                  ITemplateContext templateContext ) {
-		if ( formControl != null
+
+		if ( ( formControl != null || fieldErrors.length > 0 )
 				&& templateContext.containsVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
-			String controlName = formControl.getControlName();
+			Set<String> errorMessages = new LinkedHashSet<>( fieldErrors.length + 1 );
 
-			if ( controlName != null ) {
-				String propertyName = StringUtils.startsWith( controlName, "_" )
-						? StringUtils.substring( controlName, 1 )
-						: controlName;
+			if ( formControl != null ) {
+				String controlName = formControl.getControlName();
+				String propertyName = StringUtils.startsWith( controlName, "_" ) ? StringUtils.substring( controlName, 1 ) : controlName;
 
-				IThymeleafBindStatus bindStatus = retrieveBindStatus( templateContext, propertyName );
+				IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus( templateContext, true, "*{" + propertyName + "}" );
 
 				if ( bindStatus != null && bindStatus.isError() ) {
+					errorMessages.addAll( Arrays.asList( bindStatus.getErrorMessages() ) );
+
 					if ( formControl instanceof TextboxFormElement ) {
-						// Set value that original value that caused a binding error
+						// Set the original value that caused the binding error on the textbox
 						Object inputValue = bindStatus.getValue();
 						if ( inputValue != null ) {
 							formControl.setAttribute( TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE, inputValue.toString() );
 						}
 					}
-
-					return model -> {
-						model.addOpenElement( "div" );
-						model.addAttributeValue( "class", "invalid-feedback" );
-						model.addHtml( bindStatus.getErrorMessagesAsString( " " ) );
-						model.addCloseElement();
-					};
 				}
+			}
+
+			Stream.of( fieldErrors )
+			      .map( propertyName -> FieldUtils.getBindStatus( templateContext, true, "*{" + propertyName + "}" ) )
+			      .filter( Objects::nonNull )
+			      .filter( IThymeleafBindStatus::isError )
+			      .flatMap( bs -> Stream.of( bs.getErrorMessages() ) )
+			      .forEach( errorMessages::add );
+
+			if ( !errorMessages.isEmpty() ) {
+				return model -> {
+					model.addOpenElement( "div" );
+					model.addAttributeValue( "class", "invalid-feedback" );
+					model.addHtml( StringUtils.join( errorMessages, " " ) );
+					model.addCloseElement();
+				};
 			}
 		}
 
 		return null;
-	}
-
-	// Temporary workaround for what appears to be a bug with Thymeleaf which does not allow map indexed properties
-	// even though they are allowed by Spring (see https://github.com/thymeleaf/thymeleaf-spring/issues/176)
-	private IThymeleafBindStatus retrieveBindStatus( ITemplateContext templateContext, String propertyName ) {
-		if ( propertyName.indexOf( '[' ) >= 0 ) {
-			try {
-				return FieldUtils.getBindStatus( templateContext, false, "*{" + propertyName + "}" );
-			}
-			catch ( NotReadablePropertyException e ) {
-				return null;
-			}
-		}
-
-		return FieldUtils.getBindStatus( templateContext, true, "*{" + propertyName + "}" );
 	}
 
 	private boolean isCheckboxGroup( FormGroupElement group ) {

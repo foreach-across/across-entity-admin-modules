@@ -14,38 +14,35 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.config;
+package com.foreach.across.modules.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
- * Register the default Font Awesome {@link SimpleIconSet} that BootstrapUiModule uses.
+ * Register the default Font Awesome icon sets.
  * For now the free solid and brand icons of Font Awesome 5 are implemented.
  *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
-@Configuration
-public class FontAwesomeIconSetConfiguration
+@SuppressWarnings("WeakerAccess")
+public class BootstrapUiModuleIcons
 {
-	public static final String FONT_AWESOME_REGULAR_ICON_SET = "fontawesome-regular";
-	public static final String FONT_AWESOME_SOLID_ICON_SET = "fontawesome-solid";
-	public static final String FONT_AWESOME_BRANDS_ICON_SET = "fontawesome-brands";
+	public static final String ICON_SET_FONT_AWESOME_REGULAR = "font-awesome-regular";
+	public static final String ICON_SET_FONT_AWESOME_SOLID = "font-awesome-solid";
+	public static final String ICON_SET_FONT_AWESOME_BRANDS = "font-awesome-brands";
 
-	@Autowired
-	public void createDefaultIconSets() {
-		IconSetRegistry.addIconSet( FONT_AWESOME_REGULAR_ICON_SET, createFontAwesomeIconSet( "far") );
-		IconSetRegistry.addIconSet( FONT_AWESOME_SOLID_ICON_SET, createFontAwesomeIconSet( "fas") );
-		IconSetRegistry.addIconSet( FONT_AWESOME_BRANDS_ICON_SET, createFontAwesomeIconSet( "fab" ) );
+	public static void registerFontAwesomeIconSets() {
+		IconSetRegistry.addIconSet( ICON_SET_FONT_AWESOME_REGULAR, createFontAwesomeIconSet( "far" ) );
+		IconSetRegistry.addIconSet( ICON_SET_FONT_AWESOME_SOLID, createFontAwesomeIconSet( "fas" ) );
+		IconSetRegistry.addIconSet( ICON_SET_FONT_AWESOME_BRANDS, createFontAwesomeIconSet( "fab" ) );
 	}
 
-	private SimpleIconSet createFontAwesomeIconSet( String cssPrefix ) {
+	private static SimpleIconSet createFontAwesomeIconSet( String cssPrefix ) {
 		SimpleIconSet simpleiconset = new SimpleIconSet();
 		simpleiconset.setDefaultIconResolver( ( iconName ) -> html.i( css( cssPrefix + " fa-" + iconName ) ) );
 		return simpleiconset;

@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.ui.factories.support;
+package com.foreach.across.modules.bootstrapui.styles.utilities.across;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
-import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.bootstrapui.styles.AcrossStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 
 /**
- * @author Stijn Vanhoof
+ * @author Steven Gentens
  * @since 3.0.0
  */
-public class BootstrapFieldSetElementFactoryHelper
+public class AcrossBackgroundStyleRule extends AcrossColorStyleRule
 {
-	public FieldsetFormElement.Legend legend() {
-		return new FieldsetFormElement.Legend();
-	}
+	public final BootstrapStyleRule transparent = AcrossStyleRule.of( BootstrapStyles.css.background.transparent );
+	public final AcrossColorStyleRule gradient = new AcrossColorStyleRule( "bg-gradient" );
 
-	public FieldsetFormElement.Legend legend( ViewElement.WitherSetter... setters ) {
-		return legend().set( setters );
+	public AcrossBackgroundStyleRule() {
+		super( "bg" );
 	}
 }

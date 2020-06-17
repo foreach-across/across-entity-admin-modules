@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.styles.components;
 
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.utilities.ColorStyleRule;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * https://getbootstrap.com/docs/4.3/components/list-group/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class ListGroupStyleRule implements BootstrapStyleRule
 {
@@ -62,6 +63,11 @@ public class ListGroupStyleRule implements BootstrapStyleRule
 			@Override
 			public String[] toCssClasses() {
 				return new String[] { "list-group-item", "list-group-item-action" };
+			}
+
+			@Override
+			public void removeFrom( HtmlViewElement target ) {
+				target.removeCssClass( "list-group-item-action" );
 			}
 		}
 	}

@@ -28,7 +28,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * https://getbootstrap.com/docs/4.3/layout/grid/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class GridStyleRule
 {
@@ -62,7 +62,7 @@ public class GridStyleRule
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Row implements BootstrapStyleRule
 	{
-		public final BootstrapStyleRule noGutters = of( "row", "no-gutters" );
+		public final BootstrapStyleRule noGutters = BootstrapStyleRule.appendOnSet( this, "no-gutters" );
 
 		@Override
 		public String[] toCssClasses() {

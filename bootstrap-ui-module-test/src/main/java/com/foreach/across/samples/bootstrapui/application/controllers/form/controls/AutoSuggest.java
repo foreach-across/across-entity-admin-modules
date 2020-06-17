@@ -79,7 +79,7 @@ class AutoSuggest extends ExampleController
 	}
 
 	private AutoSuggestFormElement defaultAutoSuggest() {
-		return bootstrap.builders.autosuggest()
+		return bootstrap.builders.autoSuggest()
 		                         .configuration(
 				                         AutoSuggestFormElementConfiguration.withDataSet(
 						                         dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" )
@@ -107,7 +107,7 @@ class AutoSuggest extends ExampleController
 				                                      .htmlId( "datasource-switcher" )
 				                                      .label( "Switch datasource" )
 		                    ).add(
-						bootstrap.builders.autosuggest()
+						bootstrap.builders.autoSuggest()
 						                  .htmlId( "js-switch-source-autosuggest" )
 						                  .configuration(
 								                  AutoSuggestFormElementConfiguration.withDataSet(

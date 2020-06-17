@@ -17,11 +17,12 @@
 package com.foreach.across.modules.bootstrapui.styles.utilities;
 
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class SimpleBreakpointStyleRule implements BreakpointStyleRule
 {
@@ -37,11 +38,16 @@ public class SimpleBreakpointStyleRule implements BreakpointStyleRule
 
 	@Override
 	public BootstrapStyleRule on( String breakpoint ) {
-		return BootstrapStyleRule.of( ArrayUtils.add( additionalCss, prefix + "-" + breakpoint + ( suffix != null ? "-" + suffix : "" ) ) );
+		return BootstrapStyleRule.appendOnSet( BootstrapStyleRule.of( additionalCss ), prefix + "-" + breakpoint + ( suffix != null ? "-" + suffix : "" ) );
 	}
 
 	@Override
 	public String[] toCssClasses() {
 		return ArrayUtils.add( additionalCss, prefix + ( suffix != null ? "-" + suffix : "" ) );
+	}
+
+	@Override
+	public void removeFrom( HtmlViewElement target ) {
+		target.removeCssClass( prefix + ( suffix != null ? "-" + suffix : "" ) );
 	}
 }

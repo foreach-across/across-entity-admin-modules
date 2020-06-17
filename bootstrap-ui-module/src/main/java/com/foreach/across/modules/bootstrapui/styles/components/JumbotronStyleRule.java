@@ -22,11 +22,11 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
  * https://getbootstrap.com/docs/4.3/components/jumbotron/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 public class JumbotronStyleRule implements BootstrapStyleRule
 {
-	public final BootstrapStyleRule fluid = BootstrapStyleRule.of( "jumbotron", "jumbotron-fluid" );
+	public final BootstrapStyleRule fluid = BootstrapStyleRule.appendOnSet( this, "jumbotron-fluid" );
 
 	@Override
 	public String[] toCssClasses() {

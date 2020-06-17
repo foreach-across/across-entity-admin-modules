@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-standard-module-parent</artifactId>
-		<version>5.0.0-SNAPSHOT</version>
+		<version>5.0.0.RELEASE</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
@@ -59,7 +59,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<revision>3.0.0-SNAPSHOT</revision>
+		<revision>3.0.0.RELEASE</revision>
 		<!-- webjar specific properties -->
 		<webjars.jquery>3.4.1</webjars.jquery>
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
@@ -71,6 +71,7 @@
 		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
 		<webjars.handlebars>4.0.14</webjars.handlebars>
 		<webjars.font-awesome>5.10.1</webjars.font-awesome>
+		<webjars.ax-bootstrap-4-utilities>0.0.1.RELEASE</webjars.ax-bootstrap-4-utilities>
 	</properties>
 
 	<modules>
@@ -91,6 +92,11 @@
 				<artifactId>xmlunit</artifactId>
 				<version>1.6</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>ax-bootstrap-4-utilities</artifactId>
+				<version>${webjars.ax-bootstrap-4-utilities}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

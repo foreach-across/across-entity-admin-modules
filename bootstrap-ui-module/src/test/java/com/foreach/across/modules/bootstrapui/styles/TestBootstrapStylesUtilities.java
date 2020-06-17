@@ -16,18 +16,21 @@
 
 package com.foreach.across.modules.bootstrapui.styles;
 
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * See https://getbootstrap.com/docs/4.3/utilities/
  *
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 class TestBootstrapStylesUtilities
 {
@@ -494,6 +497,13 @@ class TestBootstrapStylesUtilities
 
 		public StyleMatcher is( String... css ) {
 			assertThat( o.toCssClasses() ).containsExactly( css );
+			return this;
+		}
+
+		public StyleMatcher removes( String... css ) {
+			HtmlViewElement html = mock( HtmlViewElement.class );
+			o.removeFrom( html );
+			verify( html ).removeCssClass( css );
 			return this;
 		}
 	}

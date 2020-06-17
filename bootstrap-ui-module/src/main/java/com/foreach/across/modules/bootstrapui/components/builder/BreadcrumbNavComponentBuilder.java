@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -72,7 +71,7 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement list = apply(  html.ol( css.breadcrumb ), builderContext );
+		NodeViewElement list = apply( html.ol( css.breadcrumb ), builderContext );
 
 		if ( menu != null ) {
 			List<Menu> segments = menu.getSelectedItemPath()
@@ -89,6 +88,10 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 	}
 
 	protected void addBreadcrumbSegment( NodeViewElement list, Menu item, ViewElementBuilderContext builderContext, int level, boolean isLastItem ) {
+		if ( addViewElementIfAttributeExists( item, ATTR_ITEM_VIEW_ELEMENT, list, builderContext ) ) {
+			return;
+		}
+
 		NodeViewElement li = html.li( css.breadcrumb.item );
 
 		boolean iconOnly = level < iconOnlyLevels && Boolean.TRUE.equals( item.getAttribute( ATTR_ICON_ONLY ) );
@@ -96,7 +99,9 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 
 		if ( isLastItem ) {
 			li.set( css.active );
-			addIconAndText( li, item, builderContext.resolveText( item.getTitle() ), iconAllowed, iconOnly, builderContext );
+			if ( !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, li, builderContext ) ) {
+				addIconAndText( li, item, builderContext.resolveText( item.getTitle() ), iconAllowed, iconOnly, builderContext );
+			}
 		}
 		else {
 			if ( item.hasUrl() || !item.isGroup() ) {
@@ -116,6 +121,8 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 				}
 			}
 		}
+
+		li.set( witherAttribute( item, null ) );
 
 		list.addChild( li );
 	}

@@ -20,15 +20,36 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.NonNull;
 
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
  * @author Arne Vandamme
- * @since 2.3.0
+ * @since 3.0.0
  */
 @FunctionalInterface
-public interface BootstrapStyleRule extends ViewElement.WitherSetter<HtmlViewElement>, ViewElement.WitherRemover<HtmlViewElement>
+public interface BootstrapStyleRule extends ViewElement.WitherSetter<HtmlViewElement>, ViewElement.WitherRemover<HtmlViewElement>, Predicate<HtmlViewElement>
 {
+	static BootstrapStyleRule empty() {
+		return of();
+	}
+
+	static BootstrapStyleRule of( String... css ) {
+		return () -> css;
+	}
+
+	static BootstrapStyleRule appendOnSet( BootstrapStyleRule original, String... css ) {
+		return new AppendingBootstrapStyleRule( original, css );
+	}
+
+	static BootstrapStyleRule combine( BootstrapStyleRule... rules ) {
+		return () ->
+				Stream.of( rules )
+				      .map( BootstrapStyleRule::toCssClasses )
+				      .flatMap( Stream::of )
+				      .toArray( String[]::new );
+	}
+
 	String[] toCssClasses();
 
 	@Override
@@ -41,25 +62,37 @@ public interface BootstrapStyleRule extends ViewElement.WitherSetter<HtmlViewEle
 		target.addCssClass( toCssClasses() );
 	}
 
+	/**
+	 * Create a new rule with applies a suffix to all css classes from the current rule.
+	 *
+	 * @param suffix to apply
+	 * @return new rule instance
+	 */
 	default BootstrapStyleRule suffix( @NonNull String suffix ) {
 		String[] cssClasses = Stream.of( toCssClasses() ).map( s -> s + "-" + suffix )
 		                            .toArray( String[]::new );
 		return () -> cssClasses;
 	}
 
-	static BootstrapStyleRule empty() {
-		return of();
+	/**
+	 * Create a new rule with applies a prefix to all css classes from the current rule.
+	 *
+	 * @param prefix to apply
+	 * @return new rule instance
+	 */
+	default BootstrapStyleRule prefix( @NonNull String prefix ) {
+		String[] cssClasses = Stream.of( toCssClasses() ).map( s -> prefix + "-" + s )
+		                            .toArray( String[]::new );
+		return () -> cssClasses;
 	}
 
-	static BootstrapStyleRule of( String... css ) {
-		return () -> css;
-	}
-
-	static BootstrapStyleRule combine( BootstrapStyleRule... rules ) {
-		return () ->
-				Stream.of( rules )
-				      .map( BootstrapStyleRule::toCssClasses )
-				      .flatMap( Stream::of )
-				      .toArray( String[]::new );
+	@Override
+	default boolean test( HtmlViewElement target ) {
+		for ( String cssClassName : toCssClasses() ) {
+			if ( !target.hasCssClass( cssClassName ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
