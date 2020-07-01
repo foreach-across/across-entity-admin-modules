@@ -1,0 +1,12 @@
+acrossHibernate:
+  generate-ddl: true
+
+across:
+  development:
+    active: true
+
+adminWebModule:
+  title: Expirmental module - TestApplication
+  login:
+    rememberMe:
+      key: changeme
