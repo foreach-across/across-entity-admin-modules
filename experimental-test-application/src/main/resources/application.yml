@@ -6,7 +6,12 @@ across:
     active: true
 
 adminWebModule:
-  title: Expirmental module - TestApplication
+  title: Experimental module - TestApplication
   login:
     rememberMe:
       key: changeme
+
+
+acrossModule:
+  ExperimentalModule:
+    resources: ../experimental-module/src/main/resources

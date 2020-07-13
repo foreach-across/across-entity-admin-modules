@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-module-parent</artifactId>
-		<version>5.0.0.RC1</version>
+		<version>5.0.1.RELEASE</version>
 		<relativePath/>
 	</parent>
 
 	<artifactId>experimental-module-project</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 
 	<name>Experimental</name>
@@ -30,6 +30,7 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<build.revision>development</build.revision>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+		<revision>0.0.1-SNAPSHOT</revision>
 	</properties>
 
 	<modules>

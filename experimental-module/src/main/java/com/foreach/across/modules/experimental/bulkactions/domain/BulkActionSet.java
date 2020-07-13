@@ -13,9 +13,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BulkActionSet
 {
-    private List<BulkAction> bulkActions;
+	private List<BulkAction> bulkActions;
 
-    public static BulkActionSet of( BulkAction... actions ) {
-        return new BulkActionSet( List.of( actions ) );
-    }
+	public static BulkActionSet of( BulkAction... actions ) {
+		return new BulkActionSet( List.of( actions ) );
+	}
 }

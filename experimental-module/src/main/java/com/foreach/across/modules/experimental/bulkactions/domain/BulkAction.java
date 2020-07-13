@@ -6,14 +6,15 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BulkAction {
-    @NonNull
-    private String action;
+public class BulkAction
+{
+	@NonNull
+	private String action;
 
-    @NonNull
-    private String id;
+	@NonNull
+	private String id;
 
-    public static BulkAction of(String action, String id) {
-        return new BulkAction(action, id);
-    }
+	public static BulkAction of( String action, String id ) {
+		return new BulkAction( action, id );
+	}
 }

@@ -7,10 +7,10 @@ import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 
-@AcrossApplication(modules = {EntityModule.NAME, BootstrapUiModule.NAME, AdminWebModule.NAME, AcrossHibernateJpaModule.NAME, ExperimentalModule.NAME})
-public class ExperimentalModuleTestApplication {
-
-    public static void main(String[] args) {
-        AcrossApplicationRunner.run(ExperimentalModuleTestApplication.class, args);
-    }
+@AcrossApplication(modules = { EntityModule.NAME, BootstrapUiModule.NAME, AdminWebModule.NAME, AcrossHibernateJpaModule.NAME, ExperimentalModule.NAME })
+public class ExperimentalModuleTestApplication
+{
+	public static void main( String[] args ) {
+		AcrossApplicationRunner.run( ExperimentalModuleTestApplication.class, args );
+	}
 }

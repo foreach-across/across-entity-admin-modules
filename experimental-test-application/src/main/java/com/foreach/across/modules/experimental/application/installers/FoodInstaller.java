@@ -9,16 +9,17 @@ import lombok.RequiredArgsConstructor;
 
 @Installer(name = "Food installer", description = "Installs some default food.", phase = InstallerPhase.AfterModuleBootstrap)
 @RequiredArgsConstructor
-public class FoodInstaller {
-    private final FoodRepository foodRepository;
+public class FoodInstaller
+{
+	private final FoodRepository foodRepository;
 
-    @InstallerMethod
-    public void installDefaultFood(){
-        Food pizza = new Food(-1L, "Pizza");
-        Food hamburger = new Food(-2L, "Hamburger");
+	@InstallerMethod
+	public void installDefaultFood() {
+		Food pizza = new Food( -1L, "Pizza" );
+		Food hamburger = new Food( -2L, "Hamburger" );
 
-        foodRepository.save(pizza);
-        foodRepository.save(hamburger);
-    }
+		foodRepository.save( pizza );
+		foodRepository.save( hamburger );
+	}
 
 }

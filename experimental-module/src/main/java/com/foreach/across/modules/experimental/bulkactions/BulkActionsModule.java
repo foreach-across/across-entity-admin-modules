@@ -8,16 +8,17 @@ import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import java.util.Set;
 
 @AcrossDepends(required = "EntityModule")
-public class BulkActionsModule extends AcrossModule {
-    public static final String NAME = "BulkActionsModule";
+public class BulkActionsModule extends AcrossModule
+{
+	public static final String NAME = "BulkActionsModule";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    protected void registerDefaultApplicationContextConfigurers(Set<ApplicationContextConfigurer> contextConfigurers) {
-        contextConfigurers.add(ComponentScanConfigurer.forAcrossModule(BulkActionsModule.class));
-    }
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( ComponentScanConfigurer.forAcrossModule( BulkActionsModule.class ) );
+	}
 }

@@ -22,24 +22,25 @@ import java.util.function.Consumer;
  * @author Stijn Vanhoof
  */
 @RequiredArgsConstructor
-public class CustomizeBatchProperties {
-    @Getter
-    private final Consumer<EntityPropertyRegistryBuilder> builder;
+public class CustomizeBatchProperties
+{
+	@Getter
+	private final Consumer<EntityPropertyRegistryBuilder> builder;
 
-    @SneakyThrows
-    public void apply(EntityViewElementBatch batch) {
-        Field field = ReflectionUtils.findField(EntityViewElementBatch.class, "propertyRegistry");
-        field.setAccessible(true);
+	@SneakyThrows
+	public void apply( EntityViewElementBatch batch ) {
+		Field field = ReflectionUtils.findField( EntityViewElementBatch.class, "propertyRegistry" );
+		field.setAccessible( true );
 
-        EntityPropertyRegistry props = (EntityPropertyRegistry) field.get(batch);
-        MergingEntityPropertyRegistry newProps = new MergingEntityPropertyRegistry(props,
-                DefaultEntityPropertyRegistryProvider.INSTANCE,
-                new EntityPropertyDescriptorFactoryImpl());
+		EntityPropertyRegistry props = (EntityPropertyRegistry) field.get( batch );
+		MergingEntityPropertyRegistry newProps = new MergingEntityPropertyRegistry( props,
+		                                                                            DefaultEntityPropertyRegistryProvider.INSTANCE,
+		                                                                            new EntityPropertyDescriptorFactoryImpl() );
 
-        EntityPropertyRegistryBuilder propsBuilder = new EntityPropertyRegistryBuilder();
-        builder.accept(propsBuilder);
-        propsBuilder.apply(newProps);
+		EntityPropertyRegistryBuilder propsBuilder = new EntityPropertyRegistryBuilder();
+		builder.accept( propsBuilder );
+		propsBuilder.apply( newProps );
 
-        batch.setPropertyRegistry(newProps);
-    }
+		batch.setPropertyRegistry( newProps );
+	}
 }

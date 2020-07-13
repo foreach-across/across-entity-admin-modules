@@ -7,21 +7,22 @@ import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModu
 
 import java.util.Set;
 
-public class ExperimentalModule extends AcrossModule {
-    public static final String NAME = "ExperimentalModule";
+public class ExperimentalModule extends AcrossModule
+{
+	public static final String NAME = "ExperimentalModule";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public String getDescription() {
-        return "ExperimentalModule contains a bunch of experimental features. ";
-    }
+	@Override
+	public String getDescription() {
+		return "ExperimentalModule contains a bunch of experimental features. ";
+	}
 
-    @Override
-    protected void registerDefaultApplicationContextConfigurers(Set<ApplicationContextConfigurer> contextConfigurers) {
-        contextConfigurers.add(ComponentScanConfigurer.forAcrossModule(EntityControlsModule.class));
-    }
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( ComponentScanConfigurer.forAcrossModule( EntityControlsModule.class ) );
+	}
 }

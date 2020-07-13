@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-public class CarResource {
-    private String model;
+public class CarResource
+{
+	private String model;
 }

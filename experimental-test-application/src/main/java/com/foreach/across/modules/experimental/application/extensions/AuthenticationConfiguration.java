@@ -9,11 +9,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @ModuleConfiguration(SpringSecurityModule.NAME)
 @EnableGlobalAuthentication
-public class AuthenticationConfiguration {
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin").password("{noop}admin")
-                .authorities(new SimpleGrantedAuthority("access administration"));
-    }
+public class AuthenticationConfiguration
+{
+	@Autowired
+	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
+		auth.inMemoryAuthentication()
+		    .withUser( "admin" ).password( "{noop}admin" )
+		    .authorities( new SimpleGrantedAuthority( "access administration" ) );
+	}
 }

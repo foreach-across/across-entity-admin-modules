@@ -22,72 +22,75 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EntityControlsTest {
-    @Mock
-    private EntityConfiguration entityConfiguration;
+class EntityControlsTest
+{
+	@Mock
+	private EntityConfiguration entityConfiguration;
 
-    @Mock
-    private EntityViewElementBatch batch;
+	@Mock
+	private EntityViewElementBatch batch;
 
-    @Mock
-    private EntityPropertiesBinder entityPropertiesBinder;
+	@Mock
+	private EntityPropertiesBinder entityPropertiesBinder;
 
-    @InjectMocks
-    private EntityControls entityControls;
+	@InjectMocks
+	private EntityControls entityControls;
 
-    @Test
-    void setEntity() {
-        Object object = mock(Object.class);
-        entityControls.forInstance(object);
+	@Test
+	void setEntity() {
+		Object object = mock( Object.class );
+		entityControls.forInstance( object );
 
-        assertThat(entityControls.getEntity()).isEqualTo(object);
-    }
+		assertThat( entityControls.getEntity() ).isEqualTo( object );
+	}
 
-    @Test
-    void customizeProperties() {
-        Consumer<EntityPropertyRegistryBuilder> builder = props -> props.property("email");
+	@Test
+	void customizeProperties() {
+		Consumer<EntityPropertyRegistryBuilder> builder = props -> props.property( "email" );
 
-        entityControls.properties(builder);
-        assertThat(entityControls.getCustomizeBatchProperties().getBuilder()).isEqualTo(builder);
-    }
+		entityControls.properties( builder );
+		assertThat( entityControls.getCustomizeBatchProperties().getBuilder() ).isEqualTo( builder );
+	}
 
-    @Test
-    void customizePropertiesToShowWithStrings() {
-        entityControls.showProperties("a", "b");
-        verify(batch).setPropertySelector(EntityPropertySelector.of("a", "b"));
-    }
+	@Test
+	void customizePropertiesToShowWithStrings() {
+		entityControls.showProperties( "a", "b" );
+		verify( batch ).setPropertySelector( EntityPropertySelector.of( "a", "b" ) );
+	}
 
-    @Test
-    void customizePropertiesToShowWithPropertySelectors() {
-        entityControls.showProperties(EntityPropertySelector.of("a", "b"));
-        verify(batch).setPropertySelector(EntityPropertySelector.of("a", "b"));
-    }
+	@Test
+	void customizePropertiesToShowWithPropertySelectors() {
+		entityControls.showProperties( EntityPropertySelector.of( "a", "b" ) );
+		verify( batch ).setPropertySelector( EntityPropertySelector.of( "a", "b" ) );
+	}
 
-    @Test
-    void changeDefaultRenderMode() {
-        assertThat(entityControls.getGlobalViewElementMode()).isEqualTo(ViewElementMode.FORM_WRITE);
+	@Test
+	void changeDefaultRenderMode() {
+		assertThat( entityControls.getGlobalViewElementMode() ).isEqualTo( ViewElementMode.FORM_WRITE );
 
-        entityControls.defaultRenderMode(ViewElementMode.FORM_READ);
-        assertThat(entityControls.getGlobalViewElementMode()).isEqualTo(ViewElementMode.FORM_READ);
-    }
+		entityControls.defaultRenderMode( ViewElementMode.FORM_READ );
+		assertThat( entityControls.getGlobalViewElementMode() ).isEqualTo( ViewElementMode.FORM_READ );
+	}
 
-    @Test
-    void changeRenderModelForSingleProperty() {
-        entityControls.renderModeForProperties(ViewElementMode.FORM_READ, "a", "b");
-        assertThat(entityControls.getPropertyRenderModes().size()).isEqualTo(2);
-    }
+	@Test
+	void changeRenderModelForSingleProperty() {
+		entityControls.renderModeForProperties( ViewElementMode.FORM_READ, "a", "b" );
+		assertThat( entityControls.getPropertyRenderModes().size() ).isEqualTo( 2 );
+	}
 
-    @Nested
-    @DisplayName("Build entity controls")
-    class Build {
-        @Test
-        void throwErrorWhenNoPropertiesBinderIsConfigured() {
-            when(batch.getPropertiesBinder()).thenReturn(entityPropertiesBinder);
-            when(entityPropertiesBinder.getEntity()).thenReturn(null);
+	@Nested
+	@DisplayName("Build entity controls")
+	class Build
+	{
+		@Test
+		void throwErrorWhenNoPropertiesBinderIsConfigured() {
+			when( batch.getPropertiesBinder() ).thenReturn( entityPropertiesBinder );
+			when( entityPropertiesBinder.getEntity() ).thenReturn( null );
 
-            assertThatExceptionOfType(IllegalStateException.class)
-                    .isThrownBy(() -> entityControls.build())
-                    .satisfies(e -> Assertions.assertThat(e.getMessage()).isEqualTo("You must set an entity before building the entity controls. This can be done using the method forInstance."));
-        }
-    }
+			assertThatExceptionOfType( IllegalStateException.class )
+					.isThrownBy( () -> entityControls.build() )
+					.satisfies( e -> Assertions.assertThat( e.getMessage() ).isEqualTo(
+							"You must set an entity before building the entity controls. This can be done using the method forInstance." ) );
+		}
+	}
 }

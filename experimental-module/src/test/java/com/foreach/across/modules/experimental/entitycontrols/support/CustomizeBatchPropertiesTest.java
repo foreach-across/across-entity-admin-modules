@@ -26,50 +26,53 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @AcrossWebAppConfiguration(classes = CustomizeBatchPropertiesTest.Config.class)
-class CustomizeBatchPropertiesTest {
-    private CustomizeBatchProperties customizeBatchProperties;
+class CustomizeBatchPropertiesTest
+{
+	private CustomizeBatchProperties customizeBatchProperties;
 
-    @Mock
-    private Consumer<EntityPropertyRegistryBuilder> builder;
+	@Mock
+	private Consumer<EntityPropertyRegistryBuilder> builder;
 
-    private EntityViewElementBuilderService builderService;
+	private EntityViewElementBuilderService builderService;
 
-    @BeforeEach
-    void setup() {
-        Consumer<EntityPropertyRegistryBuilder> builder = props -> props.property("email")
-                .propertyType(String.class)
-                .and()
-                .property("fakeComment")
-                .propertyType(String.class)
-                .readable(true)
-                .writable(true);
+	@BeforeEach
+	void setup() {
+		Consumer<EntityPropertyRegistryBuilder> builder = props -> props.property( "email" )
+		                                                                .propertyType( String.class )
+		                                                                .and()
+		                                                                .property( "fakeComment" )
+		                                                                .propertyType( String.class )
+		                                                                .readable( true )
+		                                                                .writable( true );
 
-        customizeBatchProperties = new CustomizeBatchProperties(builder);
-    }
+		customizeBatchProperties = new CustomizeBatchProperties( builder );
+	}
 
-    @Test
-    void canCustomizeBatchProperties() throws IllegalAccessException {
-        EntityViewElementBatch<Object> batchForEntity = new EntityViewElementBatch<>(builderService);
-        MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistry.forClass(Config.User.class);
-        batchForEntity.setPropertyRegistry(propertyRegistry);
-        customizeBatchProperties.apply(batchForEntity);
+	@Test
+	void canCustomizeBatchProperties() throws IllegalAccessException {
+		EntityViewElementBatch<Object> batchForEntity = new EntityViewElementBatch<>( builderService );
+		MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistry.forClass( Config.User.class );
+		batchForEntity.setPropertyRegistry( propertyRegistry );
+		customizeBatchProperties.apply( batchForEntity );
 
-        Field field = ReflectionUtils.findField(EntityViewElementBatch.class, "propertyRegistry");
-        field.setAccessible(true);
+		Field field = ReflectionUtils.findField( EntityViewElementBatch.class, "propertyRegistry" );
+		field.setAccessible( true );
 
-        EntityPropertyRegistry props = (EntityPropertyRegistry) field.get(batchForEntity);
+		EntityPropertyRegistry props = (EntityPropertyRegistry) field.get( batchForEntity );
 
-        assertThat(props.getProperties()).hasSize(3);
-    }
+		assertThat( props.getProperties() ).hasSize( 3 );
+	}
 
-    @AcrossTestConfiguration(modules = EntityModule.NAME, expose = EntityViewElementBuilderService.class)
-    protected static class Config {
+	@AcrossTestConfiguration(modules = EntityModule.NAME, expose = EntityViewElementBuilderService.class)
+	protected static class Config
+	{
 
-        @NoArgsConstructor
-        public class User {
-            @Setter
-            @Getter
-            private String name;
-        }
-    }
+		@NoArgsConstructor
+		public class User
+		{
+			@Setter
+			@Getter
+			private String name;
+		}
+	}
 }
