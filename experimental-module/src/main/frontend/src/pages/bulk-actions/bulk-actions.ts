@@ -1,20 +1,26 @@
-EntityModule.registerInitializer( function( node ) {
-    let table = $( ".em-sortableTable-table", node );
-    if ( table.data( "bootstrapui-adapter-type" ) ) {
-        const containerAdapter = table.data( "bootstrapui-adapter" );
+import "./bulk-actions.scss";
 
-        $( $( ".js-exm-bulk-select-all", node ).data( "bootstrapui-adapter" ).getTarget() ).on( "bootstrapui.change", function( event, adapter ) {
-            let allSelectorValue = adapter.getValue();
-            const shouldSelect = allSelectorValue.length > 0;
-            $( "[data-bootstrapui-adapter-type]:not(.js-exm-bulk-select-all)", containerAdapter.getTarget() )
-                    .each( function( idx, element ) {
-                        $( element ).data( "bootstrapui-adapter" ).selectValue( shouldSelect );
-                    } )
-        } );
+EntityModule.registerInitializer(function (node) {
+  let table = $(".em-sortableTable-table", node);
+  if (table.data("bootstrapui-adapter-type")) {
+    const containerAdapter = table.data("bootstrapui-adapter");
 
+    $($(".js-exm-bulk-select-all", node).data("bootstrapui-adapter").getTarget()).on("bootstrapui.change", function (
+      event,
+      adapter
+    ) {
+      let allSelectorValue = adapter.getValue();
+      const shouldSelect = allSelectorValue.length > 0;
+      $("[data-bootstrapui-adapter-type]:not(.js-exm-bulk-select-all)", containerAdapter.getTarget()).each(function (
+        idx,
+        element
+      ) {
+        $(element).data("bootstrapui-adapter").selectValue(shouldSelect);
+      });
+    });
+  }
+});
 
-    }
-} );
 // $( containerAdapter.getTarget() ).on( "bootstrapui.change", function( event, adapter ) {
 //     let selectedValues = adapter.getValue().filter( ( value ) => value.context.name !== "exm-bulk-actions-all" );
 //

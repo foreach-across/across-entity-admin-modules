@@ -52,8 +52,8 @@ public class BulkActionViewProcessor<T> extends ExtensionViewProcessorAdapter<Bu
 	@Override
 	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.apply(
-				WebResourceRule.add( WebResource.javascript( "@static:/experimental/js/bulk-actions.js" ) ).toBucket( WebResource.JAVASCRIPT_PAGE_END ),
-				WebResourceRule.add( WebResource.css( "@static:/experimental/css/bulk-actions.css" ) ).toBucket( WebResource.CSS ),
+				WebResourceRule.add( WebResource.javascript( "@static:/experimental/web/bulk-actions.js" ) ).toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+				WebResourceRule.add( WebResource.css( "@static:/experimental/web/bulk-actions.css" ) ).toBucket( WebResource.CSS ),
 				WebResourceRule.addPackage( BootstrapUiFormElementsWebResources.NAME )
 		);
 	}
