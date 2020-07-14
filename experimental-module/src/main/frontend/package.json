@@ -1,0 +1,87 @@
+{
+  "name": "@across/experimental",
+  "license": "UNLICENSED",
+  "homepage": "/across/resources/static/experimental/web",
+  "version": "0.0.1",
+  "engines": {
+    "node": "12.x",
+    "yarn": ">=1.0.0"
+  },
+  "scripts": {
+    "start": "cross-env EXTEND_ESLINT=true PROXY_URL='http://localhost:8099' react-scripts start --output='../resources/views/static/experimental/web/' --noAssetHashing",
+    "build": "cross-env EXTEND_ESLINT=true react-scripts build --output='../resources/views/static/experimental/web/' --noAssetHashing",
+    "test": "cross-env JEST_REPORT_FILE=./test-output/test-report.json react-scripts test",
+    "test:ci": "cross-env CI=true npm run test",
+    "lint": "concurrently 'yarn:lint:js' 'yarn:lint:css'",
+    "lint:js": "eslint ./src --max-warnings=0 --ext .ts,.tsx,.js,.jsx",
+    "lint:css": "stylelint \"src/**/*.{css,scss,sass}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md,scss,css,sass}\" && yarn lint:js --fix && yarn lint:css --fix "
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "react": "^16.13.1"
+  },
+  "devDependencies": {
+    "@foreachbe/react-scripts": "^6.0.2",
+    "@types/jquery": "^3.5.0",
+    "concurrently": "^5.2.0",
+    "cross-env": "^7.0.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "node-sass": "^4.14.1",
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.5"
+  },
+  "appPages": [
+    {
+      "name": "bulk-actions",
+      "title": "bulk-actions",
+      "appIndexJs": "src/pages/bulk-actions/bulk-actions"
+    }
+  ],
+  "eslintConfig": {
+    "extends": "@foreachbe/eslint-config-react-app",
+    "globals": {
+      "$": "readonly",
+      "jQuery": "readonly",
+      "EntityModule": "readonly",
+      "BootstrapUiModule": "readonly"
+    }
+  },
+  "prettier": {
+    "printWidth": 120
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{css,scss,sass}": [
+      "prettier --write",
+      "stylelint --fix"
+    ],
+    "*.{json,md,html}": [
+      "prettier --write"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
