@@ -30,3 +30,5 @@ node_modules
 .vscode
 
 experimental-module/src/main/resources/views/static/experimental/web
+
+**/.credentials
