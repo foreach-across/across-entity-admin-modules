@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.application.dto;
+package com.foreach.across.testapplication.application.dto;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.application.domain.food;
+package com.foreach.across.testapplication.application.domain.food;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 

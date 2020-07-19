@@ -1,8 +1,8 @@
-package com.foreach.across.modules.experimental.application.config;
+package com.foreach.across.testapplication.application.config;
 
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.experimental.application.dto.CarResource;
+import com.foreach.across.testapplication.application.dto.CarResource;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

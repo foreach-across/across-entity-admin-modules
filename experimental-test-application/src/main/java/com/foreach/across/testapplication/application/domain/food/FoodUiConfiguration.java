@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.application.domain.food;
+package com.foreach.across.testapplication.application.domain.food;
 
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
-import static com.foreach.across.modules.experimental.application.domain.food.FoodBulkActionHandler.DELETE_ACTION;
+import static com.foreach.across.testapplication.application.domain.food.FoodBulkActionHandler.DELETE_ACTION;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
 
 @Configuration

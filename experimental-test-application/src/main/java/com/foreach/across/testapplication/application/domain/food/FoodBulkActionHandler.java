@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.application.domain.food;
+package com.foreach.across.testapplication.application.domain.food;
 
 import com.foreach.across.modules.experimental.bulkactions.support.BulkActionHandler;
 import lombok.RequiredArgsConstructor;

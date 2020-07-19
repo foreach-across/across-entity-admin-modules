@@ -1,8 +1,8 @@
 package com.foreach.across.modules.experimental.bulkactions.viewprocessors;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiViewElementAttributes;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
@@ -52,7 +53,9 @@ public class BulkActionViewProcessor<T> extends ExtensionViewProcessorAdapter<Bu
 	@Override
 	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.apply(
-				WebResourceRule.add( WebResource.javascript( "@static:/experimental/web/bulk-actions.js" ) ).toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+				WebResourceRule.add( WebResource.javascript( "@static:/experimental/web/bulk-actions.js" ) ).toBucket( WebResource.JAVASCRIPT_PAGE_END )
+				               .before( BootstrapUiFormElementsWebResources.NAME )
+				               .after( BootstrapUiWebResources.NAME ),
 				WebResourceRule.add( WebResource.css( "@static:/experimental/web/bulk-actions.css" ) ).toBucket( WebResource.CSS ),
 				WebResourceRule.addPackage( BootstrapUiFormElementsWebResources.NAME )
 		);
@@ -76,10 +79,12 @@ public class BulkActionViewProcessor<T> extends ExtensionViewProcessorAdapter<Bu
 		if ( sortableTableBuilder != null && bulkIdentifierBuilder != null ) {
 			Assert.notNull( bulkActionItemConfigurer, "A BulkActionItemConfigurer is required for a bulk actions view" );
 			sortableTableBuilder.headerRowProcessor( ( viewElementBuilderContext, row ) -> {
-				row.addFirstChild( bootstrap.builders.table.headerCell( css.of( "bulk-action-column" ) )
-				                                           .add( checkbox( "exm-bulk-actions-all", "exm-bulk-actions-all", "",
-				                                                           ( ctx, element ) -> element.set( css.of( "js-exm-bulk-select-all" ) ) ) )
-				                                           .build( viewElementBuilderContext ) );
+				row.addFirstChild(
+						bootstrap.builders.table.headerCell( css.of( "bulk-action-column" ) )
+						                        .add( checkbox( "exm-bulk-actions-all", "exm-bulk-actions-all", "",
+						                                        ( ctx, element ) -> element.set( css.of( "js-exm-bulk-select-all" ) ) ) )
+						                        .build( viewElementBuilderContext )
+				);
 			} );
 
 			AtomicInteger i = new AtomicInteger( 0 );
@@ -110,7 +115,7 @@ public class BulkActionViewProcessor<T> extends ExtensionViewProcessorAdapter<Bu
 //		                                                           .getEntityConfiguration();
 
 		ContainerViewElementUtils.find( container, "itemsTable-table", TableViewElement.class )
-		                         .ifPresent( tableViewElement -> tableViewElement.setAttribute( "data-bootstrapui-adapter-type", "container" ) );
+		                         .ifPresent( tableViewElement -> tableViewElement.set( attribute( CONTROL_ADAPTER_TYPE, "bulk-actions-container" ) ) );
 
 		ContainerViewElementUtils.find( container, "itemsTable" )
 		                         .ifPresent( table -> ContainerViewElementUtils.findParent( container, table ).ifPresent( tableParent -> {
@@ -178,7 +183,7 @@ public class BulkActionViewProcessor<T> extends ExtensionViewProcessorAdapter<Bu
 		                    .add(
 				                    html.builders.input( css.form.check.input, css.position.cssStatic, attribute( "type", "checkbox" ) )
 				                                 .with( attribute( "name", attrName ), attribute( "value", value ) )
-				                                 .with( attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "checkbox" ) )
+				                                 .with( attribute( CONTROL_ADAPTER_TYPE, "checkbox" ) )
 				                                 .htmlId( htmlId )
 				                                 .andThen( checkboxPostProcessor )
 		                    );

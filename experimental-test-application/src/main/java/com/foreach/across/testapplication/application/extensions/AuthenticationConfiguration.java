@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.application.extensions;
+package com.foreach.across.testapplication.application.extensions;
 
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;

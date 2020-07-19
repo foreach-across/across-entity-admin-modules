@@ -1,9 +1,9 @@
-package com.foreach.across.modules.experimental.application.controller;
+package com.foreach.across.testapplication.application.controller;
 
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.experimental.application.dto.CarResource;
-import com.foreach.across.modules.experimental.application.dto.UserResource;
+import com.foreach.across.testapplication.application.dto.CarResource;
+import com.foreach.across.testapplication.application.dto.UserResource;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
