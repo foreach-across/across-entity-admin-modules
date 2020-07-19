@@ -7,7 +7,7 @@ services:
     #     https://github.com/carlossg/docker-maven/issues/90
     # 3.) Using > 3.5.0 because of timestamp issues with -SNAPSHOT dependencies
     #     https://issues.apache.org/jira/browse/MDEPLOY-221
-    image: 'ax-maven-with-build-tools:3.5.2-jdk-8'
+    image: 'ax-maven-with-build-tools:3.6.2-jdk-11'
     build:
       context: .
       dockerfile: 'docker-build-files/Dockerfile'
