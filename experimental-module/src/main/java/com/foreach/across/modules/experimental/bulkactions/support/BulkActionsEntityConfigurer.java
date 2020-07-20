@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.bulkactions.configurers;
+package com.foreach.across.modules.experimental.bulkactions.support;
 
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityViewProcessorConfigurer;
@@ -17,8 +17,15 @@ public class BulkActionsEntityConfigurer
 	public static Consumer<EntityViewFactoryBuilder> configureBulkActions( BulkActionsConfigurer bulkActionItemConfigurer ) {
 		return view -> view.viewProcessor(
 				vp -> vp.createBean( BulkActionViewProcessor.class )
-				        .configure( bavp -> bavp.submitUrlConfigurer( bulkActionItemConfigurer.submitUrlConfigurer() )
-				                                .bulkActionItemConfigurer( bulkActionItemConfigurer.itemConfigurer() ) )
+				        .configure(
+						        bavp -> {
+							        bavp.submitUrlConfigurer( bulkActionItemConfigurer.submitUrlConfigurer() )
+							            .bulkActionItemConfigurer( bulkActionItemConfigurer.itemConfigurer() );
+							        if ( bulkActionItemConfigurer.controlNameConfigurer() != null ) {
+								        bavp.controlNameSupplier( bulkActionItemConfigurer.controlNameConfigurer() );
+							        }
+						        }
+				        )
 		);
 	}
 

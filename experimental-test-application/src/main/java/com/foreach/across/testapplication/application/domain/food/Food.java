@@ -32,4 +32,5 @@ public class Food extends SettableIdBasedEntity<Food>
 	)
 	private Long id;
 	private String name;
+	private FoodAction currentAction;
 }
