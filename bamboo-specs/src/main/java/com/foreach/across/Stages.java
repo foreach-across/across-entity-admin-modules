@@ -15,6 +15,7 @@ import static com.foreach.across.Jobs.requiresLinux;
 
 public class Stages {
     private static final String DOCKER_COMPOSE = "docker-compose --no-ansi";
+    private static final String BUILD_FRONTEND = DOCKER_COMPOSE + " run --rm frontend sh -c 'yarn run build'";
 
     public static ScriptTask runCommands(String... commands) {
         String inlineBody =
@@ -31,6 +32,7 @@ public class Stages {
                                 defaultRepositoryCheckoutTask(),
                                 runCommands(
                                         cleanAcrossDepsFromLocalRepository(),
+                                        BUILD_FRONTEND,
                                         DOCKER_COMPOSE + " run maven-base mvn -U --batch-mode clean verify -Dmaven.javadoc.skip=true"
                                 ).description("Run unit tests")
                         )
@@ -49,7 +51,8 @@ public class Stages {
 
     public static Stage deploySnapshot() {
         String template =
-                DOCKER_COMPOSE + " run --rm maven-base mvn -U --batch-mode clean compile assembly:assembly deploy -DskipTests=true -P{profile} -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true";
+                BUILD_FRONTEND + "\n" +
+                        DOCKER_COMPOSE + " run --rm maven-base mvn -U --batch-mode clean compile assembly:assembly deploy -DskipTests=true -P{profile} -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true";
         ScriptTask deployTask = runCommands(cleanAcrossDepsFromLocalRepository(), buildMavenDeployToNexusAndSonatypeCommand(template))
                 .description("Run mvn clean deploy");
 

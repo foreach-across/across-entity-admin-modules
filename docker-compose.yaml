@@ -7,7 +7,7 @@ services:
     #     https://github.com/carlossg/docker-maven/issues/90
     # 3.) Using > 3.5.0 because of timestamp issues with -SNAPSHOT dependencies
     #     https://issues.apache.org/jira/browse/MDEPLOY-221
-    image: 'ax-maven-with-build-tools:3.5.2-jdk-8'
+    image: 'ax-maven-with-build-tools:3.6.2-jdk-11'
     build:
       context: .
       dockerfile: 'docker-build-files/Dockerfile'
@@ -85,3 +85,15 @@ services:
       - MYSQL_USER=axt
       - MYSQL_PASSWORD=across_test
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
+
+  frontend:
+    tty: false
+    build:
+      context: ./experimental-module/src/main/frontend
+      dockerfile: ./Dockerfile
+    command: yarn run build
+    volumes:
+      - ./experimental-module/src/main/frontend:/build/src/main/frontend
+      # scope node_modules to the container
+      - /build/src/main/frontend/node_modules
+      - ./experimental-module/src/main/resources/views/static/experimental:/build/src/main/resources/views/static/experimental:delegated

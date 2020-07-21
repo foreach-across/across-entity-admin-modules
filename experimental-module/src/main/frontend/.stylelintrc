@@ -1,0 +1,11 @@
+{
+  "extends": "@foreachbe/stylelint-config-react-app",
+  "rules": {
+    "at-rule-no-unknown": null,
+    "no-descending-specificity": null,
+    "font-family-no-missing-generic-family-keyword": null,
+    "selector-type-no-unknown": [true, {
+      "ignoreTypes": ["_"]
+    }]
+  }
+}

@@ -5,6 +5,10 @@ across:
 applicationInfo:
   buildDate: "2020-04-23 12:57:42"
 
+acrossModule:
+  ExperimentalModule:
+    resources: ./experimental/src/main/resources
+
 server:
   error:
     includeStacktrace: ALWAYS

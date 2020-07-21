@@ -4,7 +4,7 @@
 #     https://github.com/carlossg/docker-maven/issues/90
 # 3.) Using > 3.5.0 because of timestamp issues with -SNAPSHOT dependencies
 #     https://issues.apache.org/jira/browse/MDEPLOY-221
-FROM maven:3.5.2-jdk-8
+FROM maven:3.6.2-jdk-11
 
 # Might not be needed anymore ?
 # RUN apt-get update && apt-get install -y build-essential
