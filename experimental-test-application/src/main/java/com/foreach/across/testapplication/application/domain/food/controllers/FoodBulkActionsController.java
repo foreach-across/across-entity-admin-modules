@@ -1,6 +1,7 @@
 package com.foreach.across.testapplication.application.domain.food.controllers;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.testapplication.application.domain.food.Food;
 import com.foreach.across.testapplication.application.domain.food.FoodBulkActionsHandler;

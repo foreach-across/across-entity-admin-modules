@@ -8,6 +8,7 @@ import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.bulkactions.support.SimpleBulkActionItemConfigurer;
 import com.foreach.across.modules.experimental.bulkactions.ui.viewprocessors.BulkActionViewProcessor;
+import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.testapplication.application.domain.food.processors.FoodBulkActionViewProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,7 @@ public class FoodUiConfiguration implements EntityConfigurer
 				        lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
 				                                          .order( 1100 ) )
 				                  .and( bulkActionsConfigurer( join( "extensions[", getShortName( FoodBulkActionViewProcessor.class ), "].selectedItems" ) ) )
+				                  .and( ModalConfigurers.linkCreateToModal() )
 		        )
 		        .listView( "controller",
 		                   lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
@@ -50,7 +52,8 @@ public class FoodUiConfiguration implements EntityConfigurer
 						                                                               .submitUrlResolver( ( req ) -> adminWeb.path( FOOD_BULK_ACTIONS ) )
 						                                                               .formAttributeProvider( () -> "bulkActions" ) ) )
 		                             )
-		        );
+		        )
+		;
 	}
 
 	private Consumer<EntityViewFactoryBuilder> bulkActionsConfigurer( String controlName ) {
