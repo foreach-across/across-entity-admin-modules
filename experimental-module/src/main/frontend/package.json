@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@foreachbe/react-scripts": "^6.0.3",
+    "@types/bootstrap": "^4.5.0",
     "@types/jquery": "^3.5.0",
     "concurrently": "^5.2.0",
     "cross-env": "^7.0.2",
@@ -40,6 +41,21 @@
       "name": "bulk-actions",
       "title": "bulk-actions",
       "appIndexJs": "src/pages/bulk-actions/bulk-actions"
+    },
+    {
+      "name": "modal-loader",
+      "title": "modal-loader",
+      "appIndexJs": "src/pages/modals/modal-loader"
+    },
+    {
+      "name": "action-executor",
+      "title": "action-executor",
+      "appIndexJs": "src/pages/modals/action-executor"
+    },
+    {
+      "name": "experimental-module",
+      "title": "experimental-module",
+      "appIndexJs": "src/pages/experimental/experimental"
     }
   ],
   "eslintConfig": {
@@ -48,7 +64,8 @@
       "$": "readonly",
       "jQuery": "readonly",
       "EntityModule": "readonly",
-      "BootstrapUiModule": "readonly"
+      "BootstrapUiModule": "readonly",
+      "ExperimentalModule": "writable"
     }
   },
   "prettier": {

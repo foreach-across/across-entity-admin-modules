@@ -1,18 +1,21 @@
 package com.foreach.across.modules.experimental.modals.support;
 
-import be.camalion.application.web.support.ContentLoadAttribute;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.foreach.across.modules.experimental.modals.support.action.ActionAttribute;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.springframework.http.HttpMethod;
 
-import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,69 +29,82 @@ public class ModalLoadAttribute implements ViewElement.WitherSetter<HtmlViewElem
 	 */
 	@NonNull
 	@JsonProperty
-	private String targetModalId;
+	private String target;
 
 	@NonNull
-	private Supplier<DataRequestAttribute> contentConfiguration;
-	/**
-	 * Url from which the content to be loaded into the modal should be fetched.
-	 * The data loaded for the content will be rendered using
-	 */
-	@Getter(value = AccessLevel.NONE)
-	@Setter(value = AccessLevel.NONE)
 	@JsonProperty
-	private DataRequestAttribute content = null;
+	private List<ActionAttribute> content = new ArrayList<>();
 
-	/**
-	 * Selector for the form within the modal body that should be submitted.
-	 * <p>
-	 * If not present, defaults to the first form within the modal.
-	 */
-	@JsonProperty
-	private String formToSubmit;
+	public ModalLoadAttribute content( ActionAttribute... actions ) {
+		this.content.addAll( Arrays.asList( actions ) );
+		return this;
+	}
 
-	private Supplier<DataRequestAttribute> submissionConfiguration;
-
-	/**
-	 * Request configuration to which the content should be submitted upon submission of the modal.
-	 * Upon submit the form, referenced by {@link #formToSubmit}, will be serialized and send.
-	 * <p>
-	 * If not present, defaults to {@link #content}, with a {@link HttpMethod#POST} method instead.
-	 */
-	@Getter(value = AccessLevel.NONE)
-	@Setter(value = AccessLevel.NONE)
-	@JsonProperty
-	private DataRequestAttribute submission = null;
-
-	@JsonProperty
-	private ContentLoadAttribute refreshOnClose;
-
-	@Getter
-	@Setter
-	@JsonIgnore
-	private String modalTitle;
-
-	@Getter
-	@Setter
-	@JsonIgnore
-	private String modalConfirmButton;
-
-	@Getter
-	@Setter
-	@JsonIgnore
-	private String modalCancelButton;
+	public static ModalLoadAttribute modalLoadAttribute() {
+		return new ModalLoadAttribute();
+	}
+//
+//	@NonNull
+//	private Supplier<DataRequestAttribute> contentConfiguration;
+//	/**
+//	 * Url from which the content to be loaded into the modal should be fetched.
+//	 * The data loaded for the content will be rendered using
+//	 */
+//	@Getter(value = AccessLevel.NONE)
+//	@Setter(value = AccessLevel.NONE)
+//	@JsonProperty
+//	private DataRequestAttribute content = null;
+//
+//	/**
+//	 * Selector for the form within the modal body that should be submitted.
+//	 * <p>
+//	 * If not present, defaults to the first form within the modal.
+//	 */
+//	@JsonProperty
+//	private String formToSubmit;
+//
+//	private Supplier<DataRequestAttribute> submissionConfiguration;
+//
+//	/**
+//	 * Request configuration to which the content should be submitted upon submission of the modal.
+//	 * Upon submit the form, referenced by {@link #formToSubmit}, will be serialized and send.
+//	 * <p>
+//	 * If not present, defaults to {@link #content}, with a {@link HttpMethod#POST} method instead.
+//	 */
+//	@Getter(value = AccessLevel.NONE)
+//	@Setter(value = AccessLevel.NONE)
+//	@JsonProperty
+//	private DataRequestAttribute submission = null;
+//
+//	@JsonProperty
+//	private ContentLoadAttribute refreshOnClose;
+//
+//	@Getter
+//	@Setter
+//	@JsonIgnore
+//	private String modalTitle;
+//
+//	@Getter
+//	@Setter
+//	@JsonIgnore
+//	private String modalConfirmButton;
+//
+//	@Getter
+//	@Setter
+//	@JsonIgnore
+//	private String modalCancelButton;
 
 	@Override
 	public void applyTo( HtmlViewElement target ) {
-		content = contentConfiguration.get();
-		if ( submissionConfiguration != null ) {
-			submission = submissionConfiguration.get();
-		}
-		else {
-			submission = new DataRequestAttribute()
-					.url( content.url() )
-					.method( HttpMethod.POST );
-		}
+//		content = contentConfiguration.get();
+//		if ( submissionConfiguration != null ) {
+//			submission = submissionConfiguration.get();
+//		}
+//		else {
+//			submission = new DataRequestAttribute()
+//					.url( content.url() )
+//					.method( HttpMethod.POST );
+//		}
 		// set the attribute to this object, which will be serialized as json
 		target.setAttribute( "data-modal-load", this );
 	}

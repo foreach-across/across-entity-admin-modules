@@ -33,11 +33,11 @@ public class FoodUiConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Food.class )
+		        .and( ModalConfigurers.createViewAsModal() )
 		        .listView(
 				        lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
 				                                          .order( 1100 ) )
 				                  .and( bulkActionsConfigurer( join( "extensions[", getShortName( FoodBulkActionViewProcessor.class ), "].selectedItems" ) ) )
-				                  .and( ModalConfigurers.linkCreateToModal() )
 		        )
 		        .listView( "controller",
 		                   lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )

@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.modals.web.components;
+package com.foreach.across.modules.experimental.modals.ui.components;
 
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
@@ -69,6 +69,10 @@ public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<Abst
 		return this;
 	}
 
+	public ModalViewElementBuilder header() {
+		return header( html.builders.container() );
+	}
+
 	public ModalViewElementBuilder header( ViewElementBuilder header ) {
 		this.header = ElementOrBuilder.wrap( header );
 		return this;
@@ -79,6 +83,10 @@ public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<Abst
 		return this;
 	}
 
+	public ModalViewElementBuilder body() {
+		return body( html.builders.container() );
+	}
+
 	public ModalViewElementBuilder body( ViewElementBuilder body ) {
 		this.body = ElementOrBuilder.wrap( body );
 		return this;
@@ -87,6 +95,10 @@ public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<Abst
 	public ModalViewElementBuilder body( ViewElement body ) {
 		this.body = ElementOrBuilder.wrap( body );
 		return this;
+	}
+
+	public ModalViewElementBuilder footer() {
+		return footer( html.builders.container() );
 	}
 
 	public ModalViewElementBuilder footer( ViewElementBuilder footer ) {
