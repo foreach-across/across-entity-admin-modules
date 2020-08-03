@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -49,6 +50,10 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
 	@Getter
 	@JsonProperty
 	private String url;
+
+	@Getter
+	@JsonProperty
+	private Map<String, Object> requestConfig;
 
 	@JsonProperty
 	private LinkedList<ActionHandlerAttribute> success = new LinkedList<>();

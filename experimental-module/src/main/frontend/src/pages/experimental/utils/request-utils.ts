@@ -28,10 +28,11 @@ export interface RequestConfiguration {
   partial?: string;
   form?: string;
   url?: string;
+  requestConfig?: any;
 }
 
 export function executeRequest(partialConfiguration: RequestConfiguration): Promise<Response> {
-  const { partial, form, method, url } = partialConfiguration;
+  const { partial, form, method, url, requestConfig } = partialConfiguration;
 
   const currentUrl = url ? url : window.location.href;
   const requestUrl = partial
@@ -42,17 +43,22 @@ export function executeRequest(partialConfiguration: RequestConfiguration): Prom
   const formToSerialize = form ? $(form) : null;
 
   if (formToSerialize) {
-    return executeFormRequest(requestUrl, method, formToSerialize);
+    return executeFormRequest(requestUrl, method, formToSerialize, requestConfig);
   }
-  return executeFetchRequest(requestUrl, method, formToSerialize);
+  return executeFetchRequest(requestUrl, method, requestConfig);
 }
 
-export function executeFormRequest(url: string, method: string, form: any): Promise<Response> {
-  let formConfiguration: any = {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+export function executeFormRequest(url: string, method: string, form: any, requestConfig: any): Promise<Response> {
+  let formConfiguration: any = $.extend(
+    true,
+    {},
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     },
-  };
+    requestConfig
+  );
 
   if (form.attr("enctype") === "multipart/form-data") {
     formConfiguration.body = new FormData(form[0]);

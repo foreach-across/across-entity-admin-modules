@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
@@ -93,6 +94,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 								           requestAction()
 										           .url( url.apply( linkViewBuilder ) )
 										           .partial( partial )
+										           .requestConfig( Map.of( "headers", Map.of( "X-MODAL-ORIGIN", modalId ) ) )
 										           .success(
 												           clearHandler()
 														           .target( modalTarget( ".modal-title" ) ),

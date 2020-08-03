@@ -10,6 +10,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.springframework.http.HttpMethod;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute.requestAction;
@@ -89,6 +90,7 @@ public class ModalConfigurers
 												             .url( url )
 												             .method( HttpMethod.GET )
 												             .partial( "content" )
+												             .requestConfig( Map.of( "headers", Map.of( "X-MODAL-ORIGIN", modalId ) ) )
 												             .success(
 														             clearHandler()
 																             .target( modalSelector + " .modal-title" ),

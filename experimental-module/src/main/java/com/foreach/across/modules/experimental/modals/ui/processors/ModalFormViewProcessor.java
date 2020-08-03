@@ -10,6 +10,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import lombok.Getter;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class ModalFormViewProcessor<T extends ModalFormViewProcessor> extends EntityViewProcessorAdapter
 {
@@ -34,11 +35,15 @@ public abstract class ModalFormViewProcessor<T extends ModalFormViewProcessor> e
 	                           EntityView entityView,
 	                           ContainerViewElement container,
 	                           ViewElementBuilderContext builderContext ) {
-		EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
-		ContainerViewElementUtils.find( container, elementName )
-		                         .ifPresent(
-				                         ve -> configureViewElement( ve, linkBuilder, builderContext )
-		                         );
+		String modalName = entityViewRequest.getWebRequest().getHeader( "X-MODAL-ORIGIN" );
+		if ( StringUtils.isNotBlank( modalName ) ) {
+			modalSelector( "#" + modalName );
+			EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
+			ContainerViewElementUtils.find( container, elementName )
+			                         .ifPresent(
+					                         ve -> configureViewElement( ve, linkBuilder, builderContext )
+			                         );
+		}
 	}
 
 	protected abstract void configureViewElement( ViewElement element, EntityViewLinkBuilder linkBuilder, ViewElementBuilderContext builderContext );
