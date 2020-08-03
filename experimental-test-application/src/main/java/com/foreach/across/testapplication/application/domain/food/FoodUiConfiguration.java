@@ -34,6 +34,8 @@ public class FoodUiConfiguration implements EntityConfigurer
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Food.class )
 		        .and( ModalConfigurers.createViewAsModal() )
+		        .and( ModalConfigurers.updateViewAsModal() )
+		        .and( ModalConfigurers.deleteViewAsModal() )
 		        .listView(
 				        lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
 				                                          .order( 1100 ) )

@@ -48,9 +48,9 @@
       "appIndexJs": "src/pages/modals/modal-loader"
     },
     {
-      "name": "action-executor",
-      "title": "action-executor",
-      "appIndexJs": "src/pages/modals/action-executor"
+      "name": "action-loader",
+      "title": "action-loader",
+      "appIndexJs": "src/pages/modals/action-loader"
     },
     {
       "name": "experimental-module",

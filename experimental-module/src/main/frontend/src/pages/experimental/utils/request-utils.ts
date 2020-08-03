@@ -23,32 +23,24 @@ export function translateResponse(toTranslate: Response): Promise<TextResponse |
   });
 }
 
-export function executeRequest(requestConfig: any) {
-  switch (requestConfig.type) {
-    case "partial:multi":
-      return requestConfig.partials.map((partial: any) => {
-        return {
-          partial: partial,
-          promise: executeRequest(partial),
-        };
-      });
-    case "partial:single":
-      return executePartialRequest(requestConfig);
-    default:
-      console.debug("Did not find a suitable request handler. Config: ", requestConfig);
-  }
+export interface RequestConfiguration {
+  method: string;
+  partial?: string;
+  form?: string;
+  url?: string;
 }
 
-export function executePartialRequest(partialConfiguration: any): Promise<Response> {
+export function executeRequest(partialConfiguration: RequestConfiguration): Promise<Response> {
   const { partial, form, method, url } = partialConfiguration;
+
   const currentUrl = url ? url : window.location.href;
-  const baseUrl = currentUrl.split("?")[0];
   const requestUrl = partial
     ? currentUrl.indexOf("?") === -1
-      ? `${baseUrl}?_partial=${partial}`
-      : `${baseUrl}&_partial=${partial}`
-    : baseUrl;
+      ? `${currentUrl}?_partial=${partial}`
+      : `${currentUrl}&_partial=${partial}`
+    : currentUrl;
   const formToSerialize = form ? $(form) : null;
+
   if (formToSerialize) {
     return executeFormRequest(requestUrl, method, formToSerialize);
   }
