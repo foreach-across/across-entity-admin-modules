@@ -10,11 +10,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Defines one or more steps which should be executed when the specified DOM Event is triggered on the corresponding element.
+ * After the execution of a step, the result can be handled by one or more {@link ActionHandlerAttribute}s.
+ *
+ * @param <T> inheriting type
+ */
 @Getter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ActionAttribute<T extends ActionAttribute> implements ViewElement.WitherSetter<HtmlViewElement>, ViewElementPostProcessor<HtmlViewElement>
 {
+	/**
+	 * Name of the action handler.
+	 */
 	@NonNull
 	@JsonProperty
 	private String action;
@@ -38,7 +47,7 @@ public abstract class ActionAttribute<T extends ActionAttribute> implements View
 
 	@Override
 	public void applyTo( HtmlViewElement target ) {
-		target.setAttribute( "data-action-loader", this );
+		target.setAttribute( "data-action-load", this );
 	}
 
 	@Override

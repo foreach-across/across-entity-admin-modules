@@ -6,6 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Handles the result of an {@link ActionAttribute}.
+ *
+ * @param <T> inheriting type
+ */
 @Getter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)

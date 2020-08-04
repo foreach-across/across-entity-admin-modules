@@ -13,6 +13,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * {@link ActionAttribute} that is used to perform a request when the specified event is triggered on the corresponding element.
+ * A request can optionally define a {@link RequestActionHandlerAttribute#partial(String)} parameter and form that should be submitted.
+ * <p>
+ * Currently, a request supports handling successful calls ({@link #success(ActionHandlerAttribute[])}) and redirects ({@link #redirect(ActionHandlerAttribute[])})
+ */
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
@@ -44,25 +50,33 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
 	private HttpMethod method = HttpMethod.GET;
 
 	/**
-	 * URL to which the partial request should go. If not set, the url from the {@link #form(String)} will be used
-	 * (or from the closest form if {@link #form(String)} was also not specified.
+	 * URL to which the partial request should go. If not set, the url of the current page will be reused.
 	 */
 	@Getter
 	@JsonProperty
 	private String url;
 
+	/**
+	 * A collection of attributes that can be added to the request.
+	 * Can be used for example to add additional headers to a request.
+	 */
 	@Getter
 	@JsonProperty
 	private Map<String, Object> requestConfig;
 
+	/**
+	 * A collection of {@link ActionHandlerAttribute}s that should be executed when the response was succesful (statuscode 200-299).
+	 * The provided handlers are executed in order.
+	 */
 	@JsonProperty
 	private LinkedList<ActionHandlerAttribute> success = new LinkedList<>();
 
+	/**
+	 * A collection of {@link ActionHandlerAttribute}s that should be executed when the response is a redirect.
+	 * The provided handlers are executed in order.
+	 */
 	@JsonProperty
 	private LinkedList<ActionHandlerAttribute> redirect = new LinkedList<>();
-
-	@JsonProperty
-	private LinkedList<ActionHandlerAttribute> error = new LinkedList<>();
 
 	public RequestActionAttribute success( Collection<ActionHandlerAttribute> success ) {
 		this.success = new LinkedList<>( success );
@@ -81,16 +95,6 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
 
 	public RequestActionAttribute redirect( ActionHandlerAttribute... redirect ) {
 		this.redirect.addAll( Arrays.asList( redirect ) );
-		return this;
-	}
-
-	public RequestActionAttribute error( Collection<ActionHandlerAttribute> error ) {
-		this.error = new LinkedList<>( error );
-		return this;
-	}
-
-	public RequestActionAttribute error( ActionHandlerAttribute... error ) {
-		this.error.addAll( Arrays.asList( error ) );
 		return this;
 	}
 

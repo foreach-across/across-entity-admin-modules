@@ -11,6 +11,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.http.HttpMethod;
 
+import java.util.Map;
+
 /**
  * Enable automatic partial snippet refreshing on an element.
  * <p/>
@@ -92,6 +94,14 @@ public class RequestActionHandlerAttribute extends ActionHandlerAttribute<Reques
 	 */
 	@JsonProperty
 	private String target;
+
+	/**
+	 * A collection of attributes that can be added to the request.
+	 * Can be used for example to add additional headers to a request.
+	 */
+	@Getter
+	@JsonProperty
+	private Map<String, Object> requestConfig;
 
 	public static RequestActionHandlerAttribute requestActionHandler() {
 		return new RequestActionHandlerAttribute();

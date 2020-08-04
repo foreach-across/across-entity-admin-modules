@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * {@link ActionAttribute} that is used to perform a series of handlers
+ */
 public class SimpleActionAttribute extends ActionAttribute<SimpleActionAttribute>
 {
 	public static final String ACTION = "exm:simple";

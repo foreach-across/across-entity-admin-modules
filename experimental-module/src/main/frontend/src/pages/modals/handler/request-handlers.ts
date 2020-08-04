@@ -8,12 +8,12 @@ interface Context {
   response: JsonResponse | TextResponse;
 }
 
-export class RequestContentActionHandlerResolver implements ActionHandlerResolver {
-  static readonly TYPE: string = "exm:request-content";
+export class ResponseContentActionHandlerResolver implements ActionHandlerResolver {
+  static readonly TYPE: string = "exm:response-content";
 
   handle(action: ActionHandler, context: Context): Promise<any> {
     if ("jsonContent" in context.response) {
-      console.log(`Received json response in ${RequestContentActionHandlerResolver.TYPE} handler`, context.response);
+      console.log(`Received json response in ${ResponseContentActionHandlerResolver.TYPE} handler`, context.response);
       return Promise.resolve();
     } else {
       const response: TextResponse = context.response;

@@ -19,6 +19,10 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
 
+/**
+ * Supports the configuration of a bootstrap 4 modal.
+ * For more information regarding the output, see <a href="https://getbootstrap.com/docs/4.5/getting-started/introduction/"></a>
+ */
 public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<AbstractNodeViewElement, ModalViewElementBuilder>
 {
 	private ElementOrBuilder header, body, footer = null;
@@ -42,79 +46,130 @@ public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<Abst
 		return this;
 	}
 
+	/**
+	 * Configures the modal to be vertically centered.
+	 */
 	public ModalViewElementBuilder centered() {
 		return centered( true );
 	}
 
+	/**
+	 * Configures whether the modal should be vertically centered.
+	 */
 	public ModalViewElementBuilder centered( boolean centered ) {
 		this.centered = centered;
 		return this;
 	}
 
+	/**
+	 * Configures the modal body to be scrollable.
+	 * If set, when the modal content is too long, the body will be scrollable and the modal will retain its position.
+	 */
 	public ModalViewElementBuilder scrollableBody() {
 		return scrollableBody( true );
 	}
 
+	/**
+	 * Configures the modal to be scrollable.
+	 * If {@code true}, when the modal content is too long, the body will be scrollable and the modal will retain its position.
+	 * If {@code false}, the entire modal will scroll if its content is too long, independent of the page.
+	 */
 	public ModalViewElementBuilder scrollableBody( boolean scrollableBody ) {
 		this.scrollableBody = scrollableBody;
 		return this;
 	}
 
+	/**
+	 * Configures that the modal should have an fade animation when the modal is opened or closed.
+	 */
 	public ModalViewElementBuilder animated() {
 		return animated( true );
 	}
 
+	/**
+	 * Configures whether the modal should have an fade animation when the modal is opened or closed.
+	 */
 	private ModalViewElementBuilder animated( boolean animated ) {
 		this.animated = animated;
 		return this;
 	}
 
+	/**
+	 * Configures an empty {@code .modal-header} section.
+	 */
 	public ModalViewElementBuilder header() {
 		return header( html.builders.container() );
 	}
 
+	/**
+	 * Configures the given builder as content for the {@code .modal-header} section.
+	 */
 	public ModalViewElementBuilder header( ViewElementBuilder header ) {
 		this.header = ElementOrBuilder.wrap( header );
 		return this;
 	}
 
+	/**
+	 * Configures the given element as content for the {@code .modal-header} section.
+	 */
 	public ModalViewElementBuilder header( ViewElement header ) {
 		this.header = ElementOrBuilder.wrap( header );
 		return this;
 	}
 
+	/**
+	 * Configures an empty {@code .modal-body} section.
+	 */
 	public ModalViewElementBuilder body() {
 		return body( html.builders.container() );
 	}
 
+	/**
+	 * Configures the given builder as content for the {@code .modal-body} section.
+	 */
 	public ModalViewElementBuilder body( ViewElementBuilder body ) {
 		this.body = ElementOrBuilder.wrap( body );
 		return this;
 	}
 
+	/**
+	 * Configures the given element as content for the {@code .modal-body} section.
+	 */
 	public ModalViewElementBuilder body( ViewElement body ) {
 		this.body = ElementOrBuilder.wrap( body );
 		return this;
 	}
 
+	/**
+	 * Configures an empty {@code .modal-footer} section.
+	 */
 	public ModalViewElementBuilder footer() {
 		return footer( html.builders.container() );
 	}
 
+	/**
+	 * Configures the given builder as content for the {@code .modal-footer} section.
+	 */
 	public ModalViewElementBuilder footer( ViewElementBuilder footer ) {
 		this.footer = ElementOrBuilder.wrap( footer );
 		return this;
 	}
 
+	/**
+	 * Configures the given element as content for the {@code .modal-footer} section.
+	 */
 	public ModalViewElementBuilder footer( ViewElement footer ) {
 		this.footer = ElementOrBuilder.wrap( footer );
 		return this;
 	}
 
+	/**
+	 * Configures the header to have an {@code <h3></h3>} element containing the given title as well as a close button for the modal.
+	 */
 	public ModalViewElementBuilder title( String title ) {
 		header = ElementOrBuilder.wrap(
 				html.builders.container()
-				             .add( html.builders.h3( css.modal.title, text( title ) ) )
+				             .add( html.builders.div( css.modal.title ).add( html.builders.h3( text( title ) ) ) )
 				             .add( html.builders.button()
 				                                .attribute( "type", "button" )
 				                                .with( css.close )

@@ -8,6 +8,7 @@ import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAda
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -31,6 +32,11 @@ import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAG
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.data;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
+/**
+ * Registers the necessary webresources for modal and ajax-based loading support, and defines a few utility methods to configure the loading of a modal.
+ *
+ * @param <T> inherited type
+ */
 public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProcessor> extends EntityViewProcessorAdapter
 {
 	@NonNull
@@ -97,15 +103,15 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 								           requestAction()
 										           .url( url.apply( linkViewBuilder, builderContext ) )
 										           .partial( partial )
-										           .requestConfig( Map.of( "headers", Map.of( "X-MODAL-ORIGIN", modalId ) ) )
+										           .requestConfig( Map.of( "headers", Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
 										           .success(
 												           clearHandler( modalTarget( ".modal-title" ) ),
 												           clearHandler( modalTarget( ".modal-footer" ) ),
 												           clearHandler( modalTarget( ".modal-body" ) ),
-												           requestContentHandler()
+												           responseContentHandler()
 														           .source( "." + PageContentStructure.CSS_BODY_SECTION )
 														           .target( modalTarget( ".modal-body" ) ),
-												           requestContentHandler()
+												           responseContentHandler()
 														           .source( ".page-header" )
 														           .target( modalTarget( ".modal-title" ) ),
 												           moveHandler()

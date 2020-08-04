@@ -9,7 +9,6 @@ export function translateResponse(toTranslate: Response): Promise<TextResponse |
       const jsonResponse = toTranslate;
       // @ts-ignore
       jsonResponse.jsonContent = json;
-      console.log("jsonResponse", jsonResponse);
       return jsonResponse as JsonResponse;
     });
   }
@@ -18,7 +17,6 @@ export function translateResponse(toTranslate: Response): Promise<TextResponse |
     const textResponse = toTranslate;
     // @ts-ignore
     textResponse.textContent = text;
-    console.log("textResponse", textResponse);
     return textResponse as TextResponse;
   });
 }

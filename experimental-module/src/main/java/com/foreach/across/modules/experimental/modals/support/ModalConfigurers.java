@@ -25,6 +25,9 @@ public class ModalConfigurers
 	 */
 	public static final String MODAL_ORIGIN_HEADER = "X-MODAL-ORIGIN";
 
+	/**
+	 * Creates a bootstrap modal with id {@code createModal} that is linked to the create button on the listView.
+	 */
 	public static <U extends EntityConfigurationBuilder<?>> Consumer<U> createViewAsModal() {
 		String modalId = "createModal";
 		String modalSelector = "#" + modalId;
@@ -37,7 +40,7 @@ public class ModalConfigurers
 								                        .partial( "content" )
 						        )
 				) ).createFormView( fvb -> fvb.viewProcessor(
-						vp -> vp.createBean( SubmitAndRefreshTableViewProcessor.class )
+						vp -> vp.createBean( ModalSubmitAndRefreshTableViewProcessor.class )
 						        .configure(
 								        mfvp -> mfvp.modalSelector( modalSelector )
 								                    .elementName( "btn-save" )
@@ -49,6 +52,9 @@ public class ModalConfigurers
 				);
 	}
 
+	/**
+	 * Creates a bootstrap modal with id {@code updateModal} that is linked to the update action for each row on the listView.
+	 */
 	public static <U extends EntityConfigurationBuilder<?>> Consumer<U> updateViewAsModal() {
 		String modalId = "updateModal";
 		String modalSelector = "#" + modalId;
@@ -66,7 +72,7 @@ public class ModalConfigurers
 						        )
 				) ).updateFormView(
 						fvb -> fvb.viewProcessor(
-								vp -> vp.createBean( SubmitAndRefreshTableViewProcessor.class )
+								vp -> vp.createBean( ModalSubmitAndRefreshTableViewProcessor.class )
 								        .configure(
 										        mfvp -> mfvp.modalSelector( modalSelector )
 										                    .elementName( "btn-save" )
@@ -91,10 +97,10 @@ public class ModalConfigurers
 														             clearHandler( modalSelector + " .modal-title" ),
 														             clearHandler( modalSelector + " .modal-footer" ),
 														             clearHandler( modalSelector + " .modal-body" ),
-														             requestContentHandler()
+														             responseContentHandler()
 																             .source( "." + PageContentStructure.CSS_BODY_SECTION )
 																             .target( modalSelector + " .modal-body" ),
-														             requestContentHandler()
+														             responseContentHandler()
 																             .source( ".page-header" )
 																             .target( modalSelector + " .modal-title" ),
 														             moveHandler()
@@ -111,6 +117,9 @@ public class ModalConfigurers
 				);
 	}
 
+	/**
+	 * Creates a bootstrap modal with id {@code updateModal} that is linked to the delete action for each row on the listView.
+	 */
 	public static <U extends EntityConfigurationBuilder<?>> Consumer<U> deleteViewAsModal() {
 		String modalId = "deleteModal";
 		String modalSelector = "#" + modalId;
@@ -127,7 +136,7 @@ public class ModalConfigurers
 								                      .actionRole( "delete" )
 						        )
 				) ).deleteFormView( fvb -> fvb.viewProcessor(
-						vp -> vp.createBean( SubmitAndRefreshTableViewProcessor.class )
+						vp -> vp.createBean( ModalSubmitAndRefreshTableViewProcessor.class )
 						        .configure(
 								        mfvp -> mfvp.modalSelector( modalSelector )
 								                    .elementName( "btn-delete" )

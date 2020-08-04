@@ -10,6 +10,7 @@ import com.foreach.across.modules.entity.views.processors.SortableTableRendering
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
@@ -21,6 +22,11 @@ import org.thymeleaf.util.StringUtils;
 
 import java.util.Optional;
 
+/**
+ * Configures the referenced {@link ViewElement} to load a modal for a specific instance in a table.
+ * The customization is only applied if a {@link com.foreach.across.modules.experimental.modals.support.ModalConfigurers#MODAL_ORIGIN_HEADER} header
+ * is present that references the id of the modal.
+ */
 @Accessors(fluent = true, chain = true)
 public class ModalItemActionViewProcessor extends AbstractModalViewProcessor<ModalItemActionViewProcessor>
 {

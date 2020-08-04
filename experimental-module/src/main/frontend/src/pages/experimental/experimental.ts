@@ -1,7 +1,7 @@
 import { handlerFactory } from "../modals/handler/action-handler-factory";
 import { ActionFactory } from "../modals/action/action-factory";
 import { RequestActionResolver, requestActionResolver } from "../modals/action/request-action";
-import { RequestActionHandlerResolver, RequestContentActionHandlerResolver } from "../modals/handler/request-handlers";
+import { RequestActionHandlerResolver, ResponseContentActionHandlerResolver } from "../modals/handler/request-handlers";
 import {
   ClearActionHandlerResolver,
   CloseModalHandlerResolver,
@@ -23,8 +23,8 @@ window.ExperimentalModule = (function () {
   experimentalModule.actionFactory.register(SimpleActionResolver.TYPE, simpleActionResolver);
 
   experimentalModule.actionHandlerFactory.register(
-    RequestContentActionHandlerResolver.TYPE,
-    new RequestContentActionHandlerResolver()
+    ResponseContentActionHandlerResolver.TYPE,
+    new ResponseContentActionHandlerResolver()
   );
   experimentalModule.actionHandlerFactory.register(MoveActionHandlerResolver.TYPE, new MoveActionHandlerResolver());
   experimentalModule.actionHandlerFactory.register(RemoveActionHandlerResolver.TYPE, new RemoveActionHandlerResolver());

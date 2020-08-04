@@ -31,6 +31,9 @@ public class ModalLoadAttribute implements ViewElement.WitherSetter<HtmlViewElem
 	@JsonProperty
 	private String target;
 
+	/**
+	 * Collection of {@link ActionAttribute}s that are possible on the target element
+	 */
 	@NonNull
 	@JsonProperty
 	private List<ActionAttribute> content = new ArrayList<>();
