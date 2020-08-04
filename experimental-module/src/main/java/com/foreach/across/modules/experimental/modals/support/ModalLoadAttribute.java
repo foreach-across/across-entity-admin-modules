@@ -36,7 +36,7 @@ public class ModalLoadAttribute implements ViewElement.WitherSetter<HtmlViewElem
 	private List<ActionAttribute> content = new ArrayList<>();
 
 	@JsonProperty
-	private boolean renderAfterContentLoaded = false;
+	private boolean renderAfterContentLoaded = true;
 
 	public ModalLoadAttribute content( ActionAttribute... actions ) {
 		this.content.addAll( Arrays.asList( actions ) );

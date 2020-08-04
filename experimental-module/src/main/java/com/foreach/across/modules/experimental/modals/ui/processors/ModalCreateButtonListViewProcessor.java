@@ -21,7 +21,7 @@ public class ModalCreateButtonListViewProcessor extends AbstractModalViewProcess
 		ContainerViewElementUtils.find( container, "btn-create", ButtonViewElement.class )
 		                         .ifPresent(
 				                         btn -> {
-					                         configureViewElement( btn, linkBuilder );
+					                         configureViewElement( btn, linkBuilder, builderContext );
 					                         container.addChild( createModal().build( builderContext ) );
 				                         }
 		                         );

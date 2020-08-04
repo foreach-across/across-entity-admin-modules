@@ -34,19 +34,28 @@ public class SimpleActionHandlerAttribute extends ActionHandlerAttribute<SimpleA
 				.type( Type.MOVE );
 	}
 
-	public static SimpleActionHandlerAttribute removeHandler() {
+	public static SimpleActionHandlerAttribute removeHandler( String target ) {
 		return simpleActionHandler()
-				.type( Type.REMOVE );
+				.type( Type.REMOVE )
+				.target( target );
 	}
 
-	public static SimpleActionHandlerAttribute clearHandler() {
+	public static SimpleActionHandlerAttribute clearHandler( String target ) {
 		return simpleActionHandler()
-				.type( Type.CLEAR );
+				.type( Type.CLEAR )
+				.target( target );
 	}
 
-	public static SimpleActionHandlerAttribute closeModalHandler() {
+	public static SimpleActionHandlerAttribute closeModalHandler( String target ) {
 		return simpleActionHandler()
-				.type( Type.CLOSE_MODAL );
+				.type( Type.CLOSE_MODAL )
+				.target( target );
+	}
+
+	public static SimpleActionHandlerAttribute initializeFormElements( String target ) {
+		return simpleActionHandler()
+				.type( Type.INITIALIZE_ELEMENTS )
+				.target( target );
 	}
 
 	public interface Type
@@ -56,5 +65,6 @@ public class SimpleActionHandlerAttribute extends ActionHandlerAttribute<SimpleA
 		String CLEAR = "exm:clear";
 		String REMOVE = "exm:remove";
 		String CLOSE_MODAL = "exm:modal:close";
+		String INITIALIZE_ELEMENTS = "exm:initialize-elements";
 	}
 }

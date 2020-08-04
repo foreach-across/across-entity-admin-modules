@@ -20,17 +20,19 @@ export class RequestActionResolver implements ActionResolver {
     return executeRequest(action)
       .then((response) => translateResponse(response))
       .then((response: Response) => {
+        let sequence = Promise.resolve();
         if (response.redirected) {
           action.redirect.forEach((handler) => {
-            actionHandlerFactory.handle(handler, { action, response });
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, response }));
           });
         } else if (response.ok) {
           action.success.forEach((handler) => {
-            actionHandlerFactory.handle(handler, { action, response });
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, response }));
           });
         } else {
           console.error("response for action was neither redirected nor ok", action, response);
         }
+        return sequence;
       });
   }
 }

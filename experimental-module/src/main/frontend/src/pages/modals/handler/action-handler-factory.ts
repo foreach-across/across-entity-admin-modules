@@ -11,13 +11,13 @@ export class ActionHandlerFactory {
     this.actionHandlerResolvers.set(type, handler);
   }
 
-  handle(action: ActionHandler, context: any): void {
+  handle(action: ActionHandler, context: any): Promise<any> {
     const handler = this.actionHandlerResolvers.get(action.type);
     if (!handler) {
       console.error("Could not find a matching handler for action", action);
-      return;
+      return Promise.reject();
     }
-    handler.handle(action, context);
+    return handler.handle(action, context);
   }
 }
 

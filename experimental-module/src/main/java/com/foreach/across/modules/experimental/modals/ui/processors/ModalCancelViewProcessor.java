@@ -11,10 +11,6 @@ public class ModalCancelViewProcessor extends ModalFormViewProcessor<ModalCancel
 {
 	@Override
 	protected void configureViewElement( ViewElement element, EntityViewLinkBuilder linkBuilder, ViewElementBuilderContext builderContext ) {
-		element.set( simpleAction()
-				             .handlers(
-						             closeModalHandler()
-								             .target( getModalSelector() )
-				             ) );
+		element.set( simpleAction().handlers( closeModalHandler( getModalSelector() ) ) );
 	}
 }

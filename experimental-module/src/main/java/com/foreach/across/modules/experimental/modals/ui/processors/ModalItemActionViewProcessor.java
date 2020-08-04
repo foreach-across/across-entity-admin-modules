@@ -9,9 +9,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBui
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
-import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
@@ -45,11 +43,7 @@ public class ModalItemActionViewProcessor extends AbstractModalViewProcessor<Mod
 				if ( actions.isPresent() ) {
 					TableViewElement.Cell rowActions = actions.get();
 					rowActions.findAll( ButtonViewElement.class, this::shouldConfigureRowAction )
-					          .forEach( btnViewElement -> {
-						          SingleEntityViewLinkBuilder entityLinkBuilder =
-								          linkBuilder.forInstance( EntityViewElementUtils.currentEntity( ctx ) );
-						          configureViewElement( btnViewElement, entityLinkBuilder );
-					          } );
+					          .forEach( btnViewElement -> configureViewElement( btnViewElement, linkBuilder, ctx ) );
 
 				}
 			} );

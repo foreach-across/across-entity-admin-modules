@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 
 import static com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute.requestAction;
 import static com.foreach.across.modules.experimental.modals.support.action.RequestActionHandlerAttribute.requestActionHandler;
-import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionHandlerAttribute.closeModalHandler;
+import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionHandlerAttribute.*;
 
 @Accessors(fluent = true, chain = true)
 public class SubmitAndRefreshTableViewProcessor extends ModalFormViewProcessor<SubmitAndRefreshTableViewProcessor>
@@ -26,13 +26,21 @@ public class SubmitAndRefreshTableViewProcessor extends ModalFormViewProcessor<S
 		element.set( requestAction()
 				             .url( url.apply( linkBuilder, builderContext ) )
 				             .method( HttpMethod.POST )
+				             .partial( "::entityForm" )
 				             .form( getModalSelector() + " .modal-body form" )
+				             .success(
+						             clearHandler( getModalSelector() + " .modal-body" ),
+						             requestContentHandler()
+								             .target( getModalSelector() + " .modal-body" ),
+						             removeHandler( getModalSelector() + " .modal-body .em-form-actions" ),
+						             initializeFormElements( getModalSelector() + ".modal-body" )
+				             )
 				             .redirect(
 						             requestActionHandler()
 								             .partial( "::itemsTable" )
 								             .target( ".em-sortableTable-panel" ),
-						             closeModalHandler()
-								             .target( getModalSelector() )
+						             closeModalHandler( getModalSelector() ),
+						             initializeFormElements( ".em-sortableTable-panel" )
 				             ) );
 	}
 }

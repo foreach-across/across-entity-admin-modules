@@ -12,5 +12,5 @@ export interface RequestActionHandler extends ActionHandler {
 }
 
 export interface ActionHandlerResolver {
-  handle(action: ActionHandler, context: any): void;
+  handle(action: ActionHandler, context: any): Promise<any>;
 }

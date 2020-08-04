@@ -2,9 +2,7 @@ package com.foreach.across.modules.experimental.modals.support;
 
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
-import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.ui.processors.*;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -13,11 +11,20 @@ import org.springframework.http.HttpMethod;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
 import static com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute.requestAction;
 import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionHandlerAttribute.*;
 
 public class ModalConfigurers
 {
+	/**
+	 * Identifies the request header that allows a form to be modified for a modal.
+	 * The value of the origin header should be the id of the modal that is in use.
+	 *
+	 * @see ModalFormViewProcessor
+	 */
+	public static final String MODAL_ORIGIN_HEADER = "X-MODAL-ORIGIN";
+
 	public static <U extends EntityConfigurationBuilder<?>> Consumer<U> createViewAsModal() {
 		String modalId = "createModal";
 		String modalSelector = "#" + modalId;
@@ -26,12 +33,7 @@ public class ModalConfigurers
 						vp -> vp.createBean( ModalCreateButtonListViewProcessor.class )
 						        .configure(
 								        mcblvp -> mcblvp.modalId( modalId )
-								                        .url( linkViewBuilder -> {
-									                        if ( EntityViewLinkBuilder.class.isAssignableFrom( linkViewBuilder.getClass() ) ) {
-										                        return ( (EntityViewLinkBuilder) linkViewBuilder ).createView().toUriString();
-									                        }
-									                        return linkViewBuilder.toUriString();
-								                        } )
+								                        .url( ( linkBuilder, ctx ) -> linkBuilder.createView().toUriString() )
 								                        .partial( "content" )
 						        )
 				) ).createFormView( fvb -> fvb.viewProcessor(
@@ -39,7 +41,7 @@ public class ModalConfigurers
 						        .configure(
 								        mfvp -> mfvp.modalSelector( modalSelector )
 								                    .elementName( "btn-save" )
-								                    .url( ( ( linkBuilder, builderContext ) -> linkBuilder.createView().toUriString() ) )
+								                    .url( ( linkBuilder, ctx ) -> linkBuilder.createView().toUriString() )
 						        )
 				                    ).viewProcessor( vp -> vp.createBean( ModalCancelViewProcessor.class )
 				                                             .configure( mfvp -> mfvp.modalSelector( modalSelector )
@@ -56,12 +58,9 @@ public class ModalConfigurers
 						        .withName( "updateModalItemActionViewProcessor" )
 						        .configure(
 								        mclvp -> mclvp.modalId( modalId )
-								                      .url( ( linkViewBuilder ) -> {
-									                      if ( SingleEntityViewLinkBuilder.class.isAssignableFrom( linkViewBuilder.getClass() ) ) {
-										                      return ( (SingleEntityViewLinkBuilder) linkViewBuilder ).updateView().toUriString();
-									                      }
-									                      return linkViewBuilder.toUriString();
-								                      } )
+								                      .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
+								                                                               .updateView()
+								                                                               .toUriString() )
 								                      .partial( "content" )
 								                      .actionRole( "edit" )
 						        )
@@ -71,12 +70,10 @@ public class ModalConfigurers
 								        .configure(
 										        mfvp -> mfvp.modalSelector( modalSelector )
 										                    .elementName( "btn-save" )
-										                    .url(
-												                    ( ( linkBuilder, builderContext ) -> linkBuilder.forInstance(
-														                    EntityViewElementUtils.currentEntity( builderContext ) )
-												                                                                    .updateView()
-												                                                                    .toUriString() )
-										                    ) )
+										                    .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
+										                                                             .updateView()
+										                                                             .toUriString() )
+								        )
 						).viewProcessor(
 								vp -> vp.provideBean( new ModalFormViewProcessor<>()
 								{
@@ -84,20 +81,16 @@ public class ModalConfigurers
 									protected void configureViewElement( ViewElement element,
 									                                     EntityViewLinkBuilder linkBuilder,
 									                                     ViewElementBuilderContext builderContext ) {
-										String url = linkBuilder.forInstance( EntityViewElementUtils.currentEntity( builderContext ) ).deleteView()
-										                        .toUriString();
+										String url = linkBuilder.forInstance( currentEntity( builderContext ) ).deleteView().toUriString();
 										element.set( requestAction()
 												             .url( url )
 												             .method( HttpMethod.GET )
 												             .partial( "content" )
-												             .requestConfig( Map.of( "headers", Map.of( "X-MODAL-ORIGIN", modalId ) ) )
+												             .requestConfig( Map.of( "headers", Map.of( MODAL_ORIGIN_HEADER, modalId ) ) )
 												             .success(
-														             clearHandler()
-																             .target( modalSelector + " .modal-title" ),
-														             clearHandler()
-																             .target( modalSelector + " .modal-footer" ),
-														             clearHandler()
-																             .target( modalSelector + " .modal-body" ),
+														             clearHandler( modalSelector + " .modal-title" ),
+														             clearHandler( modalSelector + " .modal-footer" ),
+														             clearHandler( modalSelector + " .modal-body" ),
 														             requestContentHandler()
 																             .source( "." + PageContentStructure.CSS_BODY_SECTION )
 																             .target( modalSelector + " .modal-body" ),
@@ -106,7 +99,8 @@ public class ModalConfigurers
 																             .target( modalSelector + " .modal-title" ),
 														             moveHandler()
 																             .source( modalSelector + " .modal-body .em-form-actions" )
-																             .target( modalSelector + " .modal-footer" )
+																             .target( modalSelector + " .modal-footer" ),
+														             initializeFormElements( modalSelector )
 												             ) );
 									}
 								}.elementName( "btn-delete" )
@@ -126,12 +120,9 @@ public class ModalConfigurers
 						        .withName( "deleteModalItemActionViewProcessor" )
 						        .configure(
 								        mclvp -> mclvp.modalId( modalId )
-								                      .url( ( linkViewBuilder ) -> {
-									                      if ( SingleEntityViewLinkBuilder.class.isAssignableFrom( linkViewBuilder.getClass() ) ) {
-										                      return ( (SingleEntityViewLinkBuilder) linkViewBuilder ).deleteView().toUriString();
-									                      }
-									                      return linkViewBuilder.toUriString();
-								                      } )
+								                      .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
+								                                                               .deleteView()
+								                                                               .toUriString() )
 								                      .partial( "content" )
 								                      .actionRole( "delete" )
 						        )
@@ -140,12 +131,9 @@ public class ModalConfigurers
 						        .configure(
 								        mfvp -> mfvp.modalSelector( modalSelector )
 								                    .elementName( "btn-delete" )
-								                    .url(
-										                    ( ( linkBuilder, builderContext ) -> linkBuilder.forInstance(
-												                    EntityViewElementUtils.currentEntity( builderContext ) )
-										                                                                    .deleteView()
-										                                                                    .toUriString() )
-								                    )
+								                    .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
+								                                                             .deleteView()
+								                                                             .toUriString() )
 						        ) ).viewProcessor( vp -> vp.createBean( ModalCancelViewProcessor.class )
 				                                           .configure( mfvp -> mfvp.modalSelector( modalSelector )
 				                                                                   .elementName( "btn-cancel" ) ) )

@@ -15,13 +15,10 @@ function initializeModalConfiguration(element: Node) {
 
     if (config.renderAfterContentLoaded) {
       fetchModalContent(targetModalId, config, () => {
-        EntityModule.initializeFormElements($(targetModalId));
         $(targetModalId).modal("show");
       });
     } else {
-      fetchModalContent(targetModalId, config, () => {
-        EntityModule.initializeFormElements($(targetModalId));
-      });
+      fetchModalContent(targetModalId, config, () => {});
       $(targetModalId).modal("show");
     }
   });

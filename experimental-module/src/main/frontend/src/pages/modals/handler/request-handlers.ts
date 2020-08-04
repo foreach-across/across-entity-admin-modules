@@ -11,9 +11,10 @@ interface Context {
 export class RequestContentActionHandlerResolver implements ActionHandlerResolver {
   static readonly TYPE: string = "exm:request-content";
 
-  handle(action: ActionHandler, context: Context): void {
+  handle(action: ActionHandler, context: Context): Promise<any> {
     if ("jsonContent" in context.response) {
       console.log(`Received json response in ${RequestContentActionHandlerResolver.TYPE} handler`, context.response);
+      return Promise.resolve();
     } else {
       const response: TextResponse = context.response;
 
@@ -30,6 +31,7 @@ export class RequestContentActionHandlerResolver implements ActionHandlerResolve
         contentToSet = "</form>" + contentToSet;
       }
       $(action.target).html(contentToSet);
+      return Promise.resolve();
     }
   }
 }
@@ -37,13 +39,12 @@ export class RequestContentActionHandlerResolver implements ActionHandlerResolve
 export class RequestActionHandlerResolver implements ActionHandlerResolver {
   static readonly TYPE: string = "exm:request";
 
-  handle(action: RequestActionHandler, context: Context): void {
-    executeRequest(action)
+  handle(action: RequestActionHandler, context: Context): Promise<any> {
+    return executeRequest(action)
       .then(translateResponse)
       .then((response) => {
         const asTextResponse: TextResponse = response as TextResponse;
         $(action.target).replaceWith(asTextResponse.textContent);
-        EntityModule.initializeFormElements($(action.target));
       });
   }
 }

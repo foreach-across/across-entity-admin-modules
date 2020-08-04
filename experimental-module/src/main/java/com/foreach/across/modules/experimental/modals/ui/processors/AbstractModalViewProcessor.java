@@ -7,19 +7,20 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
-import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilderSupport;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -38,7 +39,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 
 	@NonNull
 	@Setter
-	private Function<EntityViewLinkBuilderSupport, String> url;
+	private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url;
 
 	@Setter
 	private String partial = null;
@@ -48,7 +49,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 		return (T) this;
 	}
 
-	public T url( Function<EntityViewLinkBuilderSupport, String> url ) {
+	public T url( BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url ) {
 		this.url = url;
 		return (T) this;
 	}
@@ -85,23 +86,22 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 		);
 	}
 
-	protected void configureViewElement( ViewElement viewElement, EntityViewLinkBuilderSupport linkViewBuilder ) {
+	protected void configureViewElement( ViewElement viewElement,
+	                                     EntityViewLinkBuilder linkViewBuilder,
+	                                     ViewElementBuilderContext builderContext ) {
 		viewElement.set( data( "toggle", "modal" ), data( "target", modalSelector() ) )
 		           .set(
 				           modalLoadAttribute()
 						           .target( modalSelector() )
 						           .content(
 								           requestAction()
-										           .url( url.apply( linkViewBuilder ) )
+										           .url( url.apply( linkViewBuilder, builderContext ) )
 										           .partial( partial )
 										           .requestConfig( Map.of( "headers", Map.of( "X-MODAL-ORIGIN", modalId ) ) )
 										           .success(
-												           clearHandler()
-														           .target( modalTarget( ".modal-title" ) ),
-												           clearHandler()
-														           .target( modalTarget( ".modal-footer" ) ),
-												           clearHandler()
-														           .target( modalTarget( ".modal-body" ) ),
+												           clearHandler( modalTarget( ".modal-title" ) ),
+												           clearHandler( modalTarget( ".modal-footer" ) ),
+												           clearHandler( modalTarget( ".modal-body" ) ),
 												           requestContentHandler()
 														           .source( "." + PageContentStructure.CSS_BODY_SECTION )
 														           .target( modalTarget( ".modal-body" ) ),
@@ -110,7 +110,8 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 														           .target( modalTarget( ".modal-title" ) ),
 												           moveHandler()
 														           .source( modalTarget( ".modal-body .em-form-actions" ) )
-														           .target( modalTarget( ".modal-footer" ) )
+														           .target( modalTarget( ".modal-footer" ) ),
+												           initializeFormElements( modalSelector() )
 										           )
 						           )
 		           );

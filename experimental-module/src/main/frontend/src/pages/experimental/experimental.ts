@@ -5,6 +5,7 @@ import { RequestActionHandlerResolver, RequestContentActionHandlerResolver } fro
 import {
   ClearActionHandlerResolver,
   CloseModalHandlerResolver,
+  InitializeFormElementsHandlerResolver,
   MoveActionHandlerResolver,
   RemoveActionHandlerResolver,
 } from "../modals/handler/simple-handlers";
@@ -32,6 +33,10 @@ window.ExperimentalModule = (function () {
   experimentalModule.actionHandlerFactory.register(
     RequestActionHandlerResolver.TYPE,
     new RequestActionHandlerResolver()
+  );
+  experimentalModule.actionHandlerFactory.register(
+    InitializeFormElementsHandlerResolver.TYPE,
+    new InitializeFormElementsHandlerResolver()
   );
 
   return experimentalModule;
