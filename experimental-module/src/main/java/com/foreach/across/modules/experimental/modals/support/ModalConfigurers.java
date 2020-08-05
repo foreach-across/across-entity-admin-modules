@@ -2,6 +2,8 @@ package com.foreach.across.modules.experimental.modals.support;
 
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityViewProcessorConfigurer;
+import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.ui.processors.*;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -46,9 +48,7 @@ public class ModalConfigurers
 								                    .elementName( "btn-save" )
 								                    .url( ( linkBuilder, ctx ) -> linkBuilder.createView().toUriString() )
 						        )
-				                    ).viewProcessor( vp -> vp.createBean( ModalCancelViewProcessor.class )
-				                                             .configure( mfvp -> mfvp.modalSelector( modalSelector )
-				                                                                     .elementName( "btn-cancel" ) ) )
+				                    ).viewProcessor( customizeFormViewCancelButton( modalSelector ) )
 				);
 	}
 
@@ -111,9 +111,7 @@ public class ModalConfigurers
 									}
 								}.elementName( "btn-delete" )
 								 .modalSelector( modalSelector ) )
-						).viewProcessor( vp -> vp.createBean( ModalCancelViewProcessor.class )
-						                         .configure( mfvp -> mfvp.elementName( "btn-cancel" )
-						                                                 .modalSelector( modalSelector ) ) )
+						).viewProcessor( customizeFormViewCancelButton( modalSelector ) )
 				);
 	}
 
@@ -143,9 +141,12 @@ public class ModalConfigurers
 								                    .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
 								                                                             .deleteView()
 								                                                             .toUriString() )
-						        ) ).viewProcessor( vp -> vp.createBean( ModalCancelViewProcessor.class )
-				                                           .configure( mfvp -> mfvp.modalSelector( modalSelector )
-				                                                                   .elementName( "btn-cancel" ) ) )
+						        ) ).viewProcessor( customizeFormViewCancelButton( modalSelector ) )
 				);
+	}
+
+	private static Consumer<EntityViewProcessorConfigurer<? extends EntityViewProcessor>> customizeFormViewCancelButton( String modalSelector ) {
+		return vp -> vp.createBean( ModalCancelViewProcessor.class )
+		               .configure( mfvp -> mfvp.elementName( "btn-cancel" ).modalSelector( modalSelector ) );
 	}
 }
