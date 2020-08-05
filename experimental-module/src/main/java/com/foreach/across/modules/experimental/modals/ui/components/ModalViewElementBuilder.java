@@ -8,6 +8,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.Getter;
@@ -33,6 +34,9 @@ public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<Abst
 	private boolean scrollableBody = false;
 	private boolean animated = true;
 
+	/**
+	 * Sets the {@link ViewElement} name of the modal, not to be confused with the name attribute.
+	 */
 	public ModalViewElementBuilder name( String name ) {
 		this.name = name;
 		if ( StringUtils.isBlank( id ) ) {
@@ -41,6 +45,9 @@ public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<Abst
 		return this;
 	}
 
+	/**
+	 * Configures the id of the modal. The id is used to reference and control the modal.
+	 */
 	public ModalViewElementBuilder id( String id ) {
 		this.id = id;
 		return this;
@@ -89,8 +96,50 @@ public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<Abst
 	/**
 	 * Configures whether the modal should have an fade animation when the modal is opened or closed.
 	 */
-	private ModalViewElementBuilder animated( boolean animated ) {
+	public ModalViewElementBuilder animated( boolean animated ) {
 		this.animated = animated;
+		return this;
+	}
+
+	/**
+	 * Configures the modal with a backdrop that does not close the modal when clicked.
+	 */
+	public ModalViewElementBuilder staticBackdrop() {
+		with( HtmlViewElement.Functions.data( "backdrop", "static" ) );
+		return this;
+	}
+
+	/**
+	 * Configures that a backdrop should be present when the modal is opened.
+	 * By default, a backdrop is present.
+	 */
+	public ModalViewElementBuilder backdrop() {
+		return backdrop( true );
+	}
+
+	/**
+	 * Configures that a backdrop should be present when the modal is opened.
+	 * By default, a backdrop is present.
+	 */
+	public ModalViewElementBuilder backdrop( boolean backdrop ) {
+		with( HtmlViewElement.Functions.data( "backdrop", backdrop ) );
+		return this;
+	}
+
+	/**
+	 * Configures that the escape key should close the modal when it's opened.
+	 * By default, the escape key closes the modal.
+	 */
+	public ModalViewElementBuilder keyboard() {
+		return keyboard( true );
+	}
+
+	/**
+	 * Configures that the escape key should close the modal when it's opened.
+	 * By default, the escape key closes the modal.
+	 */
+	public ModalViewElementBuilder keyboard( boolean keyboard ) {
+		with( HtmlViewElement.Functions.data( "keyboard", keyboard ) );
 		return this;
 	}
 
