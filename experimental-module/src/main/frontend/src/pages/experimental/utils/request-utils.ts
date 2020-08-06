@@ -1,4 +1,3 @@
-import { getFormData } from "./form-utils";
 import { getCookie } from "./utils";
 import { JsonResponse, TextResponse } from "./response-types";
 
@@ -32,13 +31,9 @@ export interface RequestConfiguration {
 export function executeRequest(partialConfiguration: RequestConfiguration): Promise<Response> {
   const { partial, form, method, url, requestConfig } = partialConfiguration;
 
-  const currentUrl = url ? url : window.location.href;
-  const requestUrl = partial
-    ? currentUrl.indexOf("?") === -1
-      ? `${currentUrl}?_partial=${partial}`
-      : `${currentUrl}&_partial=${partial}`
-    : currentUrl;
+  const baseUrl = url ? url : window.location.href.split("?")[0];
   const formToSerialize = form ? $(form) : null;
+  const requestUrl = partial ? `${baseUrl}?_partial=${partial}` : baseUrl;
 
   if (formToSerialize) {
     return executeFormRequest(requestUrl, method, formToSerialize, requestConfig);
@@ -47,7 +42,13 @@ export function executeRequest(partialConfiguration: RequestConfiguration): Prom
 }
 
 export function executeFormRequest(url: string, method: string, form: any, requestConfig: any): Promise<Response> {
-  let formConfiguration: any = $.extend(
+  if (methodDoesNotSupportBody(method)) {
+    const formAsUrlParams = new URLSearchParams(getFormData(form[0]) as any);
+    const targetUrl = url.indexOf("?") === -1 ? `${url}?${formAsUrlParams}` : `${url}&${formAsUrlParams}`;
+    return executeFetchRequest(targetUrl, method, requestConfig);
+  }
+
+  const formConfiguration: any = $.extend(
     true,
     {},
     {
@@ -59,15 +60,21 @@ export function executeFormRequest(url: string, method: string, form: any, reque
   );
 
   if (form.attr("enctype") === "multipart/form-data") {
-    formConfiguration.body = new FormData(form[0]);
+    formConfiguration.headers["Content-Type"] = "multipart/form-data";
+    formConfiguration.body = getFormData(form[0]);
     formConfiguration.processData = false;
     formConfiguration.contentType = false;
     formConfiguration.cache = false;
   } else {
-    formConfiguration.body = getFormData($(form[0]));
+    formConfiguration.body = new URLSearchParams(getFormData(form[0]) as any);
   }
 
   return executeFetchRequest(url, method, formConfiguration);
+}
+
+function methodDoesNotSupportBody(method: string) {
+  let lowerCased = method.toLowerCase();
+  return lowerCased === "get" || lowerCased === "head";
 }
 
 export function executeFetchRequest(url: string, method: string, requestConfiguration?: any): Promise<Response> {
@@ -81,4 +88,18 @@ export function executeFetchRequest(url: string, method: string, requestConfigur
     requestConfiguration
   );
   return fetch(url, fetchConfiguration);
+}
+
+export function getFormData(form: any): FormData {
+  const queryParams = new URLSearchParams(window.location.search);
+  const formData = new FormData(form);
+
+  // @ts-ignore
+  for (const entry of queryParams.entries()) {
+    if (!formData.has(entry[0])) {
+      formData.set(entry[0], entry[1]);
+    }
+  }
+
+  return formData;
 }
