@@ -6,33 +6,3 @@ export function getCookie(name: string) {
   }
   return undefined;
 }
-
-export function convertResponseToText(response: any) {
-  if (response.redirected) {
-    window.location.href = response.url + "&redirectUrl=" + encodeURI(window.location.href);
-    return Promise.reject(null);
-  } else {
-    return response.text();
-  }
-}
-
-export function convertResponseToTextWithoutSettingRedirectUrl(response: any) {
-  if (response.redirected) {
-    window.location.href = response.url;
-    return Promise.reject(null);
-  } else {
-    return response.text();
-  }
-}
-
-export function convertResponseToJson(response: any) {
-  if (response.redirected) {
-    window.location.href = response.url + "&redirectUrl=" + encodeURI(window.location.href);
-  } else {
-    return response.json();
-  }
-}
-
-export function handleError(e: any) {
-  console.error("Unexpected error", e);
-}
