@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 
 @Setter
 @Getter
@@ -31,6 +32,7 @@ public class Food extends SettableIdBasedEntity<Food>
 			}
 	)
 	private Long id;
+	@NotBlank
 	private String name;
 	private FoodAction currentAction;
 }

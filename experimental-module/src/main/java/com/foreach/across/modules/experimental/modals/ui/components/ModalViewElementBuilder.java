@@ -1,0 +1,310 @@
+package com.foreach.across.modules.experimental.modals.ui.components;
+
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+
+import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
+import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
+
+/**
+ * Supports the configuration of a bootstrap 4 modal.
+ * For more information regarding the output, see <a href="https://getbootstrap.com/docs/4.5/getting-started/introduction/"></a>
+ */
+public class ModalViewElementBuilder extends AbstractNodeViewElementBuilder<AbstractNodeViewElement, ModalViewElementBuilder>
+{
+	private ElementOrBuilder header, body, footer = null;
+	private String name;
+	private String id;
+	private ModalSize size = ModalSize.MEDIUM;
+	private boolean centered = false;
+	private boolean scrollableBody = false;
+	private boolean animated = true;
+
+	/**
+	 * Sets the {@link ViewElement} name of the modal, not to be confused with the name attribute.
+	 */
+	public ModalViewElementBuilder name( String name ) {
+		this.name = name;
+		if ( StringUtils.isBlank( id ) ) {
+			id = name;
+		}
+		return this;
+	}
+
+	/**
+	 * Configures the id of the modal. The id is used to reference and control the modal.
+	 */
+	public ModalViewElementBuilder id( String id ) {
+		this.id = id;
+		return this;
+	}
+
+	/**
+	 * Configures the modal to be vertically centered.
+	 */
+	public ModalViewElementBuilder centered() {
+		return centered( true );
+	}
+
+	/**
+	 * Configures whether the modal should be vertically centered.
+	 */
+	public ModalViewElementBuilder centered( boolean centered ) {
+		this.centered = centered;
+		return this;
+	}
+
+	/**
+	 * Configures the modal body to be scrollable.
+	 * If set, when the modal content is too long, the body will be scrollable and the modal will retain its position.
+	 */
+	public ModalViewElementBuilder scrollableBody() {
+		return scrollableBody( true );
+	}
+
+	/**
+	 * Configures the modal to be scrollable.
+	 * If {@code true}, when the modal content is too long, the body will be scrollable and the modal will retain its position.
+	 * If {@code false}, the entire modal will scroll if its content is too long, independent of the page.
+	 */
+	public ModalViewElementBuilder scrollableBody( boolean scrollableBody ) {
+		this.scrollableBody = scrollableBody;
+		return this;
+	}
+
+	/**
+	 * Configures that the modal should have an fade animation when the modal is opened or closed.
+	 */
+	public ModalViewElementBuilder animated() {
+		return animated( true );
+	}
+
+	/**
+	 * Configures whether the modal should have an fade animation when the modal is opened or closed.
+	 */
+	public ModalViewElementBuilder animated( boolean animated ) {
+		this.animated = animated;
+		return this;
+	}
+
+	/**
+	 * Configures the modal with a backdrop that does not close the modal when clicked.
+	 */
+	public ModalViewElementBuilder staticBackdrop() {
+		with( HtmlViewElement.Functions.data( "backdrop", "static" ) );
+		return this;
+	}
+
+	/**
+	 * Configures that a backdrop should be present when the modal is opened.
+	 * By default, a backdrop is present.
+	 */
+	public ModalViewElementBuilder backdrop() {
+		return backdrop( true );
+	}
+
+	/**
+	 * Configures that a backdrop should be present when the modal is opened.
+	 * By default, a backdrop is present.
+	 */
+	public ModalViewElementBuilder backdrop( boolean backdrop ) {
+		with( HtmlViewElement.Functions.data( "backdrop", backdrop ) );
+		return this;
+	}
+
+	/**
+	 * Configures that the escape key should close the modal when it's opened.
+	 * By default, the escape key closes the modal.
+	 */
+	public ModalViewElementBuilder keyboard() {
+		return keyboard( true );
+	}
+
+	/**
+	 * Configures that the escape key should close the modal when it's opened.
+	 * By default, the escape key closes the modal.
+	 */
+	public ModalViewElementBuilder keyboard( boolean keyboard ) {
+		with( HtmlViewElement.Functions.data( "keyboard", keyboard ) );
+		return this;
+	}
+
+	/**
+	 * Configures an empty {@code .modal-header} section.
+	 */
+	public ModalViewElementBuilder header() {
+		return header( html.builders.container() );
+	}
+
+	/**
+	 * Configures the given builder as content for the {@code .modal-header} section.
+	 */
+	public ModalViewElementBuilder header( ViewElementBuilder header ) {
+		this.header = ElementOrBuilder.wrap( header );
+		return this;
+	}
+
+	/**
+	 * Configures the given element as content for the {@code .modal-header} section.
+	 */
+	public ModalViewElementBuilder header( ViewElement header ) {
+		this.header = ElementOrBuilder.wrap( header );
+		return this;
+	}
+
+	/**
+	 * Configures an empty {@code .modal-body} section.
+	 */
+	public ModalViewElementBuilder body() {
+		return body( html.builders.container() );
+	}
+
+	/**
+	 * Configures the given builder as content for the {@code .modal-body} section.
+	 */
+	public ModalViewElementBuilder body( ViewElementBuilder body ) {
+		this.body = ElementOrBuilder.wrap( body );
+		return this;
+	}
+
+	/**
+	 * Configures the given element as content for the {@code .modal-body} section.
+	 */
+	public ModalViewElementBuilder body( ViewElement body ) {
+		this.body = ElementOrBuilder.wrap( body );
+		return this;
+	}
+
+	/**
+	 * Configures an empty {@code .modal-footer} section.
+	 */
+	public ModalViewElementBuilder footer() {
+		return footer( html.builders.container() );
+	}
+
+	/**
+	 * Configures the given builder as content for the {@code .modal-footer} section.
+	 */
+	public ModalViewElementBuilder footer( ViewElementBuilder footer ) {
+		this.footer = ElementOrBuilder.wrap( footer );
+		return this;
+	}
+
+	/**
+	 * Configures the given element as content for the {@code .modal-footer} section.
+	 */
+	public ModalViewElementBuilder footer( ViewElement footer ) {
+		this.footer = ElementOrBuilder.wrap( footer );
+		return this;
+	}
+
+	/**
+	 * Configures the header to have an {@code <h3></h3>} element containing the given title as well as a close button for the modal.
+	 */
+	public ModalViewElementBuilder title( String title ) {
+		header = ElementOrBuilder.wrap(
+				html.builders.container()
+				             .add( html.builders.div( css.modal.title ).add( html.builders.h3( text( title ) ) ) )
+				             .add( html.builders.button()
+				                                .attribute( "type", "button" )
+				                                .with( css.close )
+				                                .data( "dismiss", "modal" )
+				                                .attribute( "aria-label", "Close" )
+				                                .add( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
+				                                             .set( AcrossBootstrapStyles.css.text.danger )
+				                                             .setAttribute( "aria-hidden", true ) )
+				             )
+		);
+		return this;
+	}
+
+	@Override
+	protected AbstractNodeViewElement createElement( ViewElementBuilderContext builderContext ) {
+		NodeViewElementBuilder modal = html.builders.div()
+		                                            .with( css.modal )
+		                                            .attribute( "tabindex", -1 )
+		                                            .attribute( "role", "dialog" )
+		                                            .name( name )
+		                                            .htmlId( id )
+		                                            .attribute( "aria-hidden", true );
+
+		if ( animated ) {
+			modal.with( css.fade );
+		}
+
+		NodeViewElementBuilder dialog = html.builders.div( css.modal.dialog, size.getSize() ).attribute( "role", "document" )
+		                                             .name( nestedElementName( "dialog" ) );
+		modal.add( dialog );
+
+		if ( scrollableBody ) {
+			dialog.with( css.modal.dialog.scrollable );
+		}
+		if ( centered ) {
+			dialog.with( css.modal.dialog.centered );
+		}
+
+		NodeViewElementBuilder content = html.builders.div( css.modal.content );
+		dialog.add( content );
+
+		if ( header != null ) {
+			String titleId = StringUtils.join( id, "Title" );
+			content.add(
+					html.builders.div( css.modal.header )
+					             .name( nestedElementName( "header" ) )
+					             .htmlId( titleId )
+					             .add( header.get( builderContext ) )
+			);
+			modal.attribute( "aria-labelledby", titleId );
+		}
+
+		if ( body != null ) {
+			content.add(
+					html.builders.div( css.modal.body )
+					             .name( nestedElementName( "body" ) )
+					             .add( body.get( builderContext ) )
+			);
+		}
+
+		if ( footer != null ) {
+			content.add(
+					html.builders.div( css.modal.footer )
+					             .name( nestedElementName( "footer" ) )
+					             .add( footer.get( builderContext ) )
+			);
+		}
+
+		return apply( modal.build( builderContext ), builderContext );
+	}
+
+	private String nestedElementName( String nestedElement ) {
+		return StringUtils.isNotBlank( name )
+				? StringUtils.join( name, "-", nestedElement )
+				: "";
+	}
+
+	@Getter
+	@RequiredArgsConstructor
+	public enum ModalSize
+	{
+		SMALL( BootstrapStyles.css.modal.small ),
+		MEDIUM( BootstrapStyleRule.empty() ),
+		LARGE( BootstrapStyles.css.modal.large ),
+		EXTRA_LARGE( BootstrapStyles.css.modal.extraLarge );
+
+		private final BootstrapStyleRule size;
+	}
+}
