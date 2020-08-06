@@ -2,6 +2,7 @@ import { Action } from "../action-types";
 import { ActionHandler, ActionHandlerResolver, RequestActionHandler } from "../handler-types";
 import { JsonResponse, TextResponse } from "../../experimental/utils/response-types";
 import { executeRequest, translateResponse } from "../../experimental/utils/request-utils";
+import { ActionHandlerError } from "../error-types";
 
 interface Context {
   action: Action;
@@ -13,9 +14,24 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
 
   handle(action: ActionHandler, context: Context): Promise<any> {
     if ("jsonContent" in context.response) {
-      console.log(`Received json response in ${ResponseContentActionHandlerResolver.TYPE} handler`, context.response);
-      return Promise.resolve();
+      return Promise.reject(
+        new ActionHandlerError(
+          `Handler ${ResponseContentActionHandlerResolver.TYPE} currently does not support json responses`,
+          action,
+          context
+        )
+      );
     } else {
+      if (!action.target) {
+        return Promise.reject(
+          new ActionHandlerError(
+            `Handler ${ResponseContentActionHandlerResolver.TYPE} requires a target`,
+            action,
+            context
+          )
+        );
+      }
+
       const response: TextResponse = context.response;
 
       let $content = $(response.textContent);
@@ -44,6 +60,13 @@ export class RequestActionHandlerResolver implements ActionHandlerResolver {
       .then(translateResponse)
       .then((response) => {
         const asTextResponse: TextResponse = response as TextResponse;
+        if (!action.target) {
+          throw new ActionHandlerError(
+            `Handler ${RequestActionHandlerResolver.TYPE} requires a target`,
+            action,
+            context
+          );
+        }
         $(action.target).replaceWith(asTextResponse.textContent);
       });
   }

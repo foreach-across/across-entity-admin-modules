@@ -17,7 +17,7 @@ import java.util.Map;
  * {@link ActionAttribute} that is used to perform a request when the specified event is triggered on the corresponding element.
  * A request can optionally define a {@link RequestActionHandlerAttribute#partial(String)} parameter and form that should be submitted.
  * <p>
- * Currently, a request supports handling successful calls ({@link #success(ActionHandlerAttribute[])}) and redirects ({@link #redirect(ActionHandlerAttribute[])})
+ * Currently, a request supports handling successful calls ({@link #success(ActionHandlerAttribute[])}) and redirects ({@link #redirect(ActionHandlerAttribute[])}).
  */
 @Getter
 @Setter
@@ -78,6 +78,20 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
 	@JsonProperty
 	private LinkedList<ActionHandlerAttribute> redirect = new LinkedList<>();
 
+	/**
+	 * A collection of {@link ActionHandlerAttribute}s that should be executed when the response is not in the 200 - 399 (inclusive) http status range.
+	 * The provided handlers are executed in order.
+	 */
+	@JsonProperty
+	private LinkedList<ActionHandlerAttribute> failure = new LinkedList<>();
+
+	/**
+	 * A collection of {@link ActionHandlerAttribute}s that should be executed when an error occurs during handling of the request or one of the action handlers.
+	 * The provided handlers are executed in order.
+	 */
+	@JsonProperty
+	private LinkedList<ActionHandlerAttribute> error = new LinkedList<>();
+
 	public RequestActionAttribute success( Collection<ActionHandlerAttribute> success ) {
 		this.success = new LinkedList<>( success );
 		return this;
@@ -95,6 +109,26 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
 
 	public RequestActionAttribute redirect( ActionHandlerAttribute... redirect ) {
 		this.redirect.addAll( Arrays.asList( redirect ) );
+		return this;
+	}
+
+	public RequestActionAttribute error( Collection<ActionHandlerAttribute> error ) {
+		this.error = new LinkedList<>( error );
+		return this;
+	}
+
+	public RequestActionAttribute error( ActionHandlerAttribute... error ) {
+		this.error.addAll( Arrays.asList( error ) );
+		return this;
+	}
+
+	public RequestActionAttribute failure( Collection<ActionHandlerAttribute> failure ) {
+		this.failure = new LinkedList<>( failure );
+		return this;
+	}
+
+	public RequestActionAttribute failure( ActionHandlerAttribute... failure ) {
+		this.failure.addAll( Arrays.asList( failure ) );
 		return this;
 	}
 

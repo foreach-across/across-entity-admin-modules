@@ -29,5 +29,9 @@ function fetchModalContent(targetModalId: string, config: any, callback: () => v
   config.content.forEach((action: any) => {
     handlerResults.push(ExperimentalModule.actionFactory.handle(action, {}));
   });
-  Promise.all(handlerResults).then(callback);
+  Promise.allSettled(handlerResults)
+    .then(callback)
+    .catch((error) => {
+      console.error("Unexpected error occurred", error);
+    });
 }

@@ -10,7 +10,8 @@ interface RequestAction extends Action {
   partial?: string;
   redirect: ActionHandler[];
   success: ActionHandler[];
-  // error: ActionHandler[]; // action handlers
+  failure: ActionHandler[]; // action handlers
+  error: ActionHandler[]; // action handlers
 }
 
 export class RequestActionResolver implements ActionResolver {
@@ -30,9 +31,23 @@ export class RequestActionResolver implements ActionResolver {
             sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, response }));
           });
         } else {
-          console.error("response for action was neither redirected nor ok", action, response);
+          action.failure.forEach((handler) => {
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, response }));
+          });
         }
         return sequence;
+      })
+      .catch((error) => {
+        let sequence = Promise.resolve();
+
+        if (action.error.length > 0) {
+          action.error.forEach((handler) => {
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, error }));
+          });
+          return sequence;
+        }
+
+        throw error;
       });
   }
 }
