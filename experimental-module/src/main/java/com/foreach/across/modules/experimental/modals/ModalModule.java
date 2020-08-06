@@ -3,7 +3,6 @@ package com.foreach.across.modules.experimental.modals;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
-import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
 import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
@@ -25,7 +24,7 @@ public class ModalModule extends AcrossModule
 
 	@Override
 	public String getDescription() {
-		return "Supports persisting and querying auditing information for entities within an application";
+		return "Enables modal support, including ease of configuration for default CUD views";
 	}
 
 	@Override
