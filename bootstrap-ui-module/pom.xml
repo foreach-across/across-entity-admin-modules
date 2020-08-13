@@ -97,8 +97,8 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>tempusdominus-bootstrap-4</artifactId>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>tempusdominus-bootstrap</artifactId>
 			<version>${webjars.tempus-dominus-datetimepicker}</version>
 		</dependency>
 		<dependency>

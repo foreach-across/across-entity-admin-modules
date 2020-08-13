@@ -59,14 +59,14 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<revision>3.0.0.RELEASE</revision>
+		<revision>3.0.1-SNAPSHOT</revision>
 		<!-- webjar specific properties -->
 		<webjars.jquery>3.4.1</webjars.jquery>
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
 		<webjars.autosize>4.0.2</webjars.autosize>
 		<webjars.autonumeric>4.5.4</webjars.autonumeric>
 		<webjars.momentjs>2.24.0</webjars.momentjs>
-		<webjars.tempus-dominus-datetimepicker>5.1.2</webjars.tempus-dominus-datetimepicker>
+		<webjars.tempus-dominus-datetimepicker>5.23.0</webjars.tempus-dominus-datetimepicker>
 		<webjars.bootstrap-select>1.13.11</webjars.bootstrap-select>
 		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
 		<webjars.handlebars>4.0.14</webjars.handlebars>
