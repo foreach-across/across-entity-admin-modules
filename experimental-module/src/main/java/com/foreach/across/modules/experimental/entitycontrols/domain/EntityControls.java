@@ -1,5 +1,7 @@
 package com.foreach.across.modules.experimental.entitycontrols.domain;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.bootstrapui.utils.ControlNamePrefixAdjuster;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -33,130 +35,145 @@ import java.util.stream.Stream;
  * @author Stijn Vanhoof
  */
 @RequiredArgsConstructor
-public class EntityControls<T>
-{
-	private final EntityViewElementBatch<T> batch;
-	private final EntityConfiguration entityConfiguration;
-	private final HashMap<String, Object> builderHints = new HashMap<>();
-	@Getter
-	private final HashMap<String, ViewElementMode> propertyRenderModes = new HashMap<>();
+public class EntityControls<T> {
+    private final EntityViewElementBatch<T> batch;
+    private final EntityConfiguration entityConfiguration;
+    private final HashMap<String, Object> builderHints = new HashMap<>();
+    @Getter
+    private final HashMap<String, ViewElementMode> propertyRenderModes = new HashMap<>();
 
-	@Getter
-	private T entity;
-	@Getter
-	private CustomizeBatchProperties customizeBatchProperties;
-	@Getter
-	private ViewElementMode globalViewElementMode = ViewElementMode.FORM_WRITE;
+    @Getter
+    private T entity;
+    @Getter
+    private CustomizeBatchProperties customizeBatchProperties;
+    @Getter
+    private ViewElementMode globalViewElementMode = ViewElementMode.FORM_WRITE;
 
-	/**
-	 * The instance of the entity for which the control will be build for.
-	 */
-	public EntityControls<T> forInstance( T object ) {
-		entity = object;
-		return this;
-	}
+    @Getter
+    private ControlNamePrefixAdjuster controlNamePrefixAdjuster;
 
-	/**
-	 * The properties can be customized by providing a {@link EntityPropertyRegistryBuilder}
-	 */
-	public EntityControls<T> properties( @NonNull Consumer<EntityPropertyRegistryBuilder> builder ) {
-		this.customizeBatchProperties = new CustomizeBatchProperties( builder );
-		return this;
-	}
+    /**
+     * The instance of the entity for which the control will be build for.
+     */
+    public EntityControls<T> forInstance(T object) {
+        entity = object;
+        return this;
+    }
 
-	/**
-	 * The properties that need to be build
-	 *
-	 * @param propertyNames as a list of strings
-	 */
-	public EntityControls<T> showProperties( String... propertyNames ) {
-		batch.setPropertySelector( EntityPropertySelector.of( propertyNames ) );
-		return this;
-	}
+    /**
+     * The properties can be customized by providing a {@link EntityPropertyRegistryBuilder}
+     */
+    public EntityControls<T> properties(@NonNull Consumer<EntityPropertyRegistryBuilder> builder) {
+        this.customizeBatchProperties = new CustomizeBatchProperties(builder);
+        return this;
+    }
 
-	/**
-	 * The properties that need to be build
-	 *
-	 * @param entityPropertySelector that defined the properties
-	 */
-	public EntityControls<T> showProperties( EntityPropertySelector entityPropertySelector ) {
-		batch.setPropertySelector( entityPropertySelector );
-		return this;
-	}
+    /**
+     * The properties that need to be build
+     *
+     * @param propertyNames as a list of strings
+     */
+    public EntityControls<T> showProperties(String... propertyNames) {
+        batch.setPropertySelector(EntityPropertySelector.of(propertyNames));
+        return this;
+    }
 
-	/**
-	 * The {@link ViewElementMode} that will be used to render the given properties by default. The {@link ViewElementMode}}
-	 * of each property can be individually overriden by using the {@link #renderModeForProperties(ViewElementMode, String...)}
-	 */
-	public EntityControls<T> defaultRenderMode( ViewElementMode viewElementMode ) {
-		globalViewElementMode = viewElementMode;
-		return this;
-	}
+    /**
+     * The properties that need to be build
+     *
+     * @param entityPropertySelector that defined the properties
+     */
+    public EntityControls<T> showProperties(EntityPropertySelector entityPropertySelector) {
+        batch.setPropertySelector(entityPropertySelector);
+        return this;
+    }
 
-	/**
-	 * Will define the render mode for all given properties
-	 * Note that this will overrride the {@link #defaultRenderMode(ViewElementMode)}
-	 */
-	public EntityControls<T> renderModeForProperties( ViewElementMode viewElementMode, String... propertyNames ) {
-		Stream.of( propertyNames ).forEach( propertyName -> propertyRenderModes.put( propertyName, viewElementMode ) );
-		return this;
-	}
+    /**
+     * The {@link ViewElementMode} that will be used to render the given properties by default. The {@link ViewElementMode}}
+     * of each property can be individually overriden by using the {@link #renderModeForProperties(ViewElementMode, String...)}
+     */
+    public EntityControls<T> defaultRenderMode(ViewElementMode viewElementMode) {
+        globalViewElementMode = viewElementMode;
+        return this;
+    }
 
-	/**
-	 * Builderhints that can be supplied to the underlying {@link EntityViewElementBatch}
-	 */
-	public EntityControls<T> builderHints( @NonNull Map<String, Object> builderHints ) {
-		this.builderHints.putAll( builderHints );
-		return this;
-	}
+    /**
+     * Will define the render mode for all given properties
+     * Note that this will overrride the {@link #defaultRenderMode(ViewElementMode)}
+     */
+    public EntityControls<T> renderModeForProperties(ViewElementMode viewElementMode, String... propertyNames) {
+        Stream.of(propertyNames).forEach(propertyName -> propertyRenderModes.put(propertyName, viewElementMode));
+        return this;
+    }
 
-	/**
-	 * Load the configuration that was done for a specific view.
-	 */
-	public EntityControls<T> loadViewProperties( String viewName ) {
-		EntityViewFactory viewToLoad = entityConfiguration.getViewFactory( viewName );
-		EntityPropertyRegistry propertyRegistryFromView = Objects.requireNonNull( ( (DispatchingEntityViewFactory) viewToLoad )
-				                                                                          .getProcessorRegistry()
-				                                                                          .getProcessorRegistration(
-						                                                                          EntityPropertyRegistryViewProcessor.class
-								                                                                          .getName() )
-				                                                                          .orElse( null ) )
-		                                                         .getProcessor( EntityPropertyRegistryViewProcessor.class )
-		                                                         .getPropertyRegistry();
+    /**
+     * Builderhints that can be supplied to the underlying {@link EntityViewElementBatch}
+     */
+    public EntityControls<T> builderHints(@NonNull Map<String, Object> builderHints) {
+        this.builderHints.putAll(builderHints);
+        return this;
+    }
 
-		batch.setPropertyRegistry( propertyRegistryFromView );
-		return this;
-	}
+    /**
+     * Load the configuration that was done for a specific view.
+     */
+    public EntityControls<T> loadViewProperties(String viewName) {
+        EntityViewFactory viewToLoad = entityConfiguration.getViewFactory(viewName);
+        EntityPropertyRegistry propertyRegistryFromView = Objects.requireNonNull(((DispatchingEntityViewFactory) viewToLoad)
+                .getProcessorRegistry()
+                .getProcessorRegistration(
+                        EntityPropertyRegistryViewProcessor.class
+                                .getName())
+                .orElse(null))
+                .getProcessor(EntityPropertyRegistryViewProcessor.class)
+                .getPropertyRegistry();
 
-	/**
-	 * Build the {@link EntityControls}. This method should not be used and you should always try to
-	 * call {@link #build(ViewElementBuilderContext)}
-	 */
-	public Map<String, ViewElement> build() {
-		return build( new DefaultViewElementBuilderContext() );
-	}
+        batch.setPropertyRegistry(propertyRegistryFromView);
+        return this;
+    }
 
-	/**
-	 * Build the entityControls controls and return a map with the control name as key and the view element as value
-	 */
-	public Map<String, ViewElement> build( ViewElementBuilderContext builderContext ) {
-		if ( getCustomizeBatchProperties() != null ) {
-			getCustomizeBatchProperties().apply( batch );
-		}
+    public EntityControls<T> controlNamePrefix(String controlNamePrefix) {
+        this.controlNamePrefixAdjuster = BootstrapElementUtils.prefixControlNames(controlNamePrefix);
+        return this;
+    }
 
-		if ( getEntity() != null ) {
-			batch.setEntity( getEntity() );
-		}
+    public EntityControls<T> controlNamePrefix(ControlNamePrefixAdjuster controlNamePrefixAdjuster) {
+        this.controlNamePrefixAdjuster = controlNamePrefixAdjuster;
+        return this;
+    }
 
-		if ( batch.getPropertiesBinder().getEntity() == null ) {
-			throw new IllegalStateException( "You must set an entity before building the entity controls. This can be done using the method forInstance." );
-		}
+    /**
+     * Build the {@link EntityControls}. This method should not be used and you should always try to
+     * call {@link #build(ViewElementBuilderContext)}
+     */
+    public Map<String, ViewElement> build() {
+        return build(new DefaultViewElementBuilderContext());
+    }
 
-		propertyRenderModes.forEach( builderHints::put );
-		batch.setBuilderHints( builderHints );
+    /**
+     * Build the entityControls controls and return a map with the control name as key and the view element as value
+     */
+    public Map<String, ViewElement> build(ViewElementBuilderContext builderContext) {
+        if (getCustomizeBatchProperties() != null) {
+            getCustomizeBatchProperties().apply(batch);
+        }
 
-		batch.setViewElementMode( getGlobalViewElementMode() );
+        if (getEntity() != null) {
+            batch.setEntity(getEntity());
+        }
 
-		return batch.build( builderContext );
-	}
+        if (batch.getPropertiesBinder().getEntity() == null) {
+            throw new IllegalStateException("You must set an entity before building the entity controls. This can be done using the method forInstance.");
+        }
+
+        propertyRenderModes.forEach(builderHints::put);
+        batch.setBuilderHints(builderHints);
+
+        batch.setViewElementMode(getGlobalViewElementMode());
+
+        Map<String, ViewElement> viewElementMap = batch.build(builderContext);
+        viewElementMap.values().forEach(ve -> controlNamePrefixAdjuster.accept(ve));
+
+        return viewElementMap;
+    }
 }
