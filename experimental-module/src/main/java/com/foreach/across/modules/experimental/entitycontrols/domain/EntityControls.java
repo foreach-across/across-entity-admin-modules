@@ -134,8 +134,7 @@ public class EntityControls<T>
 	}
 
 	public EntityControls<T> controlNamePrefix( String controlNamePrefix ) {
-		this.controlNamePrefixAdjuster = BootstrapElementUtils.prefixControlNames( controlNamePrefix );
-		return this;
+		return controlNamePrefix( BootstrapElementUtils.prefixControlNames( controlNamePrefix ) );
 	}
 
 	public EntityControls<T> controlNamePrefix( ControlNamePrefixAdjuster controlNamePrefixAdjuster ) {
