@@ -33,7 +33,10 @@ export function executeRequest(partialConfiguration: RequestConfiguration): Prom
 
   const baseUrl = url ? url : window.location.href.split("?")[0];
   const formToSerialize = form ? $(form) : null;
-  const requestUrl = partial ? `${baseUrl}?_partial=${partial}` : baseUrl;
+  let requestUrl = baseUrl;
+  if (partial) {
+    requestUrl = baseUrl.indexOf("?") === -1 ? `${baseUrl}?_partial=${partial}` : `${baseUrl}&_partial=${partial}`;
+  }
 
   if (formToSerialize) {
     return executeFormRequest(requestUrl, method, formToSerialize, requestConfig);

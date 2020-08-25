@@ -9,6 +9,8 @@ import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
+import com.foreach.across.modules.experimental.modals.support.action.ActionAttribute;
+import com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -16,6 +18,7 @@ import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -44,24 +47,44 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 	private String modalId;
 
 	@NonNull
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url;
 
-	@Setter
+	@Setter(AccessLevel.PROTECTED)
 	private String partial = null;
+
+	@Setter(AccessLevel.PROTECTED)
+	private BiFunction<RequestActionAttribute, ViewElementBuilderContext, ActionAttribute> actionCustomizer = ( action, bc ) -> action;
 
 	public T modalId( String modalId ) {
 		this.modalId = modalId;
 		return (T) this;
 	}
 
+	/**
+	 * The url from which the data should be fetched.
+	 */
 	public T url( BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url ) {
 		this.url = url;
 		return (T) this;
 	}
 
+	/**
+	 * The partial that should be fetched.
+	 */
 	public T partial( String partial ) {
 		this.partial = partial;
+		return (T) this;
+	}
+
+	/**
+	 * Supports customizing the default action attribute that is registered to fetch the modal content.
+	 * Offers more advanced configuration as well as overriding of previously configured methods.
+	 * </p>
+	 * The customizer should return the final action that should be used. Overrides applied through the customizer always take precedence.
+	 */
+	public T action( BiFunction<RequestActionAttribute, ViewElementBuilderContext, ActionAttribute> actionCustomizer ) {
+		this.actionCustomizer = actionCustomizer;
 		return (T) this;
 	}
 
@@ -100,25 +123,28 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 				           modalLoadAttribute()
 						           .target( modalSelector() )
 						           .content(
-								           requestAction()
-										           .url( url.apply( linkViewBuilder, builderContext ) )
-										           .partial( partial )
-										           .requestConfig( Map.of( "headers", Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
-										           .success(
-												           clearHandler( modalTarget( ".modal-title" ) ),
-												           clearHandler( modalTarget( ".modal-footer" ) ),
-												           clearHandler( modalTarget( ".modal-body" ) ),
-												           responseContentHandler()
-														           .source( "." + PageContentStructure.CSS_BODY_SECTION )
-														           .target( modalTarget( ".modal-body" ) ),
-												           responseContentHandler()
-														           .source( ".page-header" )
-														           .target( modalTarget( ".modal-title" ) ),
-												           moveHandler()
-														           .source( modalTarget( ".modal-body .em-form-actions" ) )
-														           .target( modalTarget( ".modal-footer" ) ),
-												           initializeFormElements( modalSelector() )
-										           )
+								           actionCustomizer.apply(
+										           requestAction()
+												           .url( url.apply( linkViewBuilder, builderContext ) )
+												           .partial( partial )
+												           .requestConfig( Map.of( "headers",
+												                                   Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
+												           .success(
+														           clearHandler( modalTarget( ".modal-title" ) ),
+														           clearHandler( modalTarget( ".modal-footer" ) ),
+														           clearHandler( modalTarget( ".modal-body" ) ),
+														           responseContentHandler()
+																           .source( "." + PageContentStructure.CSS_BODY_SECTION )
+																           .target( modalTarget( ".modal-body" ) ),
+														           responseContentHandler()
+																           .source( ".page-header" )
+																           .target( modalTarget( ".modal-title" ) ),
+														           moveHandler()
+																           .source( modalTarget( ".modal-body .em-form-actions" ) )
+																           .target( modalTarget( ".modal-footer" ) ),
+														           initializeFormElements( modalSelector() )
+												           ), builderContext
+								           )
 						           )
 		           );
 	}
