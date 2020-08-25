@@ -69,6 +69,10 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
             return isChecked(true);
         }
 
+        public Dependency isNotChecked() {
+            return isChecked(false);
+        }
+
         public Dependency isChecked(boolean checked) {
             rules.put("checked", checked);
             return this;
