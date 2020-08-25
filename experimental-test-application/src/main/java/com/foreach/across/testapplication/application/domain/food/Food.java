@@ -22,12 +22,12 @@ public class Food extends SettableIdBasedEntity<Food>
 {
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(generator = "seq_camashop__company")
+	@GeneratedValue(generator = "seq_food")
 	@GenericGenerator(
-			name = "seq_camashop__company",
+			name = "seq_food",
 			strategy = AcrossSequenceGenerator.STRATEGY,
 			parameters = {
-					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_camashop__company"),
+					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_food"),
 					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "1")
 			}
 	)
