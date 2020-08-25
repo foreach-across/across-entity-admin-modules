@@ -50,10 +50,10 @@ public class EntityControlFactoryDemoController {
         CarResource car = new CarResource("Chevrolet El Camino");
 
         Map<String, ViewElement> carControls = entityControlFactory.createControlsForClass(CarResource.class)
-                .forInstance(car)
-                .controlPrefix(BootstrapElementUtils.prefixControlNames("abc"))
-                .loadViewProperties("custom")
-                .build(ctx);
+                                                                   .forInstance(car)
+                                                                   .controlNamePrefix( BootstrapElementUtils.prefixControlNames( "abc" ) )
+                                                                   .loadViewProperties("custom")
+                                                                   .build(ctx);
 
         NodeViewElement simpleUserForm = HtmlViewElements.html.builders.form()
                 .addAll(userCreateControls.values())
