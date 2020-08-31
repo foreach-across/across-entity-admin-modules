@@ -8,6 +8,7 @@ interface RequestAction extends Action {
   url?: string; // url to call
   form?: string; // form selector
   partial?: string;
+  copyOriginalRequestParameters?: boolean
   redirect: ActionHandler[];
   success: ActionHandler[];
   failure: ActionHandler[]; // action handlers
