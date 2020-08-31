@@ -32,13 +32,13 @@ export function executeRequest(partialConfiguration: RequestConfiguration): Prom
   const { partial, form, method, url, requestConfig } = partialConfiguration;
 
   const baseUrl = url ? url : window.location.href.split("?")[0];
-  const formToSerialize = form ? $(form) : null;
+  const formToSerialize = form ? $(form) : undefined;
   let requestUrl = baseUrl;
   if (partial) {
     requestUrl = baseUrl.indexOf("?") === -1 ? `${baseUrl}?_partial=${partial}` : `${baseUrl}&_partial=${partial}`;
   }
 
-  if (formToSerialize) {
+  if (typeof formToSerialize !== "undefined") {
     return executeFormRequest(requestUrl, method, formToSerialize, requestConfig);
   }
   return executeFetchRequest(requestUrl, method, requestConfig);
