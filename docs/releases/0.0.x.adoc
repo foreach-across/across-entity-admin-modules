@@ -1,0 +1,29 @@
+[#0-0-1]
+=== 0.0.1-SNAPSHOT
+
+* Initial release
+
+==== ModalModule
+
+* Initial release
+* Supports easier configuration of bootstrap modals.
+// todo this will be moved to WebUtilityModule
+* Added support for configuring `Action` and `ActionHandler` objects which enables the execution of smaller function based javascript features
+
+==== EntityControlsModule
+
+* Initial release
+* Support easier creation of view elements based on a java pojo or entity
+** Optionally, configurations of views can be reused
+
+==== BulkActionsModule
+
+* Initial release
+* Added a BulkActionsModule which supports the use of bulk actions on collection views
+** Currently this supports bulk actions on a single view (support across pages is not available yet)
+
+==== WebUtilityModule
+
+* Initial release
+* Supports an easier or more advanced configuration of basic web-based actions
+** Supports a more advanced `dependson` configuration to conditionally show or hide fields

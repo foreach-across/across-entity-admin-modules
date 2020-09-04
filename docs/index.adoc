@@ -1,0 +1,24 @@
+= Experimental modules
+0.0.1-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 0.0.1-SNAPSHOT
+
+:entity-module-url: https://across.dev/modules/entitymodule
+:bootstrap-ui-module-url: https://across.dev/modules/bootstrap-ui
+
+:numbered!:
+
+[abstract]
+== General
+
+Experimental module is a collection of feature modules, which were pulled out of a project into a more base generic approach.
+This allows us to deliver more, albeit less finished or thought through, features upon which can be built further.
+Once features are at a reasonably complete state or have proven its use, they can be refined and evolve into their own module or be added to one of the existing modules.
+
+NOTE: Implementations within this module can change quickly with possible breaking changes and snapshots can be around for a while.
+If you want don't want to pull in further changes within a certain snapshot, it is advised to create a separate milestone release or similar to ensure this.
+
+include::./releases/index.adoc[]
+
+include::./feature-modules/index.adoc[]

@@ -1,0 +1,21 @@
+== ModalModule
+
+=== General
+
+Activates support for https://getbootstrap.com/docs/4.3/components/modal/[bootstrap modals], as well as a very basic configuration to activate EntityModule views as a modal.
+
+[[modal-module-dependencies]]
+=== Module dependencies
+
+[options="header",cols="1,1,4"]
+|===
+|Module |Type |Description
+
+|{bootstrap-ui-module-url}[BootstrapUiModule]
+|required
+|Supplies a ModalViewElementBuilder for creating bootstrap modals, using the BootstrapUiModule API
+
+|{entity-module-url}[EntityModule]
+|required
+|Supports reconfiguring views to be rendered in modals by registering EntityViewProcessors
+|===

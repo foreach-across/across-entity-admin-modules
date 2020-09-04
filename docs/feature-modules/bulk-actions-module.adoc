@@ -1,0 +1,90 @@
+== BulkActionsModule
+
+=== General
+
+Enables the selection of instances on a list view, for which then an action could be executed.
+Currently, this only supports the selection of instances, anything regarding actions of a module must be implemented entirely within the project.
+
+[[bulk-actions-module-dependencies]]
+=== Module dependencies
+
+[options="header",cols="1,1,4"]
+|===
+|Module |Type |Description
+
+|{entity-module-url}[EntityModule]
+|required
+|BulkActionsModule modifies the EntityModule list views to configure instance selectors.
+|===
+
+=== Configuring bulk actions
+
+Bulk actions are configured using a `BulkActionViewProcessor`.
+This view processor modifies the `SortableTableViewElementBuilder` present on the list view and adds a column at the start of the table.
+Within that column, a checkbox is provided as a selector for the entity represented by the table row.
+The column header also contains a checkbox, which supports (de-)selecting all rows on the current page.
+The table is then wrapped within a new form.
+
+The actual registration and execution of an action, as well as submitting the action with the selected values is not yet supported and the responsibility of the project.
+
+In its simplest form, the actions are configured using the `BulkActionsEntityConfigurers` utility class.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Override
+public void configure( EntitiesConfigurationBuilder entities ){
+    entities.withType( MyType.class )
+            .listView(
+                    lvb -> lvb.and(
+                        BulkActionsEntityConfigurers.configureBulkActions(  <1>
+                                new SimpleBulkActionItemConfigurer<MyType>()
+                                .itemSelectorControlPostProcessor( (ctx, builder) -> {} )  <2>
+                                .itemValue( (instance, ctx) -> instance.getId() )  <3>
+                                .itemControlName( "extensions[BulkActions].items" )  <4>
+                                .formAttributeName( EntityViewModel.VIEW_COMMAND )  <5>
+                                .submitUrl( request -> "http:localhost:8080/admin/entities/myType?view=submitBulkActions" )  <6>
+                                )
+                    )
+            );
+}
+----
+<1> Helper function to configure bulk actions.
+Accepts any object that implements `BulkActionsConfigurer<T>`.
+The generic parameter is used for casting the instance to the correct type (see <3>).
+<2> Optional.
+A `ViewElementPostProcessor<CheckboxFormElement>` that supports reconfiguring the selector for a row.
+This can be used to configure additional context information to know for example which actions are supported by this checkbox.
+<3> Configures the value that should be used as the value for the checkbox, this will be the value that is submitted with the form.
+The function provides you with both the instance itself, as the `ViewElementBuilderContext` of the row.
+<4> Configures the control name of the checkboxes.
+Required for binding the selected rows to the model attribute.
+<5> Optional.
+Configures the model attribute to which the binding should be applied.
+Can be used to bind form validation for example.
+<6> Optional.
+Supports configuring the url of the in which the table is wrapped.
+
+=== Accessing the selected values
+
+Submitting the actions is currently the responsibility of the project using them.
+This means, that you'll have to be able to know _when_ actions are available and _which_ items are selected.
+
+To support configuring these dynamically, the control adapter that is used for controlling the (de)selection of items can be reused to retrieve the selected items as well.
+On the `TableViewElement` that is rendered, a specific container https://docs.across.dev/across-site/production/bootstrap-ui-module/control-adapters/index.html[control adapter] is registered, called `bulk-actions-container`.
+This control adapter wraps around the checkbox controls and as such retrieves all selected items in the table body when `getValue()` is called.
+
+[source,javascript,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+const adapter = $('table[data-tbl-entity-type=myType][data-bootstrapui-adapter-type=bulk-actions-container]').data('bootstrapui-adapter');  <1>
+let selectedItems = adapter.getValue();  <2>
+$( adapter.getTarget() ).on( 'bootstrapui.change', (event, adapter) => {}); <3>
+----
+<1> Retrieve the control adapter
+<2> Retrieve the selected items.
+The selected items are the values selected by the underlying https://docs.across.dev/across-site/production/bootstrap-ui-module/control-adapters/checkbox-radio-adapter.html[checkbox control adapters]
+<3> Register a change listener which is fired whenever an item is selected or deselected.
+
+NOTE: If you programmatically change the value of one of a checkbox in the table body through its individual checkbox-control-adapter, you will have to execute `triggerChange()` as well.
+If you do not fire a change event, the `bulk-actions-container` adapter will not fire a change event either.

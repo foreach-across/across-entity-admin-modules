@@ -1,0 +1,17 @@
+== EntityControlsModule
+
+=== General
+
+Supports the creation of ViewElements for any POJO or Entity which can then be used on EntityViews or custom pages.
+
+[[entity-controls-module-dependencies]]
+=== Module dependencies
+
+[options="header",cols="1,1,4"]
+|===
+|Module |Type |Description
+
+|{entity-module-url}[EntityModule]
+|required
+|Supports building controls for entities and pojos based on EntityViewElementBatch and the EntityRegistry.
+|===

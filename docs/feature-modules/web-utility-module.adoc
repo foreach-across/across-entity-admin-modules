@@ -1,0 +1,17 @@
+== WebUtilityModule
+
+=== General
+
+Supports easier and more advanced configuration utilities for web-based actions.
+
+[[web-utility-module-dependencies]]
+=== Module dependencies
+
+[options="header",cols="1,1,4"]
+|===
+|Module |Type |Description
+
+|{entity-module-url}[EntityModule]
+|optional
+|Adds advanced/easier configuration for web utilities such as dependson which can be configured on either EntityPropertyDescriptors or ViewElements.
+|===

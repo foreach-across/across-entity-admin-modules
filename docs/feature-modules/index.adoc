@@ -1,0 +1,31 @@
+//== Modules
+//
+//=== ExperimentalModule
+//
+//This is a special module that encompasses all the other modules below.
+//When this module is activated in a project, it will activate all the available experimental modules.
+//
+//=== ModalModule
+//
+//Activates support for https://getbootstrap.com/docs/4.3/components/modal/[bootstrap modals], as well as a very basic configuration to activate EntityModule views as a modal.
+//
+//=== EntityControlsModule
+//
+//Supports the creation of ViewElements for any POJO or Entity which can then be used on EntityViews or custom pages.
+//
+//=== BulkActionsModule
+//
+//Enables the selection of instances on a list view, for which then an action could be executed.
+//Currently, this only supports the selection of instances, anything regarding actions of a module must be implemented entirely within the project.
+//
+//=== WebUtilityModule
+//
+//Supports easier and more advanced configuration utilities for web-based actions.
+
+include::./modal-module.adoc[]
+
+include::./entity-controls-module.adoc[]
+
+include::./bulk-actions-module.adoc[]
+
+include::./web-utility-module.adoc[]
