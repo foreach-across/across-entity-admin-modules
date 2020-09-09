@@ -53,7 +53,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 	public static final String HANDLEBARS = "handlebars";
 
 	private static final String MOMENT_VERSION = "2.24.0";
-	private static final String TEMPUS_DOMINUS_VERSION = "5.23.0";
+	private static final String TEMPUS_DOMINUS_VERSION = "5.32.1";
 	private static final String AUTO_NUMERIC_VERSION = "4.5.4";
 	private static final String AUTOSIZE_VERSION = "4.0.2";
 	private static final String BOOTSTRAP_SELECT_VERSION = "1.13.11";
