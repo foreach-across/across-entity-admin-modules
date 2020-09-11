@@ -36,7 +36,8 @@
 	<modules>
 		<module>experimental-module</module>
 		<module>experimental-test-application</module>
-    </modules>
+		<module>experimental-module-distribution-assembly</module>
+	</modules>
 
 	<build>
 		<plugins>

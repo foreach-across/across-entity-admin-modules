@@ -59,24 +59,25 @@ public class FoodUiConfiguration implements EntityConfigurer
 	}
 
 	private Consumer<EntityViewFactoryBuilder> bulkActionsConfigurer( String controlName ) {
-		SimpleBulkActionItemConfigurer<Food> bulkActionsConfiguration = new SimpleBulkActionItemConfigurer<Food>()
-				.itemSelectorControlPostProcessor( ( ctx, builder ) -> {
-					Food instance = EntityViewElementUtils.currentEntity( ctx, Food.class );
-					if ( instance.getCurrentAction() == FoodAction.STORED ) {
-						if ( containsIgnoreCase( instance.getName(), "pizza" ) ) {
-							builder.set( attribute( "supportedActions", Collections.singletonList( FoodActionType.BAKE_OVEN ) ) );
-						}
-						else {
-							builder.set( attribute( "supportedActions", Arrays.asList( FoodActionType.BAKE_OVEN, FoodActionType.BAKE_STOVE ) ) );
-						}
-					}
-					else {
-						builder.set( attribute( "supportedActions", Collections.singletonList( FoodActionType.RESET ) ) );
-					}
-				} )
-				.itemValue( ( instance, ctx ) -> instance.getId() )
-				.itemControlName( controlName )
-				.formAttributeName( EntityViewModel.VIEW_COMMAND + ".extensions[" + getShortName( FoodBulkActionViewProcessor.class ) + "]" );
+		SimpleBulkActionItemConfigurer<Food> bulkActionsConfiguration =
+				new SimpleBulkActionItemConfigurer<Food>()
+						.itemSelectorControlPostProcessor( ( ctx, builder ) -> {
+							Food instance = EntityViewElementUtils.currentEntity( ctx, Food.class );
+							if ( instance.getCurrentAction() == FoodAction.STORED ) {
+								if ( containsIgnoreCase( instance.getName(), "pizza" ) ) {
+									builder.set( attribute( "supportedActions", Collections.singletonList( FoodActionType.BAKE_OVEN ) ) );
+								}
+								else {
+									builder.set( attribute( "supportedActions", Arrays.asList( FoodActionType.BAKE_OVEN, FoodActionType.BAKE_STOVE ) ) );
+								}
+							}
+							else {
+								builder.set( attribute( "supportedActions", Collections.singletonList( FoodActionType.RESET ) ) );
+							}
+						} )
+						.itemValue( ( instance, ctx ) -> instance.getId() )
+						.itemControlName( controlName )
+						.formAttributeName( EntityViewModel.VIEW_COMMAND + ".extensions[" + getShortName( FoodBulkActionViewProcessor.class ) + "]" );
 		return configureBulkActions( bulkActionsConfiguration );
 	}
 }
