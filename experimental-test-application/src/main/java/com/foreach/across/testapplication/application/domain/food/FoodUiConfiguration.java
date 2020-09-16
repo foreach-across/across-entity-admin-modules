@@ -1,14 +1,23 @@
 package com.foreach.across.testapplication.application.domain.food;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.bulkactions.support.SimpleBulkActionItemConfigurer;
 import com.foreach.across.modules.experimental.bulkactions.ui.viewprocessors.BulkActionViewProcessor;
+import com.foreach.across.modules.experimental.export.support.CsvExportViewConfigurer;
+import com.foreach.across.modules.experimental.export.support.ExportViewConfigurers;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.testapplication.application.domain.food.processors.FoodBulkActionViewProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +64,44 @@ public class FoodUiConfiguration implements EntityConfigurer
 						                                                               .formAttributeProvider( () -> "bulkActions" ) ) )
 		                             )
 		        )
+		        .and( this::configureExportView );
+	}
+
+	private void configureExportView( EntityConfigurationBuilder<Food> entities ) {
+		entities.listView( "exportToCsv",
+		                   ExportViewConfigurers.configureCsvExportView(
+				                   new CsvExportViewConfigurer<>()
+						                   .fileName( "content.csv" )
+						                   .shouldIncludeUtf8Bom( true )
+						                   .shouldIncludeSeparatorIdentifier( true )
+		                   )
+		)
+		        .listView( lvb -> lvb.viewProcessor( vp -> vp.provideBean( new EntityViewProcessorAdapter()
+		        {
+			        @Override
+			        protected void postRender( EntityViewRequest entityViewRequest,
+			                                   EntityView entityView,
+			                                   ContainerViewElement container,
+			                                   ViewElementBuilderContext builderContext ) {
+				        container.find( "entityListForm-actions", ContainerViewElement.class )
+				                 .ifPresent(
+						                 c -> {
+							                 String url = entityViewRequest.getEntityViewContext()
+							                                               .getLinkBuilder()
+							                                               .listView()
+							                                               .withViewName( "exportToCsv" )
+							                                               .toUriString();
+							                 c.addChild(
+									                 BootstrapViewElements.bootstrap.builders
+											                 .button()
+											                 .text( "Export" )
+											                 .link( url )
+											                 .build( builderContext )
+							                 );
+						                 }
+				                 );
+			        }
+		        } ) ) )
 		;
 	}
 
