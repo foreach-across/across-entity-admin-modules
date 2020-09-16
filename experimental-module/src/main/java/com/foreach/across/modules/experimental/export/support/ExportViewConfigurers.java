@@ -16,14 +16,21 @@ import java.util.function.Consumer;
 @Slf4j
 public class ExportViewConfigurers
 {
+
+	/**
+	 * Configures a given view to result in an export of the fetched data.
+	 *
+	 * @see #configureExportView(ExportViewConfigurer)
+	 * @see CsvExportViewConfigurer
+	 */
+	public <T> Consumer<EntityListViewFactoryBuilder> configureCsvExportView( CsvExportViewConfigurer<T> configurer ) {
+		return configureExportView( configurer );
+	}
+
 	/**
 	 * Configures a given view to result in an export of the fetched data. How the data is exported is defined by an {@link ExportViewConfigurer}.
 	 * If the configurer does not define any properties to be selected, the properties configured on the current view will be used.
 	 * If the properties which should be rendered on this view can not be resolved, all readable properties are configured instead.
-	 *
-	 * @param configurer
-	 * @param <T>
-	 * @return
 	 */
 	public <T> Consumer<EntityListViewFactoryBuilder> configureExportView( ExportViewConfigurer<T> configurer ) {
 		return lvb -> {
@@ -67,9 +74,5 @@ public class ExportViewConfigurers
 			LOG.debug( "Unable to resolve properties to select via PropertyRenderingViewProcessor" );
 		}
 		return Optional.ofNullable( value );
-	}
-
-	public <T> Consumer<EntityListViewFactoryBuilder> configureCsvExportView( CsvExportViewConfigurer<T> configurer ) {
-		return configureExportView( configurer );
 	}
 }
