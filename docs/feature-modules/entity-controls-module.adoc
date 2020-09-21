@@ -3,6 +3,7 @@
 === General
 
 Supports the creation of ViewElements for any POJO or Entity which can then be used on EntityViews or custom pages.
+It consists of helpers that built further upon EntityViewElementBatch to support a more intuitive API as well as some additional features, for example to take over configuration from an existing view.
 
 [[entity-controls-module-dependencies]]
 === Module dependencies
@@ -15,3 +16,101 @@ Supports the creation of ViewElements for any POJO or Entity which can then be u
 |required
 |Supports building controls for entities and pojos based on EntityViewElementBatch and the EntityRegistry.
 |===
+
+=== Configuring entity controls
+
+The `EntityControlFactory` supports creating `EntityControls` for a given entity or POJO.
+These can then be further customized to select which controls should be rendered or how they should be rendered.
+By providing an API that is similar to how customizing entity configurations and views work, it should be relatively easy to create controls for any given instance.
+
+==== Attributes
+
+[options="header",cols="2,4"]
+|===
+|Method |Description
+
+|`forInstance( Class<?> )`
+|Creates controls for an instance of the defined type.
+If used, the values of the controls rendered will be based on the provided instance.
+
+|`properties( Consumer<EntityPropertyRegistryBuilder> )`
+|Customized the properties of the pojo for the EntityControls currently being configured.
+
+|`showProperties( String... )`
+|Configures for which properties a control should be configured.
+Aside of specifying specific property names, additional selectors supported by `EntityPropertySelector` can be used as well.
+
+|`showProperties( EntityPropertySelector )`
+|Configures for which properties a control should be configured.
+
+|`defaultRenderMode( ViewElementMode )`
+|Configures for which `ViewElementMode` the controls should be created.
+If not specified, falls back to `ViewElementMode.FORM_WRITE`
+
+|`renderModeForProperties( ViewElementMode, String... )`
+|Overrides the `ViewElementMode` for specific properties.
+
+|`builderHints( Map<String,Object> )`
+|Customizes how the control for a certain property is created.
+BuilderHints are a `Map` containing the property name as key and the value can be one of the following:
+
+* `ViewElementMode`: for which specific mode the builder should be retrieved
+* `String`: which element type should be generated for the property
+* `ViewElementBuilder`: element builder that should be used for building the element
+* `ViewElement`: fixed element that should be returned
+
+|`loadViewProperties( String )`
+|Reconfigures the base `EntityPropertyRegistry` used by the `EntityControls` based on the name of the view.
+The specified view must exist on the `EntityConfiguration` of the type for which these controls are build.
+
+|`controlNamePrefix( String )`
+|Configures the prefix that should be used as the control name for the controls being build.
+By default, the control name will correspond to the property that is rendered, for example `name`.
+By specifying a prefix `extensions[myExtension]` the resulting control name will be `extension[myExtension].name`.
+
+|`controlNamePrefix( ControlNamePrefixAdjuster )`
+|Configures the prefix that should be used as the control name for the controls being build.
+A `ControlNamePrefixAdjuster` supports a more advanced configuration to prefix the control name.
+
+|`build()`
+|Builds the controls with a default `ViewElementBuilderContext`.
+
+|`build( ViewElementBuilderContext )`
+|Builds the controls with the specified `ViewElementBuilderContext`.
+
+|===
+
+=== Examples
+
+==== Creating controls for a POJO
+
+----
+private final EntityControlFactory entityControlFactory;
+
+MyObject myObject = new MyObject();
+EntityControls entityControls =
+    entityControlFactory.createControlsForClass( MyObject.class ) <1>
+                        .forInstance( myObject ) <2>
+                        .defaultRenderMode( ViewElementMode.FORM_WRITE ) <3>
+                        .showProperties( "name", "date" ) <4>
+                        .properties( <5>
+                            props -> props.property( "date" )
+                                          .attribute( DateTimeFormElementConfiguration.class,
+                                                      new DateTimeFormElementConfiguration( DateTimeFormElementConfiguration.Format.DATE ) )
+                        )
+                        .renderModeForProperties( ViewElementMode.FORM_READ, "date" ); <6>
+Map<String,ViewElement> controls = entityControls.build( builderContext ); <7>
+----
+<1> Define for which type you want to create controls.
+<2> Create controls using a specific instance.
+The values contained within this instance will be used when the controls are rendered.
+<3> The default `ViewElementMode` for which the controls should be built.
+Unless otherwise specified, the controls will be rendered to the specified ViewElementMode.
+<4> Define which properties controls should be build.
+<5> Customize the property registry used to render the controls.
+These customizations will not be applied in other separately configured controls.
+<6> Override the `ViewElementMode` for specific properties.
+<7> Build the controls.
+This will return a `Map` with the key being the name of the property and the value the control.
+The order of the entries within this map are defined by the order of the properties (either specified through `showProperties` or the order within the registry).
+

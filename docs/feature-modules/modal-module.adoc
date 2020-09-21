@@ -19,3 +19,180 @@ Activates support for https://getbootstrap.com/docs/4.3/components/modal/[bootst
 |required
 |Supports reconfiguring views to be rendered in modals by registering EntityViewProcessors
 |===
+
+=== Rendering default views in modals
+
+To configure default views as a modal, a utility class has been provided which updates both the view on which the links to the modal are rendered, as the view that should be rendered in a modal itself.
+These utility configurers can be found in `ModalConfigurers`.
+
+In the most basic configuration, rendering the create, update and delete view as a modal can be done as follows:
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+public void configure( EntitiesConfigurationBuilder entities ) {
+    entities.withType( MyObject.class )
+            .and( ModalConfigurers.createViewAsModal() ) <1>
+            .and( ModalConfigurers.updateViewAsModal() ) <2>
+            .and( ModalConfigurers.deleteViewAsModal() ); <3>
+}
+----
+<1> Render the create view as a modal.
+This customizes the _Create a new my object_ button on the list view to open a modal containing the create view.
+<2> Render the update view as a modal.
+This customizes the edit links on each row in the list view to open a modal containing the update view for the corresponding instance.
+The same modal is reused, regardless of which instance is selected.
+The same modal is reused, as well as when navigation to the delete view occurs within the modal.
+The content that is rendered in the modal is the `body` ViewElement of the page (the content of the general tab).
+<3> Renders the delete view as a modal.
+This customizes the delete links on each row in the list view to open a modal containing the delete view for the corresponding instance.
+The same modal is reused, regardless of which instance is selected.
+
+Underlying, these utility configurers customize one or more views to ajaxify actions as well as create a specific modal for handling these interaction.
+These modals can be reused for whole flows or be used for only this interaction.
+Modals are configured using <<modal-view-element-builder,ModalViewElementBuilders>> in combination with <<modal-action-attributes,actions>> that are registered on specific view elements.
+
+[[modal-action-attributes]]
+==== Controlling flow using actions
+
+The modal configuration utilities configure `ActionAttributes` on specific `ViewElements`.
+On the list view the create, update and delete buttons, which otherwise navigate to the specific page are modified to do the following:
+
+* Fetch the partial `content` of the view corresponding to the button, with a `X-MODAL-ORIGIN` header containing the modal id.
+* If the result is successful
+** Clear the header, body and footer of the modal
+** Insert the `.pcs-body-section` element into the modal body
+** Insert the `.page-header` element into the title element of the modal header
+** Move the `.em-form-actions` element from the body to the footer
+* If the result fails
+** No actions defined at this point
+
+Aside of modifying the list view, the view rendered in the modal is also customized as follows:
+
+* The cancel button is modified to close the modal
+* The save/delete button is modified to submit the form that is present in the modal body
+* If an HTTP OK response is returned
+** An HTTP OK in this case means that a validation error has occured, because HTML is returned.
+As such, the content of the response is rendered in the modal body and initialized.
+* If a REDIRECT response is returned
+** The list view is fetched and rerendered
+** The modal is closed
+
+On the update view, one additional action is configured:
+
+* The delete button is modified to fetch the delete view of this instance (similar to opening an update or delete modal for example), but instead of opening a _new_ modal, the current modal is reused.
+
+[[modal-view-element-builder]]
+=== ModalViewElementBuilder
+
+A `ModalViewElementBuilder` supports configuring a https://getbootstrap.com/docs/4.3/components/modal/[Bootstrap 4 Modal] element.
+
+==== Attributes
+
+The ViewElementBuilder provides several configuration options, both for composing a modal as well as influencing its behaviour.
+
+[options="header",cols="1,4"]
+|===
+|attribute |Description
+
+|centered
+|Whether the modal should be centered on the page when it is opened
+
+|animated
+|Whether a fade animation should be played when the modal is opened or closed
+
+|scrollableBody
+|Configures whether the body of the modal should be scrollable when content is too long for the page or the entire modal
+
+|staticBackdrop
+|Renders a backdrop which does not close the modal if it is clicked
+
+|backdrop
+|Whether a backdrop should be rendered or not
+
+|keyboard
+|Whether the modal should be closed when the escape key is pressed
+
+|header
+|Renders the given ViewElement as the header of the modal.
+If no element has been configured, no header will be added to the modal.
+
+|body
+|Renders the given ViewElement as the body of the modal.
+If no element has been configured, no body will be added to the modal.
+
+|footer
+|Renders the given ViewElement as the footer of the modal.
+If no element has been configured, no footer will be added to the modal.
+
+|title
+|Configures a header element with a given title and a close button.
+|===
+
+==== Examples
+
+===== Creating a simple modal
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+new ModalViewElementBuilder()
+        .title( "A fancy modal" )
+        .body( HtmlViewElements.html.p( text( "Hello world" ) ) )
+        .footer( BootstrapViewElements.bootstrap.builders.button()
+                                                         .style( Style.PRIMARY )
+                                                         .text( "Close" ) );
+----
+
+Results in the following html:
+
+[source,html,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+<div role="dialog" aria-labelledby="Title" tabindex="-1" aria-hidden="true" class="modal fade">
+    <div role="document" class="modal-dialog">
+        <div class="modal-content">
+            <div id="Title" class="modal-header">
+                <div class="modal-title">
+                    <h3>A fancy modal</h3>
+                </div><button type="button" class="close" data-dismiss="modal" aria-label="Close"><i aria-hidden="true"
+                        class="fas fa-times axu-text-danger"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Hello world</p>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-primary">Close</button></div>
+        </div>
+    </div>
+</div>
+----
+
+===== Creating a modal with only a body and a footer
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+new ModalViewElementBuilder()
+        .staticBackdrop()
+        .body( HtmlViewElements.html.p( text( "Hellow world" ) ) )
+        .footer( BootstrapViewElements.bootstrap.builders.button()
+                                                         .style( Style.PRIMARY )
+                                                         .text( "Close" ) );
+----
+
+Results in the following html:
+
+[source,html,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+<div role="dialog" data-backdrop="static" tabindex="-1" aria-hidden="true" class="modal fade">
+    <div role="document" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Hello world</p>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-primary">Close</button></div>
+        </div>
+    </div>
+</div>
+----
