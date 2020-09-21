@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
@@ -95,6 +96,17 @@ public class LibraryConfiguration implements EntityConfigurer
 				                      .and()
 				                      .property( "discounts[]" )
 				                      .attribute( NumericFormElementConfiguration.class, NumericFormElementConfiguration.percent( 2, true ) )
+				                      .and()
+				                      .property( "nameBulkFetched" )
+				                      .readable( true )
+				                      .writable( false )
+				                      .propertyType( TypeDescriptor.valueOf( String.class ) )
+				                      .controller(
+						                      ctrl -> ctrl.withTarget( Library.class, String.class )
+						                                  .valueFetcher( x -> x.getId() + ":single" )
+						                                  .bulkValueFetcher( libraries -> libraries.stream().collect(
+								                                  Collectors.toMap( l -> l, l -> l.getName() + ":bulk" ) ) )
+				                      )
 		        )
 		        .and( registerEntityQueryExecutor( libraries::values ) )
 		        .detailView()

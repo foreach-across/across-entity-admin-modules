@@ -37,7 +37,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Contains utility methods related to view elements and view building in an entity context.
@@ -204,6 +206,13 @@ public class EntityViewElementUtils
 		PriorityValue<EntityPropertyBindingContext> bindingContext = currentBindingContextValue( builderContext, false );
 		int bindingContextPriority = bindingContext.priority;
 
+		if ( descriptor.getController().isOptimizedForBulkValueFetching() && builderContext instanceof IteratorViewElementBuilderContext ) {
+			Optional<Object> possibleValue = resolveValueForOptimizedBulkFetching( builderContext, descriptor, bindingContext );
+			if ( possibleValue.isPresent() ) {
+				return possibleValue.get();
+			}
+		}
+
 		if ( propertyValuePriority <= propertyBinderPriority && propertyValuePriority <= bindingContextPriority ) {
 			return attrPropertyValue.getValue().getNewValue();
 		}
@@ -219,6 +228,30 @@ public class EntityViewElementUtils
 		}
 
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Optional<Object> resolveValueForOptimizedBulkFetching( ViewElementBuilderContext builderContext,
+	                                                                      EntityPropertyDescriptor descriptor,
+	                                                                      PriorityValue<EntityPropertyBindingContext> bindingContext ) {
+		String bulkContextHolderName = "entityPropertyBindingContext:bulk:" + descriptor.getName();
+		if ( !builderContext.hasAttribute( bulkContextHolderName ) ) {
+			ViewElementBuilderContext parentContext = ( (IteratorViewElementBuilderContext) builderContext ).getParentContext();
+			Object items = builderContext.getAttribute( "items" );
+			List<EntityPropertyBindingContext> contexts = Collections.emptyList();
+			if ( items instanceof Iterable ) {
+				contexts = StreamSupport.stream( ( (Iterable<Object>) items ).spliterator(), false )
+				                        .map( EntityPropertyBindingContext::forReading )
+				                        .collect( Collectors.toList() );
+			}
+			parentContext.setAttribute( bulkContextHolderName, descriptor.getController().fetchValues( contexts ) );
+		}
+
+		Map<EntityPropertyBindingContext, Object> attribute = builderContext.getAttribute( bulkContextHolderName, Map.class );
+		return attribute.entrySet().stream()
+		                .filter( e -> Objects.equals( e.getKey(), bindingContext.value ) )
+		                .map( Map.Entry::getValue )
+		                .findFirst();
 	}
 
 	static EntityPropertyBindingContext currentBindingContext( @NonNull ViewElementBuilderContext builderContext ) {
