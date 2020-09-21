@@ -23,7 +23,7 @@ The `EntityControlFactory` supports creating `EntityControls` for a given entity
 These can then be further customized to select which controls should be rendered or how they should be rendered.
 By providing an API that is similar to how customizing entity configurations and views work, it should be relatively easy to create controls for any given instance.
 
-==== Attributes
+==== Options
 
 [options="header",cols="2,4"]
 |===
@@ -51,7 +51,7 @@ If not specified, falls back to `ViewElementMode.FORM_WRITE`
 |Overrides the `ViewElementMode` for specific properties.
 
 |`builderHints( Map<String,Object> )`
-|Customizes how the control for a certain property is created.
+a|Customizes how the control for a certain property is created.
 BuilderHints are a `Map` containing the property name as key and the value can be one of the following:
 
 * `ViewElementMode`: for which specific mode the builder should be retrieved
