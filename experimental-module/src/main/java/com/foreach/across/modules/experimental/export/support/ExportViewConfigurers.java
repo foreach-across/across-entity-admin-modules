@@ -3,6 +3,7 @@ package com.foreach.across.modules.experimental.export.support;
 import com.foreach.across.modules.entity.config.builders.EntityListViewFactoryBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.processors.PropertyRenderingViewProcessor;
+import com.foreach.across.modules.experimental.export.support.csv.BaseCsvExportViewConfigurer;
 import com.foreach.across.modules.experimental.export.ui.viewprocessors.ExportListViewProcessor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,14 @@ public class ExportViewConfigurers
 
 	/**
 	 * Configures a given view to result in an export of the fetched data.
+	 * Actual behaviour defines on the implementation used.
+	 * </p>
+	 * Currently only one implementation is provided, being {@link com.foreach.across.modules.experimental.export.support.csv.CsvExportViewConfigurer}.
 	 *
 	 * @see #configureExportView(ExportViewConfigurer)
-	 * @see CsvExportViewConfigurer
+	 * @see BaseCsvExportViewConfigurer
 	 */
-	public <T> Consumer<EntityListViewFactoryBuilder> configureCsvExportView( CsvExportViewConfigurer<T> configurer ) {
+	public <T> Consumer<EntityListViewFactoryBuilder> configureCsvExportView( BaseCsvExportViewConfigurer<T, byte[]> configurer ) {
 		return configureExportView( configurer );
 	}
 
@@ -32,18 +36,18 @@ public class ExportViewConfigurers
 	 * If the configurer does not define any properties to be selected, the properties configured on the current view will be used.
 	 * If the properties which should be rendered on this view can not be resolved, all readable properties are configured instead.
 	 */
-	public <T> Consumer<EntityListViewFactoryBuilder> configureExportView( ExportViewConfigurer<T> configurer ) {
+	public <T> Consumer<EntityListViewFactoryBuilder> configureExportView( ExportViewConfigurer<T, byte[]> configurer ) {
 		return lvb -> {
-			if ( configurer.applyPaginationParameters() ) {
+			if ( !configurer.applyPaginationParameters() ) {
 				lvb.pageSize( Integer.MAX_VALUE );
 			}
 
 			lvb.viewProcessor(
-					vp -> vp.provideBean( new ExportListViewProcessor<T>() )
+					vp -> vp.provideBean( new ExportListViewProcessor<T, byte[]>() )
 					        .configure( evp -> evp.responseContentType( configurer.getResponseContentType() )
 					                              .fileNameResolver( configurer::resolveFileName )
 					                              .propertiesToExport( configurer.getPropertiesToExport() )
-					                              .export( (ExportMapper<T>) configurer::converter ) )
+					                              .export( (ExportMapper<T, byte[]>) configurer::converter ) )
 			).postProcess(
 					( view, registry ) -> {
 						Optional<EntityPropertySelector> propertySelector = Optional.ofNullable( configurer.getPropertiesToExport() );
@@ -63,6 +67,9 @@ public class ExportViewConfigurers
 		};
 	}
 
+	/**
+	 * Attempts to resolve the {@link EntityPropertySelector} registered on a {@link PropertyRenderingViewProcessor}.
+	 */
 	private static Optional<EntityPropertySelector> resolveEntityPropertySelector( PropertyRenderingViewProcessor viewProcessor ) {
 		EntityPropertySelector value = null;
 		try {

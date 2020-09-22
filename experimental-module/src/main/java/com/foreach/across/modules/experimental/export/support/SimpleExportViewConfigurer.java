@@ -8,13 +8,13 @@ import org.springframework.http.MediaType;
 import java.util.Collection;
 import java.util.function.Function;
 
-public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
+public class SimpleExportViewConfigurer<T, R> implements ExportViewConfigurer<T, R>
 {
 	private EntityPropertySelector propertiesToExport;
 	private MediaType contentType;
 	private boolean applyPaginationParameters = false;
 	private Function<EntityViewRequest, String> resolveFileName;
-	private ExportMapper<T> converter;
+	private ExportMapper<T, R> converter;
 
 	/**
 	 * Configures whether only the current page should be exported or all the data matching the current filter.
@@ -23,7 +23,7 @@ public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
 	 * @param applyPaginationParameters whether the filtered data should be limited to the current page.
 	 * @return self
 	 */
-	public SimpleExportViewConfigurer<T> applyPaginationParameters( boolean applyPaginationParameters ) {
+	public SimpleExportViewConfigurer<T, R> applyPaginationParameters( boolean applyPaginationParameters ) {
 		this.applyPaginationParameters = applyPaginationParameters;
 		return this;
 	}
@@ -34,7 +34,7 @@ public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
 	 * @param propertiesToExport to export
 	 * @return self
 	 */
-	public SimpleExportViewConfigurer<T> propertiesToExport( EntityPropertySelector propertiesToExport ) {
+	public SimpleExportViewConfigurer<T, R> propertiesToExport( EntityPropertySelector propertiesToExport ) {
 		this.propertiesToExport = propertiesToExport;
 		return this;
 	}
@@ -45,7 +45,7 @@ public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
 	 * @param contentType to use.
 	 * @return self
 	 */
-	public SimpleExportViewConfigurer<T> contentType( MediaType contentType ) {
+	public SimpleExportViewConfigurer<T, R> contentType( MediaType contentType ) {
 		this.contentType = contentType;
 		return this;
 	}
@@ -56,7 +56,7 @@ public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
 	 * @param resolver to define the file name
 	 * @return self
 	 */
-	public SimpleExportViewConfigurer<T> fileName( Function<EntityViewRequest, String> resolver ) {
+	public SimpleExportViewConfigurer<T, R> fileName( Function<EntityViewRequest, String> resolver ) {
 		this.resolveFileName = resolver;
 		return this;
 	}
@@ -67,7 +67,7 @@ public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
 	 * @param fileName name of the file
 	 * @return self
 	 */
-	public SimpleExportViewConfigurer<T> fileName( String fileName ) {
+	public SimpleExportViewConfigurer<T, R> fileName( String fileName ) {
 		this.resolveFileName = evr -> fileName;
 		return this;
 	}
@@ -79,7 +79,7 @@ public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
 	 * @param converter to use
 	 * @return self
 	 */
-	public SimpleExportViewConfigurer<T> converter( ExportMapper<T> converter ) {
+	public SimpleExportViewConfigurer<T, R> converter( ExportMapper<T, R> converter ) {
 		this.converter = converter;
 		return this;
 	}
@@ -105,7 +105,7 @@ public class SimpleExportViewConfigurer<T> implements ExportViewConfigurer<T>
 	}
 
 	@Override
-	public byte[] converter( EntityViewRequest entityViewRequest, Collection<EntityPropertyDescriptor> propertiesToExport, Iterable<T> toExport ) {
+	public R converter( EntityViewRequest entityViewRequest, Collection<EntityPropertyDescriptor> propertiesToExport, Iterable<T> toExport ) {
 		return converter.convertToFile( entityViewRequest, propertiesToExport, toExport );
 	}
 }

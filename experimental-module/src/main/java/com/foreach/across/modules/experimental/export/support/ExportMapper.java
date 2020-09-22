@@ -6,7 +6,7 @@ import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import java.util.Collection;
 
 @FunctionalInterface
-public interface ExportMapper<T>
+public interface ExportMapper<T, R>
 {
 	/**
 	 * Converts properties of a given amount of data to a byte[] representing a file.
@@ -16,5 +16,5 @@ public interface ExportMapper<T>
 	 * @param data               that should be exported
 	 * @return a byte[] holding the converted content
 	 */
-	byte[] convertToFile( EntityViewRequest entityViewRequest, Collection<EntityPropertyDescriptor> propertiesToExport, Iterable<T> data );
+	R convertToFile( EntityViewRequest entityViewRequest, Collection<EntityPropertyDescriptor> propertiesToExport, Iterable<T> data );
 }

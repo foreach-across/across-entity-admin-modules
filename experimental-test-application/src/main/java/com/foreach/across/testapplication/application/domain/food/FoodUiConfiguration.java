@@ -13,8 +13,8 @@ import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.bulkactions.support.SimpleBulkActionItemConfigurer;
 import com.foreach.across.modules.experimental.bulkactions.ui.viewprocessors.BulkActionViewProcessor;
-import com.foreach.across.modules.experimental.export.support.CsvExportViewConfigurer;
 import com.foreach.across.modules.experimental.export.support.ExportViewConfigurers;
+import com.foreach.across.modules.experimental.export.support.csv.CsvExportViewConfigurer;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -91,29 +91,36 @@ public class FoodUiConfiguration implements EntityConfigurer
 				        container.find( "entityListForm-actions", ContainerViewElement.class )
 				                 .ifPresent(
 						                 c -> {
-							                 String url = entityViewRequest.getEntityViewContext()
-							                                               .getLinkBuilder()
-							                                               .listView()
-							                                               .withViewName( "exportToCsv" )
-							                                               .toUriString();
-							                 c.set( css.size.width100 );
-
-							                 c.addChild(
-									                 html.builders.div( css.cssFloat.right )
-									                              .add( bootstrap.builders
-											                                    .button()
-											                                    .icon( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "download" )
-											                                                  .set( css.margin.right.s2 ) )
-											                                    .iconLeft()
-											                                    .text( "to CSV" )
-											                                    .link( url ) )
-									                              .build( builderContext )
-							                 );
+							                 configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" );
 						                 }
 				                 );
 			        }
 		        } ) ) )
 		;
+	}
+
+	private void configureButton( EntityViewRequest entityViewRequest,
+	                              ViewElementBuilderContext builderContext,
+	                              ContainerViewElement c,
+	                              String viewName, String btnText ) {
+		String url = entityViewRequest.getEntityViewContext()
+		                              .getLinkBuilder()
+		                              .listView()
+		                              .withViewName( viewName )
+		                              .toUriString();
+		c.set( css.size.width100 );
+
+		c.addChild(
+				html.builders.div( css.cssFloat.right )
+				             .add( bootstrap.builders
+						                   .button()
+						                   .icon( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "download" )
+						                                 .set( css.margin.right.s2 ) )
+						                   .iconLeft()
+						                   .text( btnText )
+						                   .link( url ) )
+				             .build( builderContext )
+		);
 	}
 
 	private Consumer<EntityViewFactoryBuilder> bulkActionsConfigurer( String controlName ) {

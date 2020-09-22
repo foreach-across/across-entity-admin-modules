@@ -22,12 +22,12 @@ import java.util.function.Function;
  */
 @Setter
 @Accessors(fluent = true)
-public class ExportListViewProcessor<T> extends EntityViewProcessorAdapter
+public class ExportListViewProcessor<T, R> extends EntityViewProcessorAdapter
 {
 	private EntityPropertySelector propertiesToExport;
 	private MediaType responseContentType;
 	private Function<EntityViewRequest, String> fileNameResolver;
-	private ExportMapper<T> export;
+	private ExportMapper<T, R> export;
 
 	@Override
 	protected void doControl( EntityViewRequest entityViewRequest,
@@ -43,7 +43,7 @@ public class ExportListViewProcessor<T> extends EntityViewProcessorAdapter
 		Iterable<T> items = entityView.getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class );
 
 		EntityPropertyRegistry propertyRegistry = entityViewRequest.getEntityViewContext().getPropertyRegistry();
-		byte[] file = export.convertToFile( entityViewRequest, propertyRegistry.select( propertiesToExport ), items );
+		R file = export.convertToFile( entityViewRequest, propertyRegistry.select( propertiesToExport ), items );
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType( responseContentType );

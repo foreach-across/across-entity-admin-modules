@@ -4,4 +4,3 @@ applicationInfo:
 
 build:
   number: "@build.revision@"
-

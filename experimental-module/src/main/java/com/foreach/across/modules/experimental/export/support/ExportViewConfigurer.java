@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 
 import java.util.Collection;
 
-public interface ExportViewConfigurer<T>
+public interface ExportViewConfigurer<T, R>
 {
 	/**
 	 * Defines which properties should be exported of the fetched items.
@@ -37,5 +37,5 @@ public interface ExportViewConfigurer<T>
 	 * @param toExport           items to export
 	 * @return a byte[] representing the file
 	 */
-	byte[] converter( EntityViewRequest entityViewRequest, Collection<EntityPropertyDescriptor> propertiesToExport, Iterable<T> toExport );
+	R converter( EntityViewRequest entityViewRequest, Collection<EntityPropertyDescriptor> propertiesToExport, Iterable<T> toExport );
 }
