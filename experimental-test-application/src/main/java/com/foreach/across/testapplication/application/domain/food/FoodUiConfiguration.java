@@ -1,7 +1,7 @@
 package com.foreach.across.testapplication.application.domain.food;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
-import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
@@ -26,8 +26,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.experimental.bulkactions.support.BulkActionsEntityConfigurers.configureBulkActions;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.testapplication.application.domain.food.controllers.FoodBulkActionsController.FOOD_BULK_ACTIONS;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -72,6 +76,7 @@ public class FoodUiConfiguration implements EntityConfigurer
 		                   ExportViewConfigurers.configureCsvExportView(
 				                   new CsvExportViewConfigurer<>()
 						                   .fileName( "content.csv" )
+						                   .separator( ";" )
 						                   .shouldIncludeUtf8Bom( true )
 						                   .shouldIncludeSeparatorIdentifier( true )
 		                   )
@@ -91,12 +96,18 @@ public class FoodUiConfiguration implements EntityConfigurer
 							                                               .listView()
 							                                               .withViewName( "exportToCsv" )
 							                                               .toUriString();
+							                 c.set( css.size.width100 );
+
 							                 c.addChild(
-									                 BootstrapViewElements.bootstrap.builders
-											                 .button()
-											                 .text( "Export" )
-											                 .link( url )
-											                 .build( builderContext )
+									                 html.builders.div( css.cssFloat.right )
+									                              .add( bootstrap.builders
+											                                    .button()
+											                                    .icon( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "download" )
+											                                                  .set( css.margin.right.s2 ) )
+											                                    .iconLeft()
+											                                    .text( "to CSV" )
+											                                    .link( url ) )
+									                              .build( builderContext )
 							                 );
 						                 }
 				                 );
