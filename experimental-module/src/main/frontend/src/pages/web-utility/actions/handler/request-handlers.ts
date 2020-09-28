@@ -1,7 +1,7 @@
 import { Action } from "../action-types";
 import { ActionHandler, ActionHandlerResolver, RequestActionHandler } from "../handler-types";
-import { JsonResponse, TextResponse } from "../../experimental/utils/response-types";
-import { executeRequest, translateResponse } from "../../experimental/utils/request-utils";
+import { JsonResponse, TextResponse } from "../../utils/response-types";
+import { executeRequest, translateResponse } from "../../utils/request-utils";
 import { ActionHandlerError } from "../error-types";
 
 interface Context {

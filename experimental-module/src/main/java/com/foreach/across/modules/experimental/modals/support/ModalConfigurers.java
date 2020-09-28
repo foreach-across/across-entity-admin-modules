@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
-import static com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute.requestAction;
-import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionHandlerAttribute.*;
+import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 
 public class ModalConfigurers
 {

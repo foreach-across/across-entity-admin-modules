@@ -1,6 +1,6 @@
 import { Action, ActionResolver } from "../action-types";
 import { ActionHandlerFactory } from "../handler/action-handler-factory";
-import { executeRequest, translateResponse } from "../../experimental/utils/request-utils";
+import { executeRequest, translateResponse } from "../../utils/request-utils";
 import { ActionHandler } from "../handler-types";
 
 interface RequestAction extends Action {
@@ -8,7 +8,7 @@ interface RequestAction extends Action {
   url?: string; // url to call
   form?: string; // form selector
   partial?: string;
-  copyOriginalRequestParameters?: boolean
+  copyOriginalRequestParameters?: boolean;
   redirect: ActionHandler[];
   success: ActionHandler[];
   failure: ActionHandler[]; // action handlers

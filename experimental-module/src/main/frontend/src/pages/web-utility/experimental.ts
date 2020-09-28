@@ -1,15 +1,15 @@
-import { handlerFactory } from "../modals/handler/action-handler-factory";
-import { ActionFactory } from "../modals/action/action-factory";
-import { RequestActionResolver, requestActionResolver } from "../modals/action/request-action";
-import { RequestActionHandlerResolver, ResponseContentActionHandlerResolver } from "../modals/handler/request-handlers";
+import { handlerFactory } from "./actions/handler/action-handler-factory";
+import { ActionFactory } from "./actions/action/action-factory";
+import { RequestActionResolver, requestActionResolver } from "./actions/action/request-action";
+import { RequestActionHandlerResolver, ResponseContentActionHandlerResolver } from "./actions/handler/request-handlers";
 import {
   ClearActionHandlerResolver,
   CloseModalHandlerResolver,
   InitializeFormElementsHandlerResolver,
   MoveActionHandlerResolver,
   RemoveActionHandlerResolver,
-} from "../modals/handler/simple-handlers";
-import { simpleActionResolver, SimpleActionResolver } from "../modals/action/simple-action";
+} from "./actions/handler/simple-handlers";
+import { simpleActionResolver, SimpleActionResolver } from "./actions/action/simple-action";
 
 const actionFactory = new ActionFactory(handlerFactory);
 

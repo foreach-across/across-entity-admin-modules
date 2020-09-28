@@ -2,7 +2,7 @@ package com.foreach.across.modules.experimental.modals.support;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foreach.across.modules.experimental.modals.support.action.ActionAttribute;
+import com.foreach.across.modules.experimental.webutility.support.action.ActionAttribute;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;

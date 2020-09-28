@@ -50,12 +50,12 @@
     {
       "name": "action-loader",
       "title": "action-loader",
-      "appIndexJs": "src/pages/modals/action-loader"
+      "appIndexJs": "src/pages/web-utility/actions/action-loader"
     },
     {
       "name": "experimental-module",
       "title": "experimental-module",
-      "appIndexJs": "src/pages/experimental/experimental"
+      "appIndexJs": "src/pages/web-utility/experimental"
     }
   ],
   "eslintConfig": {

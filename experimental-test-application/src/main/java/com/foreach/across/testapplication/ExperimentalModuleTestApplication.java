@@ -6,9 +6,11 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.experimental.ExperimentalModule;
+import com.foreach.across.modules.experimental.webutility.WebUtilityModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 
-@AcrossApplication(modules = { EntityModule.NAME, BootstrapUiModule.NAME, AdminWebModule.NAME, AcrossHibernateJpaModule.NAME, ExperimentalModule.NAME })
+@AcrossApplication(modules = { EntityModule.NAME, BootstrapUiModule.NAME, AdminWebModule.NAME, AcrossHibernateJpaModule.NAME, ExperimentalModule.NAME,
+                               WebUtilityModule.NAME })
 public class ExperimentalModuleTestApplication
 {
 	public static void main( String[] args ) {

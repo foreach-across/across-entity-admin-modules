@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.modals.support.action;
+package com.foreach.across.modules.experimental.webutility.support.action;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

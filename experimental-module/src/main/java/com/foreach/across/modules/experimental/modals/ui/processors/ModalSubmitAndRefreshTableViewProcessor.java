@@ -10,9 +10,9 @@ import org.springframework.http.HttpMethod;
 
 import java.util.function.BiFunction;
 
-import static com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute.requestAction;
-import static com.foreach.across.modules.experimental.modals.support.action.RequestActionHandlerAttribute.requestActionHandler;
-import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionHandlerAttribute.*;
+import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionHandlerAttribute.requestActionHandler;
+import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 
 /**
  * Configures the referenced {@link ViewElement} to submit a given modal on click.

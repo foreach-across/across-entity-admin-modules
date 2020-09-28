@@ -6,12 +6,12 @@ import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
-import com.foreach.across.modules.experimental.modals.support.action.ActionAttribute;
-import com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
+import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
+import com.foreach.across.modules.experimental.webutility.support.action.ActionAttribute;
+import com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
@@ -29,8 +29,8 @@ import java.util.function.BiFunction;
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.experimental.modals.support.ModalLoadAttribute.modalLoadAttribute;
-import static com.foreach.across.modules.experimental.modals.support.action.RequestActionAttribute.requestAction;
-import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionHandlerAttribute.*;
+import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.data;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
@@ -91,26 +91,11 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 	@Override
 	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.apply(
-				WebResourceRule.add(
-						WebResource.javascript( "@static:/experimental/web/experimental-module.js" ) )
-				               .withKey( "experimental-module" )
-				               .after( EntityModuleWebResources.NAME )
-				               .before( "modal-loader-js" )
-				               .toBucket( JAVASCRIPT_PAGE_END )
-		);
-		webResourceRegistry.apply(
-				WebResourceRule.add(
-						WebResource.javascript( "@static:/experimental/web/action-loader.js" ) )
-				               .withKey( "request-executor" )
-				               .after( EntityModuleWebResources.NAME )
-				               .before( "modal-loader-js" )
-				               .toBucket( JAVASCRIPT_PAGE_END )
-		);
-		webResourceRegistry.apply(
+				WebResourceRule.addPackage( WebUtilityModuleWebResources.NAME ),
 				WebResourceRule.add(
 						WebResource.javascript( "@static:/experimental/web/modal-loader.js" ) )
 				               .withKey( "modal-loader-js" )
-				               .after( EntityModuleWebResources.NAME )
+				               .after( WebUtilityModuleWebResources.NAME )
 				               .toBucket( JAVASCRIPT_PAGE_END )
 		);
 	}
