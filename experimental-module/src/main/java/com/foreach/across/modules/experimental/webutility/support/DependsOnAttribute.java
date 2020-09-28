@@ -33,10 +33,23 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
         consumer.accept(this);
     }
 
+    /**
+     * Set the source field using the name of the viewElement
+     */
     public Dependency viewElementName(@NonNull String viewElementName) {
         return new Dependency(ruleSet(viewElementNameToDependencyId(viewElementName)), options);
     }
 
+    /**
+     * Set the source field using a jQuery selector
+     */
+    public Dependency selector(@NonNull String selector) {
+        return new Dependency(ruleSet(selector), options);
+    }
+
+    /**
+     * Set the source field using the property selector
+     */
     public Dependency property(@NonNull String propertyName) {
         return new Dependency(ruleSet(propertyToDependencyId(propertyName)), options);
     }
@@ -97,6 +110,14 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 
         public Dependency toggleClass(@NonNull String classToToggle) {
             settings.put("toggleClass", classToToggle);
+            return this;
+        }
+
+        /**
+         * @param valueTarget is the jQuery selector for the target
+         */
+        public Dependency valueTarget(@NonNull String valueTarget) {
+            settings.put("valueTarget", valueTarget);
             return this;
         }
 
