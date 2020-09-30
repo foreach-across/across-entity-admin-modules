@@ -75,7 +75,7 @@ webResourceRegistry.apply(
 );
 ----
 
-==== Available Actions
+==== Available actions
 
 As mentioned earlier, Actions are triggered by events on DOM elements.
 In the backend, an action is defined by an `ActionAttribute`, which is a configuration object that is applicable to `ViewElements`.
@@ -88,7 +88,7 @@ Each action defines the following attributes:
 |Attribute |Description
 
 | `action`
-| Name of the action handler.
+| Name of the action.
 This is a unique identifier, which is then picked up on the client-side to integrate with the javascript.
 
 | `event`
@@ -100,7 +100,7 @@ Actions can be registered without events, but if missing they will not be execut
 These attributes can be found on each of the mentioned actions below.
 On specific implementations, defaults are provided, but they can be overridden by setting the attribute again.
 
-===== Simple Actions
+===== Simple actions
 
 Simple actions will do nothing special when triggered by an event on the corresponding element and will immediately execute their handlers.
 
@@ -121,7 +121,7 @@ Each of these handlers is triggered in order.
 
 |===
 
-===== Request Actions
+===== Request actions
 
 Request actions trigger a request on the client side when they are triggered by an event on the corresponding element.
 
@@ -178,7 +178,88 @@ Each of these handlers is triggered in order.
 
 |===
 
-==== Available ActionHandlers
+==== Available action handlers
+
+Action handlers are used to define a series of steps that should be executed in order for an action.
+They can do anything you want them to do.
+In its core, they have a single attribute to link them to their client-side counterpart.
+
+[options="header",cols="2,4"]
+|===
+
+|Attribute |Description
+
+| `type`
+| Type of the action handler.
+This is a unique identifier, which is then picked up on the client-side to integrate with the javascript.
+
+|===
+
+===== Simple action handlers
+
+The currently available simple action handlers support basic DOM manipulations.
+First we'll take a look at the attributes it provides and then move on to some utilities that allow us to quickly set up some action handlers.
+
+[options="header",cols="1,4"]
+|===
+
+|Attribute |Description
+
+| `source`
+| CSS3 selector that represents the source element.
+A source element is optional as not every action handler requires input.
+
+| `target`
+| CSS3 selector that represents the target element.
+The target element should always be specified.
+
+|===
+
+The above attributes don't tell us much in the sense of how to use them.
+Let's jump to some of the utilities that are provided, which allow us to quickly set up some basic action handlers.
+Most of these utilities specify the core `type` attribute to provide a link to the client-side functionality.
+
+[options="header",cols="2,4"]
+|===
+
+|Utility |Description
+
+| `simpleActionHandler`
+| The most basic action handler.
+This gives you a `SimpleActionHandlerAttribute` that needs to be fully configured to your use case.
+
+| `responseContentHandler`
+a| A response content handler can only be used within the context of a request action and handles the content in its response.
+A `source` element is optional, if specified it will look for that element in the _content_ of the http response, if left empty, the source element will represent the entire response content.
+The `target` selector defines which element's content should be replaced entirely with the source content.
+
+NOTE: this handler does not support JSON response types.
+
+| `moveHandler`
+| An action handler that moves elements around the DOM.
+It requires both a `source` and a `target` element to be specified.
+The element defined by the `source` selector will be moved into the element represented by the `target` selector.
+
+| `removeHandler( String target )`
+| CSS3 selector that represents the target element.
+The element defined by the `target` selector will be removed from the DOM.
+
+| `clearHandler( String target )`
+| CSS3 selector that represents the target element.
+The element defined by the `target` selector will have it's content cleared.
+
+| `closeModalHandler( String target )`
+| CSS3 selector that represents the target element.
+The element defined by the `target` selector should have a registered [Bootstrap modal] and will call its `hide` function.
+
+| `initializeFormElements( String target )`
+| CSS3 selector that represents the target element.
+Reinitializes the element defined by the `target` selector.
+This is practically the same as executing `EntityModule.initializeFormElements( target )`.
+
+|===
+
+===== Request action handlers
 
 ==== Registering custom actions
 
