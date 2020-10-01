@@ -259,12 +259,113 @@ This is practically the same as executing `EntityModule.initializeFormElements( 
 
 |===
 
-===== Request action handlers
+===== Request action handler
+
+Currently one request action handler is available, which can execute another request during the handling of the current action.
+When the request of this handler is successfully executed, the element defined by the target attribute is replaced with the response text content.
+
+A request action handler has the following attributes:
+
+[options="header",cols="1,4"]
+|===
+
+|Attribute |Description
+
+| url
+| The url to which the request should be send to.
+If let empty, the url of the current page on the client-side will be used.
+
+| partial
+| Defines whether a partial should be fetched instead of the entire page.
+Optional.
+
+| `form
+| The form that should be serialized for the request.
+If the request is a `HttpMethod.POST` request, the form will be serialized to the request body, else it will be appended as request parameters.
+Optional.
+
+| `method`
+| The HTTP request method that should be used.
+Defaults to `HttpMethod.GET`.
+
+| `requestConfig`
+| A configuration map to extend the request configuration.
+Can be used for example to configure specific headers that should be added to the request.
+
+| `target`
+| Defines the target element that should be replaced with the content of the response.
+
+|===
 
 ==== Registering custom actions
 
 To register custom actions which can then be used on the client-side, additional javascript has to be configured.
-The javascript
+Registering the client-side functionality for actions and their handlers can be done by registering additional web resources that come _after_ the `WebUtilityModuleWebResources`.
+If so, a global `ExperimentalModule` object should be available that holds an `ActionFactory` and an `ActionHandlerFactory`.
+
+These factories can be used to register _new_ actions or action handlers as well as execute them, all actions and action handlers return `Promise` objects to support error handling and execution order.
+
+.Registering a new action
+[source,javascript,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+class MyAction {
+  handle(action, context, actionHandlerFactory) {
+    // perform some logic
+
+    // execute handlers in order
+    let sequence = Promise.resolve();
+    action.handlers.forEach((handler) => {
+      sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action }));
+    });
+    return sequence;
+  }
+}
+
+ExperimentalModule.actionFactory.register( "app:my-action", new MyAction()); <1>
+----
+<1> Registers the client-side execution for the action with name `app:my-action`.
+
+An action is executed when the corresponding event is triggered.
+To resolve the handling, the action that is executed is provided in combination with the context it is executed in and the `ActionHandlerFactory` that supports executing the handlers for an action.
+In the above example, the action executes all its handlers in order and provides it with a context containing the action that is executed.
+The context that is provided is a placeholder for custom implementations and uses, by default no information will be present.
+
+Action resolving will automatically be configured once a `[data-action-load]` attribute is present.
+
+.Registering a new action handler
+[source,javascript,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+class MyCustomHandler {
+  handle(action, context) {
+    if (action.source && action.target) {
+        // perform some logic
+      return Promise.resolve();
+    }
+
+    return Promise.reject(
+      new ActionHandlerError(
+        `Handler 'app:my-handler': both source and target are required`,
+        action,
+        context
+      )
+    );
+  }
+}
+
+ExperimentalModule.actionHandlerFactory.register( "app:my-handler", new MyCustomHandler()); <1>
+----
+<1> Registers a custom action under the key `app:my-handler`.
+This key corresponds to the type attribute of the action handler.
+
+An action handler is similar to an action, being a `handle(action, context)` method.
+The `action` holds the configuration of the action handler that should be executed, and the context holds information to execute the request.
+
+What the context actually represents depends on the action that is executed.
+For a simple action, the context by default only has one attribute, being the `action` that is executed.
+For a request action, the context holds both an `action` and a `response` attribute.
+The response in this case has been modified to also include the actual content of the response, represented by a `jsonContent` or `textContent` so that these can immediately be used.
 
 === Configuring conditional display
 
