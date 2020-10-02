@@ -58,9 +58,10 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
         return dependencies.computeIfAbsent(id, key -> new LinkedHashMap<>());
     }
 
-    private String propertyToDependencyId(String propertyName) {
-        return "[data-em-property=\"" + propertyName + "\"]";
-    }
+	//todo used to select the actual control by specifying input, but that is not sufficient (e.g. for a select)
+	private String propertyToDependencyId( String propertyName ) {
+		return "[data-em-property=\"" + propertyName + "\"]";
+	}
 
     private String viewElementNameToDependencyId(String viewElementName) {
         return "[name=\"" + viewElementName + "\"]";
