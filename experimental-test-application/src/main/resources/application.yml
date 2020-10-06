@@ -1,5 +1,6 @@
 acrossHibernate:
-  generate-ddl: true
+  hibernate-properties:
+    hibernate.hbm2ddl.auto: update
 
 across:
   development:

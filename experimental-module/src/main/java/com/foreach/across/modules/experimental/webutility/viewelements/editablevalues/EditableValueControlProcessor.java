@@ -213,7 +213,7 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 						Collections.singletonMap( "element", viewElement )
 				);
 
-		return templateEngine.process( "th/camashop/inline-view-element", context );
+		return templateEngine.process( "th/experimental/inline-view-element", context );
 	}
 
 	private EntityPropertyRegistry getParentPropertyRegistry( boolean forAssociation, EntityViewContext entityViewContext ) {

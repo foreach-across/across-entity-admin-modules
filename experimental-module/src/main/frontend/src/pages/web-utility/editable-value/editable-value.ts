@@ -2,7 +2,7 @@
 import { ax } from "../utils/utils";
 import "./editable-value.scss";
 import { executeFetchRequest, translateResponse } from "../utils/request-utils";
-import { JsonResponse } from "../utils/response-types";
+import { JsonResponse, TextResponse } from "../utils/response-types";
 
 /**
  * EditableValue is a readonly value which can be converted into an actual
@@ -106,21 +106,25 @@ class EditableValue {
 
       ax.log.debug("Refreshing editable value control for", this.propertyId);
 
-      $.ajax({
-        type: "get",
-        url: editableControl.settings.targetUrl,
-        data: "&_partial=::editableValue-" + editableControl.propertyNameOfControl + "-control",
-      }).done(function (data) {
-        ax.log.debug("Updating control script for property", editableControl.propertyId);
-        editableControl.controlContainer.html(data);
-        editableControl.resetChangeTracking();
+      executeFetchRequest(editableControl.settings.targetUrl, "get", {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "&_partial=::editableValue-" + editableControl.propertyNameOfControl + "-control",
+      })
+        .then(translateResponse)
+        .then((resp) => {
+          const textResponse: TextResponse = resp as TextResponse;
+          const textContent: any = textResponse.textContent;
 
-        editableControl.refreshBusy = false;
+          ax.log.debug("Updating control script for property", editableControl.propertyId);
+          editableControl.controlContainer.html(textContent);
+          editableControl.resetChangeTracking();
 
-        if (editableControl.controlSwitchRequested) {
-          editableControl._renderControl();
-        }
-      });
+          editableControl.refreshBusy = false;
+
+          if (editableControl.controlSwitchRequested) {
+            editableControl._renderControl();
+          }
+        });
     }
   }
 
@@ -274,53 +278,6 @@ class EditableValue {
         $(".invalid-feedback", controlHolder).remove();
         $(".form-control", controlHolder).addClass("is-invalid");
       });
-    // $.ajax( {
-    //             type: "post", url: this.settings.targetUrl, data: serializedForm + "&" + requestedPropertiesData,
-    //         } )
-    //     .done( function ( data, status, request ) {
-    //         if ( data.success ) {
-    //             controlHolder.removeClass( "is-invalid" );
-    //
-    //             updatePropertyData( propertyId, data.properties[propertyNameOfControl] );
-    //
-    //             label.removeClass( "d-none" );
-    //             controlHolder.remove();
-    //
-    //             //update absolute proerties
-    //             $.each( data.absoluteProperties, function ( propertyName, propertyData ) {
-    //                 if ( propertyName !== propertyNameOfControl ) {
-    //                     updatePropertyData( propertyName, propertyData );
-    //                 }
-    //             } );
-    //
-    //             // update other relative properties
-    //             $.each( data.properties, function ( propertyName: any, propertyData ) {
-    //                 if ( propertyName !== propertyNameOfControl ) {
-    //                     updatePropertyData( entityPrefix + propertyName, propertyData );
-    //                 }
-    //             } );
-    //         }
-    //         else {
-    //             controlHolder.removeClass( "spinner" );
-    //             controlHolder.addClass( "is-invalid" );
-    //             input.removeAttr( "disabled" );
-    //             select.removeAttr( "disabled" );
-    //             $( ".invalid-feedback", controlHolder ).remove();
-    //             $( ".form-control", controlHolder ).addClass( "is-invalid" );
-    //
-    //             var messages = $.map( data.errors[propertyNameOfControl], function ( error, ix ) {
-    //                 return '<span class="validation-message">' + error.message + "</span>";
-    //             } );
-    //
-    //             controlHolder.append( '<div class="invalid-feedback">' + messages.join() + "</div>" );
-    //         }
-    //     } )
-    //     .fail( function ( xhr, status, error ) {
-    //         ax.log.error( "Updating value failed for " + propertyId, xhr.responseText as any );
-    //         controlHolder.addClass( "is-invalid" );
-    //         $( ".invalid-feedback", controlHolder ).remove();
-    //         $( ".form-control", controlHolder ).addClass( "is-invalid" );
-    //     } );
 
     ax.log.groupEnd();
   }
@@ -388,48 +345,6 @@ class EditableValue {
         $(".invalid-feedback", controlHolder).remove();
         $(".form-control", controlHolder).addClass("is-invalid");
       });
-    // $.ajax( {
-    //             type: "post", url: this.settings.targetUrl, data: $( "form", wrapper ).serialize() + "&" + requestedPropertiesData,
-    //         } )
-    //     .done( function ( data, status, request ) {
-    //         if ( data.success ) {
-    //             successFunction();
-    //             controlHolder.removeClass( "is-invalid" );
-    //             $( ".invalid-feedback", controlHolder ).remove();
-    //             updatePropertyData( propertyId, data.properties[propertyNameOfControl] );
-    //
-    //             // update other properties
-    //             $.each( data.properties, function ( propertyName: string, propertyData ) {
-    //                 if ( propertyName !== propertyNameOfControl ) {
-    //                     if ( propertyName.startsWith( propertyId.substring( 0, propertyId.indexOf( "/" ) ) ) ) {
-    //                         updatePropertyData( propertyName, propertyData );
-    //                     }
-    //                     else {
-    //                         updatePropertyData( entityPrefix + propertyName, propertyData );
-    //                     }
-    //                 }
-    //             } );
-    //         }
-    //         else {
-    //             failFunction();
-    //             controlHolder.addClass( "is-invalid" );
-    //             $( ".invalid-feedback", controlHolder ).remove();
-    //             $( ".form-control", controlHolder ).addClass( "is-invalid" );
-    //
-    //             var messages = $.map( data.errors[propertyNameOfControl], function ( error, ix ) {
-    //                 return '<span class="validation-message">' + error.message + "</span>";
-    //             } );
-    //
-    //             controlHolder.append( '<div class="invalid-feedback">' + messages.join() + "</div>" );
-    //         }
-    //     } )
-    //     .fail( function ( xhr, status, error ) {
-    //         failFunction();
-    //         ax.log.error( "Updating value failed for " + propertyId, xhr.responseText as any );
-    //         controlHolder.addClass( "is-invalid" );
-    //         $( ".invalid-feedback", controlHolder ).remove();
-    //         $( ".form-control", controlHolder ).addClass( "is-invalid" );
-    //     } );
 
     ax.log.groupEnd();
   }
@@ -462,11 +377,6 @@ class EditableValue {
   }
 }
 
-//
-// EntityModule.registerInitializer(function (node) {
-//     $.ajaxSetup({ headers: { "X-XSRF-Token": getCookie("XSRF-TOKEN") } });
-// });
-
 EntityModule.registerInitializer(function (node) {
   $("[data-em-editable-value]", node).each(function () {
     new EditableValue($(this)).activate();
@@ -475,8 +385,12 @@ EntityModule.registerInitializer(function (node) {
 
 EntityModule.registerInitializer(function (node) {
   if (node && $(node).data("editable-value-control") === true) {
-    // @ts-ignore
-    $("input[type=text]", $(node)).focusTextToEnd();
+    // todo focusTextToEnd messes up the value in case of an embedded element / embedded collection
+    // it selects all text controls, which will result in `.val()` returnnig the first value
+    $("input[type=text]", $(node)).each(function (e) {
+      // @ts-ignore
+      $(this).focusTextToEnd();
+    });
     $(".bootstrap-tagsinput span[data-role=remove]", $(node))
       .off()
       .on("click", function (e) {
