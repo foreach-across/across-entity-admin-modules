@@ -14,6 +14,28 @@ _ {
   display: none;
 }
 
+.editable-value-wrapper {
+  .editable-value-value-wrapper {
+    &:hover:after {
+      font-family: "Font Awesome 5 Free";
+      content: "\f303";
+      margin-left: 0.5rem;
+      color: $dark-grey;
+      vertical-align: middle;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    &:empty:hover:after {
+      margin-left: 0;
+    }
+  }
+
+  .editable-value-value {
+    border-bottom: 1px solid $primary;
+  }
+}
+
 .editable-value-value {
   cursor: pointer;
 }
@@ -88,26 +110,6 @@ h3 .editable-value-form input.form-control {
   }
 }
 
-.rate-card-inline-editable {
-  .editable-value-wrapper {
-    border-bottom: 2px solid;
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    .editable-value-value::after {
-      font-family: "Font Awesome 5 Free";
-      content: "\f303";
-      margin-left: 0.5rem;
-      color: $dark-grey;
-      vertical-align: middle;
-      font-weight: 600;
-      font-size: 0.75rem;
-    }
-  }
-}
-
 .form-group {
   .editable-value-wrapper {
     display: block;
@@ -121,19 +123,19 @@ h3 .editable-value-form input.form-control {
     min-height: 1.5rem;
     clear: both;
 
-    &:hover:after {
-      font-family: "Font Awesome 5 Free";
-      content: "\f303";
-      margin-left: 0.5rem;
-      color: $dark-grey;
-      vertical-align: middle;
-      font-weight: 600;
-      font-size: 0.75rem;
-    }
-
-    &:empty:hover:after {
-      margin-left: 0;
-    }
+    //&:hover:after {
+    //  font-family: "Font Awesome 5 Free";
+    //  content: "\f303";
+    //  margin-left: 0.5rem;
+    //  color: $dark-grey;
+    //  vertical-align: middle;
+    //  font-weight: 600;
+    //  font-size: 0.75rem;
+    //}
+    //
+    //&:empty:hover:after {
+    //  margin-left: 0;
+    //}
   }
 
   .editable-value-wrapper.editable-value-reload {

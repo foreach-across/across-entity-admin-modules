@@ -26,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.resource.WebResource.CSS;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
@@ -91,9 +92,13 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 				.name( "editableValue-" + propertyDescriptor.getName() )
 				.add(
 						// add value mode
-						html.builders.span( attribute.of( EDITABLE_VALUE_ROLE ).withValue( VALUE_CHILD_MODE ) )
-						             .with( attributeIfDifferent( valueMode, ViewElementMode.VALUE ) )
-						             .add( entityViewElementBuilderService.createElementBuilder( propertyDescriptor, valueMode ) ) )
+						html.builders.span( css.of( "editable-value-value-wrapper" ) )
+						             .add(
+								             html.builders.span( attribute.of( EDITABLE_VALUE_ROLE ).withValue( VALUE_CHILD_MODE ) )
+								                          .with( attributeIfDifferent( valueMode, ViewElementMode.VALUE ) )
+								                          .add( entityViewElementBuilderService.createElementBuilder( propertyDescriptor, valueMode ) )
+						             )
+				)
 				.add(
 						// add control mode
 						html.builders.span( attribute.of( EDITABLE_VALUE_ROLE ).withValue( "control-container" ) )
