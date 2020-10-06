@@ -36,7 +36,7 @@ declare var BootstrapUiModule: {
 
   initializeFormElements(node: any): void;
 
-  refTarget(node: any, recurse: any): void;
+  refTarget(node: any, recurse?: any): any;
 };
 
 declare var EntityModule: {

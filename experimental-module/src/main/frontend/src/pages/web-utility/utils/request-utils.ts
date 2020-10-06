@@ -99,7 +99,7 @@ export function executeFetchRequest(url: string, method: string, requestConfigur
     {},
     {
       method: method,
-      headers: { "X-XSRF-Token": getCookie("XSRF-TOKEN"), "Content-Type": "application/x-www-form-urlencoded" },
+      headers: { "X-XSRF-Token": getCookie("XSRF-TOKEN") /*, "Content-Type": "application/x-www-form-urlencoded" */ },
     },
     requestConfiguration
   );

@@ -22,6 +22,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
+    "bootstrap": "4.3",
     "react": "^16.13.1"
   },
   "devDependencies": {
@@ -51,6 +52,11 @@
       "name": "action-loader",
       "title": "action-loader",
       "appIndexJs": "src/pages/web-utility/actions/action-loader"
+    },
+    {
+      "name": "editable-value",
+      "title": "editable-value",
+      "appIndexJs": "src/pages/web-utility/editable-value/editable-value"
     },
     {
       "name": "experimental-module",
