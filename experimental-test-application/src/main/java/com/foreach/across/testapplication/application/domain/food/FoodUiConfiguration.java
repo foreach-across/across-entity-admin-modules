@@ -1,14 +1,23 @@
 package com.foreach.across.testapplication.application.domain.food;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.bulkactions.support.SimpleBulkActionItemConfigurer;
 import com.foreach.across.modules.experimental.bulkactions.ui.viewprocessors.BulkActionViewProcessor;
+import com.foreach.across.modules.experimental.export.support.ExportViewConfigurers;
+import com.foreach.across.modules.experimental.export.support.csv.CsvExportViewConfigurer;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.testapplication.application.domain.food.processors.FoodBulkActionViewProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +26,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.experimental.bulkactions.support.BulkActionsEntityConfigurers.configureBulkActions;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.testapplication.application.domain.food.controllers.FoodBulkActionsController.FOOD_BULK_ACTIONS;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -55,7 +68,59 @@ public class FoodUiConfiguration implements EntityConfigurer
 						                                                               .formAttributeProvider( () -> "bulkActions" ) ) )
 		                             )
 		        )
+		        .and( this::configureExportView );
+	}
+
+	private void configureExportView( EntityConfigurationBuilder<Food> entities ) {
+		entities.listView( "exportToCsv",
+		                   ExportViewConfigurers.configureCsvExportView(
+				                   new CsvExportViewConfigurer<>()
+						                   .fileName( "content.csv" )
+						                   .separator( ";" )
+						                   .shouldIncludeUtf8Bom( true )
+						                   .shouldIncludeSeparatorIdentifier( true )
+		                   )
+		)
+		        .listView( lvb -> lvb.viewProcessor( vp -> vp.provideBean( new EntityViewProcessorAdapter()
+		        {
+			        @Override
+			        protected void postRender( EntityViewRequest entityViewRequest,
+			                                   EntityView entityView,
+			                                   ContainerViewElement container,
+			                                   ViewElementBuilderContext builderContext ) {
+				        container.find( "entityListForm-actions", ContainerViewElement.class )
+				                 .ifPresent(
+						                 c -> {
+							                 configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" );
+						                 }
+				                 );
+			        }
+		        } ) ) )
 		;
+	}
+
+	private void configureButton( EntityViewRequest entityViewRequest,
+	                              ViewElementBuilderContext builderContext,
+	                              ContainerViewElement c,
+	                              String viewName, String btnText ) {
+		String url = entityViewRequest.getEntityViewContext()
+		                              .getLinkBuilder()
+		                              .listView()
+		                              .withViewName( viewName )
+		                              .toUriString();
+		c.set( css.size.width100 );
+
+		c.addChild(
+				html.builders.div( css.cssFloat.right )
+				             .add( bootstrap.builders
+						                   .button()
+						                   .icon( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "download" )
+						                                 .set( css.margin.right.s2 ) )
+						                   .iconLeft()
+						                   .text( btnText )
+						                   .link( url ) )
+				             .build( builderContext )
+		);
 	}
 
 	private Consumer<EntityViewFactoryBuilder> bulkActionsConfigurer( String controlName ) {

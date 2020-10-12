@@ -40,6 +40,7 @@ export function executeRequest(partialConfiguration: RequestConfiguration): Prom
   }
 
   if (typeof formToSerialize !== "undefined") {
+    // @ts-ignore
     return executeFormRequest(
       requestUrl,
       method,
