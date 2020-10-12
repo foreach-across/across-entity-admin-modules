@@ -25,27 +25,53 @@ import java.util.function.Consumer;
 @Accessors(chain = true, fluent = true)
 public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElement>, ViewElementPostProcessor<HtmlViewElement>, Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> {
     private final Map<String, Map<String, Object>> dependencies = new LinkedHashMap<>();
+	private final Map<String, Object> options = new LinkedHashMap<>()
+	{{
+		put( "hide", true );
+	}};
 
     DependsOnAttribute(Consumer<DependsOnAttribute> consumer) {
         consumer.accept(this);
     }
 
-    public Dependency property(@NonNull String propertyName) {
-        return new Dependency(ruleSet(propertyToDependencyId(propertyName)));
-    }
+	/**
+	 * Set the source field using the name of the viewElement
+	 */
+	public Dependency viewElementName( @NonNull String viewElementName ) {
+		return new Dependency( ruleSet( viewElementNameToDependencyId( viewElementName ) ), options );
+	}
+
+	/**
+	 * Set the source field using a jQuery selector
+	 */
+	public Dependency selector( @NonNull String selector ) {
+		return new Dependency( ruleSet( selector ), options );
+	}
+
+	/**
+	 * Set the source field using the property selector
+	 */
+	public Dependency property( @NonNull String propertyName) {
+		return new Dependency( ruleSet( propertyToDependencyId( propertyName ) ), options );
+	}
 
     private Map<String, Object> ruleSet(String id) {
         return dependencies.computeIfAbsent(id, key -> new LinkedHashMap<>());
     }
 
-    private String propertyToDependencyId(String propertyName) {
-        return "[data-em-property=\"" + propertyName + "\"] input";
+	//todo used to select the actual control by specifying input, but that is not sufficient (e.g. for a select)
+	private String propertyToDependencyId( String propertyName ) {
+		return "[data-em-property=\"" + propertyName + "\"]";
+	}
+
+	private String viewElementNameToDependencyId( String viewElementName ) {
+		return "[name=\"" + viewElementName + "\"]";
     }
 
     @Override
     public void applyTo(HtmlViewElement node) {
         Map<String, Map<String, Object>> attributeValue = new LinkedHashMap<>(dependencies);
-        attributeValue.put("options", Map.of("hide", true));
+	    attributeValue.put( "options", options );
         node.setAttribute("style", "display: none;");
         node.setAttribute("data-dependson", attributeValue);
     }
@@ -64,6 +90,12 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public class Dependency {
         private final Map<String, Object> rules;
+	    private final Map<String, Object> settings;
+
+	    public Dependency values( Object... values ) {
+		    rules.put( "values", values );
+		    return this;
+	    }
 
         public Dependency isChecked() {
             return isChecked(true);
@@ -77,6 +109,19 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
             rules.put("checked", checked);
             return this;
         }
+
+	    public Dependency toggleClass( @NonNull String classToToggle ) {
+		    settings.put( "toggleClass", classToToggle );
+		    return this;
+	    }
+
+	    /**
+	     * @param valueTarget is the jQuery selector for the target
+	     */
+	    public Dependency valueTarget( @NonNull String valueTarget ) {
+		    settings.put( "valueTarget", valueTarget );
+		    return this;
+	    }
 
         public DependsOnAttribute and() {
             return DependsOnAttribute.this;

@@ -4,8 +4,8 @@ import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
-import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionAttribute.simpleAction;
-import static com.foreach.across.modules.experimental.modals.support.action.SimpleActionHandlerAttribute.closeModalHandler;
+import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionAttribute.simpleAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.closeModalHandler;
 
 /**
  * Configures the referenced {@link ViewElement} to close a given modal on click.

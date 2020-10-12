@@ -38,10 +38,7 @@ public abstract class BaseCsvExportViewConfigurer<T, R> extends SimpleExportView
 	protected void writeFileToOutputStream( OutputStream outputStream, EntityViewRequest entityViewRequest,
 	                                        Collection<EntityPropertyDescriptor> propertiesToExport,
 	                                        Iterable<T> data ) {
-		OutputStreamWriter os = new OutputStreamWriter( outputStream, StandardCharsets.UTF_8 );
-		BufferedWriter writer = new BufferedWriter( os );
-
-		try {
+		try (OutputStreamWriter os = new OutputStreamWriter( outputStream, StandardCharsets.UTF_8 ); BufferedWriter writer = new BufferedWriter( os )) {
 			// byte order marker so excel can recognise unicode characters
 			if ( isIncludeUtf8Bom() ) {
 				byte[] bom = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
@@ -77,10 +74,8 @@ public abstract class BaseCsvExportViewConfigurer<T, R> extends SimpleExportView
 			}
 
 			writer.flush();
-			writer.close();
 		}
 		catch ( IOException e ) {
-			e.printStackTrace();
 			LOG.error( "Unexpected exception whilst mapping data", e );
 		}
 	}

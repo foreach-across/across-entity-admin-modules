@@ -1,0 +1,76 @@
+package com.foreach.across.modules.experimental.webutility.support.action;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.springframework.http.HttpMethod;
+
+import java.util.Map;
+
+/**
+ * {@link ActionHandlerAttribute} that supports refreshing fetching and replacing an element.
+ * This will trigger a client-side request based on the configured properties.
+ * When the request is resolved, the content of the response will replace the {@link #target} element.
+ */
+@Setter
+@Accessors(chain = true, fluent = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@SuppressWarnings("unused")
+public class RequestActionHandlerAttribute extends ActionHandlerAttribute<RequestActionHandlerAttribute>
+{
+
+	public RequestActionHandlerAttribute() {
+		type( "exm:request" );
+	}
+
+	/**
+	 * Name of the view element that should be rendered as partial.
+	 * Only the output of this view element will be then be set on the {@link #target(String)} element.
+	 */
+	@JsonProperty
+	private String partial;
+
+	/**
+	 * CSS3 selector to the form whose data should be sent to the {@link #url(String)}.
+	 * If no url property is configured, the form action will also be used as url.
+	 */
+	@JsonProperty
+	private String form;
+
+	/**
+	 * HTTP method that should be used for the AJAX request.
+	 * Defaults to {@link HttpMethod#GET}.
+	 * <strong>Note that any client-side form method will be ignored as this property takes precedence.</strong>
+	 */
+	@JsonProperty
+	private HttpMethod method = HttpMethod.GET;
+
+	/**
+	 * URL to which the partial request should go. If not set, the url from the {@link #form(String)} will be used
+	 * (or from the closest form if {@link #form(String)} was also not specified.
+	 */
+	@Getter
+	@JsonProperty
+	private String url;
+
+	/**
+	 * CSS3 selector of the element that should be replaced by the partial output.
+	 * The target element in its entirety will be replaced by the partial output.
+	 */
+	@JsonProperty
+	private String target;
+
+	/**
+	 * A collection of attributes that can be added to the request.
+	 * Can be used for example to add additional headers to a request.
+	 */
+	@Getter
+	@JsonProperty
+	private Map<String, Object> requestConfig;
+
+	public static RequestActionHandlerAttribute requestActionHandler() {
+		return new RequestActionHandlerAttribute();
+	}
+}

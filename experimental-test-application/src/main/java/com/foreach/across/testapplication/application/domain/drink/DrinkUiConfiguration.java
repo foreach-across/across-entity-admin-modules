@@ -16,7 +16,7 @@ public class DrinkUiConfiguration implements EntityConfigurer
 		        .properties(
 				        // only show the linked feature selection when dealing with a derived feature
 				        onProperties( "alcoholPercentage" ).enable(
-						        dependsOn( dependsOn -> dependsOn.property( "containsAlcohol" ).isChecked() )
+						        dependsOn( dependsOn -> dependsOn.viewElementName( "entity.containsAlcohol" ).isChecked() )
 				        )
 		        );
 	}

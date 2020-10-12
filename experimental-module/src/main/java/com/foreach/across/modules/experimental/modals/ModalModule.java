@@ -8,10 +8,11 @@ import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.experimental.webutility.WebUtilityModule;
 
 import java.util.Set;
 
-@AcrossDepends(required = { BootstrapUiModule.NAME, EntityModule.NAME })
+@AcrossDepends(required = { BootstrapUiModule.NAME, EntityModule.NAME, WebUtilityModule.NAME })
 public class ModalModule extends AcrossModule
 {
 	public static final String NAME = "ModalModule";
