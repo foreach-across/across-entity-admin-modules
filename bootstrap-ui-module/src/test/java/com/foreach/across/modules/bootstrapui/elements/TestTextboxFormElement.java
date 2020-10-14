@@ -18,9 +18,9 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.TextboxFormElementModelWriter;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme

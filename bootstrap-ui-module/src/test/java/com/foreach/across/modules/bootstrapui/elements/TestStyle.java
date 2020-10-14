@@ -26,8 +26,8 @@ import static com.foreach.across.modules.bootstrapui.elements.Style.ACTIVE;
 import static com.foreach.across.modules.bootstrapui.elements.Style.SECONDARY;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class TestStyle
 {

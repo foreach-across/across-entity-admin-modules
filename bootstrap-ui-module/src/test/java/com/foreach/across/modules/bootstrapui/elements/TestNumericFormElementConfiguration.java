@@ -15,14 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme

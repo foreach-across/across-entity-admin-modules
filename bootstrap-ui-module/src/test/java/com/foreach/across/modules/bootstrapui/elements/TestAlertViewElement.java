@@ -17,13 +17,13 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Arne Vandamme
@@ -33,7 +33,7 @@ public class TestAlertViewElement extends AbstractBootstrapViewElementTest
 {
 	private AlertViewElement alert;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		alert = new AlertViewElement();
 	}

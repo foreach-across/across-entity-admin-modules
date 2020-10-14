@@ -19,8 +19,8 @@ import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElem
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.web.support.MessageCodeSupportingLocalizedTextResolver;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Arne Vandamme
@@ -31,7 +31,7 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 
 	protected DefaultViewElementBuilderContext builderContext;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		builderContext = new DefaultViewElementBuilderContext();
 		builderContext.setLocalizedTextResolver( new MessageCodeSupportingLocalizedTextResolver( null ) );

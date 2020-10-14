@@ -19,9 +19,9 @@ import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme

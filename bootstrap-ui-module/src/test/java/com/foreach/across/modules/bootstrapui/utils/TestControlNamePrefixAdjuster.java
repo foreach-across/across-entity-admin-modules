@@ -19,8 +19,8 @@ package com.foreach.across.modules.bootstrapui.utils;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +36,7 @@ public class TestControlNamePrefixAdjuster
 	private ContainerViewElement containerWithControl;
 	private TextboxFormElement textboxWithControl;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		control = new HiddenFormElement();
 		control.setControlName( "ctl" );

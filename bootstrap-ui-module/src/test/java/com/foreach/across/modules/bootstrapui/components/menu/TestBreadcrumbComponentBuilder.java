@@ -26,8 +26,8 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.CTX_CURRENT_MENU_ITEM;
@@ -46,7 +46,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 	private DefaultViewElementBuilderContext builderContext;
 	private BreadcrumbNavComponentBuilder builder;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		menu = new PathBasedMenuBuilder();
 		builderContext = new DefaultViewElementBuilderContext();

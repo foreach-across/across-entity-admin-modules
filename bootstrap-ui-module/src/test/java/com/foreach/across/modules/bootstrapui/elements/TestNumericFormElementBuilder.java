@@ -16,13 +16,13 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -32,7 +32,7 @@ public class TestNumericFormElementBuilder
 	private NumericFormElementBuilder numericFormElementBuilder;
 	private NumericFormElement numeric;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		numericFormElementBuilder = new NumericFormElementBuilder();
 	}
@@ -42,7 +42,7 @@ public class TestNumericFormElementBuilder
 		NumericFormElement numeric = numericFormElementBuilder.percent()
 		                                                      .build();
 
-		assertEquals( NumericFormElementConfiguration.Format.PERCENT , numeric.getConfiguration().getFormat() );
+		assertEquals( NumericFormElementConfiguration.Format.PERCENT, numeric.getConfiguration().getFormat() );
 	}
 
 	@Test

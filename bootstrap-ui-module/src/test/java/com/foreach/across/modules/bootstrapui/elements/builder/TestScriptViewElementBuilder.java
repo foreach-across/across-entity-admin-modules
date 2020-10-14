@@ -18,7 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;

@@ -16,7 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.time.*;
@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
