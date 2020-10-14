@@ -5,12 +5,12 @@ import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.applicationinfo.business.AcrossApplicationInfo;
 import com.foreach.across.test.AcrossTestContext;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.standard;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ITApplicationInfoBuilding
 {

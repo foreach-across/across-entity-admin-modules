@@ -1,17 +1,17 @@
 package com.foreach.across.modules.applicationinfo.business;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestAcrossApplicationInfo
 {
 	private AcrossApplicationInfoImpl applicationInfo;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		applicationInfo = new AcrossApplicationInfoImpl();
 	}

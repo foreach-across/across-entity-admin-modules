@@ -21,10 +21,10 @@ import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
 import com.foreach.across.test.AcrossTestWebContext;
 import com.foreach.across.test.support.AcrossTestWebContextBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme
