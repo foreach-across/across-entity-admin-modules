@@ -35,25 +35,25 @@ import com.foreach.across.modules.it.properties.extendingmodule.services.ClientP
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration(classes = ITDefineAndExtendBusinessProperties.Config.class)
 public class ITDefineAndExtendBusinessProperties
@@ -78,16 +78,16 @@ public class ITDefineAndExtendBusinessProperties
 
 	private long entityId = System.currentTimeMillis();
 
-	@Before
+	@BeforeEach
 	public void resetRepository() {
-		revisionPropertiesRepository.setAllowRevisionModification( false );
+		revisionPropertiesRepository.setAllowRevisionModification(false);
 	}
 
 	@Test
 	public void forceTrackingUpdate() throws InterruptedException {
-		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( "ExtendingModule" );
+		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo("ExtendingModule");
 
-		Thread.sleep( 1000 );
+		Thread.sleep(1000);
 
 		userPropertyRegistry.register( moduleInfo, UserPropertiesConfig.BOOLEAN, Boolean.class );
 	}
@@ -221,29 +221,31 @@ public class ITDefineAndExtendBusinessProperties
 		assertEquals( "modified", updated.getValue( "string" ) );
 		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
 
-		updated.put( "other", 8989L );
-		revisionPropertyService.saveProperties( updated, revision );
+		updated.put("other", 8989L);
+		revisionPropertyService.saveProperties(updated, revision);
 
-		updated = revisionPropertyService.getProperties( revision );
-		assertEquals( 3, updated.size() );
-		assertEquals( "modified", updated.getValue( "string" ) );
-		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
-		assertEquals( Long.valueOf( 8989 ), updated.getValue( "other", Long.class ) );
+		updated = revisionPropertyService.getProperties(revision);
+		assertEquals(3, updated.size());
+		assertEquals("modified", updated.getValue("string"));
+		assertEquals(uuid, updated.getValue("uuid", UUID.class));
+		assertEquals(Long.valueOf(8989), updated.getValue("other", Long.class));
 	}
 
-	@Test(expected = RevisionModificationException.class)
+	@Test
 	public void revisionBasedPropertiesForSpecificRevisionIfNotAllowed() {
-		Entity entity = new Entity( entityId() );
-		EntityRevision revision = new EntityRevision( entity, 2, false, true );
+		assertThrows(RevisionModificationException.class, () -> {
+			Entity entity = new Entity(entityId());
+			EntityRevision revision = new EntityRevision(entity, 2, false, true);
 
-		RevisionProperties created = revisionPropertyService.getProperties( revision );
-		assertNotNull( created );
-		assertTrue( created.isEmpty() );
+			RevisionProperties created = revisionPropertyService.getProperties(revision);
+			assertNotNull(created);
+			assertTrue(created.isEmpty());
 
-		created.put( "integer", 123 );
-		created.put( "string", "text" );
+			created.put("integer", 123);
+			created.put("string", "text");
 
-		revisionPropertyService.saveProperties( created, revision );
+			revisionPropertyService.saveProperties(created, revision);
+		});
 	}
 
 	@Test

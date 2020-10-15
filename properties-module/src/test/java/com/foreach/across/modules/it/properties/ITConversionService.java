@@ -22,10 +22,10 @@ import com.foreach.across.core.installers.InstallerAction;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.properties.PropertiesModuleSettings;
 import com.foreach.common.spring.convert.HierarchicalConversionService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -36,17 +36,17 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(classes = ITConversionService.Config.class)
 public class ITConversionService
@@ -65,18 +65,18 @@ public class ITConversionService
 	private AcrossContext context;
 	private PropertiesModule propertiesModule;
 
-	@Before
+	@BeforeEach
 	public void prepare() {
 		propertiesModule = new PropertiesModule();
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
-		if ( context != null ) {
+		if (context != null) {
 			try {
 				context.shutdown();
+			} catch (Exception e) {
 			}
-			catch ( Exception e ) {}
 		}
 	}
 
@@ -107,26 +107,27 @@ public class ITConversionService
 
 	@Test
 	public void explicitConversionServiceSettingTrumpsAll() {
-		ConversionService third = mock( ConversionService.class );
+		ConversionService third = mock(ConversionService.class);
 
-		propertiesModule.setProperty( PropertiesModuleSettings.CONVERSION_SERVICE_BEAN,
-		                              "conversionServiceTwo" );
-		propertiesModule.setProperty( PropertiesModuleSettings.CONVERSION_SERVICE, third );
+		propertiesModule.setProperty(PropertiesModuleSettings.CONVERSION_SERVICE_BEAN,
+				"conversionServiceTwo");
+		propertiesModule.setProperty(PropertiesModuleSettings.CONVERSION_SERVICE, third);
 
 		ConversionService actual = bootstrapWithParent();
-		assertEquals( third, actual );
+		assertEquals(third, actual);
 	}
 
-	@Test(expected = AcrossException.class)
+	@Test
 	public void bootstrapFailsIfConversionServiceBeanNotFound() {
-		propertiesModule.setProperty( PropertiesModuleSettings.CONVERSION_SERVICE_BEAN,
-		                              "unexistingConversionServiceBean" );
-
-		bootstrapWithParent();
+		assertThrows(AcrossException.class, () -> {
+			propertiesModule.setProperty(PropertiesModuleSettings.CONVERSION_SERVICE_BEAN,
+					"unexistingConversionServiceBean");
+			bootstrapWithParent();
+		});
 	}
 
 	private ConversionService bootstrapWithoutParent() {
-		return bootstrap( false );
+		return bootstrap(false);
 	}
 
 	private ConversionService bootstrapWithParent() {
