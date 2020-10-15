@@ -22,12 +22,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.util.collections.Sets;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import java.util.Date;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestDefaultEntityPropertyRegistry
 {
 	@Mock
@@ -52,7 +52,7 @@ public class TestDefaultEntityPropertyRegistry
 
 	private DefaultEntityPropertyRegistry registry;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		registry = new DefaultEntityPropertyRegistry( registryProvider );
 

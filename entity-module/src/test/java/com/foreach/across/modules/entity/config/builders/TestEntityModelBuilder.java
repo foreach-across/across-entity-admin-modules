@@ -19,8 +19,8 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.registry.DefaultEntityModel;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 
@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -42,7 +42,7 @@ public class TestEntityModelBuilder
 	private EntityModelBuilder<Object> modelBuilder;
 	private DefaultEntityModel<Object, Serializable> model;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		modelBuilder = new EntityModelBuilder<>();
 		model = mock( DefaultEntityModel.class );

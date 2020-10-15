@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 
 import java.beans.PropertyDescriptor;
@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestEntityPropertyComparators
 {
 	private List<EntityPropertyDescriptor> descriptors;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		descriptors = new ArrayList<>();
 

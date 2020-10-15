@@ -30,7 +30,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.NumericFormElementBui
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -46,7 +46,7 @@ import java.text.MessageFormat;
 import java.util.Currency;
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**

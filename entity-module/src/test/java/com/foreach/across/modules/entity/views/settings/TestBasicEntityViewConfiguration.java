@@ -19,11 +19,11 @@ package com.foreach.across.modules.entity.views.settings;
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.BiPredicate;
 
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestBasicEntityViewConfiguration
 {
 	@Mock(answer = Answers.RETURNS_SELF)

@@ -22,12 +22,14 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +39,8 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestFormGroupTooltipTextPostProcessor
 {
 	@Mock
@@ -51,7 +54,7 @@ public class TestFormGroupTooltipTextPostProcessor
 
 	private FormGroupTooltipTextPostProcessor<ViewElement> postProcessor = new FormGroupTooltipTextPostProcessor<>();
 
-	@Before
+	@BeforeEach
 	public void before() {
 		when( descriptor.getName() ).thenReturn( "myprop" );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );

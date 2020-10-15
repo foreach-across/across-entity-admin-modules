@@ -17,10 +17,12 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.modules.entity.EntityAttributes;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +32,8 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.1.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestEntityPropertyHandlingType
 {
 	@Mock

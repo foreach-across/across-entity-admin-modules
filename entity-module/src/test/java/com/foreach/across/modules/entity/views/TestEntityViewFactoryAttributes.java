@@ -19,10 +19,10 @@ package com.foreach.across.modules.entity.views;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.foreach.across.modules.entity.views.EntityViewFactoryAttributes.defaultAccessValidator;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityViewFactoryAttributes
 {
 	@Mock

@@ -23,12 +23,12 @@ import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOp
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -47,7 +47,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	private Map<String, OptionFormElementBuilder> options = new HashMap<>();
 
-	@Before
+	@BeforeEach
 	@SuppressWarnings("unchecked")
 	public void before() {
 		EntityModel entityModel = mock( EntityModel.class );

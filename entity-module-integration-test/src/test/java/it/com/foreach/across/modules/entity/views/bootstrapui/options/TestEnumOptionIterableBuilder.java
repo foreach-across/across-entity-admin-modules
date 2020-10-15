@@ -23,14 +23,14 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static it.com.foreach.across.modules.entity.views.bootstrapui.options.TestEnumOptionIterableBuilder.Counter.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 /**
@@ -42,7 +42,7 @@ public class TestEnumOptionIterableBuilder
 	private ViewElementBuilderContext elementBuilderContext;
 	private Map<Counter, OptionFormElementBuilder> options = new HashMap<>();
 
-	@Before
+	@BeforeEach
 	@SuppressWarnings("unchecked")
 	public void before() {
 		iterableBuilder = new EnumOptionIterableBuilder();

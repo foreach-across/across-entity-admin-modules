@@ -39,8 +39,8 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +53,7 @@ import java.util.Optional;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.views.support.EntityMessages.RESULTS_FOUND;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -108,7 +108,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	private SortableTableBuilder tableBuilder;
 	private EntityPropertyDescriptor descriptor;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		reset( viewElementBuilderService );
 

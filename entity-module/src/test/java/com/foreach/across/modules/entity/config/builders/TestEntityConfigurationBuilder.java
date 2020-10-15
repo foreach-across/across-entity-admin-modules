@@ -26,27 +26,30 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import com.foreach.across.modules.entity.views.builders.FormViewInitializer;
 import com.foreach.across.modules.entity.views.processors.TemplateViewProcessor;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 public class TestEntityConfigurationBuilder
 {
@@ -61,7 +64,7 @@ public class TestEntityConfigurationBuilder
 
 	private EntityConfigurationBuilder<String> builder;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		builder = spy( new EntityConfigurationBuilder<>( beanFactory ) );
 		when( beanFactory.getBean( EntityConfigurationProvider.class ) ).thenReturn( configurationProvider );

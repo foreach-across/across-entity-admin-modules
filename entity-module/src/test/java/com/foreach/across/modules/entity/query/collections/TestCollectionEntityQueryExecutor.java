@@ -25,8 +25,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -55,7 +55,7 @@ public class TestCollectionEntityQueryExecutor
 
 	private EntityQueryExecutor<Entry> executor;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ).accept( Entry.class, propertyRegistry );
 

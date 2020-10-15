@@ -25,13 +25,13 @@ import com.foreach.across.testmodules.springdata.repositories2.RepresentativeRep
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -45,7 +45,7 @@ import java.util.function.Supplier;
  * @since 2.0.0
  */
 @Slf4j
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
@@ -70,7 +70,7 @@ public abstract class AbstractQueryTest
 	@Autowired
 	protected CarRepository carRepository;
 
-	@Before
+	@BeforeEach
 	public void insertTestData() {
 		if ( !inserted ) {
 			inserted = true;
@@ -101,7 +101,8 @@ public abstract class AbstractQueryTest
 			one.setRepresentatives( Collections.singleton( john ) );
 			two.setRepresentatives( new HashSet<>( Arrays.asList( john, joe, peter ) ) );
 
-			companyRepository.saveAll( Arrays.asList( one, two, three ) );;
+			companyRepository.saveAll( Arrays.asList( one, two, three ) );
+			;
 
 			carOne = new Car( "one", one, true );
 			carTwo = new Car( "two", two, true );
@@ -109,7 +110,7 @@ public abstract class AbstractQueryTest
 		}
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void resetTestData() {
 		inserted = false;
 	}

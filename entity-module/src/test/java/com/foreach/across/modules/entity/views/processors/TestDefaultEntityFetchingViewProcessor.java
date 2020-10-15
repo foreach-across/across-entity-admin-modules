@@ -29,11 +29,13 @@ import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,14 +47,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestDefaultEntityFetchingViewProcessor
 {
 	private static final String PARENT = "parentEntity";
@@ -83,7 +87,7 @@ public class TestDefaultEntityFetchingViewProcessor
 
 	private DefaultEntityFetchingViewProcessor processor;
 
-	@Before
+	@BeforeEach
 	@SuppressWarnings("unchecked")
 	public void setUp() throws Exception {
 		processor = new DefaultEntityFetchingViewProcessor( entityQueryFacadeResolver );
@@ -117,10 +121,12 @@ public class TestDefaultEntityFetchingViewProcessor
 		verifyItems();
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void exceptionIsThrownIfNeitherCrudRepositoryNorEntityQueryExecutor() {
-		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( mock( Repository.class ) );
-		verifyItems();
+		assertThrows( IllegalStateException.class, () -> {
+			when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( mock( Repository.class ) );
+			verifyItems();
+		} );
 	}
 
 	@Test

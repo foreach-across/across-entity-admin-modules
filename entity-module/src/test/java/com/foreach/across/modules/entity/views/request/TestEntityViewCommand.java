@@ -17,13 +17,13 @@
 package com.foreach.across.modules.entity.views.request;
 
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.Validator;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -34,7 +34,7 @@ public class TestEntityViewCommand
 {
 	private EntityViewCommand command;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		command = new EntityViewCommand();
 	}
@@ -57,10 +57,12 @@ public class TestEntityViewCommand
 		assertFalse( command.holdsEntity() );
 	}
 
-	@Test(expected = ClassCastException.class)
+	@Test
 	public void exceptionWhenCoercingEntityToWrongType() {
-		command.setEntity( 123L );
-		command.getEntity( String.class );
+		assertThrows( ClassCastException.class, () -> {
+			command.setEntity( 123L );
+			command.getEntity( String.class );
+		} );
 	}
 
 	@Test
@@ -78,11 +80,13 @@ public class TestEntityViewCommand
 		assertSame( value, typedMap );
 	}
 
-	@Test(expected = ClassCastException.class)
+	@Test
 	public void exceptionWhenCoercingExtensionToWrongType() {
-		val map = new HashMap<>();
-		command.addExtension( "my-extension", map );
-		command.getExtension( "my-extension", HashSet.class );
+		assertThrows( ClassCastException.class, () -> {
+			val map = new HashMap<>();
+			command.addExtension( "my-extension", map );
+			command.getExtension( "my-extension", HashSet.class );
+		} );
 	}
 
 	@Test

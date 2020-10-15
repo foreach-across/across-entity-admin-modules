@@ -31,8 +31,8 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import lombok.Getter;
 import lombok.Setter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;
@@ -60,7 +60,7 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 	@Mock
 	private ConversionService conversionService;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		builder = new AuditablePropertyViewElementBuilder();
 

@@ -27,26 +27,26 @@ import com.foreach.across.testmodules.springdata.business.Representative;
 import com.foreach.across.testmodules.springdata.repositories.CompanyRepository;
 import com.foreach.across.testmodules.springdata.repositories2.RepresentativeRepository;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
@@ -66,7 +66,7 @@ public class TestManyToManyAssociations
 	@Autowired
 	private CompanyRepository companyRepository;
 
-	@Before
+	@BeforeEach
 	public void insertTestData() {
 		if ( !inserted ) {
 			inserted = true;
@@ -95,8 +95,7 @@ public class TestManyToManyAssociations
 
 		assertNotNull( association );
 		assertEquals(
-				"Association name should be source entity name joined with source property name",
-				"company.representatives", association.getName()
+				"company.representatives", association.getName(), "Association name should be source entity name joined with source property name"
 		);
 
 		AssociatedEntityQueryExecutor<Representative> queryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );
@@ -122,8 +121,7 @@ public class TestManyToManyAssociations
 
 		assertNotNull( association );
 		assertEquals(
-				"Association name should be the reverse source entity name joined with source property name",
-				"company.representatives", association.getName()
+				"company.representatives", association.getName(), "Association name should be the reverse source entity name joined with source property name"
 		);
 
 		AssociatedEntityQueryExecutor<Company> queryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );

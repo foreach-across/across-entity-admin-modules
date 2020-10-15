@@ -21,12 +21,12 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestFieldsetTooltipTextPostProcessor
 {
 	@Mock
@@ -46,8 +46,8 @@ public class TestFieldsetTooltipTextPostProcessor
 
 	private ViewElementFieldset fieldset = new ViewElementFieldset();
 	private FieldsetTooltipTextPostProcessor<ViewElement> postProcessor = new FieldsetTooltipTextPostProcessor<>();
-	
-	@Before
+
+	@BeforeEach
 	public void before() {
 		when( descriptor.getName() ).thenReturn( "myprop" );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );

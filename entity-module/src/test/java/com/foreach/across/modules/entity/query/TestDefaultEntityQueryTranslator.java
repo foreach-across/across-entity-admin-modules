@@ -18,11 +18,11 @@ package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
 
@@ -30,7 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestDefaultEntityQueryTranslator
 {
 	@Mock
@@ -49,7 +50,7 @@ public class TestDefaultEntityQueryTranslator
 
 	private DefaultEntityQueryTranslator translator;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		translator = new DefaultEntityQueryTranslator();
 		translator.setPropertyRegistry( propertyRegistry );
@@ -57,29 +58,35 @@ public class TestDefaultEntityQueryTranslator
 		translator.validateProperties();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validatePropertiesRequiresTypeConverter() {
-		translator.setTypeConverter( null );
-		translator.validateProperties();
+		assertThrows( IllegalArgumentException.class, () -> {
+			translator.setTypeConverter( null );
+			translator.validateProperties();
+		} );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validatePropertiesRequiresQueryTranslator() {
-		translator.setPropertyRegistry( null );
-		translator.validateProperties();
+		assertThrows( IllegalArgumentException.class, () -> {
+			translator.setPropertyRegistry( null );
+			translator.validateProperties();
+		} );
 	}
 
-	@Test(expected = EntityQueryParsingException.IllegalField.class)
+	@Test
 	public void exceptionIfPropertyNotFound() {
-		EntityQuery query = EntityQuery.and(
-				new EntityQueryCondition( "name", IN, "one", "two" ),
-				EntityQuery.or(
-						new EntityQueryCondition( "id", EQ, 1 ),
-						new EntityQueryCondition( "id", EQ, 2 )
-				)
-		);
+		assertThrows( EntityQueryParsingException.IllegalField.class, () -> {
+			EntityQuery query = EntityQuery.and(
+					new EntityQueryCondition( "name", IN, "one", "two" ),
+					EntityQuery.or(
+							new EntityQueryCondition( "id", EQ, 1 ),
+							new EntityQueryCondition( "id", EQ, 2 )
+					)
+			);
 
-		translator.translate( query );
+			translator.translate( query );
+		} );
 	}
 
 	@Test

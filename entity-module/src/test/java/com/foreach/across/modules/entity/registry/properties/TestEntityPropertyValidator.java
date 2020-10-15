@@ -16,11 +16,11 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityPropertyValidator
 {
 	@Mock

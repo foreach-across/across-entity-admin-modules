@@ -22,12 +22,14 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyContr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -40,7 +42,8 @@ import static org.mockito.Mockito.*;
  * @since 3.2.0
  */
 @SuppressWarnings({ "Duplicates", "unchecked" })
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestSingleEntityPropertyBinder
 {
 	@Mock
@@ -55,7 +58,7 @@ public class TestSingleEntityPropertyBinder
 	private EntityPropertyDescriptor descriptor;
 	private SingleEntityPropertyBinder property;
 
-	@Before
+	@BeforeEach
 	@SuppressWarnings("unchecked")
 	public void resetMocks() {
 		reset( binder, controller );

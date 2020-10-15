@@ -20,19 +20,19 @@ import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestPropertyPlaceholderTextProcessor
 {
 	@Mock
@@ -44,7 +44,7 @@ public class TestPropertyPlaceholderTextProcessor
 	private PropertyPlaceholderTextPostProcessor postProcessor = new PropertyPlaceholderTextPostProcessor();
 	private TextboxFormElement box = new TextboxFormElement();
 
-	@Before
+	@BeforeEach
 	public void before() {
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 	}

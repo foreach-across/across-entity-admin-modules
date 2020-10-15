@@ -22,8 +22,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
-import static org.junit.Assert.assertNotNull;
-
 /**
  * @author Arne Vandamme
  */
@@ -39,7 +37,7 @@ public class CompanyValidator implements Validator
 
 	@Override
 	public void validate( Object target, Errors errors ) {
-		assertNotNull( entityValidator );
+		assert entityValidator != null;
 		entityValidator.validate( target, errors );
 	}
 }

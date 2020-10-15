@@ -19,12 +19,12 @@ package com.foreach.across.modules.entity.registry.properties.binding;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestAbstractEntityPropertyBindingContext
 {
 	@Mock
@@ -45,7 +45,7 @@ public class TestAbstractEntityPropertyBindingContext
 	@Spy
 	private AbstractEntityPropertyBindingContext bindingContext;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		when( descriptor.getController() ).thenReturn( controller );
 		when( descriptor.getTargetPropertyName() ).thenReturn( "myprop" );

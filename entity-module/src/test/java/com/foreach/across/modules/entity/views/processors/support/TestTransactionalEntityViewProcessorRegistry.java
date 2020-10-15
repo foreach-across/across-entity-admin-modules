@@ -19,12 +19,12 @@ package com.foreach.across.modules.entity.views.processors.support;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -32,14 +32,14 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestTransactionalEntityViewProcessorRegistry
 {
 	private TransactionalEntityViewProcessorRegistry registry;
@@ -56,7 +56,7 @@ public class TestTransactionalEntityViewProcessorRegistry
 	@Mock
 	private EntityViewProcessorAdapter three;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		registry = new TransactionalEntityViewProcessorRegistry();
 		registry.setTransactionTemplate( transactionTemplate );

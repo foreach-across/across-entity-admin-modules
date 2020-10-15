@@ -22,12 +22,12 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestRequiredControlPostProcessor
 {
 	@Mock
@@ -50,7 +50,7 @@ public class TestRequiredControlPostProcessor
 
 	private RequiredControlPostProcessor<ViewElement> postProcessor = new RequiredControlPostProcessor<>();
 
-	@Before
+	@BeforeEach
 	public void before() {
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 	}

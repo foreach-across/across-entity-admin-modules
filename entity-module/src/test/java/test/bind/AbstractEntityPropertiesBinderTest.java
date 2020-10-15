@@ -23,7 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.DefaultEntityProper
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.MapAssert;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -53,7 +53,7 @@ public abstract class AbstractEntityPropertiesBinderTest
 
 	protected EntityPropertiesBinder propertyValues;
 
-	@Before
+	@BeforeEach
 	public void resetForBinding() {
 		propertyRegistry = new DefaultEntityPropertyRegistry( DefaultEntityPropertyRegistryProvider.newInstance() );
 		registeredProperties().forEach( b -> propertyRegistry.register( b.build() ) );

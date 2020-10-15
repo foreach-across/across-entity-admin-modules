@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;

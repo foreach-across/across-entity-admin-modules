@@ -40,12 +40,12 @@ import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.ClientGroup;
 import com.foreach.across.testmodules.springdata.business.Company;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme

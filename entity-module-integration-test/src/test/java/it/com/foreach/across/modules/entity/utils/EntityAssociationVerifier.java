@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -33,7 +33,7 @@ public class EntityAssociationVerifier
 	EntityAssociationVerifier( EntityVerifier parent, EntityConfiguration<?> configuration, String associationName ) {
 		this.parent = parent;
 		association = configuration.association( associationName );
-		assertNotNull( "Association " + associationName + " not present", association );
+		assertNotNull( association, "Association" + associationName + " not present" );
 
 		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 		assertTrue( association.hasView( EntityView.CREATE_VIEW_NAME ) );
@@ -58,7 +58,7 @@ public class EntityAssociationVerifier
 	public EntityAssociationVerifier to( Class<?> targetClass, String targetPropertyName ) {
 		assertSame( parent.entityRegistry.getEntityConfiguration( targetClass ), association.getTargetEntityConfiguration() );
 		if ( targetPropertyName == null ) {
-			assertNull( "No target property was expected", association.getTargetProperty() );
+			assertNull( association.getTargetProperty(), "No target property was expected" );
 
 		}
 		else {

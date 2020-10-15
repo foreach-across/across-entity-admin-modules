@@ -16,10 +16,11 @@
 
 package com.foreach.across.modules.entity.query;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * @author Arne Vandamme
@@ -27,9 +28,11 @@ import static org.junit.Assert.assertNotEquals;
  */
 public class TestEQValue
 {
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullValueNotAllowed() {
-		new EQValue( null );
+		Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			new EQValue( null );
+		} );
 	}
 
 	@Test

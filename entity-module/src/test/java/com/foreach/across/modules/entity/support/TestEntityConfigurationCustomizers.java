@@ -23,11 +23,11 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.3.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class TestEntityConfigurationCustomizers
 {
@@ -82,7 +82,7 @@ public class TestEntityConfigurationCustomizers
 		EntityConfiguration configuration = mock( EntityConfiguration.class );
 		WritableAttributes attributes = mock( WritableAttributes.class );
 		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
-		when( configuration.getPropertyRegistry() ).thenReturn( propertyRegistry );
+//		when( configuration.getPropertyRegistry() ).thenReturn( propertyRegistry );
 
 		ArgumentCaptor<EntityQueryExecutor> argument = ArgumentCaptor.forClass( EntityQueryExecutor.class );
 

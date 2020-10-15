@@ -36,12 +36,14 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +54,8 @@ import static org.mockito.Mockito.when;
  * @author Steven Gentens
  * @since 3.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 public class TestDeleteActionFormViewProcessor
 {
@@ -75,12 +78,12 @@ public class TestDeleteActionFormViewProcessor
 	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 	private Object entity = new Object();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		deleteActionFormViewProcessor = new DeleteActionFormViewProcessor();
 
 		ContainerViewElementBuilderSupport buttonsContainer = html.builders.container()
-		                                                                         .name( "buttons" );
+		                                                                   .name( "buttons" );
 		when( builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS, ContainerViewElementBuilderSupport.class ) )
 				.thenReturn( buttonsContainer );
 
@@ -103,8 +106,8 @@ public class TestDeleteActionFormViewProcessor
 		IconSetRegistry.addIconSet( EntityModule.NAME, mutableIconSet );
 	}
 
-	@After
-	public void cleanUp(){
+	@AfterEach
+	public void cleanUp() {
 		IconSetRegistry.removeIconSet( EntityModule.NAME );
 	}
 

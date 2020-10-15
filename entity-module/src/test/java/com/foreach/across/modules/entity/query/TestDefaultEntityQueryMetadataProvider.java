@@ -19,26 +19,29 @@ package com.foreach.across.modules.entity.query;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestDefaultEntityQueryMetadataProvider
 {
 	@Mock
@@ -49,7 +52,7 @@ public class TestDefaultEntityQueryMetadataProvider
 
 	private EntityQueryMetadataProvider metadataProvider;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		metadataProvider = new DefaultEntityQueryMetadataProvider( propertyRegistry );
 		when( propertyRegistry.getProperty( "existing" ) ).thenReturn( descriptor );
@@ -124,14 +127,14 @@ public class TestDefaultEntityQueryMetadataProvider
 		for ( EntityQueryOps op : EntityQueryOps.values() ) {
 			if ( ArrayUtils.contains( allowed, op ) ) {
 				assertTrue(
-						"Expected operand was not allowed: " + op,
-						metadataProvider.isValidOperatorForProperty( op, "existing" )
+						metadataProvider.isValidOperatorForProperty( op, "existing" ),
+						"Expected operand was not allowed: " + op
 				);
 			}
 			else {
 				assertFalse(
-						"Operand should not be allowed: " + op,
-						metadataProvider.isValidOperatorForProperty( op, "existing" )
+						metadataProvider.isValidOperatorForProperty( op, "existing" ),
+						"Operand should not be allowed: " + op
 				);
 			}
 		}

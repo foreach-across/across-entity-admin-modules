@@ -23,8 +23,8 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 {
 	private ViewElementFieldset fieldset = new ViewElementFieldset();
 
-	@Before
+	@BeforeEach
 	public void addContent() {
 		fieldset.getTitle().addChild( text( "title" ) );
 		fieldset.getHeader().addChild( text( "header" ) );

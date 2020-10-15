@@ -22,14 +22,14 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ResolvableType;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityPageStructureRenderedEvent
 {
 	@Mock
@@ -57,9 +57,9 @@ public class TestEntityPageStructureRenderedEvent
 
 	private EntityPageStructureRenderedEvent<Object> event;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
-		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
+//		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
 		event = new EntityPageStructureRenderedEvent<>( false, viewRequest, view, viewContext, builderContext );
 	}
@@ -67,12 +67,14 @@ public class TestEntityPageStructureRenderedEvent
 	@Test
 	public void eventNameIsTheEntityConfigurationName() {
 		when( entityConfiguration.getName() ).thenReturn( "configName" );
+		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 		assertEquals( "configName", event.getEventName() );
 	}
 
 	@Test
 	public void eventTypeIsEntityConfigurationType() {
 		when( entityConfiguration.getEntityType() ).thenReturn( String.class );
+		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 		assertEquals(
 				ResolvableType.forClassWithGenerics( EntityPageStructureRenderedEvent.class, String.class ),
 				event.getResolvableType()

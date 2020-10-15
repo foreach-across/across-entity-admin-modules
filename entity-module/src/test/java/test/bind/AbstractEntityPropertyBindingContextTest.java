@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import lombok.*;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 import java.util.Map;
@@ -56,7 +56,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 	EntityPropertyDescriptor userWithCityAddressCityAddressCity;
 	EntityPropertyDescriptor userWithCityAddressCityAddressCityName;
 
-	@Before
+	@BeforeEach
 	@SuppressWarnings("unchecked")
 	public void createRegistries() {
 		EntityPropertyRegistryProvider registryProvider = DefaultEntityPropertyRegistryProvider.newInstance();

@@ -23,8 +23,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.querydsl.core.util.ReflectionUtils;
 import lombok.Data;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -52,7 +52,7 @@ public class TestRequiredAttributePropertyDescriptorEnhancer
 
 	private DefaultEntityPropertyRegistry propertyRegistry = new DefaultEntityPropertyRegistry();
 
-	@Before
+	@BeforeEach
 	public void before() {
 		EntityPropertyDescriptorFactory descriptorFactory = new EntityPropertyDescriptorFactoryImpl();
 		DefaultPropertiesRegistrar propertiesRegistrar = new DefaultPropertiesRegistrar( descriptorFactory );

@@ -18,22 +18,26 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestDelegatingEntityFetchingViewProcessor
 {
 	@Mock
@@ -50,15 +54,17 @@ public class TestDelegatingEntityFetchingViewProcessor
 
 	private DelegatingEntityFetchingViewProcessor processor;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		processor = new DelegatingEntityFetchingViewProcessor();
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void exceptionThrownIfNoDelegateSet() {
-		processor.fetchItems( viewRequest, null, pageable );
+		Assertions.assertThrows( IllegalStateException.class, () -> {
+			processor.fetchItems( viewRequest, null, pageable );
+		} );
 	}
 
 	@Test

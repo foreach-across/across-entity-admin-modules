@@ -28,7 +28,7 @@ import com.foreach.across.test.AcrossTestContext;
 import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.testmodules.springdata.business.Group;
 import com.foreach.across.testmodules.springdata.repositories.GroupRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static java.lang.Thread.currentThread;

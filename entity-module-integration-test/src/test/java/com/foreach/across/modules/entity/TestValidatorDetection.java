@@ -16,7 +16,7 @@
 package com.foreach.across.modules.entity;
 
 import com.foreach.across.testmodules.springdata.business.Client;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -26,7 +26,7 @@ import javax.validation.metadata.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestValidatorDetection
 {

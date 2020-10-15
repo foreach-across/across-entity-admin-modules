@@ -27,12 +27,12 @@ import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestAbstractEntityFetchingViewProcessor
 {
 	Entry one = new Entry( 1L ), two = new Entry( 2L ),

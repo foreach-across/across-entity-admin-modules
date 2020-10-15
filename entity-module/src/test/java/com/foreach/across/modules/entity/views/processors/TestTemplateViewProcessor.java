@@ -17,10 +17,11 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.views.EntityView;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -30,9 +31,11 @@ import static org.mockito.Mockito.verify;
  */
 public class TestTemplateViewProcessor
 {
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void templateIsRequired() {
-		new TemplateViewProcessor( null );
+		Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			new TemplateViewProcessor( null );
+		} );
 	}
 
 	@Test

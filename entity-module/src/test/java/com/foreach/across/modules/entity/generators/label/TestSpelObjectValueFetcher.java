@@ -18,9 +18,9 @@ package com.foreach.across.modules.entity.generators.label;
 import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Address;
 import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Customer;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme

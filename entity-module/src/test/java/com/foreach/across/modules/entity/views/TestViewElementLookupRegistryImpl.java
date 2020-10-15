@@ -18,13 +18,13 @@ package com.foreach.across.modules.entity.views;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static com.foreach.across.modules.entity.views.ViewElementMode.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -34,7 +34,7 @@ public class TestViewElementLookupRegistryImpl
 {
 	private ViewElementLookupRegistryImpl registry;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		registry = new ViewElementLookupRegistryImpl();
 		registry.setDefaultCacheable( false );

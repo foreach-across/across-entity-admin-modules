@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static com.foreach.across.modules.entity.views.ViewElementMode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * @author Arne Vandamme

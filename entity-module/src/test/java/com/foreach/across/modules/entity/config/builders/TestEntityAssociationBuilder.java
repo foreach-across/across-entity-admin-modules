@@ -24,11 +24,13 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Collections;
@@ -36,14 +38,15 @@ import java.util.function.Consumer;
 
 import static com.foreach.across.modules.entity.registry.EntityAssociation.Type.EMBEDDED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
 @SuppressWarnings("unchecked")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestEntityAssociationBuilder
 {
 	@Mock
@@ -64,7 +67,7 @@ public class TestEntityAssociationBuilder
 		verify( consumer ).accept( builder );
 	}
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		EntityViewFactoryBuilderInitializer builderInitializer = mock( EntityViewFactoryBuilderInitializer.class );
 

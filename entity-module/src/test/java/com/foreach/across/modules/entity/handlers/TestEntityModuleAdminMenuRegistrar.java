@@ -36,11 +36,13 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +55,8 @@ import static org.mockito.Mockito.when;
  * @author Steven Gentens
  * @since 3.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 public class TestEntityModuleAdminMenuRegistrar
 {
@@ -67,7 +70,7 @@ public class TestEntityModuleAdminMenuRegistrar
 	private EntityAdminMenu entityAdminMenu;
 	private PathBasedMenuBuilder menuBuilder;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		menuBuilder = new PathBasedMenuBuilder();
 		entityAdminMenuEvent = mock( EntityAdminMenuEvent.class );
@@ -111,7 +114,7 @@ public class TestEntityModuleAdminMenuRegistrar
 		IconSetRegistry.addIconSet( EntityModule.NAME, mutableIconSet );
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		IconSetRegistry.removeIconSet( EntityModule.NAME );
 	}

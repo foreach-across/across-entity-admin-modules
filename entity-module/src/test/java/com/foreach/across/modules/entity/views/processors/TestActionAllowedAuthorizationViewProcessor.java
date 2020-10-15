@@ -22,13 +22,16 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.security.access.AccessDeniedException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +39,8 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestActionAllowedAuthorizationViewProcessor
 {
 	@Mock
@@ -56,7 +60,7 @@ public class TestActionAllowedAuthorizationViewProcessor
 
 	private ActionAllowedAuthorizationViewProcessor processor;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 		when( viewContext.getEntityConfiguration() ).thenReturn( configuration );
@@ -68,23 +72,29 @@ public class TestActionAllowedAuthorizationViewProcessor
 		processor = new ActionAllowedAuthorizationViewProcessor();
 	}
 
-	@Test(expected = AccessDeniedException.class)
+	@Test
 	public void hiddenEntityConfigurationThrowsAccessDenied() {
-		when( configuration.isHidden() ).thenReturn( true );
-		processor.authorizeRequest( viewRequest );
+		assertThrows( AccessDeniedException.class, () -> {
+			when( configuration.isHidden() ).thenReturn( true );
+			processor.authorizeRequest( viewRequest );
+		} );
 	}
 
-	@Test(expected = AccessDeniedException.class)
+	@Test
 	public void hiddenEntityAssociationThrowsAccessDenied() {
-		when( viewContext.isForAssociation() ).thenReturn( true );
-		when( association.isHidden() ).thenReturn( true );
-		processor.authorizeRequest( viewRequest );
+		assertThrows( AccessDeniedException.class, () -> {
+			when( viewContext.isForAssociation() ).thenReturn( true );
+			when( association.isHidden() ).thenReturn( true );
+			processor.authorizeRequest( viewRequest );
+		} );
 	}
 
-	@Test(expected = AccessDeniedException.class)
+	@Test
 	public void actionNotAllowedThrowsException() {
-		processor.setRequiredAllowableAction( AllowableAction.CREATE );
-		processor.authorizeRequest( viewRequest );
+		assertThrows( AccessDeniedException.class, () -> {
+			processor.setRequiredAllowableAction( AllowableAction.CREATE );
+			processor.authorizeRequest( viewRequest );
+		} );
 	}
 
 	@Test

@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.registry;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -39,14 +39,16 @@ public class TestEntityModel
 {
 	private DefaultEntityModel<Object, Serializable> model;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		model = new DefaultEntityModel<>();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void printerCannotBeNull() {
-		model.setLabelPrinter( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			model.setLabelPrinter( null );
+		} );
 	}
 
 	@Test
@@ -67,9 +69,11 @@ public class TestEntityModel
 		assertEquals( "hello", model.getLabel( "test" ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void entityFactoryCannotBeNull() {
-		model.setEntityFactory( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			model.setEntityFactory( null );
+		} );
 	}
 
 	@Test
@@ -94,9 +98,11 @@ public class TestEntityModel
 		assertEquals( "dto", model.createDto( "existing" ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void findOneMethodCannotBeNull() {
-		model.setFindOneMethod( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			model.setFindOneMethod( null );
+		} );
 	}
 
 	@Test
@@ -107,9 +113,11 @@ public class TestEntityModel
 		assertEquals( "yes", model.findOne( "go" ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void saveMethodCannotBeNull() {
-		model.setSaveMethod( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			model.setSaveMethod( null );
+		} );
 	}
 
 	@Test
@@ -120,9 +128,11 @@ public class TestEntityModel
 		assertEquals( "yes", model.save( "go" ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void deleteMethodCannotBeNull() {
-		model.setDeleteMethod( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			model.setDeleteMethod( null );
+		} );
 	}
 
 	@Test
@@ -135,9 +145,11 @@ public class TestEntityModel
 		verify( consumer ).accept( "entity" );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void entityInformationCannotBeNull() {
-		model.setEntityInformation( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			model.setEntityInformation( null );
+		} );
 	}
 
 	@Test

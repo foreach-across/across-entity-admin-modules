@@ -27,23 +27,23 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.IteratorItemStatsImpl;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityViewElementUtils
 {
 	private final static Object SOME_ENTITY = "someEntity";
@@ -57,9 +57,9 @@ public class TestEntityViewElementUtils
 	@Mock
 	private EntityPropertyController controller;
 
-	@Before
+	@BeforeEach
 	public void before() {
-		when( descriptor.getController() ).thenReturn( controller );
+//		when( descriptor.getController() ).thenReturn( controller );
 	}
 
 	@Test
@@ -269,6 +269,7 @@ public class TestEntityViewElementUtils
 
 	@Test
 	public void currentPropertyValueIsReturnValueOfControllerWithCurrentEntity() {
+		when( descriptor.getController() ).thenReturn( controller );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 		setCurrentEntity( builderContext, "my entity" );
 
@@ -313,6 +314,7 @@ public class TestEntityViewElementUtils
 
 	@Test
 	public void currentPropertyValueIsNullIfNotOfCorrectType() {
+		when( descriptor.getController() ).thenReturn( controller );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 		setCurrentEntity( builderContext, "my entity" );
 

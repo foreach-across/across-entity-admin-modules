@@ -43,8 +43,8 @@ import com.foreach.across.testmodules.springdata.business.*;
 import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import it.com.foreach.across.modules.entity.utils.EntityPropertyDescriptorVerifier;
 import it.com.foreach.across.modules.entity.utils.EntityVerifier;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +57,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -66,13 +66,13 @@ import javax.validation.metadata.PropertyDescriptor;
 import java.io.Serializable;
 
 import static com.foreach.across.modules.entity.views.EntityView.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
 public class TestRepositoryEntityRegistrar

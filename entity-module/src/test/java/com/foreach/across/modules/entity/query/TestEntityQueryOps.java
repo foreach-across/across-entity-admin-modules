@@ -16,10 +16,10 @@
 
 package com.foreach.across.modules.entity.query;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme

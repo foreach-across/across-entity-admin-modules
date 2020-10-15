@@ -21,12 +21,14 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyContr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -40,7 +42,8 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings({ "Duplicates", "unchecked" })
 public class TestListEntityPropertyBinder
 {
@@ -73,7 +76,7 @@ public class TestListEntityPropertyBinder
 	private EntityPropertyDescriptor memberDescriptor;
 	private ListEntityPropertyBinder property;
 
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		reset( binder, collectionController, memberController );
 

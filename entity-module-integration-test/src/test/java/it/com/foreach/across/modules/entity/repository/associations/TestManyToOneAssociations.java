@@ -27,25 +27,25 @@ import com.foreach.across.testmodules.springdata.business.*;
 import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.testmodules.springdata.repositories.CompanyRepository;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verifies that a @ManyToOne is registered as a @OneToMany on the source entity.
  * If entity Client refers to a single Company, then an association should be created on Company that represents
  * all clients linked to that Company.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
@@ -65,7 +65,7 @@ public class TestManyToOneAssociations
 	@Autowired
 	private ClientRepository clientRepository;
 
-	@Before
+	@BeforeEach
 	public void insertTestData() {
 		if ( !inserted ) {
 			inserted = true;
@@ -93,16 +93,15 @@ public class TestManyToOneAssociations
 
 		assertNotNull( association );
 		assertEquals(
-				"Association name should be target entity name joined with target property name",
-				"client.company", association.getName()
+				"client.company", association.getName(), "Association name should be target entity name joined with target property name"
 		);
 
 		assertSame( company, association.getSourceEntityConfiguration() );
 		assertSame( client, association.getTargetEntityConfiguration() );
 
 		assertNull(
-				"Regular ManyToOne should not have a source property as the association starts at the other end",
-				association.getSourceProperty()
+				association.getSourceProperty(),
+				"Regular ManyToOne should not have a source property as the association starts at the other end"
 		);
 		assertNotNull( association.getTargetProperty() );
 		assertSame( client.getPropertyRegistry().getProperty( "company" ), association.getTargetProperty() );
@@ -134,16 +133,15 @@ public class TestManyToOneAssociations
 
 		assertNotNull( association );
 		assertEquals(
-				"Association name should be target entity name joined with target property name",
-				"clientGroup.id.group", association.getName()
+				"clientGroup.id.group", association.getName(), "Association name should be target entity name joined with target property name"
 		);
 
 		assertSame( group, association.getSourceEntityConfiguration() );
 		assertSame( clientGroup, association.getTargetEntityConfiguration() );
 
 		assertNull(
-				"Regular ManyToOne should not have a source property as the association starts at the other end",
-				association.getSourceProperty()
+				association.getSourceProperty(),
+				"Regular ManyToOne should not have a source property as the association starts at the other end"
 		);
 		assertNotNull( association.getTargetProperty() );
 		assertSame( clientGroup.getPropertyRegistry().getProperty( "id.group" ), association.getTargetProperty() );

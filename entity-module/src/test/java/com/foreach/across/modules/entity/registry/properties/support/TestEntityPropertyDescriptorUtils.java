@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.registry.properties.support;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils.getRootDescriptor;
 import static org.assertj.core.api.Assertions.assertThat;

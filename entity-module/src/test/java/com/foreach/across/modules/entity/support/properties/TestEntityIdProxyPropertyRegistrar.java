@@ -26,8 +26,8 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.*;
 import lombok.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.validation.Errors;
@@ -57,7 +57,7 @@ public class TestEntityIdProxyPropertyRegistrar
 
 	private MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistryProvider.INSTANCE.create( RefOwner.class );
 
-	@Before
+	@BeforeEach
 	public void before() {
 		when( entityRegistry.getEntityConfiguration( Ref.class ) ).thenReturn( entityConfiguration );
 		when( entityRegistry.getEntityConfiguration( "ref" ) ).thenReturn( entityConfiguration );

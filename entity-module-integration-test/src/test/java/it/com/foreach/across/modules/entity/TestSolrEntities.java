@@ -20,31 +20,31 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
+import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.test.AcrossTestConfiguration;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import com.foreach.across.testmodules.solr.SolrTestModule;
 import com.foreach.across.testmodules.solr.business.Product;
 import com.foreach.across.testmodules.solr.repositories.ProductRepository;
 import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
-import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.test.AcrossTestConfiguration;
-import com.foreach.across.test.AcrossWebAppConfiguration;
 import it.com.foreach.across.modules.entity.utils.EntityVerifier;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.util.TxUtils;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
 public class TestSolrEntities

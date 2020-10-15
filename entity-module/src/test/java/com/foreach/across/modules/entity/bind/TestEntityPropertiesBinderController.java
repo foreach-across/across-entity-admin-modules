@@ -20,12 +20,14 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyContr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.validation.Errors;
 
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.AFTER_ENTITY;
@@ -39,7 +41,8 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestEntityPropertiesBinderController
 {
 	@Mock
@@ -57,7 +60,7 @@ public class TestEntityPropertiesBinderController
 	private EntityPropertiesBinder binder;
 	private EntityPropertiesBinderController controller;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MutableEntityPropertyRegistry registry = mock( MutableEntityPropertyRegistry.class );
 		binder = new EntityPropertiesBinder( registry );

@@ -16,14 +16,14 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +46,7 @@ public class TestEntityPropertySelectorExecutor
 	private EntityPropertyDescriptor productDate;
 	private EntityPropertyDescriptor productCatalog;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		EntityPropertyRegistryProvider registryProvider = mock( EntityPropertyRegistryProvider.class );
 		propertyRegistry = mock( MutableEntityPropertyRegistry.class );

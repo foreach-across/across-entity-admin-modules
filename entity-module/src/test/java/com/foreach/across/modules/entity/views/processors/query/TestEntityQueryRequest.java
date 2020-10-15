@@ -17,13 +17,13 @@
 package com.foreach.across.modules.entity.views.processors.query;
 
 import com.foreach.across.modules.entity.query.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Steven Gentens

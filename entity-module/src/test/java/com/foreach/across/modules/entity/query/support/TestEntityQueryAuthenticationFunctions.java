@@ -17,16 +17,16 @@
 package com.foreach.across.modules.entity.query.support;
 
 import com.foreach.across.modules.entity.query.EQType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static com.foreach.across.modules.entity.query.support.EntityQueryAuthenticationFunctions.CURRENT_USER;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,12 +38,12 @@ public class TestEntityQueryAuthenticationFunctions
 {
 	private EntityQueryAuthenticationFunctions functions;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		functions = new EntityQueryAuthenticationFunctions();
 	}
 
-	@After
+	@AfterEach
 	public void clearSecurity() {
 		SecurityContextHolder.clearContext();
 	}
@@ -56,17 +56,21 @@ public class TestEntityQueryAuthenticationFunctions
 		assertFalse( functions.accepts( CURRENT_USER, TypeDescriptor.valueOf( Object.class ) ) );
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void noSecurityContextThrowsIllegalState() {
-		SecurityContextHolder.clearContext();
-		functions.apply( "currentUser", new EQType[0], TypeDescriptor.valueOf( String.class ), null );
+		assertThrows( IllegalStateException.class, () -> {
+			SecurityContextHolder.clearContext();
+			functions.apply( "currentUser", new EQType[0], TypeDescriptor.valueOf( String.class ), null );
+		} );
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void noAuthenticationThrowsIllegalState() {
-		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-		SecurityContextHolder.setContext( securityContext );
-		functions.apply( "currentUser", new EQType[0], TypeDescriptor.valueOf( String.class ), null );
+		assertThrows( IllegalStateException.class, () -> {
+			SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+			SecurityContextHolder.setContext( securityContext );
+			functions.apply( "currentUser", new EQType[0], TypeDescriptor.valueOf( String.class ), null );
+		} );
 	}
 
 	@Test

@@ -19,10 +19,10 @@ package com.foreach.across.modules.entity.views.context;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -33,7 +33,7 @@ public class TestDefaultEntityViewContext
 {
 	private ConfigurableEntityViewContext ctx;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		ctx = new DefaultEntityViewContext();
 	}
@@ -45,10 +45,12 @@ public class TestDefaultEntityViewContext
 		assertNull( ctx.getEntity( Long.class ) );
 	}
 
-	@Test(expected = ClassCastException.class)
+	@Test
 	public void wrongEntityType() {
-		ctx.setEntity( "test" );
-		ctx.getEntity( Long.class );
+		assertThrows( ClassCastException.class, () -> {
+			ctx.setEntity( "test" );
+			ctx.getEntity( Long.class );
+		} );
 	}
 
 	@Test

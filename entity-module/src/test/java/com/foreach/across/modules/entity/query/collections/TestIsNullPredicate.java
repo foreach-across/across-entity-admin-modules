@@ -18,11 +18,11 @@ package com.foreach.across.modules.entity.query.collections;
 
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.*;
 import java.util.function.Predicate;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
  * @author Steven Gentens
  * @since 3.1.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class TestIsNullPredicate
 {
@@ -49,7 +49,7 @@ public class TestIsNullPredicate
 	@Mock
 	private CollectionEntityQueryItem item;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		when( item.getPropertyValue( "null" ) ).thenReturn( null );
 		when( item.getPropertyValue( "notNullObject" ) ).thenReturn( Color.RED );

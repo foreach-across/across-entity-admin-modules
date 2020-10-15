@@ -17,14 +17,14 @@
 package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.query.EntityQueryTokenizer.TokenMetadata;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -34,7 +34,7 @@ public class TestEntityQueryTokenizer
 {
 	private EntityQueryTokenizer tokenizer;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		tokenizer = new EntityQueryTokenizer();
 	}

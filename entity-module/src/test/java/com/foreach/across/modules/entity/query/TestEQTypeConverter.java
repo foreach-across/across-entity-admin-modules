@@ -16,18 +16,19 @@
 
 package com.foreach.across.modules.entity.query;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.convert.ConversionService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.core.convert.TypeDescriptor.collection;
 import static org.springframework.core.convert.TypeDescriptor.valueOf;
@@ -36,7 +37,8 @@ import static org.springframework.core.convert.TypeDescriptor.valueOf;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestEQTypeConverter
 {
 	@Mock
@@ -50,7 +52,7 @@ public class TestEQTypeConverter
 
 	private EQTypeConverter typeConverter;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		typeConverter = new EQTypeConverter();
 		typeConverter.setConversionService( conversionService );
@@ -58,10 +60,12 @@ public class TestEQTypeConverter
 		typeConverter.validateProperties();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validatePropertiesRequiresConversionService() {
-		typeConverter.setConversionService( null );
-		typeConverter.validateProperties();
+		assertThrows( IllegalArgumentException.class, () -> {
+			typeConverter.setConversionService( null );
+			typeConverter.validateProperties();
+		} );
 	}
 
 	@Test
@@ -134,9 +138,11 @@ public class TestEQTypeConverter
 		                                     new EQGroup( new EQValue( "1" ), new EQString( "2" ) ) ) );
 	}
 
-	@Test(expected = EntityQueryParsingException.IllegalFunction.class)
+	@Test
 	public void eqFunctionThrowsExceptionIfFunctionDoesNotExist() {
-		typeConverter.convert( valueOf( Integer.class ), new EQFunction( "hello" ) );
+		assertThrows( EntityQueryParsingException.IllegalFunction.class, () -> {
+			typeConverter.convert( valueOf( Integer.class ), new EQFunction( "hello" ) );
+		} );
 	}
 
 	@Test

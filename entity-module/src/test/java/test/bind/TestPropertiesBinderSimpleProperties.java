@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.config.builders.EntityPropertyDescripto
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.*;

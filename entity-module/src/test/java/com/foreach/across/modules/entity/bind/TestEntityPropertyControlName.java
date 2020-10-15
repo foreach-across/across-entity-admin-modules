@@ -23,7 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropert
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.RequiredArgsConstructor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.entity.bind.EntityPropertyControlName.DEFAULT_BINDER_PREFIX;
 import static com.foreach.across.modules.entity.bind.EntityPropertyControlName.forProperty;

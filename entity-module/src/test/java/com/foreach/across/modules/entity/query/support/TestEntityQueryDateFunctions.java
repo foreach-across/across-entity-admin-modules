@@ -18,8 +18,8 @@ package com.foreach.across.modules.entity.query.support;
 
 import com.foreach.across.modules.entity.query.EQType;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
@@ -29,7 +29,7 @@ import java.util.Date;
 
 import static com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions.NOW;
 import static com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions.TODAY;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -39,7 +39,7 @@ public class TestEntityQueryDateFunctions
 {
 	private EntityQueryDateFunctions functions;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		functions = new EntityQueryDateFunctions();
 	}

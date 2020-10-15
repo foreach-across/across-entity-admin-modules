@@ -17,13 +17,13 @@
 package com.foreach.across.modules.entity.query;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -31,14 +31,18 @@ import static org.junit.Assert.*;
  */
 public class TestEQFunction
 {
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullNameNotAllowed() {
-		new EQFunction( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			new EQFunction( null );
+		} );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullArgumentsNotAllowed() {
-		new EQFunction( "myFunction", (EQType[]) null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			new EQFunction( "myFunction", (EQType[]) null );
+		} );
 	}
 
 	@Test

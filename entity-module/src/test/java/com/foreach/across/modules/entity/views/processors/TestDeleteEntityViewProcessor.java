@@ -24,13 +24,13 @@ import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ResolvableType;
 import org.springframework.ui.ModelMap;
@@ -41,14 +41,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.foreach.across.modules.entity.views.processors.DeleteEntityViewProcessor.DELETE_CONFIGURATION;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.findParent;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestDeleteEntityViewProcessor
 {
 	private final String entity = "my entity";
@@ -73,7 +73,7 @@ public class TestDeleteEntityViewProcessor
 	@InjectMocks
 	private DeleteEntityViewProcessor processor;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 		when( viewContext.getEntityMessages() ).thenReturn( entityMessages );
@@ -85,7 +85,7 @@ public class TestDeleteEntityViewProcessor
 		ViewElementBuilderContextHolder.setViewElementBuilderContext( mock( ViewElementBuilderContext.class ) );
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		ViewElementBuilderContextHolder.clearViewElementBuilderContext();
 	}

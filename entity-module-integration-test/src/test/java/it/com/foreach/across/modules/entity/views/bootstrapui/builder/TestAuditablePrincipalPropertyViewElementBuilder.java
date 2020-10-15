@@ -25,8 +25,8 @@ import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -48,7 +48,7 @@ public class TestAuditablePrincipalPropertyViewElementBuilder extends AbstractVi
 	private AuditablePrincipalPropertyViewElementBuilder builder;
 	private DefaultViewElementBuilderContext builderContext;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		builder = new AuditablePrincipalPropertyViewElementBuilder();
 

@@ -24,9 +24,9 @@ import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilte
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -40,7 +40,7 @@ import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewE
  * @since 2.2.0
  */
 // todo: find a more reliable way of testing the base markup without requiring that much detail
-@Ignore
+@Disabled
 @ContextConfiguration(classes = TestEntityQueryFilterFormControlBuilder.Config.class)
 public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElementTemplateTest
 {
@@ -88,7 +88,7 @@ public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElement
 
 	private DefaultViewElementBuilderContext builderContext;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		builderContext = new DefaultViewElementBuilderContext();
 		queryFilterFormControlBuilder = new EntityQueryFilterFormControlBuilder().eqlControlName( "extensions[eqFilter]" );

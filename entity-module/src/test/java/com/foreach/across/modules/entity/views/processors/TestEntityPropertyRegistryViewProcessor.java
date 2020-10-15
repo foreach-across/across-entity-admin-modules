@@ -18,13 +18,14 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -32,15 +33,17 @@ import static org.mockito.Mockito.verify;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityPropertyRegistryViewProcessor
 {
 	@Mock
 	private ConfigurableEntityViewContext viewContext;
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void propertyRegistryIsRequired() {
-		new EntityPropertyRegistryViewProcessor( null );
+		Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			new EntityPropertyRegistryViewProcessor( null );
+		} );
 	}
 
 	@Test

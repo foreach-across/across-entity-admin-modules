@@ -18,7 +18,7 @@ package test.bind;
 
 import com.foreach.across.modules.entity.bind.*;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;

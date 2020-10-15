@@ -27,10 +27,10 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,12 +39,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.setCurrentPropertyValue;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestOptionGenerator
 {
 	private final OptionIterableBuilder singleOption = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ) );
@@ -63,7 +63,7 @@ public class TestOptionGenerator
 	private OptionsFormElementBuilder options;
 	private ViewElementBuilderContext builderContext;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		generator = new OptionGenerator();
 		options = new OptionsFormElementBuilder();
@@ -433,7 +433,7 @@ public class TestOptionGenerator
 
 		assertEquals( 2, generated.size() );
 		assertNull( generated.get( 0 ).getAttribute( "data-test" ) );
-		assertNull( "test", generated.get( 1 ).getAttribute( "data-test" ) );
+		assertNull( generated.get( 1 ).getAttribute( "data-test" ), "test" );
 	}
 
 	@SuppressWarnings("unchecked")

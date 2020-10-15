@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.query;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Arne Vandamme
@@ -36,7 +36,7 @@ public class TestEntityQueryTokenConverter
 {
 	private EntityQueryTokenConverter converter;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		converter = new EntityQueryTokenConverter();
 	}

@@ -40,26 +40,26 @@ import com.foreach.across.testmodules.springdata.business.Car;
 import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.Group;
 import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration(classes = TestCustomizingEntityConfiguration.Config.class)
 public class TestCustomizingEntityConfiguration
@@ -69,7 +69,7 @@ public class TestCustomizingEntityConfiguration
 
 	private EntityConfiguration configuration;
 
-	@Before
+	@BeforeEach
 	public void retrieveEntityConfiguration() {
 		configuration = entityRegistry.getEntityConfiguration( Client.class );
 	}

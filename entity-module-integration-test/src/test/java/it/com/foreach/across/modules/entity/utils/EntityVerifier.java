@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.views.EntityView;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.support.RepositoryInvoker;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -46,9 +46,9 @@ public class EntityVerifier
 	}
 
 	public EntityVerifier hasRepository() {
-		assertTrue( "EntityModel not present", configuration.hasEntityModel() );
-		assertTrue( "Repository not present", configuration.hasAttribute( Repository.class ) );
-		assertTrue( "RepositoryInvoker not present", configuration.hasAttribute( RepositoryInvoker.class ) );
+		assertTrue( configuration.hasEntityModel(), "EntityModel not present" );
+		assertTrue( configuration.hasAttribute( Repository.class ), "Repository not present" );
+		assertTrue( configuration.hasAttribute( RepositoryInvoker.class ), "RepositoryInvoker not present" );
 		return this;
 	}
 
@@ -64,7 +64,7 @@ public class EntityVerifier
 
 	public EntityVerifier hasAssociation( String associationName, Class<?> targetClass, boolean visible ) {
 		EntityAssociation association = configuration.association( associationName );
-		assertNotNull( "Association " + associationName + " not present", association );
+		assertNotNull( association, "Association " + associationName + " not present" );
 		assertSame( entityRegistry.getEntityConfiguration( targetClass ), association.getTargetEntityConfiguration() );
 
 		assertNotEquals( visible, association.isHidden() );

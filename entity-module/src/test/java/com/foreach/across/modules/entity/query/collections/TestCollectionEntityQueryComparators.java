@@ -17,10 +17,10 @@
 package com.foreach.across.modules.entity.query.collections;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
 
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
  * @author Steven Gentens
  * @since 3.1.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestCollectionEntityQueryComparators
 {
 	@Mock

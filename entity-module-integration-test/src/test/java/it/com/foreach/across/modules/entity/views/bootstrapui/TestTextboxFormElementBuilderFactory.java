@@ -29,7 +29,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import org.hibernate.validator.constraints.Length;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.annotation.Bean;
@@ -40,7 +40,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import javax.validation.constraints.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**

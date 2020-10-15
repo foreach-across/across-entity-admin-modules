@@ -25,12 +25,14 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import com.foreach.across.modules.web.context.WebAppLinkBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -48,7 +50,8 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestEntityViewLinks
 {
 	@Mock
@@ -74,7 +77,7 @@ public class TestEntityViewLinks
 
 	private EntityViewLinks links;
 
-	@Before
+	@BeforeEach
 	@SuppressWarnings("unchecked")
 	public void before() {
 		links = new EntityViewLinks( "/test/entities", entityRegistry );
@@ -113,7 +116,7 @@ public class TestEntityViewLinks
 		when( targetConfiguration.getId( idBasedEntity ) ).thenReturn( 20 );
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		RequestContextHolder.resetRequestAttributes();
 	}

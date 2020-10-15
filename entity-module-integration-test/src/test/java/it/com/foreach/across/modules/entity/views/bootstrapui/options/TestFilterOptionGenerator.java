@@ -28,24 +28,24 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.setCurrentPropertyValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Steven Gentens
  * @since 2.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestFilterOptionGenerator
 {
 	private FilterOptionGenerator generator;
@@ -57,7 +57,7 @@ public class TestFilterOptionGenerator
 			new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" )
 	);
 
-	@Before
+	@BeforeEach
 	public void before() {
 		generator = new FilterOptionGenerator();
 		options = new OptionsFormElementBuilder();
@@ -75,7 +75,7 @@ public class TestFilterOptionGenerator
 		List<AbstractNodeViewElement> generated = build();
 		assertEquals( 4, generated.size() );
 		assertEquals( "", ( (SelectFormElement.Option) generated.get( 0 ) ).getLabel() );
-		assertTrue( "", ( (SelectFormElement.Option) generated.get( 0 ) ).isSelected() );
+		assertTrue( ( (SelectFormElement.Option) generated.get( 0 ) ).isSelected(), "" );
 		assertTrue( generated.get( 1 ) instanceof SelectFormElement.OptionGroup );
 		assertEquals( 1, generated.get( 1 ).getChildren().size() );
 		assertEquals( "ccc", ( (SelectFormElement.Option) generated.get( 1 ).getChildren().get( 0 ) ).getLabel() );

@@ -24,13 +24,13 @@ import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -43,15 +43,17 @@ public class TestEntityPropertyDescriptorBuilder
 
 	private EntityPropertyDescriptor descriptor;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		builder = new EntityPropertyDescriptorBuilder( "myprop" );
 		descriptor = null;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nameIsRequired() {
-		builder = new EntityPropertyDescriptorBuilder( null );
+		assertThrows( IllegalArgumentException.class, () -> {
+			builder = new EntityPropertyDescriptorBuilder( null );
+		} );
 	}
 
 	@Test

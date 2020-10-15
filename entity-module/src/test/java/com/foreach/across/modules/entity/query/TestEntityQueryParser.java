@@ -16,13 +16,14 @@
 
 package com.foreach.across.modules.entity.query;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityQueryParser
 {
 	@Mock
@@ -41,7 +42,7 @@ public class TestEntityQueryParser
 
 	private EntityQueryParser parser;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		parser = new EntityQueryParser();
 		parser.setMetadataProvider( metadataProvider );
@@ -50,21 +51,27 @@ public class TestEntityQueryParser
 		parser.validateProperties();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validatePropertiesRequiresMetadataProvider() {
-		parser.setMetadataProvider( null );
-		parser.validateProperties();
+		assertThrows( IllegalArgumentException.class, () -> {
+			parser.setMetadataProvider( null );
+			parser.validateProperties();
+		} );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void validatePropertiesRequiresQueryTranslator() {
-		parser.setQueryTranslator( null );
-		parser.validateProperties();
+		assertThrows( IllegalArgumentException.class, () -> {
+			parser.setMetadataProvider( null );
+			parser.validateProperties();
+		} );
 	}
 
-	@Test(expected = EntityQueryParsingException.IllegalField.class)
+	@Test
 	public void invalidQuery() {
-		parser.parse( "id = 123 or name contains 'boe' or name = 'bla' or name != 'meh'" );
+		assertThrows( EntityQueryParsingException.IllegalField.class, () -> {
+			parser.parse( "id = 123 or name contains 'boe' or name = 'bla' or name != 'meh'" );
+		} );
 	}
 
 	@Test

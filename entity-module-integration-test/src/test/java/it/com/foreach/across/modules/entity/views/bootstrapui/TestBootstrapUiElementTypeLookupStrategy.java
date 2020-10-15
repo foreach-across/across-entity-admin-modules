@@ -28,11 +28,13 @@ import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.CompanyStatus;
 import lombok.Getter;
 import lombok.Setter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -44,14 +46,15 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestBootstrapUiElementTypeLookupStrategy
 {
 	@Mock
@@ -62,7 +65,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	private EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 	private EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
 
-	@Before
+	@BeforeEach
 	public void resetMocks() {
 		strategy = new BootstrapUiElementTypeLookupStrategy( entityRegistry, DefaultEntityPropertyRegistryProvider.INSTANCE );
 		reset( entityConfiguration, descriptor );
@@ -293,7 +296,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	@SuppressWarnings("unchecked")
 	public void collectionEntityTypeShouldReturnOptionsOrSelectTypeForFilterControl() {
-		when( entityRegistry.contains( Client.class ) ).thenReturn( true );
+		when( entityRegistry.contains( List.class ) ).thenReturn( true );
 		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
 		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Client.class ) );
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );

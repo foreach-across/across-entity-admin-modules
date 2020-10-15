@@ -17,12 +17,14 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Arrays;
@@ -33,7 +35,8 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 public class TestEntitiesConfigurationBuilder
 {
@@ -45,7 +48,7 @@ public class TestEntitiesConfigurationBuilder
 	@Mock
 	private AutowireCapableBeanFactory beanFactory;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		builder = new EntitiesConfigurationBuilder( beanFactory );
 	}

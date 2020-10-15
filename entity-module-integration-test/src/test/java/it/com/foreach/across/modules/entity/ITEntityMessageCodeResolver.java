@@ -25,24 +25,24 @@ import com.foreach.across.testmodules.solr.business.Product;
 import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.Company;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
@@ -57,7 +57,7 @@ public class ITEntityMessageCodeResolver
 	private EntityConfiguration<Client> entityConfiguration;
 	private EntityMessageCodeResolver messages;
 
-	@Before
+	@BeforeEach
 	public void fetchResolver() {
 		entityConfiguration = entityRegistry.getEntityConfiguration( Client.class );
 		assertNotNull( entityConfiguration );

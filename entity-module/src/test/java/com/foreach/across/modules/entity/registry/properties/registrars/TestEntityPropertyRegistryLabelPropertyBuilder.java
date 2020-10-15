@@ -19,8 +19,8 @@ import com.foreach.across.modules.entity.registry.properties.DefaultEntityProper
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.convert.TypeDescriptor;
@@ -29,7 +29,7 @@ import org.springframework.data.domain.Sort;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -69,7 +69,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 	private DefaultEntityPropertyRegistryProvider.PropertiesRegistrar builder = new LabelPropertiesRegistrar();
 	private MutableEntityPropertyRegistry propertyRegistry;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		propertyRegistry = mock( MutableEntityPropertyRegistry.class );
 	}

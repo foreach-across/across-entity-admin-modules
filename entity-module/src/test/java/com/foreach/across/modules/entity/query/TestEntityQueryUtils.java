@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.query;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.EQ;
 import static com.foreach.across.modules.entity.query.EntityQueryOps.LIKE;
 import static com.foreach.across.modules.entity.query.EntityQueryUtils.createAssociationPredicate;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,14 +82,18 @@ public class TestEntityQueryUtils
 		);
 	}
 
-	@Test(expected = EntityQueryParsingException.class)
+	@Test
 	public void parsingExceptionIfInvalidStringValue() {
-		EntityQueryUtils.or( query, "name ilike 'john' or number <= " );
+		org.junit.jupiter.api.Assertions.assertThrows( EntityQueryParsingException.class, () -> {
+			EntityQueryUtils.or( query, "name ilike 'john' or number <= " );
+		} );
 	}
 
-	@Test(expected = EntityQueryParsingException.class)
+	@Test
 	public void parsingExceptionIfInvalidObject() {
-		EntityQueryUtils.or( query, 123 );
+		org.junit.jupiter.api.Assertions.assertThrows( EntityQueryParsingException.class, () -> {
+			EntityQueryUtils.or( query, 123 );
+		} );
 	}
 
 	@Test

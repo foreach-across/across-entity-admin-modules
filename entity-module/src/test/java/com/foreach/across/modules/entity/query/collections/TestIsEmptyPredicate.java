@@ -18,11 +18,13 @@ package com.foreach.across.modules.entity.query.collections;
 
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.awt.*;
@@ -41,7 +43,8 @@ import static org.mockito.Mockito.when;
  * @author Steven Gentens
  * @since 3.1.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 public class TestIsEmptyPredicate
 {
@@ -53,7 +56,7 @@ public class TestIsEmptyPredicate
 	@Mock
 	private CollectionEntityQueryItem item;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		when( item.getPropertyValue( "emptyCollection" ) ).thenReturn( Collections.emptySet() );
 		when( item.getPropertyValue( "emptyMap" ) ).thenReturn( Collections.emptyMap() );

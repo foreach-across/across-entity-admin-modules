@@ -23,8 +23,8 @@ import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
@@ -47,7 +47,7 @@ public class TestPropertiesBinderDirectUse
 
 	private EntityPropertyRegistry userWithPropertiesRegistry;
 
-	@Before
+	@BeforeEach
 	public void createRegistries() {
 		MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistry.forClass( User.class );
 		propertyRegistry.register(

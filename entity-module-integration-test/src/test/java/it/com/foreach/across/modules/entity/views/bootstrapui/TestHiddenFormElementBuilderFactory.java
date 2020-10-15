@@ -18,18 +18,18 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.HiddenFormElementBuilderFactory;
 import com.foreach.across.modules.entity.web.EntityViewModel;
-import org.junit.Test;
+import com.foreach.across.testmodules.springdata.business.Client;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 /**

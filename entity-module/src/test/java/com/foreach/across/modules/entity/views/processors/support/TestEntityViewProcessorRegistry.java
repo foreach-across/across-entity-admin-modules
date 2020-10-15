@@ -19,26 +19,26 @@ package com.foreach.across.modules.entity.views.processors.support;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.Ordered;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityViewProcessorRegistry
 {
 	private EntityViewProcessorRegistry registry;
@@ -55,7 +55,7 @@ public class TestEntityViewProcessorRegistry
 	@Mock
 	private EntityViewProcessor four;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		registry = new EntityViewProcessorRegistry();
 	}
@@ -127,10 +127,12 @@ public class TestEntityViewProcessorRegistry
 		assertTrue( registry.contains( two.getClass().getName() ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void addingProcessorWithTheSameNameThrowsException() {
-		registry.addProcessor( "one", one );
-		registry.addProcessor( "one", two );
+		assertThrows( IllegalArgumentException.class, () -> {
+			registry.addProcessor( "one", one );
+			registry.addProcessor( "one", two );
+		} );
 	}
 
 	@Test
@@ -155,10 +157,12 @@ public class TestEntityViewProcessorRegistry
 		processor.ifPresent( p -> assertSame( one, p ) );
 	}
 
-	@Test(expected = ClassCastException.class)
+	@Test
 	public void getProcessorByNameAndWrongTypeShouldThrowClassCastException() {
-		registry.addProcessor( "one", one );
-		registry.getProcessor( "one", EntityViewProcessorAdapter.class );
+		assertThrows( ClassCastException.class, () -> {
+			registry.addProcessor( "one", one );
+			registry.getProcessor( "one", EntityViewProcessorAdapter.class );
+		} );
 	}
 
 	@Test

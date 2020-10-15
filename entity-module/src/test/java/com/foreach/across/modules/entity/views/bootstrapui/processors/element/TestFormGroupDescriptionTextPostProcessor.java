@@ -23,12 +23,14 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 
@@ -41,7 +43,8 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TestFormGroupDescriptionTextPostProcessor
 {
 	private static final String CSS_FORM_TEXT_DESCRIPTION = "form-text-description";
@@ -57,7 +60,7 @@ public class TestFormGroupDescriptionTextPostProcessor
 
 	private FormGroupDescriptionTextPostProcessor<ViewElement> postProcessor = new FormGroupDescriptionTextPostProcessor<>();
 
-	@Before
+	@BeforeEach
 	public void before() {
 		when( descriptor.getName() ).thenReturn( "myprop" );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );

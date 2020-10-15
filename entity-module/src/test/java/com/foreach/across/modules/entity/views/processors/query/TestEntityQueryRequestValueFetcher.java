@@ -19,18 +19,18 @@ package com.foreach.across.modules.entity.views.processors.query;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
  * @author Steven Gentens
  * @since 2.2.0
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestEntityQueryRequestValueFetcher
 {
 	private EntityQueryRequest entityQueryRequest = new EntityQueryRequest();
@@ -50,7 +50,7 @@ public class TestEntityQueryRequestValueFetcher
 	@Mock
 	private EQTypeConverter typeConverter;
 
-	@Before
+	@BeforeEach
 	public void initMocks() {
 		when( propertyDescriptor.getName() ).thenReturn( "myProperty" );
 	}

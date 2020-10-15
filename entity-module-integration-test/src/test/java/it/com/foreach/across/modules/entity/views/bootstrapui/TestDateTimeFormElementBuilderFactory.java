@@ -36,7 +36,7 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -59,7 +59,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
