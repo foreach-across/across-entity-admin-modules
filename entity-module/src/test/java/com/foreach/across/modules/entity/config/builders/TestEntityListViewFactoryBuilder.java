@@ -118,15 +118,15 @@ public class TestEntityListViewFactoryBuilder
 		processor.ifPresent( p -> assertSame( pageableProcessor, p ) );
 
 		PageableExtensionViewProcessor expected = new PageableExtensionViewProcessor();
-		expected.setDefaultPageable( new PageRequest( 0, 200 ) );
+		expected.setDefaultPageable( PageRequest.of( 0, 200 ) );
 		assertEquals( expected, pageableProcessor );
 
 		builder.defaultSort( "name" ).build();
-		expected.setDefaultPageable( new PageRequest( 0, 200, new Sort( "name" ) ) );
+		expected.setDefaultPageable( PageRequest.of( 0, 200, Sort.by( "name" ) ) );
 		assertEquals( expected, pageableProcessor );
 
 		builder.pageSize( 10 ).build();
-		expected.setDefaultPageable( new PageRequest( 0, 10, new Sort( "name" ) ) );
+		expected.setDefaultPageable( PageRequest.of( 0, 10, Sort.by( "name" ) ) );
 		assertEquals( expected, pageableProcessor );
 	}
 

@@ -77,7 +77,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 							     .propertyType( String.class )
 							     .writable( false ).readable( true ).hidden( true ).order( 1005 )
 							     .valueFetcher( createdValueBuilder() )
-							     .attribute( Sort.Order.class, new Sort.Order( "createdDate" ) )
+							     .attribute( Sort.Order.class, Sort.Order.by( "createdDate" ) )
 							     .viewElementBuilder( ViewElementMode.VALUE, createdValueBuilder() )
 							     .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() );
 
@@ -86,7 +86,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 							     .propertyType( String.class )
 							     .writable( false ).readable( true ).hidden( true ).order( 1006 )
 							     .valueFetcher( lastModifiedValueBuilder() )
-							     .attribute( Sort.Order.class, new Sort.Order( "lastModifiedDate" ) )
+							     .attribute( Sort.Order.class, Sort.Order.by( "lastModifiedDate" ) )
 							     .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )
 							     .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
 						}
@@ -101,7 +101,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 //			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityView.LIST_VIEW_NAME );
 //
 //			if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {
-//				listViewFactory.setDefaultSort( new Sort( Sort.Direction.DESC, "lastModifiedDate" ) );
+//				listViewFactory.setDefaultSort( Sort.by( Sort.Direction.DESC, "lastModifiedDate" ) );
 //			}
 //		} );
 	}

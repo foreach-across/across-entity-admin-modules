@@ -136,7 +136,7 @@ public class TestAbstractEntityFetchingViewProcessor
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
-		PageRequest pageRequest = new PageRequest( 0, 1, Sort.Direction.DESC, "id" );
+		PageRequest pageRequest = PageRequest.of( 0, 1, Sort.Direction.DESC, "id" );
 		when( command.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class ) ).thenReturn( pageRequest );
 		when( processor.fetchItems( viewRequest, entityView, pageRequest.getSort() ) ).thenReturn( entries );
 		processor.setShowOnlyItemsWithAction( AllowableAction.READ );

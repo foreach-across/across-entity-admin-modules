@@ -54,6 +54,6 @@ public final class SortDeserializer extends JsonDeserializer<Sort>
 			orderList.add( order );
 		}
 
-		return new Sort( orderList );
+		return Sort.by( orderList );
 	}
 }

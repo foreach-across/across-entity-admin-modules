@@ -324,7 +324,7 @@ public class TestEntityQueryTokenConverter
 	@Test
 	public void orderingOnly() {
 		assertEquals(
-				EntityQuery.all( new Sort( Sort.Direction.ASC, "name", "city" ) ),
+				EntityQuery.all( Sort.by( Sort.Direction.ASC, "name", "city" ) ),
 				convert( "order", "by", "name", "asc", ",", "city", "asc" )
 		);
 	}
@@ -332,7 +332,7 @@ public class TestEntityQueryTokenConverter
 	@Test
 	public void simpleQueryWithOrdering() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.EQ, new EQString( "123 456" ) ) );
-		query.setSort( new Sort( new Sort.Order( Sort.Direction.DESC, "name" ), new Sort.Order( Sort.Direction.ASC, "city" ) ) );
+		query.setSort( Sort.by( new Sort.Order( Sort.Direction.DESC, "name" ), new Sort.Order( Sort.Direction.ASC, "city" ) ) );
 
 		assertEquals(
 				query,

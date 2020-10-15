@@ -28,7 +28,6 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

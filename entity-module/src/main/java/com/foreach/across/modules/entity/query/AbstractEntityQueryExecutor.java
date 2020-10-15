@@ -56,7 +56,7 @@ public abstract class AbstractEntityQueryExecutor<T> implements EntityQueryExecu
 
 	private Pageable combinePageable( Pageable pageable, Sort sort ) {
 		Sort combinedSort = EntityUtils.combineSortSpecifiers( pageable.getSort(), sort );
-		return new PageRequest( pageable.getPageNumber(), pageable.getPageSize(), combinedSort );
+		return PageRequest.of( pageable.getPageNumber(), pageable.getPageSize(), combinedSort );
 	}
 
 	/**

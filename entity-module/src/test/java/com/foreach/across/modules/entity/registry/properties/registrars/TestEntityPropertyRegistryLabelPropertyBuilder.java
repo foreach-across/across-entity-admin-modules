@@ -43,7 +43,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 		MutableEntityPropertyDescriptor label = (MutableEntityPropertyDescriptor) invocation.getArguments()[0];
 		assertNotNull( label );
 		assertEquals( "Label", label.getDisplayName() );
-		assertEquals( new Sort.Order( "test" ), label.getAttribute( Sort.Order.class ) );
+		assertEquals( Sort.Order.by( "test" ), label.getAttribute( Sort.Order.class ) );
 		assertEquals( Integer.class, label.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Integer.class ), label.getPropertyTypeDescriptor() );
 		assertTrue( label.isReadable() );
@@ -59,7 +59,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 
 		Mockito.<Class<?>>when( EXISTING.getPropertyType() ).thenReturn( Integer.class );
 
-		Map<String, Object> attributes = Collections.singletonMap( Sort.Order.class.getName(), new Sort.Order(
+		Map<String, Object> attributes = Collections.singletonMap( Sort.Order.class.getName(), Sort.Order.by(
 				"test" ) );
 		when( EXISTING.attributeMap() ).thenReturn( attributes );
 		when( EXISTING.getValueFetcher() ).thenReturn( valueFetcher );

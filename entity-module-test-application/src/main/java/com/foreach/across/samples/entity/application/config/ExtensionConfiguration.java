@@ -122,7 +122,8 @@ public class ExtensionConfiguration implements EntityConfigurer
 			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
 			container.find( "btn-cancel", ButtonViewElement.class )
-			         .ifPresent( button -> button.setUrl( entityViewContext.getLinkBuilder().update( entityViewContext.getEntity() ) ) );
+			         .ifPresent( button -> button.setUrl( entityViewContext.getLinkBuilder().forInstance( entityViewContext.getEntity() ).updateView()
+			                                                               .toUriString() ) );
 		}
 	}
 

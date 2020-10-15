@@ -73,7 +73,7 @@ public class TestEntityQuery
 
 	@Test
 	public void allToString() {
-		Sort sort = new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) );
+		Sort sort = Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) );
 
 		assertEquals( "", EntityQuery.all().toString() );
 		assertEquals( "order by name ASC, city DESC", EntityQuery.all( sort ).toString() );
@@ -81,7 +81,7 @@ public class TestEntityQuery
 
 	@Test
 	public void queryWithOrderingToString() {
-		Sort sort = new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) );
+		Sort sort = Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) );
 
 		EntityQuery query = new EntityQuery( EntityQueryOps.AND );
 		query.setSort( sort );
@@ -95,7 +95,7 @@ public class TestEntityQuery
 	public void parseRawQuery() {
 		String eql = "(name = 'someName' and city != 217) order by name ASC, city DESC";
 
-		Sort sort = new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) );
+		Sort sort = Sort.by( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) );
 
 		EntityQuery query = new EntityQuery( EntityQueryOps.AND );
 		query.setSort( sort );
@@ -119,7 +119,7 @@ public class TestEntityQuery
 
 		assertEquals( query, other );
 
-		other.setSort( new Sort( Sort.Direction.ASC, "name" ) );
+		other.setSort( Sort.by( Sort.Direction.ASC, "name" ) );
 		assertNotEquals( query, other );
 	}
 
@@ -139,14 +139,14 @@ public class TestEntityQuery
 
 	@Test
 	public void mergeWithAllDoesNothing() {
-		EntityQuery merged = EntityQuery.and( EntityQuery.parse( "country = BE" ), EntityQuery.all( new Sort( Sort.Direction.DESC, "name" ) ) );
+		EntityQuery merged = EntityQuery.and( EntityQuery.parse( "country = BE" ), EntityQuery.all( Sort.by( Sort.Direction.DESC, "name" ) ) );
 		assertEquals( EntityQuery.parse( "country = BE order by name DESC" ), merged );
 	}
 
 	@Test
 	public void toAndFromJson() throws Exception {
-		Sort sort = new Sort( new Sort.Order( Sort.Direction.ASC, "name", Sort.NullHandling.NULLS_LAST ),
-		                      new Sort.Order( Sort.Direction.DESC, "city" ).ignoreCase() );
+		Sort sort = Sort.by( new Sort.Order( Sort.Direction.ASC, "name", Sort.NullHandling.NULLS_LAST ),
+		                     new Sort.Order( Sort.Direction.DESC, "city" ).ignoreCase() );
 
 		EntityQuery query = new EntityQuery( EntityQueryOps.AND );
 		query.add( new EntityQueryCondition( "name", EntityQueryOps.EQ, "someName" ) );

@@ -190,7 +190,7 @@ public class TestEntityUtils
 
 	@Test
 	public void unmodifiedSortIsReturned() {
-		Sort sort = new Sort( Arrays.asList(
+		Sort sort = Sort.by( Arrays.asList(
 				new Sort.Order( Sort.Direction.ASC, "nullsFirst" ),
 				new Sort.Order( Sort.Direction.DESC, "nullsLast" ),
 				new Sort.Order( Sort.Direction.ASC, "nullHandlingFixed" ),
@@ -204,7 +204,7 @@ public class TestEntityUtils
 
 	@Test
 	public void translateSort() {
-		Sort sort = new Sort( Arrays.asList(
+		Sort sort = Sort.by( Arrays.asList(
 				new Sort.Order( Sort.Direction.ASC, "nullsFirst" ),
 				new Sort.Order( Sort.Direction.DESC, "nullsLast" ),
 				new Sort.Order( Sort.Direction.ASC, "nullHandlingFixed" ),
@@ -213,15 +213,15 @@ public class TestEntityUtils
 		) );
 
 		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
-		register( propertyRegistry, "nullsFirst", new Sort.Order( "prop-nullsFirst" ) );
-		register( propertyRegistry, "nullsLast", new Sort.Order( "prop-nullsLast" ) );
-		register( propertyRegistry, "nullHandlingFixed", new Sort.Order( "prop-nullHandlingFixed" ).nullsLast() );
-		register( propertyRegistry, "ignoreCase", new Sort.Order( "prop-ignoreCase" ).ignoreCase() );
+		register( propertyRegistry, "nullsFirst", Sort.Order.by( "prop-nullsFirst" ) );
+		register( propertyRegistry, "nullsLast", Sort.Order.by( "prop-nullsLast" ) );
+		register( propertyRegistry, "nullHandlingFixed", Sort.Order.by( "prop-nullHandlingFixed" ).nullsLast() );
+		register( propertyRegistry, "ignoreCase", Sort.Order.by( "prop-ignoreCase" ).ignoreCase() );
 
 		Sort translated = EntityUtils.translateSort( sort, propertyRegistry );
 
 		assertEquals(
-				new Sort( Arrays.asList(
+				Sort.by( Arrays.asList(
 						new Sort.Order( Sort.Direction.ASC, "prop-nullsFirst", Sort.NullHandling.NULLS_FIRST ),
 						new Sort.Order( Sort.Direction.DESC, "prop-nullsLast", Sort.NullHandling.NULLS_LAST ),
 						new Sort.Order( Sort.Direction.ASC, "prop-nullHandlingFixed", Sort.NullHandling.NULLS_LAST ),
@@ -241,14 +241,14 @@ public class TestEntityUtils
 
 	@Test
 	public void combineSort() {
-		Sort one = new Sort( new Sort.Order( Sort.Direction.ASC, "two" ), new Sort.Order( Sort.Direction.DESC, "three" ) );
-		Sort two = new Sort( new Sort.Order( Sort.Direction.ASC, "one" ), new Sort.Order( Sort.Direction.DESC, "two" ) );
-		Sort three = new Sort( Sort.Direction.ASC, "two", "three", "one", "four" );
+		Sort one = Sort.by( new Sort.Order( Sort.Direction.ASC, "two" ), new Sort.Order( Sort.Direction.DESC, "three" ) );
+		Sort two = Sort.by( new Sort.Order( Sort.Direction.ASC, "one" ), new Sort.Order( Sort.Direction.DESC, "two" ) );
+		Sort three = Sort.by( Sort.Direction.ASC, "two", "three", "one", "four" );
 
 		Sort merged = EntityUtils.combineSortSpecifiers( one, two, three );
 
 		assertEquals(
-				new Sort(
+				Sort.by(
 						new Sort.Order( Sort.Direction.ASC, "two" ),
 						new Sort.Order( Sort.Direction.DESC, "three" ),
 						new Sort.Order( Sort.Direction.ASC, "one" ),

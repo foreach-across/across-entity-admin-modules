@@ -72,7 +72,7 @@ public class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAda
 	private String extensionName = DEFAULT_EXTENSION_NAME;
 
 	@Getter
-	private Pageable defaultPageable = new PageRequest( 0, 20 );
+	private Pageable defaultPageable = PageRequest.of( 0, 20 );
 
 	/**
 	 * Should the incoming pageable be translated using the current {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}

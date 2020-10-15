@@ -136,7 +136,7 @@ public class TestDefaultEntityFetchingViewProcessor
 	@Test
 	@SuppressWarnings("unchecked")
 	public void pagingAndSortingRepositoryUsesSortIfPageableIsNotPresent() {
-		Sort sort = new Sort( Sort.Direction.ASC, "name" );
+		Sort sort = Sort.by( Sort.Direction.ASC, "name" );
 		PagingAndSortingRepository repository = mock( PagingAndSortingRepository.class );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( repository );
 		when( repository.findAll( sort ) ).thenReturn( entries );
@@ -150,7 +150,7 @@ public class TestDefaultEntityFetchingViewProcessor
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityQueryFacadeUsesSortIfPageableIsNotPresent() {
-		Sort sort = new Sort( Sort.Direction.ASC, "name" );
+		Sort sort = Sort.by( Sort.Direction.ASC, "name" );
 		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
 		EntityQueryFacade queryExecutor = mock( EntityQueryFacade.class );
 		when( entityQueryFacadeResolver.forEntityViewRequest( viewRequest ) ).thenReturn( queryExecutor );

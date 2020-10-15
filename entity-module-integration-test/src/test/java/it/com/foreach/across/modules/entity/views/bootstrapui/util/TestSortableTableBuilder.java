@@ -132,7 +132,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 		when( descriptor.getName() ).thenReturn( "propertyOne" );
 
-		Sort.Order order = new Sort.Order( "sortOnMe" );
+		Sort.Order order = Sort.Order.by( "sortOnMe" );
 		when( descriptor.getAttribute( Sort.Order.class ) ).thenReturn( order );
 
 		when( viewElementBuilderService.getElementBuilder( descriptor,
@@ -208,13 +208,13 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 	@Test
 	public void secondPageResults() {
-		Sort sort = new Sort( Arrays.asList(
+		Sort sort = Sort.by( Arrays.asList(
 				new Sort.Order( Sort.Direction.ASC, "one" ),
 				new Sort.Order( Sort.Direction.DESC, "two" ),
 				new Sort.Order( Sort.Direction.DESC, "three" )
 		) );
 
-		Pageable pageable = new PageRequest( 1, 20, sort );
+		Pageable pageable = PageRequest.of( 1, 20, sort );
 		Page page = new PageImpl<>( Arrays.asList( "één", "twee" ), pageable, 57 );
 
 		tableBuilder.tableName( "entityList" ).items( page );

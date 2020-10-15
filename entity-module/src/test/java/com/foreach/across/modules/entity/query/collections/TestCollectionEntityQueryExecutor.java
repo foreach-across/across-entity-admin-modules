@@ -96,20 +96,20 @@ public class TestCollectionEntityQueryExecutor
 	public void noResults() {
 		entries.clear();
 
-		Page<Entry> page = executor.findAll( EntityQuery.all(), new PageRequest( 1, 2 ) );
+		Page<Entry> page = executor.findAll( EntityQuery.all(), PageRequest.of( 1, 2 ) );
 		assertThat( page.getTotalPages() ).isEqualTo( 0 );
 		assertThat( page.getTotalElements() ).isEqualTo( 0 );
 	}
 
 	@Test
 	public void pagingOnly() {
-		Page<Entry> page = executor.findAll( EntityQuery.all(), new PageRequest( 0, 2 ) );
+		Page<Entry> page = executor.findAll( EntityQuery.all(), PageRequest.of( 0, 2 ) );
 		assertThat( page ).isNotNull();
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 3 );
 		assertThat( page.getContent() ).containsExactly( john, george );
 
-		page = executor.findAll( EntityQuery.all(), new PageRequest( 1, 2 ) );
+		page = executor.findAll( EntityQuery.all(), PageRequest.of( 1, 2 ) );
 		assertThat( page ).isNotNull();
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 3 );
@@ -139,12 +139,12 @@ public class TestCollectionEntityQueryExecutor
 		EntityQuery query = EntityQuery.or( new EntityQueryCondition( "name", EntityQueryOps.EQ, "Jane" ),
 		                                    new EntityQueryCondition( "name", EntityQueryOps.EQ, "George" ) );
 
-		Page<Entry> page = executor.findAll( query, new PageRequest( 0, 1 ) );
+		Page<Entry> page = executor.findAll( query, PageRequest.of( 0, 1 ) );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 2 );
 		assertThat( page.getContent() ).containsExactly( george );
 
-		page = executor.findAll( query, new PageRequest( 1, 1 ) );
+		page = executor.findAll( query, PageRequest.of( 1, 1 ) );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 2 );
 		assertThat( page.getContent() ).containsExactly( jane );
@@ -152,30 +152,30 @@ public class TestCollectionEntityQueryExecutor
 
 	@Test
 	public void sortingOnly() {
-		assertThat( executor.findAll( EntityQuery.all(), new Sort( Direction.ASC, "name" ) ) )
+		assertThat( executor.findAll( EntityQuery.all(), Sort.by( Direction.ASC, "name" ) ) )
 				.containsExactly( george, jane, john );
-		assertThat( executor.findAll( EntityQuery.all(), new Sort( Direction.DESC, "name" ) ) )
+		assertThat( executor.findAll( EntityQuery.all(), Sort.by( Direction.DESC, "name" ) ) )
 				.containsExactly( john, jane, george );
 
-		assertThat( executor.findAll( EntityQuery.all(), new Sort( Direction.ASC, "group", "name" ) ) )
+		assertThat( executor.findAll( EntityQuery.all(), Sort.by( Direction.ASC, "group", "name" ) ) )
 				.containsExactly( george, john, jane );
-		assertThat( executor.findAll( EntityQuery.all(), new Sort( Direction.DESC, "group", "name" ) ) )
+		assertThat( executor.findAll( EntityQuery.all(), Sort.by( Direction.DESC, "group", "name" ) ) )
 				.containsExactly( jane, john, george );
 
-		assertThat( executor.findAll( EntityQuery.all(), new Sort( new Order( Direction.ASC, "group" ), new Order( Direction.DESC, "name" ) ) ) )
+		assertThat( executor.findAll( EntityQuery.all(), Sort.by( new Order( Direction.ASC, "group" ), new Order( Direction.DESC, "name" ) ) ) )
 				.containsExactly( john, george, jane );
-		assertThat( executor.findAll( EntityQuery.all(), new Sort( new Order( Direction.DESC, "group" ), new Order( Direction.ASC, "name" ) ) ) )
+		assertThat( executor.findAll( EntityQuery.all(), Sort.by( new Order( Direction.DESC, "group" ), new Order( Direction.ASC, "name" ) ) ) )
 				.containsExactly( jane, george, john );
 	}
 
 	@Test
 	public void sortingAndPaging() {
-		Page<Entry> page = executor.findAll( EntityQuery.all(), new PageRequest( 0, 2, Direction.ASC, "name" ) );
+		Page<Entry> page = executor.findAll( EntityQuery.all(), PageRequest.of( 0, 2, Direction.ASC, "name" ) );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 3 );
 		assertThat( page.getContent() ).containsExactly( george, jane );
 
-		page = executor.findAll( EntityQuery.all(), new PageRequest( 1, 2, Direction.ASC, "name" ) );
+		page = executor.findAll( EntityQuery.all(), PageRequest.of( 1, 2, Direction.ASC, "name" ) );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 3 );
 		assertThat( page.getContent() ).containsExactly( john );
@@ -186,12 +186,12 @@ public class TestCollectionEntityQueryExecutor
 		EntityQuery query = EntityQuery.or( new EntityQueryCondition( "name", EntityQueryOps.EQ, "Jane" ),
 		                                    new EntityQueryCondition( "name", EntityQueryOps.EQ, "George" ) );
 
-		Page<Entry> page = executor.findAll( query, new PageRequest( 0, 1, Direction.DESC, "name" ) );
+		Page<Entry> page = executor.findAll( query, PageRequest.of( 0, 1, Direction.DESC, "name" ) );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 2 );
 		assertThat( page.getContent() ).containsExactly( jane );
 
-		page = executor.findAll( query, new PageRequest( 1, 1, Direction.DESC, "name" ) );
+		page = executor.findAll( query, PageRequest.of( 1, 1, Direction.DESC, "name" ) );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 2 );
 		assertThat( page.getContent() ).containsExactly( george );

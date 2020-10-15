@@ -265,7 +265,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * @see #defaultSort(Sort)
 	 */
 	public EntityListViewFactoryBuilder defaultSort( String property ) {
-		return defaultSort( new Sort( Sort.Direction.ASC, property ) );
+		return defaultSort( Sort.by( Sort.Direction.ASC, property ) );
 	}
 
 	/**
@@ -401,7 +401,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 
 			Pageable currentPageable = pageableExtensionViewProcessor.getDefaultPageable();
 			pageableExtensionViewProcessor.setDefaultPageable(
-					new PageRequest(
+					PageRequest.of(
 							currentPageable.getPageNumber(),
 							pageSize != null ? pageSize : currentPageable.getPageSize(),
 							defaultSort != null ? defaultSort : currentPageable.getSort()

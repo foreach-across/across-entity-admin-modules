@@ -22,7 +22,6 @@ import com.foreach.across.core.installers.InstallerPhase;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +51,7 @@ public class TestGroupInstaller
 		      } );
 
 		// verify installed groups
-		Page<Group> filteredGroups = groupRepository.findByNameContaining( "people", new PageRequest( 0, 30 ) );
+		Page<Group> filteredGroups = groupRepository.findByNameContaining( "people", PageRequest.of( 0, 30 ) );
 		if ( filteredGroups.getTotalElements() != 45 ) {
 			throw new RuntimeException( "Incorrect results returned for groups containing 'people'" );
 		}

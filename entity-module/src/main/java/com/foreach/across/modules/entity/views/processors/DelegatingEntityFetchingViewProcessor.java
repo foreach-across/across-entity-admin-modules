@@ -77,7 +77,7 @@ public class DelegatingEntityFetchingViewProcessor extends AbstractEntityFetchin
 	 */
 	@Override
 	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Sort sort ) {
-		return fetchItems( entityViewRequest, entityView, new PageRequest( 0, Integer.MAX_VALUE, sort ) );
+		return fetchItems( entityViewRequest, entityView, PageRequest.of( 0, Integer.MAX_VALUE, sort ) );
 	}
 
 	/**

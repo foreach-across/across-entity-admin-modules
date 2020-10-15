@@ -244,7 +244,7 @@ public class AutoSuggestDataAttributeRegistrar
 			EntityQuery executableQuery = entityQueryFacade.convertToExecutableQuery( entityQuery );
 
 			if ( maximumResults != null ) {
-				return entityQueryFacade.findAll( executableQuery, new PageRequest( 0, configuration.maximumResults ) );
+				return entityQueryFacade.findAll( executableQuery, PageRequest.of( 0, configuration.maximumResults ) );
 			}
 
 			return entityQueryFacade.findAll( executableQuery );
