@@ -9,7 +9,6 @@ import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
@@ -17,7 +16,6 @@ import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewE
  * A helper class to convert a property in a {@link SortableTableBuilder} to an entity link.
  * Used by the {@link com.foreach.across.modules.experimental.webutility.viewprocessor.TablePropertyLinkViewProcessor}
  */
-@Component
 @RequiredArgsConstructor
 public class TableLinker {
 
