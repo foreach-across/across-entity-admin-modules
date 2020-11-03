@@ -13,6 +13,10 @@ import org.springframework.stereotype.Component;
 
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
+/**
+ * A helper class to convert a property in a {@link SortableTableBuilder} to an entity link.
+ * Used by the {@link com.foreach.across.modules.experimental.webutility.viewprocessor.TablePropertyLinkViewProcessor}
+ */
 @Component
 @RequiredArgsConstructor
 public class TableLinker {

@@ -15,7 +15,15 @@ import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 
 /**
- * Use the property as a link to the update / detail view
+ * Use the property as a link to the update / detail view.
+ * <p>
+ * Example usage that turns the property `siteName` in a link to the update view:
+ *
+ * <pre>
+ *      .viewProcessor( vp -> vp.createBean( TablePropertyLinkViewProcessor.class )
+ *           .configure( processor -> processor.property( "siteName" ).showEditIcon( false ) ) )
+ * </pre>
+ * </p>
  */
 public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
 
@@ -44,13 +52,13 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
         if (sortableTableBuilder != null) {
             tableLinker.createLinkOnProperty(sortableTableBuilder, property, entityViewRequest.getEntityViewContext().getAllowableActions().contains(AllowableAction.UPDATE) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL);
 
-            if(!showEditIcon) {
-                sortableTableBuilder.valueRowProcessor( ( ctx, row ) ->
-                        ContainerViewElementUtils.find( row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class ).ifPresent(actions ->
+            if (!showEditIcon) {
+                sortableTableBuilder.valueRowProcessor((ctx, row) ->
+                        ContainerViewElementUtils.find(row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class).ifPresent(actions ->
                                 actions.getChildren().stream()
-                                        .filter( c -> "edit".equals( c.get( HtmlViewElement.Functions.attribute( "data-em-button-role" ) ) ) )
-                                        .findFirst().ifPresent( actions::removeChild )
-                        ) );
+                                        .filter(c -> "edit".equals(c.get(HtmlViewElement.Functions.attribute("data-em-button-role"))))
+                                        .findFirst().ifPresent(actions::removeChild)
+                        ));
             }
         }
     }

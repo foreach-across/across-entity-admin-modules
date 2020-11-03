@@ -23,6 +23,10 @@ import java.util.stream.IntStream;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
+/**
+ * Used to render properties in separate sections and columns.
+ * Used in conjunction with the {@link SectionedFormLayoutHelper}
+ */
 @RequiredArgsConstructor
 public class SectionedFormLayoutViewProcessor extends EntityViewProcessorAdapter {
 
