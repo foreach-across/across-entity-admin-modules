@@ -96,4 +96,4 @@ services:
       - ./experimental-module/src/main/frontend:/build/src/main/frontend
       # scope node_modules to the container
       - /build/src/main/frontend/node_modules
-      - ./experimental-module/src/main/resources/views/static/experimental:/build/src/main/resources/views/static/experimental:consistent
+      - ./experimental-module/src/main/resources/views/static/experimental:/build/src/main/resources/views/static/experimental
