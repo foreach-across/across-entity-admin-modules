@@ -102,7 +102,7 @@ class EditableValue {
   _refreshControlScript() {
     if (this.isValuePossibleChanged()) {
       this.refreshBusy = true;
-      var editableControl = this;
+      const editableControl = this;
 
       ax.log.debug("Refreshing editable value control for", this.propertyId);
 
@@ -177,18 +177,18 @@ class EditableValue {
     // this._cancelControl( e );
     // } );
 
-    /**
-     * Hide the blade when the user clicks outside of it.
-     * Uses mousedown as blade might be opened with 'up-instant', and else the
-     * 'click' would follow the mouse down and close instantly.
-     */
-    $(document).on("mousedown", (event) => {
-      var target = $(event.target);
-
-      if (this.controlHolder && !target.closest(".editable-value-control").length) {
-        this._cancelControl(event);
-      }
-    });
+    // /**
+    //  * Hide the blade when the user clicks outside of it.
+    //  * Uses mousedown as blade might be opened with 'up-instant', and else the
+    //  * 'click' would follow the mouse down and close instantly.
+    //  */
+    // $(document).on("mousedown", (event) => {
+    //   var target = $(event.target);
+    //
+    //   if (this.controlHolder && !target.closest(".editable-value-control").length) {
+    //     this._cancelControl(event);
+    //   }
+    // });
   }
 
   // hide the control - switch back to label
@@ -264,10 +264,12 @@ class EditableValue {
           $(".invalid-feedback", controlHolder).remove();
           $(".form-control", controlHolder).addClass("is-invalid");
 
+          // todo: move into template
           var messages = $.map(jsonContent.errors[propertyNameOfControl], function (error, ix) {
             return '<span class="validation-message">' + error.message + "</span>";
           });
 
+          // todo: move into template
           controlHolder.append('<div class="invalid-feedback">' + messages.join() + "</div>");
         }
       })
@@ -282,6 +284,7 @@ class EditableValue {
     ax.log.groupEnd();
   }
 
+  //todo: diff between _updateValue and _submitValue ? --> difference in propertyData updates?
   // submit the control value
   _submitValue(e: any, successFunction: Function, failFunction: Function) {
     e.preventDefault();
@@ -357,6 +360,7 @@ class EditableValue {
       var propertyId = $(this).data("em-property-id");
       if (propertyId.startsWith(entityPrefix)) {
         var viewElementMode = resolveViewElementMode($(this));
+        // todo this will probably break in the case of embedded entitiy/colleciton
         properties[
           "extensions[editableValues].properties[" + propertyNameOf(propertyId) + "]=" + viewElementMode
         ] = true;
@@ -391,72 +395,60 @@ EntityModule.registerInitializer(function (node) {
       // @ts-ignore
       $(this).focusTextToEnd();
     });
-    $(".bootstrap-tagsinput span[data-role=remove]", $(node))
-      .off()
-      .on("click", function (e) {
-        let removeOnSuccess = false;
+    // $(".bootstrap-tagsinput span[data-role=remove]", $(node))
+    //   .off()
+    //   .on("click", function (e) {
+    //     let removeOnSuccess = false;
+    //
+    //     if ($(this).parent().parent().children("span").length === 1) {
+    //       $(this).parent().find("input").val("");
+    //       removeOnSuccess = true;
+    //     } else {
+    //       $(this).parent().remove();
+    //     }
+    //
+    // // todo: behaviour embedded collection / embedded entity
+    // $("input[type=text].js-multi-value-input", $(node))
+    //   .off()
+    //   .on("keypress", (e) => {
+    //     if (e.key === "Enter") {
+    //       const target: HTMLInputElement = e.target as HTMLInputElement;
+    //       if ($(target).attr("new-value") === "true" && !!target.value) {
+    //         const id = $(target).attr("id");
+    //         const newTag = `<span data-editable-value-control="true" hidden="true" class="tag label label-info"><input name=${id} type="hidden" value=${target.value}> ${target.value} <span data-role="remove"></span></span>`;
+    //         $(newTag).insertBefore($(target));
+    //         let editableValue = $(node).data("editableValue");
+    //         // todo: ?remove clears the JQuery context before it removes the node from the DOM,
+    //         editableValue._submitValue(
+    //           e,
+    //           () => {
+    //             let eventTarget: HTMLInputElement = e.target as HTMLInputElement;
+    //             $(`input[value="${eventTarget.value}"]`).parent().removeAttr("hidden");
+    //             $(eventTarget).val("");
+    //             EntityModule.initializeFormElements($(node));
+    //           },
+    //           () => {
+    //             $(`input[value="${target.value}"]`).parent().remove();
+    //           }
+    //         );
+    //       } else {
+    //         let editableValue = $(node).data("editableValue");
+    //         // todo ?remove clears the JQuery context before it removes the node from the DOM,
+    //         editableValue._submitValue(e);
+    //       }
+    //     }
+    //   });
 
-        if ($(this).parent().parent().children("span").length === 1) {
-          $(this).parent().find("input").val("");
-          removeOnSuccess = true;
-        } else {
-          $(this).parent().remove();
-        }
-
-        let editableValue = $(node).data("editableValue");
-        editableValue._submitValue(
-          e,
-          () => {
-            if (removeOnSuccess) {
-              $(this).parent().remove();
-            }
-          },
-          () => {}
-        );
-      });
-
-    $("input[type=text].js-multi-value-input", $(node))
-      .off()
-      .on("keypress", (e) => {
-        if (e.key === "Enter") {
-          const target: HTMLInputElement = e.target as HTMLInputElement;
-          if ($(target).attr("new-value") === "true" && !!target.value) {
-            const id = $(target).attr("id");
-            const newTag = `<span data-editable-value-control="true" hidden="true" class="tag label label-info"><input name=${id} type="hidden" value=${target.value}> ${target.value} <span data-role="remove"></span></span>`;
-            $(newTag).insertBefore($(target));
-            let editableValue = $(node).data("editableValue");
-            // //LOL, remove clears the JQuery context before it removes the node from the DOM, #eendagnietgeklaagdiseendagnietgeleefd
-            editableValue._submitValue(
-              e,
-              () => {
-                let eventTarget: HTMLInputElement = e.target as HTMLInputElement;
-                $(`input[value="${eventTarget.value}"]`).parent().removeAttr("hidden");
-                $(eventTarget).val("");
-                EntityModule.initializeFormElements($(node));
-              },
-              () => {
-                $(`input[value="${target.value}"]`).parent().remove();
-              }
-            );
-          } else {
-            let editableValue = $(node).data("editableValue");
-            // //LOL, remove clears the JQuery context before it removes the node from the DOM, #eendagnietgeklaagdiseendagnietgeleefd
-            editableValue._submitValue(e);
-          }
-        }
-      });
-
-    // Update editable value on enter
-    $("input[type=text]:not(.js-multi-value-input)", $(node)).on("keypress", (e) => {
+    // todo: this works for default input fields, how do we support customization? (e.g. customizing behaviour for js-multi-value-input
+    $("input[type=text]:not(.js-multi-value-input), input[type=search]", $(node)).on("keypress", (e) => {
       if (e.key === "Enter") {
         let editableValue = $(node).data("editableValue");
-        //LOL, remove clears the JQuery context before it removes the node from the DOM, #eendagnietgeklaagdiseendagnietgeleefd
         $("input[type=text]", $(node)).blur();
         editableValue._updateValue(e);
       }
     });
 
-    // Update editable value on change
+    // Update editable value on change todo: does this work swith multi checkbox?
     $("input[type=checkbox], input[type=radio], select", $(node)).change(function (e) {
       let editableValue = $(node).data("editableValue");
       editableValue._updateValue(e);
