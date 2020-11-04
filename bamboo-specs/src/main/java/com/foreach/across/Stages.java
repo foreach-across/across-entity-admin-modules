@@ -36,6 +36,10 @@ public class Stages
 								       runCommands(
 										       cleanAcrossDepsFromLocalRepository(),
 										       BUILD_FRONTEND,
+										       "ls ./experimental-module/src/main/resources",
+										       "ls ./experimental-module/src/main/resources/views",
+										       "ls ./experimental-module/src/main/resources/views/static",
+										       "ls ./experimental-module/src/main/resources/views/static/experimental",
 										       DOCKER_COMPOSE + " run maven-base mvn -U --batch-mode clean verify -Dmaven.javadoc.skip=true"
 								       ).description( "Run unit tests" )
 						       )
