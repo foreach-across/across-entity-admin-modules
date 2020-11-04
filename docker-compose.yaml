@@ -1,4 +1,4 @@
-version: "3.1"
+version: "2.1"
 services:
   maven-base:
     # 1.) Do not use the alpine image as it fails frontend-maven-plugin:install-node-and-yarn
