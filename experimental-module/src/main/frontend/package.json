@@ -8,8 +8,8 @@
     "yarn": ">=1.0.0"
   },
   "scripts": {
-    "start": "cross-env EXTEND_ESLINT=true PROXY_URL='http://localhost:8099' react-scripts start --output='../resources/views/static/experimental/web/' --noAssetHashing",
-    "build": "cross-env EXTEND_ESLINT=true react-scripts build --output='../resources/views/static/experimental/web/' --noAssetHashing",
+    "start": "cross-env PROXY_URL='http://localhost:8099' FAST_REFRESH='false' react-scripts start",
+    "build": "cross-env react-scripts build",
     "test": "cross-env JEST_REPORT_FILE=./test-output/test-report.json react-scripts test",
     "test:ci": "cross-env CI=true npm run test",
     "lint": "concurrently 'yarn:lint:js' 'yarn:lint:css'",
