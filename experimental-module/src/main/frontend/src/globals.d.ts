@@ -13,6 +13,16 @@ declare interface ActionHandlerFactory {
   handle(action: any, context: any): void;
 }
 
+declare interface EditableValueHandlerFactory {
+  registerHandler(handler: EditableValueUpdateHandler): void;
+
+  getHandledEventTypes(): Set<string>;
+
+  removeHandler(name: string): void;
+
+  handle(control: any, editableValueHolder: EditableValue, event: any): void;
+}
+
 declare global {
   interface Window {
     ExperimentalModule: ExperimentalModuleObject;
@@ -22,6 +32,7 @@ declare global {
 declare interface ExperimentalModuleObject {
   actionFactory: ActionFactory;
   actionHandlerFactory: ActionHandlerFactory;
+  editableValueHandlerFactory: EditableValueHandlerFactory;
 }
 
 declare var ExperimentalModule: ExperimentalModuleObject;

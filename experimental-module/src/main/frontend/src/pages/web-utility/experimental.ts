@@ -10,6 +10,7 @@ import {
   RemoveActionHandlerResolver,
 } from "./actions/handler/simple-handlers";
 import { simpleActionResolver, SimpleActionResolver } from "./actions/action/simple-action";
+import { editableValueHandlerFactory } from "./editable-value/editable-value-handler-factory";
 
 const actionFactory = new ActionFactory(handlerFactory);
 
@@ -17,6 +18,7 @@ window.ExperimentalModule = (function () {
   var experimentalModule = {
     actionFactory: actionFactory,
     actionHandlerFactory: handlerFactory,
+    editableValueHandlerFactory: editableValueHandlerFactory,
   };
 
   experimentalModule.actionFactory.register(RequestActionResolver.TYPE, requestActionResolver);

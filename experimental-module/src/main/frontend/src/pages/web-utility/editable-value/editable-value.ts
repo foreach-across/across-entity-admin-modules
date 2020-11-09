@@ -50,7 +50,7 @@ var EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS =
   '<form class="editable-value-form"><div class="editable-value-control"><span data-editable-value-control="true"></span>' +
   "</div></form>";
 
-class EditableValue {
+export class EditableValue {
   private showActions: string;
   private wrapper: any;
   private settings: any;
@@ -171,7 +171,7 @@ class EditableValue {
     this.controlHolder = controlHolder;
 
     $("[data-action=cancel]", controlHolder).on("click", this._cancelControl.bind(this));
-    $("[data-action=save]", controlHolder).on("click", this._updateValue.bind(this));
+    $("[data-action=save]", controlHolder).on("click", this._updateValueWithSpinner.bind(this));
 
     // $( '[data-editable-value-control=true]', controlHolder ).on( 'focusout', ( e ) => {
     // this._cancelControl( e );
@@ -202,8 +202,7 @@ class EditableValue {
     this.controlHolder = null;
   }
 
-  // submit the control value
-  _updateValue(e: any) {
+  _updateValueWithSpinner(e: any) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -284,9 +283,7 @@ class EditableValue {
     ax.log.groupEnd();
   }
 
-  //todo: diff between _updateValue and _submitValue ? --> difference in propertyData updates?
-  // submit the control value
-  _submitValue(e: any, successFunction: Function, failFunction: Function) {
+  _updateValueWithoutSpinner(e: any, successFunction: Function, failFunction: Function) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -388,6 +385,33 @@ EntityModule.registerInitializer(function (node) {
 });
 
 EntityModule.registerInitializer(function (node) {
+  const $node = $(node);
+  if ($node.length > 0 && $node.data("editable-value-control") === true) {
+    const htmlNode = $node[0];
+    ExperimentalModule.editableValueHandlerFactory.getHandledEventTypes().forEach((eventType) => {
+      htmlNode.addEventListener(
+        eventType,
+        function (event: any) {
+          console.log("received event", event, "capturing phase");
+          if (event || !event.editableValueHolder) {
+            try {
+              event["editableValueHolder"] = $(node).data("editableValue");
+            } catch (error) {
+              ax.log.error("Unable to attach editable-value-controller to event", [event, error]);
+            }
+          }
+        },
+        true
+      );
+
+      htmlNode.addEventListener(eventType, function (event: any) {
+        if (event && event.editableValueHolder) {
+          ExperimentalModule.editableValueHandlerFactory.handle(event.target, event.editableValueHolder, event);
+        }
+      });
+    });
+  }
+
   if (node && $(node).data("editable-value-control") === true) {
     // todo focusTextToEnd messes up the value in case of an embedded element / embedded collection
     // it selects all text controls, which will result in `.val()` returnnig the first value
@@ -395,66 +419,29 @@ EntityModule.registerInitializer(function (node) {
       // @ts-ignore
       $(this).focusTextToEnd();
     });
-    // $(".bootstrap-tagsinput span[data-role=remove]", $(node))
-    //   .off()
-    //   .on("click", function (e) {
-    //     let removeOnSuccess = false;
-    //
-    //     if ($(this).parent().parent().children("span").length === 1) {
-    //       $(this).parent().find("input").val("");
-    //       removeOnSuccess = true;
-    //     } else {
-    //       $(this).parent().remove();
-    //     }
-    //
-    // // todo: behaviour embedded collection / embedded entity
-    // $("input[type=text].js-multi-value-input", $(node))
-    //   .off()
-    //   .on("keypress", (e) => {
-    //     if (e.key === "Enter") {
-    //       const target: HTMLInputElement = e.target as HTMLInputElement;
-    //       if ($(target).attr("new-value") === "true" && !!target.value) {
-    //         const id = $(target).attr("id");
-    //         const newTag = `<span data-editable-value-control="true" hidden="true" class="tag label label-info"><input name=${id} type="hidden" value=${target.value}> ${target.value} <span data-role="remove"></span></span>`;
-    //         $(newTag).insertBefore($(target));
-    //         let editableValue = $(node).data("editableValue");
-    //         // todo: ?remove clears the JQuery context before it removes the node from the DOM,
-    //         editableValue._submitValue(
-    //           e,
-    //           () => {
-    //             let eventTarget: HTMLInputElement = e.target as HTMLInputElement;
-    //             $(`input[value="${eventTarget.value}"]`).parent().removeAttr("hidden");
-    //             $(eventTarget).val("");
-    //             EntityModule.initializeFormElements($(node));
-    //           },
-    //           () => {
-    //             $(`input[value="${target.value}"]`).parent().remove();
-    //           }
-    //         );
-    //       } else {
-    //         let editableValue = $(node).data("editableValue");
-    //         // todo ?remove clears the JQuery context before it removes the node from the DOM,
-    //         editableValue._submitValue(e);
-    //       }
-    //     }
-    //   });
 
     // todo: this works for default input fields, how do we support customization? (e.g. customizing behaviour for js-multi-value-input
     $("input[type=text]:not(.js-multi-value-input), input[type=search]", $(node)).on("keypress", (e) => {
       if (e.key === "Enter") {
         let editableValue = $(node).data("editableValue");
         $("input[type=text]", $(node)).blur();
-        editableValue._updateValue(e);
+        editableValue._updateValueWithSpinner(e);
       }
     });
 
     // Update editable value on change todo: does this work swith multi checkbox?
     $("input[type=checkbox], input[type=radio], select", $(node)).change(function (e) {
       let editableValue = $(node).data("editableValue");
-      editableValue._updateValue(e);
+      editableValue._updateValueWithSpinner(e);
     });
   }
 });
+
+function onChangeValueUpdate(event: any) {
+  const $this = $(this);
+  const editableValueController = $this.closest("[data-editableValue]").data("editableValue");
+  editableValueController._updateValueWithSpinner(event);
+}
 
 (function ($) {
   // @ts-ignore
