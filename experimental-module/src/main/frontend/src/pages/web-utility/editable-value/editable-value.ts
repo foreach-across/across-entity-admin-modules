@@ -410,10 +410,11 @@ EntityModule.registerInitializer(function (node) {
   if (node && $(node).data("editable-value-control") === true) {
     // todo focusTextToEnd messes up the value in case of an embedded element / embedded collection
     // it selects all text controls, which will result in `.val()` returning the first value
-    $("input[type=text]", $(node)).each(function (e) {
+    const $elements = $("input[type=text]:not([disabled]), textarea:not([disabled])", $(node));
+    if ($elements.length === 1) {
       // @ts-ignore
-      $(this).focusTextToEnd();
-    });
+      $elements.focusTextToEnd();
+    }
   }
 });
 
