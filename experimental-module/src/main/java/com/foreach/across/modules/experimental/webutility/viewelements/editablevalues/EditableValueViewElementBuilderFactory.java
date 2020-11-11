@@ -9,9 +9,9 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
-import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
+import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
 import com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -22,8 +22,11 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -126,6 +129,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 										new EditableValueSettings()
 												.propertyId( entityControlFactory.resolveEntityPropertyId( builderContext ).orElseThrow() )
 												.targetUrl( resolveTargetUrl( entityViewContext, entity ) )
+												.multiValueProperty( isMultiValueControl( propertyDescriptor, controlMode ) )
 								);
 							}
 
@@ -134,14 +138,30 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 				);
 	}
 
+	private boolean isMultiValueControl( EntityPropertyDescriptor propertyDescriptor, ViewElementMode controlMode ) {
+		if ( controlMode.isForMultiple() ) {
+			return true;
+		}
+		TypeDescriptor propertyTypeDescriptor = propertyDescriptor.getPropertyTypeDescriptor();
+		if ( propertyTypeDescriptor != null && ( propertyTypeDescriptor.isCollection() || propertyTypeDescriptor.isArray() ) ) {
+			return true;
+		}
+		Class<?> propertyType = propertyDescriptor.getPropertyType();
+		if ( propertyType != null && ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) ) {
+			return true;
+		}
+		return false;
+	}
+
 	private void tryRegisterWebResources( ViewElementBuilderContext builderContext ) {
 		WebResourceRegistry attribute = builderContext.getAttribute( WebResourceRegistry.class );
 		if ( attribute != null ) {
+			attribute.addPackage( WebUtilityModuleWebResources.NAME );
 			attribute.apply(
 					WebResourceRule.add(
 							WebResource.javascript( "@static:/experimental/web/editable-value.js" ) )
 					               .withKey( "experimental-web-utilities-editable-value-js" )
-					               .after( EntityModuleWebResources.NAME )
+					               .after( WebUtilityModuleWebResources.NAME )
 					               .toBucket( JAVASCRIPT_PAGE_END ),
 					WebResourceRule.add(
 							WebResource.css( "@static:/experimental/web/editable-value.css" ) )
@@ -181,6 +201,10 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		@NonNull
 		@JsonProperty
 		private String targetUrl;
+
+		@NonNull
+		@JsonProperty
+		private boolean multiValueProperty;
 
 		@Override
 		public void applyTo( HtmlViewElement target ) {

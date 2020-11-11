@@ -3,6 +3,7 @@ import { ax } from "../utils/utils";
 import "./editable-value.scss";
 import { executeFetchRequest, translateResponse } from "../utils/request-utils";
 import { JsonResponse, TextResponse } from "../utils/response-types";
+import { EditableValueUpdateHandler } from "./editable-value-update-handler";
 
 /**
  * EditableValue is a readonly value which can be converted into an actual
@@ -106,9 +107,13 @@ export class EditableValue {
 
       ax.log.debug("Refreshing editable value control for", this.propertyId);
 
-      executeFetchRequest(editableControl.settings.targetUrl, "get", {
+      let url = editableControl.settings.targetUrl;
+      url =
+        url.indexOf("?") === -1
+          ? `${url}?_partial=::editableValue-${editableControl.propertyNameOfControl}-control`
+          : `${url}&_partial=::editableValue-${editableControl.propertyNameOfControl}-control`;
+      executeFetchRequest(url, "get", {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "&_partial=::editableValue-" + editableControl.propertyNameOfControl + "-control",
       })
         .then(translateResponse)
         .then((resp) => {
@@ -173,22 +178,13 @@ export class EditableValue {
     $("[data-action=cancel]", controlHolder).on("click", this._cancelControl.bind(this));
     $("[data-action=save]", controlHolder).on("click", this._updateValueWithSpinner.bind(this));
 
-    // $( '[data-editable-value-control=true]', controlHolder ).on( 'focusout', ( e ) => {
-    // this._cancelControl( e );
-    // } );
+    $(document).on("mousedown", (event) => {
+      var target = $(event.target);
 
-    // /**
-    //  * Hide the blade when the user clicks outside of it.
-    //  * Uses mousedown as blade might be opened with 'up-instant', and else the
-    //  * 'click' would follow the mouse down and close instantly.
-    //  */
-    // $(document).on("mousedown", (event) => {
-    //   var target = $(event.target);
-    //
-    //   if (this.controlHolder && !target.closest(".editable-value-control").length) {
-    //     this._cancelControl(event);
-    //   }
-    // });
+      if (this.controlHolder && !target.closest(".editable-value-control").length) {
+        this._cancelControl(event);
+      }
+    });
   }
 
   // hide the control - switch back to label
@@ -263,18 +259,15 @@ export class EditableValue {
           $(".invalid-feedback", controlHolder).remove();
           $(".form-control", controlHolder).addClass("is-invalid");
 
-          // todo: move into template
           var messages = $.map(jsonContent.errors[propertyNameOfControl], function (error, ix) {
             return '<span class="validation-message">' + error.message + "</span>";
           });
 
-          // todo: move into template
           controlHolder.append('<div class="invalid-feedback">' + messages.join() + "</div>");
         }
       })
       .catch((err) => {
-        console.log(err);
-        // ax.log.error( "Updating value failed for " + propertyId, xhr.responseText as any );
+        ax.log.error("Updating value failed for " + propertyId, err);
         controlHolder.addClass("is-invalid");
         $(".invalid-feedback", controlHolder).remove();
         $(".form-control", controlHolder).addClass("is-invalid");
@@ -339,8 +332,7 @@ export class EditableValue {
       })
       .catch((err) => {
         failFunction();
-        console.log(err);
-        // ax.log.error( "Updating value failed for " + propertyId, xhr.responseText as any );
+        ax.log.error("Updating value failed for " + propertyId, err);
         controlHolder.addClass("is-invalid");
         $(".invalid-feedback", controlHolder).remove();
         $(".form-control", controlHolder).addClass("is-invalid");
@@ -376,6 +368,10 @@ export class EditableValue {
   isValuePossibleChanged() {
     return this.label.data("em-property-value-changed") != null;
   }
+
+  supportsMultiValueSelection() {
+    return this.settings.multiValueProperty;
+  }
 }
 
 EntityModule.registerInitializer(function (node) {
@@ -392,7 +388,6 @@ EntityModule.registerInitializer(function (node) {
       htmlNode.addEventListener(
         eventType,
         function (event: any) {
-          console.log("received event", event, "capturing phase");
           if (event || !event.editableValueHolder) {
             try {
               event["editableValueHolder"] = $(node).data("editableValue");
@@ -414,34 +409,13 @@ EntityModule.registerInitializer(function (node) {
 
   if (node && $(node).data("editable-value-control") === true) {
     // todo focusTextToEnd messes up the value in case of an embedded element / embedded collection
-    // it selects all text controls, which will result in `.val()` returnnig the first value
+    // it selects all text controls, which will result in `.val()` returning the first value
     $("input[type=text]", $(node)).each(function (e) {
       // @ts-ignore
       $(this).focusTextToEnd();
     });
-
-    // todo: this works for default input fields, how do we support customization? (e.g. customizing behaviour for js-multi-value-input
-    $("input[type=text]:not(.js-multi-value-input), input[type=search]", $(node)).on("keypress", (e) => {
-      if (e.key === "Enter") {
-        let editableValue = $(node).data("editableValue");
-        $("input[type=text]", $(node)).blur();
-        editableValue._updateValueWithSpinner(e);
-      }
-    });
-
-    // Update editable value on change todo: does this work swith multi checkbox?
-    $("input[type=checkbox], input[type=radio], select", $(node)).change(function (e) {
-      let editableValue = $(node).data("editableValue");
-      editableValue._updateValueWithSpinner(e);
-    });
   }
 });
-
-function onChangeValueUpdate(event: any) {
-  const $this = $(this);
-  const editableValueController = $this.closest("[data-editableValue]").data("editableValue");
-  editableValueController._updateValueWithSpinner(event);
-}
 
 (function ($) {
   // @ts-ignore
@@ -452,3 +426,61 @@ function onChangeValueUpdate(event: any) {
     return this;
   };
 })(jQuery);
+
+class TextInputEditableValueHandler implements EditableValueUpdateHandler {
+  canHandle(control: any, editableValueHolder: EditableValue, event: any): boolean {
+    if (event.type === "keypress" && event.key === "Enter" && !editableValueHolder.supportsMultiValueSelection()) {
+      const $control = $(control);
+      return $control.is("input[type='text']") || $control.is("input[type='search']");
+    }
+    return false;
+  }
+
+  getHandledEventTypes(): string[] {
+    return ["keypress"];
+  }
+
+  getName(): string {
+    return "TextInputEditableValueHandler";
+  }
+
+  getOrder(): number {
+    return 2147483647;
+  }
+
+  handle(control: any, editableValueHolder: EditableValue, event: any): void {
+    const $control = $(control);
+    $control.trigger("blur");
+    editableValueHolder._updateValueWithSpinner(event);
+  }
+}
+
+class CheckboxRadioSelectEditableValueHandler implements EditableValueUpdateHandler {
+  canHandle(control: any, editableValueHolder: EditableValue, event: any): boolean {
+    if (event.type === "change" && !editableValueHolder.supportsMultiValueSelection()) {
+      const $control = $(control);
+      return $control.is("input[type='checkbox']") || $control.is("inupt[type='radio']") || $control.is("select");
+    }
+    return false;
+  }
+
+  getHandledEventTypes(): string[] {
+    return ["change"];
+  }
+
+  getName(): string {
+    return "CheckboxRadioSelectEditableValueHandler";
+  }
+
+  getOrder(): number {
+    return 2147483647;
+  }
+
+  handle(control: any, editableValueHolder: EditableValue, event: any): void {
+    $(control).trigger("blur");
+    editableValueHolder._updateValueWithSpinner(event);
+  }
+}
+
+ExperimentalModule.editableValueHandlerFactory.registerHandler(new TextInputEditableValueHandler());
+ExperimentalModule.editableValueHandlerFactory.registerHandler(new CheckboxRadioSelectEditableValueHandler());
