@@ -172,8 +172,9 @@ export class EditableValue {
     $control.data("editableValue", this);
 
     EntityModule.initializeFormElements($control);
-
     this.controlHolder = controlHolder;
+
+    this.sendEvent("switch-to-control");
 
     $("[data-action=cancel]", controlHolder).on("click", this._cancelControl.bind(this));
     $("[data-action=save]", controlHolder).on("click", this._updateValueWithSpinner.bind(this));
@@ -196,6 +197,7 @@ export class EditableValue {
     this.label.removeClass("d-none");
     this.controlHolder.remove();
     this.controlHolder = null;
+    this.sendEvent("switch-to-value");
   }
 
   _updateValueWithSpinner(e: any) {
@@ -372,11 +374,29 @@ export class EditableValue {
   supportsMultiValueSelection() {
     return this.settings.multiValueProperty;
   }
+
+  sendEvent(eventName: string): void {
+    this.wrapper.trigger(`experimental.editable-value.${eventName}`, {
+      editableValueController: this,
+    });
+  }
 }
 
 EntityModule.registerInitializer(function (node) {
   $("[data-em-editable-value]", node).each(function () {
-    new EditableValue($(this)).activate();
+    const $element = $(this);
+    new EditableValue($element).activate();
+
+    $element.on("experimental.editable-value.switch-to-control", function (event, ctx) {
+      if (ctx.editableValueController.controlHolder) {
+        const $control = $(ctx.editableValueController.controlHolder).find("[data-editable-value-control]");
+        const $elements = $("input[type=text]:not([disabled]), textarea:not([disabled])", $control);
+        if ($elements.length === 1) {
+          // @ts-ignore
+          $elements.focusTextToEnd();
+        }
+      }
+    });
   });
 });
 
@@ -405,16 +425,6 @@ EntityModule.registerInitializer(function (node) {
         }
       });
     });
-  }
-
-  if (node && $(node).data("editable-value-control") === true) {
-    // todo focusTextToEnd messes up the value in case of an embedded element / embedded collection
-    // it selects all text controls, which will result in `.val()` returning the first value
-    const $elements = $("input[type=text]:not([disabled]), textarea:not([disabled])", $(node));
-    if ($elements.length === 1) {
-      // @ts-ignore
-      $elements.focusTextToEnd();
-    }
   }
 });
 
