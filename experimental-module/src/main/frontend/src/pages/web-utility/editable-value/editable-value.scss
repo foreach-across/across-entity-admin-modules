@@ -99,6 +99,10 @@ h3 .editable-value-form input.form-control {
   .editable-value-control {
     display: inline-block;
     position: relative;
+
+    .bootstrap-select.form-control {
+      display: block;
+    }
   }
 
   .invalid-feedback {
