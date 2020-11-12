@@ -96,10 +96,12 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 				.add(
 						// add value mode
 						html.builders.span( css.of( "editable-value-value-wrapper" ) )
+						             .attribute( "title", "Click to edit" )
 						             .add(
 								             html.builders.span( attribute.of( EDITABLE_VALUE_ROLE ).withValue( VALUE_CHILD_MODE ) )
 								                          .with( attributeIfDifferent( valueMode, ViewElementMode.VALUE ) )
 								                          .add( entityViewElementBuilderService.createElementBuilder( propertyDescriptor, valueMode ) )
+								                          .add( html.builders.span( css.of( "cta-item cta-edit" ) ) )
 						             )
 				)
 				.add(

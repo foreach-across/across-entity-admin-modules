@@ -14,30 +14,40 @@ _ {
   display: none;
 }
 
-.editable-value-wrapper {
-  .editable-value-value-wrapper {
-    &:hover:after {
-      font-family: "Font Awesome 5 Free";
-      content: "\f303";
-      margin-left: 0.5rem;
-      color: $dark-grey;
-      vertical-align: middle;
-      font-weight: 600;
-      font-size: 0.75rem;
-    }
-
-    &:empty:hover:after {
-      margin-left: 0;
-    }
-  }
-
-  .editable-value-value {
-    border-bottom: 1px solid $primary;
-  }
-}
-
 .editable-value-value {
   cursor: pointer;
+
+  .cta-item {
+    opacity: 0;
+    background-color: #ebecf0;
+    //transition: opacity 150ms ease-in 0ms;
+    color: $dark-grey;
+
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    border-left: 1px solid #ebecf0;
+    bottom: 0;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 24px;
+  }
+
+  .cta-edit::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f303";
+    font-weight: 600;
+    font-size: 1rem;
+    padding-left: 3px;
+  }
+
+  &:hover {
+    .cta-item {
+      opacity: 1;
+    }
+  }
 }
 
 .editable-value-actions {
@@ -115,27 +125,27 @@ h3 .editable-value-form input.form-control {
     display: block;
     margin-top: 0;
     margin-bottom: 1rem;
+    height: 100%;
   }
 
   .editable-value-value {
     display: inline-block;
     min-width: 100px;
     min-height: 1.5rem;
+    height: 100%;
     clear: both;
 
-    //&:hover:after {
-    //  font-family: "Font Awesome 5 Free";
-    //  content: "\f303";
-    //  margin-left: 0.5rem;
-    //  color: $dark-grey;
-    //  vertical-align: middle;
-    //  font-weight: 600;
-    //  font-size: 0.75rem;
-    //}
-    //
-    //&:empty:hover:after {
-    //  margin-left: 0;
-    //}
+    position: relative;
+    padding-right: 30px;
+    border-radius: 2px;
+
+    &:hover {
+      box-shadow: 0 0 0 1px #ebecf0;
+      //transition: box-shadow 150ms ease-in 0ms;
+
+      padding-left: 3px;
+      margin-left: -3px;
+    }
   }
 
   .editable-value-wrapper.editable-value-reload {
@@ -191,3 +201,47 @@ h6 {
     }
   }
 }
+
+//.form-group {
+//  .editable-value-wrapper {
+//    display: flex;
+//    flex-direction: row;
+//
+//    &:hover {
+//      cursor: pointer;
+//
+//      .editable-value-content {
+//        border: 1px solid lightgrey;
+//        border-right: none;
+//
+//        transition: border-width 150ms ease-in 0ms;
+//      }
+//
+//      .editable-value-cta {
+//        opacity: 1;
+//        transition: opacity 150ms ease-in 0ms;
+//      }
+//    }
+//
+//    .editable-value-content {
+//      padding: 2px 0.5rem;
+//      margin-left: 0.5rem;
+//    }
+//
+//    .editable-value-cta {
+//      background-color: lightgrey;
+//      min-width: 1.5rem;
+//      display: flex;
+//      flex-direction: column;
+//      justify-content: start;
+//      align-items: center;
+//      padding: 2px 0.4rem;
+//      opacity: 0;
+//
+//    }
+//
+//    .cta-item:not(:nth-child(1)) {
+//      padding-left: 0.4rem;
+//    }
+//  }
+//}
