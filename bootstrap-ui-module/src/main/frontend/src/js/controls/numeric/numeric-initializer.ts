@@ -40,7 +40,7 @@ function numericInitializer( node: any ): void {
 
         const autoNumeric = new AutoNumeric( this, configuration );
         $( this )
-            .bind( 'blur focusout keypress keyup', () => {
+            .bind( 'autoNumeric:rawValueModified', () => {
                 if ( name && name.length > 1 && name[0] === '_' ) {
                     let val = autoNumeric.get();
 
