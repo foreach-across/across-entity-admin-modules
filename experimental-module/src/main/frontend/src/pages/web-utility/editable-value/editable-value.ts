@@ -1,7 +1,7 @@
 /* tslint:disable */
 import { ax } from "../utils/utils";
 import "./editable-value.scss";
-import { executeFetchRequest, translateResponse } from "../utils/request-utils";
+import { executeFetchRequest, getFormData, translateResponse } from "../utils/request-utils";
 import { JsonResponse, TextResponse } from "../utils/response-types";
 import { EditableValueUpdateHandler } from "./editable-value-update-handler";
 
@@ -26,7 +26,7 @@ function propertyNameOf(propertyId: any): string {
 
 function resolveViewElementMode(node: any) {
   var viewElementMode = $(node).data("em-ve-mode");
-  if (viewElementMode == null) {
+  if (viewElementMode == null || viewElementMode == "undefined") {
     return "VALUE";
   }
   return viewElementMode;
@@ -137,6 +137,9 @@ export class EditableValue {
     this.controlSwitchRequested = true;
 
     if (event) {
+      if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === "a") {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
     }
@@ -170,6 +173,11 @@ export class EditableValue {
     let $control = $("[data-editable-value-control]", controlHolder);
     $control.html(BootstrapUiModule.refTarget(controlScript).html());
     $control.data("editableValue", this);
+
+    const shouldBeMultipart = $("form", this.wrapper).find(":file").length !== 0;
+    if (shouldBeMultipart) {
+      $("form", this.wrapper).attr("enctype", "multipart/form-data");
+    }
 
     EntityModule.initializeFormElements($control);
     this.controlHolder = controlHolder;
@@ -209,8 +217,6 @@ export class EditableValue {
     var properties = this._retrieveRefreshableValuesToUpdate();
     ax.log.debug("Requesting refresh for properties", properties);
 
-    var requestedPropertiesData = properties.join("&");
-
     var wrapper = this.wrapper;
     var entityPrefix = this.entityPrefix;
     var propertyId = this.propertyId;
@@ -219,20 +225,19 @@ export class EditableValue {
     var controlHolder = this.controlHolder;
 
     controlHolder.addClass("spinner");
-    let input = controlHolder.find("input");
+    let input = controlHolder.find("input:not([disabled])");
     let select = controlHolder.find("select");
-    const serializedForm = $("form", wrapper).serialize();
+
+    const requestConfiguration = this.getRequestConfiguration($("form", wrapper), properties);
     input.attr("disabled", true);
     select.attr("disabled", true);
-    executeFetchRequest(this.settings.targetUrl, "post", {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: serializedForm + "&" + requestedPropertiesData,
-    })
+
+    executeFetchRequest(this.settings.targetUrl, "post", requestConfiguration)
       .then(translateResponse)
       .then((resp) => {
         const jsonResponse: JsonResponse = resp as JsonResponse;
         const jsonContent: any = jsonResponse.jsonContent;
-        if (resp.ok) {
+        if (jsonContent.success) {
           controlHolder.removeClass("is-invalid");
 
           updatePropertyData(propertyId, jsonContent.properties[propertyNameOfControl]);
@@ -287,23 +292,20 @@ export class EditableValue {
     var properties = this._retrieveRefreshableValuesToUpdate();
     ax.log.debug("Requesting refresh for properties", properties);
 
-    var requestedPropertiesData = properties.join("&");
-
     var wrapper = this.wrapper;
     var entityPrefix = this.entityPrefix;
     var propertyId = this.propertyId;
     var propertyNameOfControl = this.propertyNameOfControl;
     var controlHolder = this.controlHolder;
 
-    executeFetchRequest(this.settings.targetUrl, "post", {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: $("form", wrapper).serialize() + "&" + requestedPropertiesData,
-    })
+    const requestConfiguration = this.getRequestConfiguration($("form", wrapper), properties);
+
+    executeFetchRequest(this.settings.targetUrl, "post", requestConfiguration)
       .then(translateResponse)
       .then((resp) => {
         const jsonResponse: JsonResponse = resp as JsonResponse;
         const jsonContent: any = jsonResponse.jsonContent;
-        if (resp.ok) {
+        if (jsonContent.success) {
           successFunction();
           controlHolder.removeClass("is-invalid");
           $(".invalid-feedback", controlHolder).remove();
@@ -341,6 +343,34 @@ export class EditableValue {
       });
 
     ax.log.groupEnd();
+  }
+
+  getRequestConfiguration($form: any, propertiesToUpdate: any[]): any {
+    const formConfiguration: any = $.extend(
+      true,
+      {},
+      {
+        headers: {},
+      }
+    );
+
+    const formData: FormData = getFormData($form[0], false);
+    propertiesToUpdate.forEach((prop: string) => {
+      const idx = prop.lastIndexOf("=");
+      formData.set(prop.substring(0, idx), prop.substring(idx + 1));
+    });
+
+    if ($form.attr("enctype") === "multipart/form-data") {
+      // formConfiguration.headers["Content-Type"] = undefined;
+      formConfiguration.body = formData;
+      formConfiguration.processData = false;
+      formConfiguration.contentType = false;
+      formConfiguration.cache = "no-store";
+    } else {
+      formConfiguration.headers["Content-Type"] = "application/x-www-form-urlencoded";
+      formConfiguration.body = new URLSearchParams(formData as any);
+    }
+    return formConfiguration;
   }
 
   _retrieveRefreshableValuesToUpdate() {

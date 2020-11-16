@@ -1,14 +1,12 @@
 package com.foreach.across.testapplication.application.domain.company;
 
+import com.foreach.across.modules.filemanager.business.reference.FileReference;
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Setter
@@ -35,4 +33,8 @@ public class Company extends SettableIdBasedEntity<Company>
 	@Column
 	@NotBlank
 	private String name;
+
+	@ManyToOne
+	@JoinColumn(name = "work_regulations", referencedColumnName = "id")
+	private FileReference workRegulations;
 }
