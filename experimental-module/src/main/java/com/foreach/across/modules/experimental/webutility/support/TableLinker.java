@@ -50,10 +50,12 @@ public class TableLinker {
         if (propertyCell.getChildren().size() == 1 && rowEntity != null) {
             SingleEntityViewLinkBuilder.ForEntityConfiguration forEntityConfiguration = entityViewLinks.linkTo(rowEntity);
 
-            String url = linkDestination == LinkDestination.DETAIL ? forEntityConfiguration.toUriString() : forEntityConfiguration.updateView().toUriString();
+            String currentUrl = entityViewLinks.linkTo(rowEntity.getClass()).toUriString();
+            String url = linkDestination == LinkDestination.DETAIL ? forEntityConfiguration.withFromUrl(currentUrl).toUriString() : forEntityConfiguration.updateView().withFromUrl(currentUrl).toUriString();
 
             if (linkBuilder != null) {
-                url = linkDestination == LinkDestination.DETAIL ? linkBuilder.toUriString() : linkBuilder.forInstance(rowEntity).updateView().toUriString();
+                currentUrl = linkBuilder.toUriString();
+                url = linkDestination == LinkDestination.DETAIL ? linkBuilder.withFromUrl(currentUrl).toUriString() : linkBuilder.forInstance(rowEntity).updateView().withFromUrl(currentUrl).toUriString();
             }
 
             LinkViewElement link = bootstrap.builders.link().url(url).build();
