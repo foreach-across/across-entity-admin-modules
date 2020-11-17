@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.registrars.repository;
 import com.foreach.across.core.context.AcrossListableBeanFactory;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
@@ -36,6 +37,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -74,7 +76,7 @@ import java.util.stream.Stream;
  * @author Arne Vandamme
  */
 @Component
-class RepositoryEntityRegistrar implements EntityRegistrar
+class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityRegistrar.class );
 
@@ -87,6 +89,8 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	private PlatformTransactionManagerResolver transactionManagerResolver;
 	private EntityMessageCodeProperties entityMessageCodeProperties;
 	private ConversionService mvcConversionService;
+	private ClassLoader classLoader;
+	private boolean acrossDevelopmentModeIsActive;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -169,15 +173,18 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			Repositories repositories,
 			RepositoryInvokerFactory repositoryInvokerFactory ) {
 		String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
-		Optional<Object> repository = repositories.getRepositoryFor( entityType ).filter( Repository.class::isInstance );
+		LazyRepositoryInformation lazyRepositoryInformation = new LazyRepositoryInformation( acrossDevelopmentModeIsActive, classLoader, repositories,
+		                                                                                     repositoryFactoryInformation, entityType,
+		                                                                                     repositoryInvokerFactory );
+		Optional<Object> repository = Optional.of( lazyRepositoryInformation.getRepository() );
 
 		if ( entityTypeName != null && repository.isPresent() ) {
 			EntityConfigurationImpl entityConfiguration = new EntityConfigurationImpl<>( entityTypeName, entityType );
 			entityConfiguration.setAttribute( AcrossModuleInfo.class, moduleInfo );
 			entityConfiguration.setAttribute( RepositoryFactoryInformation.class, repositoryFactoryInformation );
-			entityConfiguration.setAttribute( Repository.class, (Repository) repository.get() );
+			entityConfiguration.setAttribute( Repository.class, lazyRepositoryInformation.getRepository() );
 			entityConfiguration.setAttribute( PersistentEntity.class, repositoryFactoryInformation.getPersistentEntity() );
-			entityConfiguration.setAttribute( RepositoryInvoker.class, repositoryInvokerFactory.getInvokerFor( entityType ) );
+			entityConfiguration.setAttribute( RepositoryInvoker.class, lazyRepositoryInformation.getRepositoryInvoker() );
 
 			String transactionManagerBeanName = transactionManagerResolver.resolveTransactionManagerBeanName( repositoryFactoryInformation );
 			if ( transactionManagerBeanName != null ) {
@@ -347,5 +354,15 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	@Autowired
 	public void setMvcConversionService( ConversionService mvcConversionService ) {
 		this.mvcConversionService = mvcConversionService;
+	}
+
+	@Override
+	public void setBeanClassLoader( ClassLoader classLoader ) {
+		this.classLoader = classLoader;
+	}
+
+	@Autowired
+	void setDevelopmentMode( AcrossDevelopmentMode acrossDevelopmentMode ) {
+		acrossDevelopmentModeIsActive = acrossDevelopmentMode.isActive();
 	}
 }
