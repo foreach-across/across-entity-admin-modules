@@ -8,8 +8,8 @@
     "yarn": ">=1.0.0"
   },
   "scripts": {
-    "start": "cross-env EXTEND_ESLINT=true PROXY_URL='http://localhost:8099' react-scripts start --output='../resources/views/static/experimental/web/' --noAssetHashing",
-    "build": "cross-env EXTEND_ESLINT=true react-scripts build --output='../resources/views/static/experimental/web/' --noAssetHashing",
+    "start": "cross-env PROXY_URL='http://localhost:8099' FAST_REFRESH='false' react-scripts start",
+    "build": "cross-env react-scripts build",
     "test": "cross-env JEST_REPORT_FILE=./test-output/test-report.json react-scripts test",
     "test:ci": "cross-env CI=true npm run test",
     "lint": "concurrently 'yarn:lint:js' 'yarn:lint:css'",
@@ -26,7 +26,7 @@
     "react": "^16.13.1"
   },
   "devDependencies": {
-    "@foreachbe/react-scripts": "^6.0.3",
+    "@foreachbe/react-scripts": "^7.0.0",
     "@types/bootstrap": "^4.5.0",
     "@types/jquery": "^3.5.0",
     "concurrently": "^5.2.0",
@@ -35,7 +35,7 @@
     "lint-staged": "^10.2.11",
     "node-sass": "^4.14.1",
     "prettier": "^2.0.5",
-    "typescript": "^3.9.6"
+    "typescript": "^4.0.2"
   },
   "appPages": [
     {
