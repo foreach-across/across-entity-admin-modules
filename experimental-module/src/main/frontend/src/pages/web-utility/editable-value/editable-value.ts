@@ -37,9 +37,14 @@ export function updatePropertyData(propertyId: any, propertyData: any) {
     $(this).data("em-property-value-changed", true);
     var label = propertyData.labels[resolveViewElementMode($(this))];
     $(this).html(label);
+    if ($(this).is("[data-em-editable-value-role='value']") && $(".cta-item", this).length === 0) {
+      $(this).append(EDITABLE_VALUE_CTA);
+    }
     EntityModule.initializeFormElements($(this));
   });
 }
+
+var EDITABLE_VALUE_CTA = "<span class='cta-item cta-edit'></span>";
 
 var EDITABLE_CONTROL_WRAPPER =
   '<form class="editable-value-form"><div class="editable-value-control"><span data-editable-value-control="true"></span>' +
