@@ -1,6 +1,7 @@
 package com.foreach.across.modules.experimental.webutility.viewprocessor;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityListActionsProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
@@ -8,6 +9,7 @@ import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAda
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.modules.experimental.webutility.support.TableLinker;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
@@ -50,7 +52,15 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
         SortableTableBuilder sortableTableBuilder = builderMap.get(SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class);
 
         if (sortableTableBuilder != null) {
-            tableLinker.createLinkOnProperty(sortableTableBuilder, property, entityViewRequest.getEntityViewContext().getAllowableActions().contains(AllowableAction.UPDATE) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL);
+            TableLinker.LinkDestination linkDestination = entityViewRequest.getEntityViewContext().getAllowableActions().contains(AllowableAction.UPDATE) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL;
+            EntityAssociation entityAssociation = entityViewRequest.getEntityViewContext().isForAssociation() ? entityViewRequest.getEntityViewContext().getEntityAssociation() : null;
+            EntityViewLinkBuilder linkBuilder = null;
+
+            if (entityAssociation != null && EntityAssociation.Type.EMBEDDED.equals(entityAssociation.getAssociationType())) {
+                linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
+            }
+
+            tableLinker.createLinkOnProperty(sortableTableBuilder, property, linkDestination, linkBuilder);
 
             if (!showEditIcon) {
                 sortableTableBuilder.valueRowProcessor((ctx, row) ->
