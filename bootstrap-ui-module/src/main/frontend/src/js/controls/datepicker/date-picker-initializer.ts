@@ -47,11 +47,9 @@ function initializeDateTimePickers( node: any ): void {
 
         $( this ).datetimepicker( configuration );
         $( this ).on( 'change.datetimepicker', ( e: any ) => formatAndSetDate( e.date ) );
-        $( this ).find( 'input[type="text"]' ).on( 'blur focusout', () => {
+        $( this ).find( 'input[type="text"]' ).on( 'blur focusout hide.datetimepicker', () => {
             const datetimepicker = $( this ).data( 'datetimepicker' );
             datetimepicker.hide();
-            // when inserting a value without using the calendar picker, the viewDate is updated but the date itself isn't
-            datetimepicker.date( datetimepicker.viewDate() );
             formatAndSetDate( datetimepicker.date() );
         } );
 
