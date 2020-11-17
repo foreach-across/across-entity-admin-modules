@@ -120,6 +120,10 @@
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy-agent:1.9.13" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across.modules:ax-bootstrap-4-utilities:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across:across-web:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-core:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across:across-test:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across.modules:ax-bootstrap-4-utilities:unknown" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-web:5.0.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:2.1.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.1.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-logging:2.1.12.RELEASE" level="project" />
@@ -145,7 +149,7 @@
     <orderEntry type="library" name="Maven: org.unbescape:unbescape:1.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.30" level="project" />
     <orderEntry type="library" name="Maven: org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across:across-core:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-core:5.0.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.libs:common-concurrent:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.1.13.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:5.1.13.RELEASE" level="project" />
@@ -168,7 +172,7 @@
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.1.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.23" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:javax.servlet-api:4.0.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across:across-test:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across:across-test:5.0.0.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.zaxxer:HikariCP:3.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:5.1.13.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test:2.1.12.RELEASE" level="project" />
@@ -185,9 +189,26 @@
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy:1.9.16" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy-agent:1.9.16" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.objenesis:objenesis:2.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testcontainers:testcontainers:1.14.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.commons:commons-compress:1.20" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.rnorth.duct-tape:duct-tape:1.0.8" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.rnorth.visible-assertions:visible-assertions:2.1.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.rnorth:tcp-unix-socket-proxy:1.0.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.kohlschutter.junixsocket:junixsocket-native-common:2.0.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.scijava:native-lib-loader:2.0.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.kohlschutter.junixsocket:junixsocket-common:2.0.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna-platform:4.5.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna:4.5.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testcontainers:mysql:1.14.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testcontainers:jdbc:1.14.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testcontainers:database-commons:1.14.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testcontainers:postgresql:1.14.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testcontainers:mssqlserver:1.14.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testcontainers:oracle-xe:1.14.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: xmlunit:xmlunit:1.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jsoup:jsoup:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across.modules:ax-bootstrap-4-utilities:unknown" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across.modules:ax-bootstrap-4-utilities:0.0.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:jquery:3.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:bootstrap:4.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:popper.js:1.14.3" level="project" />
@@ -195,7 +216,11 @@
     <orderEntry type="library" name="Maven: org.webjars:momentjs:2.24.0" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:handlebars:4.0.14" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:autonumeric:4.5.4" level="project" />
-    <orderEntry type="library" name="Maven: org.webjars:tempusdominus-bootstrap-4:5.1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.webjars.npm:tempusdominus-bootstrap:5.32.1" level="project" />
+    <orderEntry type="library" name="Maven: org.webjars.npm:bootstrap:5.0.0-alpha1" level="project" />
+    <orderEntry type="library" name="Maven: org.webjars.npm:jquery:3.5.1" level="project" />
+    <orderEntry type="library" name="Maven: org.webjars.npm:moment:2.24.0" level="project" />
+    <orderEntry type="library" name="Maven: org.webjars.npm:popper.js:1.16.1-lts" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:bootstrap-select:1.13.11" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:corejs-typeahead:1.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:font-awesome:5.10.1" level="project" />
