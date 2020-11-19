@@ -1,4 +1,4 @@
-package com.foreach.across.modules.experimental.webutility.support;
+package com.foreach.across.modules.experimental.webutility.domain;
 
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
