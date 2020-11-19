@@ -1,20 +1,26 @@
 package com.foreach.across.modules.experimental.webutility.support;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public enum WebResourceType {
-    CSS( ".css", "@static:/bic/web/" ),
-    JS( ".js", "@static:/bic/web/" ),
-    EXTERNAL_CSS( "", "" ),
-    EXTERNAL_JS( "", "" );
+@AllArgsConstructor
+public class WebResourceType {
 
     @Getter
     private String extension;
     @Getter
     private String prefix;
 
-    WebResourceType( String extension, String prefix ) {
-        this.extension = extension;
-        this.prefix = prefix;
+
+    public static WebResourceType css(String prefix) {
+        return new WebResourceType(".css", prefix);
+    }
+
+    public WebResourceType js(String prefix) {
+        return new WebResourceType(".js", prefix);
+    }
+
+    public boolean isCss() {
+        return this.extension.equals(".css");
     }
 }
