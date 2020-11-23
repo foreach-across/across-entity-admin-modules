@@ -50,6 +50,7 @@ public class NumericFormElementConfigurations {
         configuration.setDecimalPositions(decimalPositions);
         configuration.setForceWhitespaceAroundSign(forceWhitespaceAroundSign);
         configuration.setDecimalSeparator( ',' );
+        configuration.setGroupingSeparator('.');
         return configuration;
     }
 }
