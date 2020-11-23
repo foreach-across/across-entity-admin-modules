@@ -18,7 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;

@@ -17,8 +17,8 @@
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import lombok.NonNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -65,12 +65,12 @@ public class SimpleIconSet implements MutableIconSet
 	}
 
 	@Override
-	public void add( @NotNull String name, Function<String, HtmlViewElement> iconResolver ) {
+	public void add( @NonNull String name, Function<String, HtmlViewElement> iconResolver ) {
 		registeredIconResolvers.put( name, iconResolver );
 	}
 
 	@Override
-	public void remove( @NotNull String name ) {
+	public void remove( @NonNull String name ) {
 		registeredIconResolvers.remove( name );
 	}
 

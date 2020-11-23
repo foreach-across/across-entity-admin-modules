@@ -18,7 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
 import com.foreach.across.modules.bootstrapui.utils.ElementConfigurationMap;
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 

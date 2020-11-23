@@ -16,10 +16,10 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -28,7 +28,7 @@ public class TestFieldsetFormElement extends AbstractBootstrapViewElementTest
 {
 	private FieldsetFormElement fieldset;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		fieldset = new FieldsetFormElement();
 	}
