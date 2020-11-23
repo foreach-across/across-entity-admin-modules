@@ -18,12 +18,16 @@ public class NumericFormElementConfigurations {
         return configuration;
     }
 
-    public static NumericFormElementConfiguration amountNumericConfiguration() {
+    public static NumericFormElementConfiguration amountNumericConfiguration(){
+        return amountNumericConfiguration(0);
+    }
+
+    public static NumericFormElementConfiguration amountNumericConfiguration(int decimalPositions) {
         NumericFormElementConfiguration configuration = new NumericFormElementConfiguration();
         configuration.setDecimalSeparator( ',' );
         configuration.setGroupingSeparator( '.' );
         configuration.setLocalizeDecimalSymbols( false );
-        configuration.setDecimalPositions( 0 );
+        configuration.setDecimalPositions( decimalPositions );
         return configuration;
     }
 
@@ -42,6 +46,7 @@ public class NumericFormElementConfigurations {
 
     public static NumericFormElementConfiguration percentConfiguration(int decimalPositions, boolean forceWhitespaceAroundSign) {
         NumericFormElementConfiguration configuration = new NumericFormElementConfiguration(NumericFormElementConfiguration.Format.PERCENT);
+        configuration.setLocalizeDecimalSymbols(false);
         configuration.setDecimalPositions(decimalPositions);
         configuration.setForceWhitespaceAroundSign(forceWhitespaceAroundSign);
         configuration.setDecimalSeparator( ',' );
