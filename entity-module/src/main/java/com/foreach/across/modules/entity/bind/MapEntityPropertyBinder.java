@@ -323,12 +323,12 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	/**
 	 * Creates a new entry for every key requested.
 	 */
-	class Entries extends TreeMap<String, Entry>
+	class Entries extends TreeMap<String, com.foreach.across.modules.entity.bind.MapEntityPropertyBinder.Entry>
 	{
 		@Override
-		public Entry get( Object key ) {
+		public com.foreach.across.modules.entity.bind.MapEntityPropertyBinder.Entry get( Object key ) {
 			String entryKey = (String) key;
-			Entry entry = super.get( entryKey );
+			com.foreach.across.modules.entity.bind.MapEntityPropertyBinder.Entry entry = super.get( entryKey );
 
 			if ( entry == null ) {
 				entry = createEntry( entryKey );
