@@ -16,7 +16,7 @@ public class WebResourceType {
         return new WebResourceType(".css", prefix);
     }
 
-    public WebResourceType js(String prefix) {
+    public static WebResourceType js(String prefix) {
         return new WebResourceType(".js", prefix);
     }
 
