@@ -95,7 +95,7 @@ public class TestEntityQueryDateFunctions
 		assertTrue( result instanceof LocalTime );
 
 		LocalTime calculatedLocalTime = (LocalTime) result;
-		assertTrue( startLocalTime.getNano() <= calculatedLocalTime.getNano() );
+		assertTrue( startLocalTime.plusSeconds( 1 ).isAfter( calculatedLocalTime ) );
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class TestEntityQueryDateFunctions
 		assertTrue( result instanceof ZonedDateTime );
 
 		ZonedDateTime calculatedLocalTime = (ZonedDateTime) result;
-		assertTrue( start.getNano() <= calculatedLocalTime.getNano()  );
+		assertTrue( start.plusSeconds( 1 ).isAfter( calculatedLocalTime ) );
 	}
 
 	@Test
@@ -117,8 +117,7 @@ public class TestEntityQueryDateFunctions
 		LocalDateTime calculatedLocalDateTime = (LocalDateTime) result;
 		assertNotNull( calculatedLocalDateTime );
 
-		assertTrue( start.getNano() <= calculatedLocalDateTime.getNano()  );
-
+		assertTrue( start.plusSeconds( 1 ).isAfter( calculatedLocalDateTime ) );
 	}
 
 	@Test
