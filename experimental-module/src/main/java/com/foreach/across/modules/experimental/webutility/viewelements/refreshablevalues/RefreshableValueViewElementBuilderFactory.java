@@ -1,9 +1,11 @@
 package com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModule;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -23,6 +25,7 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
  */
 @Component
 @RequiredArgsConstructor
+@ConditionalOnAcrossModule(EntityControlsModule.NAME)
 public class RefreshableValueViewElementBuilderFactory implements EntityViewElementBuilderFactory<ViewElementBuilder>
 {
 	public static final String ELEMENT_TYPE = RefreshableValueViewElementBuilderFactory.class.getName();

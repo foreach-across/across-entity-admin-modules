@@ -1,5 +1,6 @@
 package com.foreach.across.modules.experimental.webutility.support;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
@@ -15,6 +16,7 @@ import com.foreach.across.modules.entity.views.processors.support.EntityPageStru
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModule;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
 import com.foreach.across.modules.web.menu.Menu;
@@ -55,6 +57,7 @@ import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
  */
 @Component
 @RequiredArgsConstructor
+@ConditionalOnAcrossModule(EntityControlsModule.NAME)
 class AdminPageHeader
 {
 	private final MenuFactory menuFactory;

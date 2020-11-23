@@ -2,6 +2,7 @@ package com.foreach.across.modules.experimental.webutility.viewelements.editable
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
@@ -10,12 +11,11 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModule;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
 import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
 import com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory;
-import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -31,8 +31,6 @@ import java.util.Collection;
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
-import static com.foreach.across.modules.web.resource.WebResource.CSS;
-import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
@@ -51,6 +49,7 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @SuppressWarnings("rawtypes")
 @Component
 @RequiredArgsConstructor
+@ConditionalOnAcrossModule(EntityControlsModule.NAME)
 public class EditableValueViewElementBuilderFactory implements EntityViewElementBuilderFactory<ViewElementBuilder>
 {
 	public static final String ELEMENT_TYPE = EditableValueViewElementBuilderFactory.class.getName();
@@ -159,17 +158,6 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		WebResourceRegistry attribute = builderContext.getAttribute( WebResourceRegistry.class );
 		if ( attribute != null ) {
 			attribute.addPackage( WebUtilityModuleWebResources.NAME );
-			attribute.apply(
-					WebResourceRule.add(
-							WebResource.javascript( "@static:/experimental/web/editable-value.js" ) )
-					               .withKey( "experimental-web-utilities-editable-value-js" )
-					               .after( WebUtilityModuleWebResources.NAME )
-					               .toBucket( JAVASCRIPT_PAGE_END ),
-					WebResourceRule.add(
-							WebResource.css( "@static:/experimental/web/editable-value.css" ) )
-					               .withKey( "experimental-web-utilities-editable-value-css" )
-					               .toBucket( CSS )
-			);
 		}
 	}
 
