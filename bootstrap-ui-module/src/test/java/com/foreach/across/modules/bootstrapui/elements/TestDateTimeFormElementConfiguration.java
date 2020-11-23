@@ -272,19 +272,43 @@ public class TestDateTimeFormElementConfiguration
 	public void localizedDateTimeFormatterIsEqualToDateFormat() {
 		Date d1 = Date.from( Instant.EPOCH );
 		Date d2 = Date.from( Instant.now() );
-		List<String> localesThatAreNotEqual = Arrays.asList( "hi-IN", "fi-FI", "ja-JP-u-ca-japanese-x-lvariant-JP", "th-TH", "fi",
-		                                                     "th-TH-u-nu-thai-x-lvariant-TH" );
+
 		List<Date> randomDates = new ArrayList<>();
 		randomDates.add( PRINT_DATE );
 		for ( int i = 0; i < 2000; i += 1 ) {
 			randomDates.add( getRandomDateBetween( d1, d2 ) );
 		}
+
+		//TODO: might have to rethink this or correct this if  we want to support all 700'ish locales from JDK11
+		List<String> supportedLocales = Arrays.asList( "", "ar_AE", "ar_JO", "ar_SY", "hr_HR", "fr_BE", "es_PA", "mt_MT", "es_VE", "bg", "zh_TW", "it", "ko",
+		                                               "uk", "lv",
+		                                               "da_DK", "es_PR", "vi_VN", "en_US", "sr_ME", "sv_SE", "es_BO", "en_SG", "ar_BH", "pt", "ar_SA", "sk",
+		                                               "ar_YE",
+		                                               "ga", "en_MT", "et", "sv", "cs", "sr_BA_#Latn", "el", "uk_UA", "hu", "fr_CH", "in",
+		                                               "es_AR",
+		                                               "ar_EG", "ja_JP_JP_#u-ca-japanese", "es_SV", "pt_BR", "be", "is_IS", "cs_CZ", "es", "pl_PL", "tr",
+		                                               "ca_ES",
+		                                               "sr_CS", "ms_MY", "hr", "lt", "es_ES", "es_CO", "bg_BG", "sq", "fr", "ja", "sr_BA", "is", "es_PY", "de",
+		                                               "es_EC",
+		                                               "es_US", "ar_SD", "en", "ro_RO", "en_PH", "ca", "ar_TN", "sr_ME_#Latn", "es_GT", "sl", "ko_KR", "el_CY",
+		                                               "es_MX",
+		                                               "ru_RU", "es_HN", "zh_HK", "no_NO_NY", "hu_HU", "ar_IQ", "es_CL", "ar_MA", "ga_IE", "mk",
+		                                               "tr_TR",
+		                                               "et_EE", "ar_QA", "sr__#Latn", "pt_PT", "fr_LU", "ar_OM", "sq_AL", "es_DO", "es_CU", "ar", "ru",
+		                                               "en_NZ",
+		                                               "sr_RS", "de_CH", "es_UY", "ms", "el_GR", "iw_IL", "en_ZA", "fr_FR",
+		                                               "de_AT", "nl",
+		                                               "no_NO", "en_AU", "vi", "nl_NL", "fr_CA", "lv_LV", "de_LU", "es_CR", "ar_KW", "sr", "ar_LY", "mt",
+		                                               "it_CH", "da",
+		                                               "de_DE", "ar_DZ", "sk_SK", "lt_LT", "it_IT", "en_IE", "zh_SG", "ro", "en_CA", "nl_BE", "no", "pl",
+		                                               "zh_CN",
+		                                               "ja_JP", "de_GR", "sr_RS_#Latn", "iw", "en_IN", "ar_LB", "es_NI", "zh", "mk_MK", "be_BY", "sl_SI",
+		                                               "es_PE",
+		                                               "in_ID", "en_GB" );
 		for ( Date date : randomDates ) {
-			for ( Locale locale : Locale.getAvailableLocales() ) {
-				if ( !localesThatAreNotEqual.contains( locale.toLanguageTag() ) ) {
-					assertLocalizedFormattersReturnEqualValues( date, locale );
-				}
-			}
+			supportedLocales.stream().map( Locale::forLanguageTag ).forEach( locale -> {
+				assertLocalizedFormattersReturnEqualValues( date, locale );
+			} );
 		}
 	}
 
