@@ -1,6 +1,5 @@
 package com.foreach.across.modules.experimental.webutility.viewelements.editablevalues;
 
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.entity.EntityModule;
@@ -16,7 +15,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.Fo
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupHelpTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupTooltipTextPostProcessor;
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
-import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModule;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.core.Ordered;
@@ -34,7 +32,6 @@ import static com.foreach.across.modules.experimental.webutility.viewelements.We
 @Component
 @Order
 @SuppressWarnings("unused")
-@ConditionalOnAcrossModule(EntityControlsModule.NAME)
 class EditableValuesFormConfiguration implements EntityConfigurer
 {
 	private final AcrossModuleInfo moduleInfo;

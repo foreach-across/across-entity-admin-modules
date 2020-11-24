@@ -33,7 +33,7 @@ public class WebUtilityModuleWebResources implements WebResourcePackage
 				               .after( "experimental-web-utilities" )
 				               .toBucket( JAVASCRIPT_PAGE_END ),
 				WebResourceRule.add(
-						WebResource.javascript( "@static:/experimental/web/editable-value.js" ) )
+						WebResource.css( "@static:/experimental/web/editable-value.css" ) )
 				               .withKey( "experimental-editable-value-css" )
 				               .after( "experimental-web-utilities" )
 				               .toBucket( CSS )

@@ -1,12 +1,10 @@
 package com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues;
 
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModule;
-import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
+import com.foreach.across.modules.experimental.webutility.viewelements.EditableValuesUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -25,7 +23,6 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
  */
 @Component
 @RequiredArgsConstructor
-@ConditionalOnAcrossModule(EntityControlsModule.NAME)
 public class RefreshableValueViewElementBuilderFactory implements EntityViewElementBuilderFactory<ViewElementBuilder>
 {
 	public static final String ELEMENT_TYPE = RefreshableValueViewElementBuilderFactory.class.getName();
@@ -44,7 +41,7 @@ public class RefreshableValueViewElementBuilderFactory implements EntityViewElem
 	static final String ATTR_PROPERTY_ID = "data-em-property-id";
 
 	private final EntityViewElementBuilderService entityViewElementBuilderService;
-	private final EntityControlFactory entityControlFactory;
+	private final EditableValuesUtils editableValuesUtils;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -63,7 +60,7 @@ public class RefreshableValueViewElementBuilderFactory implements EntityViewElem
 	}
 
 	private void attachRefreshableDataAttributes( NodeViewElement wrapper, ViewElementBuilderContext builderContext, ViewElementMode viewElementMode ) {
-		entityControlFactory.resolveEntityPropertyId( builderContext ).ifPresent( id -> wrapper.setAttribute( ATTR_PROPERTY_ID, id ) );
+		editableValuesUtils.resolveEntityPropertyId( builderContext ).ifPresent( id -> wrapper.setAttribute( ATTR_PROPERTY_ID, id ) );
 
 		if ( !ViewElementMode.VALUE.equals( viewElementMode ) ) {
 			wrapper.setAttribute( ATTR_VIEW_ELEMENT_MODE, viewElementMode.toString() );

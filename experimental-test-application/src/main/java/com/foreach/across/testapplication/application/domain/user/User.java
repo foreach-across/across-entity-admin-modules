@@ -52,6 +52,10 @@ public class User extends SettableIdBasedEntity<User>
 	@JoinColumn(name = "company_id")
 	private Company company;
 
+	@ManyToOne
+	@JoinColumn(name = "mentor_id")
+	private User mentor;
+
 	@Column
 	@NumberFormat(style = NumberFormat.Style.CURRENCY)
 	private BigDecimal netValue;

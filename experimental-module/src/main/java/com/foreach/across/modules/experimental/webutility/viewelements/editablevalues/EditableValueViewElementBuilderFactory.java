@@ -2,7 +2,6 @@ package com.foreach.across.modules.experimental.webutility.viewelements.editable
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
@@ -11,9 +10,8 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
-import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModule;
-import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
 import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
+import com.foreach.across.modules.experimental.webutility.viewelements.EditableValuesUtils;
 import com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -49,7 +47,6 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @SuppressWarnings("rawtypes")
 @Component
 @RequiredArgsConstructor
-@ConditionalOnAcrossModule(EntityControlsModule.NAME)
 public class EditableValueViewElementBuilderFactory implements EntityViewElementBuilderFactory<ViewElementBuilder>
 {
 	public static final String ELEMENT_TYPE = EditableValueViewElementBuilderFactory.class.getName();
@@ -65,7 +62,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 	private static final String EDITABLE_VALUE_ROLE = "data-em-editable-value-role";
 
 	private final EntityViewElementBuilderService entityViewElementBuilderService;
-	private final EntityControlFactory entityControlFactory;
+	private final EditableValuesUtils editableValuesUtils;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -128,7 +125,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 							if ( entity != null && entityViewContext != null && property != null ) {
 								wrapper.set(
 										new EditableValueSettings()
-												.propertyId( entityControlFactory.resolveEntityPropertyId( builderContext ).orElseThrow() )
+												.propertyId( editableValuesUtils.resolveEntityPropertyId( builderContext ).orElseThrow() )
 												.targetUrl( resolveTargetUrl( entityViewContext, entity ) )
 												.multiValueProperty( isMultiValueControl( propertyDescriptor, controlMode ) )
 								);

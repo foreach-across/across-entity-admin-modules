@@ -18,6 +18,7 @@ import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.entitycontrols.EntityControlsModule;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
+import com.foreach.across.modules.experimental.webutility.viewelements.EditableValuesUtils;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
@@ -62,6 +63,7 @@ class AdminPageHeader
 {
 	private final MenuFactory menuFactory;
 	private final EntityControlFactory entityControlFactory;
+	private final EditableValuesUtils editableValuesUtils;
 	private final SpringTemplateEngine templateEngine;
 
 	@EventListener
@@ -195,8 +197,8 @@ class AdminPageHeader
 		if ( adminMenu != null ) {
 			Menu breadcrumbLeaf = adminMenu.getLowestSelectedItem();
 			EntityPropertyDescriptor labelProperty = entityViewContext.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
-			entityControlFactory.resolveEntityPropertyId( entityViewContext, labelProperty )
-			                    .ifPresent( propertyId ->
+			editableValuesUtils.resolveEntityPropertyId( entityViewContext, labelProperty )
+			                   .ifPresent( propertyId ->
 					                                breadcrumbLeaf.setAttribute(
 							                                NavComponentBuilder.ATTR_LINK_VIEW_ELEMENT,
 							                                html.span( propertyId( propertyId ), html.text( breadcrumbLeaf.getTitle() ) )
