@@ -50,7 +50,9 @@ var EDITABLE_CONTROL_WRAPPER =
   '<form class="editable-value-form"><div class="editable-value-control"><span data-editable-value-control="true"></span>' +
   '<span class="editable-value-actions">' +
   '<a class="btn btn-sm" data-action="save"><i class="fas fa-check fa-fw"/></a>' +
-  '<a class="btn btn-sm" data-action="cancel"><i class="fas fa-times fa-fw"/></a></span></div></form>';
+  '<a class="btn btn-sm" data-action="cancel"><i class="fas fa-times fa-fw"/></a>' +
+  '<span class="btn btn-sm d-none" data-action="loading"><i class="fas fa-circle-notch fa-spin fa-fw"/></span>' +
+  "</span></div></form>";
 
 var EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS =
   '<form class="editable-value-form"><div class="editable-value-control"><span data-editable-value-control="true"></span>' +
@@ -229,13 +231,15 @@ export class EditableValue {
     var propertyNameOfControl = this.propertyNameOfControl;
     var controlHolder = this.controlHolder;
 
-    controlHolder.addClass("spinner");
-    let input = controlHolder.find("input:not([disabled])");
-    let select = controlHolder.find("select");
+    controlHolder.addClass("loading");
+    let formControlElements = controlHolder.find(":input:not([disabled])");
+    // let select = controlHolder.find( "select:not([disabled])" );
+    let actionsToToggleVisibility = controlHolder.find(".editable-value-actions > [data-action]");
+    actionsToToggleVisibility.toggleClass("d-none");
 
     const requestConfiguration = this.getRequestConfiguration($("form", wrapper), properties);
-    input.attr("disabled", true);
-    select.attr("disabled", true);
+    formControlElements.attr("disabled", true);
+    // select.attr( "disabled", true );
 
     executeFetchRequest(this.settings.targetUrl, "post", requestConfiguration)
       .then(translateResponse)
@@ -250,24 +254,23 @@ export class EditableValue {
           label.removeClass("d-none");
           controlHolder.remove();
 
-          //update absolute proerties
           $.each(jsonContent.absoluteProperties, function (propertyName, propertyData) {
             if (propertyName !== propertyNameOfControl) {
               updatePropertyData(propertyName, propertyData);
             }
           });
 
-          // update other relative properties
           $.each(jsonContent.properties, function (propertyName: any, propertyData) {
             if (propertyName !== propertyNameOfControl) {
               updatePropertyData(entityPrefix + propertyName, propertyData);
             }
           });
         } else {
-          controlHolder.removeClass("spinner");
+          controlHolder.removeClass("loading");
           controlHolder.addClass("is-invalid");
-          input.removeAttr("disabled");
-          select.removeAttr("disabled");
+          formControlElements.removeAttr("disabled");
+          actionsToToggleVisibility.toggleClass("d-none");
+          // select.removeAttr( "disabled" );
           $(".invalid-feedback", controlHolder).remove();
           $(".form-control", controlHolder).addClass("is-invalid");
 
@@ -283,6 +286,8 @@ export class EditableValue {
         controlHolder.addClass("is-invalid");
         $(".invalid-feedback", controlHolder).remove();
         $(".form-control", controlHolder).addClass("is-invalid");
+        controlHolder.removeClass("loading");
+        actionsToToggleVisibility.toggleClass("d-none");
       });
 
     ax.log.groupEnd();
@@ -316,7 +321,12 @@ export class EditableValue {
           $(".invalid-feedback", controlHolder).remove();
           updatePropertyData(propertyId, jsonContent.properties[propertyNameOfControl]);
 
-          // update other properties
+          $.each(jsonContent.absoluteProperties, function (propertyName, propertyData) {
+            if (propertyName !== propertyNameOfControl) {
+              updatePropertyData(propertyName, propertyData);
+            }
+          });
+
           $.each(jsonContent.properties, function (propertyName: string, propertyData) {
             if (propertyName !== propertyNameOfControl) {
               if (propertyName.startsWith(propertyId.substring(0, propertyId.indexOf("/")))) {
