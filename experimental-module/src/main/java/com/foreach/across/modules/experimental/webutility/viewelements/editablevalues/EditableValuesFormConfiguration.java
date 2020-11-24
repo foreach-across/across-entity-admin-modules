@@ -21,6 +21,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.function.BiConsumer;
+
 import static com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode.REFRESHABLE_LIST_VALUE;
 
 /**
@@ -43,18 +45,35 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		ViewElementMode editableValueViewElementMode = ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE );
-		EntityConfigurationBuilder<Object> editableValuesView = new EntityConfigurationBuilder<>(
-				moduleInfo.getApplicationContext().getAutowireCapableBeanFactory() )
-				.formView(
-						EditableValueViewElementBuilderFactory.REQUIRED_VIEW,
-						fvb -> {
-							fvb.requiredAllowableAction( AllowableAction.UPDATE )
-							   .viewElementMode(
-									   editableValueViewElementMode )
-							   .viewProcessor( vb -> vb.createBean( EditableValueControlProcessor.class )
-							                           .order( Ordered.LOWEST_PRECEDENCE ) );
-						}
-				);
+		EntityConfigurationBuilder<Object> editableValuesView =
+				new EntityConfigurationBuilder<>( moduleInfo.getApplicationContext().getAutowireCapableBeanFactory() )
+						.formView(
+								EditableValueViewElementBuilderFactory.REQUIRED_VIEW,
+								fvb -> {
+									fvb.requiredAllowableAction( AllowableAction.UPDATE )
+									   .viewElementMode(
+											   editableValueViewElementMode )
+									   .viewProcessor( vb -> vb.createBean( EditableValueControlProcessor.class )
+									                           .order( Ordered.LOWEST_PRECEDENCE ) );
+								}
+						);
+
+		BiConsumer<MutableEntityConfiguration, EntityAssociation> associationEditableValuesView = ( entityConfiguration, entityAssociation ) -> {
+			EntityConfigurationBuilder<Object> configurationBuilder =
+					new EntityConfigurationBuilder<>( moduleInfo.getApplicationContext().getAutowireCapableBeanFactory() )
+							.association(
+									ab -> ab.name( entityAssociation.getName() )
+									        .formView( EditableValueViewElementBuilderFactory.REQUIRED_VIEW,
+									                   fvb -> {
+										                   fvb.requiredAllowableAction( AllowableAction.UPDATE )
+										                      .viewElementMode(
+												                      editableValueViewElementMode )
+										                      .viewProcessor( vb -> vb.createBean( EditableValueControlProcessor.class )
+										                                              .order( Ordered.LOWEST_PRECEDENCE ) );
+									                   } )
+							);
+			configurationBuilder.apply( entityConfiguration );
+		};
 
 		entities.all()
 		        .postProcessor(
@@ -87,6 +106,11 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 							        .forEach( association -> {
 								        if ( association.hasView( EntityView.LIST_VIEW_NAME ) ) {
 									        configureListViewWithRefreshableValues( entityConfiguration, association );
+								        }
+
+								        if ( !association.hasView( EditableValueViewElementBuilderFactory.REQUIRED_VIEW )
+										        && association.getTargetEntityConfiguration().hasEntityModel() ) {
+									        associationEditableValuesView.accept( entityConfiguration, association );
 								        }
 							        } );
 				        }

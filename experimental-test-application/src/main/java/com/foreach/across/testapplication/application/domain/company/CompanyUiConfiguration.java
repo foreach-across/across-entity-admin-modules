@@ -2,6 +2,7 @@ package com.foreach.across.testapplication.application.domain.company;
 
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
@@ -20,6 +21,7 @@ public class CompanyUiConfiguration implements EntityConfigurer
 		        .updateFormView( fvb -> fvb.viewElementMode( ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) ) )
 		        .association(
 				        ab -> ab.name( "user.company" )
+				                .associationType( EntityAssociation.Type.EMBEDDED )
 				                .updateFormView(
 						                fvb -> fvb.viewElementMode(
 								                ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) )
