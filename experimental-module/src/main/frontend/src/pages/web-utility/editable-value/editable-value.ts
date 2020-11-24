@@ -3,7 +3,6 @@ import { ax } from "../utils/utils";
 import "./editable-value.scss";
 import { executeFetchRequest, getFormData, translateResponse } from "../utils/request-utils";
 import { JsonResponse, TextResponse } from "../utils/response-types";
-import { EditableValueUpdateHandler } from "./editable-value-update-handler";
 
 /**
  * EditableValue is a readonly value which can be converted into an actual
@@ -233,13 +232,12 @@ export class EditableValue {
 
     controlHolder.addClass("loading");
     let formControlElements = controlHolder.find(":input:not([disabled])");
-    // let select = controlHolder.find( "select:not([disabled])" );
     let actionsToToggleVisibility = controlHolder.find(".editable-value-actions > [data-action]");
-    actionsToToggleVisibility.toggleClass("d-none");
 
     const requestConfiguration = this.getRequestConfiguration($("form", wrapper), properties);
+
+    actionsToToggleVisibility.toggleClass("d-none");
     formControlElements.attr("disabled", true);
-    // select.attr( "disabled", true );
 
     executeFetchRequest(this.settings.targetUrl, "post", requestConfiguration)
       .then(translateResponse)
@@ -270,7 +268,7 @@ export class EditableValue {
           controlHolder.addClass("is-invalid");
           formControlElements.removeAttr("disabled");
           actionsToToggleVisibility.toggleClass("d-none");
-          // select.removeAttr( "disabled" );
+
           $(".invalid-feedback", controlHolder).remove();
           $(".form-control", controlHolder).addClass("is-invalid");
 
@@ -426,117 +424,3 @@ export class EditableValue {
     });
   }
 }
-
-EntityModule.registerInitializer(function (node) {
-  $("[data-em-editable-value]", node).each(function () {
-    const $element = $(this);
-    new EditableValue($element).activate();
-
-    $element.on("experimental.editable-value.switch-to-control", function (event, ctx) {
-      if (ctx.editableValueController.controlHolder) {
-        const $control = $(ctx.editableValueController.controlHolder).find("[data-editable-value-control]");
-        const $elements = $("input[type=text]:not([disabled]), textarea:not([disabled])", $control);
-        if ($elements.length === 1) {
-          // @ts-ignore
-          $elements.focusTextToEnd();
-        }
-      }
-    });
-  });
-});
-
-EntityModule.registerInitializer(function (node) {
-  const $node = $(node);
-  if ($node.length > 0 && $node.data("editable-value-control") === true) {
-    const htmlNode = $node[0];
-    ExperimentalModule.editableValueHandlerFactory.getHandledEventTypes().forEach((eventType) => {
-      htmlNode.addEventListener(
-        eventType,
-        function (event: any) {
-          if (event || !event.editableValueHolder) {
-            try {
-              event["editableValueHolder"] = $(node).data("editableValue");
-            } catch (error) {
-              ax.log.error("Unable to attach editable-value-controller to event", [event, error]);
-            }
-          }
-        },
-        true
-      );
-
-      htmlNode.addEventListener(eventType, function (event: any) {
-        if (event && event.editableValueHolder) {
-          ExperimentalModule.editableValueHandlerFactory.handle(event.target, event.editableValueHolder, event);
-        }
-      });
-    });
-  }
-});
-
-(function ($) {
-  // @ts-ignore
-  $.fn.focusTextToEnd = function () {
-    this.focus();
-    var $thisVal = this.val();
-    this.val("").val($thisVal);
-    return this;
-  };
-})(jQuery);
-
-class TextInputEditableValueHandler implements EditableValueUpdateHandler {
-  canHandle(control: any, editableValueHolder: EditableValue, event: any): boolean {
-    if (event.type === "keypress" && event.key === "Enter" && !editableValueHolder.supportsMultiValueSelection()) {
-      const $control = $(control);
-      return $control.is("input[type='text']") || $control.is("input[type='search']");
-    }
-    return false;
-  }
-
-  getHandledEventTypes(): string[] {
-    return ["keypress"];
-  }
-
-  getName(): string {
-    return "TextInputEditableValueHandler";
-  }
-
-  getOrder(): number {
-    return 2147483647;
-  }
-
-  handle(control: any, editableValueHolder: EditableValue, event: any): void {
-    const $control = $(control);
-    $control.trigger("blur");
-    editableValueHolder._updateValueWithSpinner(event);
-  }
-}
-
-class CheckboxRadioSelectEditableValueHandler implements EditableValueUpdateHandler {
-  canHandle(control: any, editableValueHolder: EditableValue, event: any): boolean {
-    if (event.type === "change" && !editableValueHolder.supportsMultiValueSelection()) {
-      const $control = $(control);
-      return $control.is("input[type='checkbox']") || $control.is("inupt[type='radio']") || $control.is("select");
-    }
-    return false;
-  }
-
-  getHandledEventTypes(): string[] {
-    return ["change"];
-  }
-
-  getName(): string {
-    return "CheckboxRadioSelectEditableValueHandler";
-  }
-
-  getOrder(): number {
-    return 2147483647;
-  }
-
-  handle(control: any, editableValueHolder: EditableValue, event: any): void {
-    $(control).trigger("blur");
-    editableValueHolder._updateValueWithSpinner(event);
-  }
-}
-
-ExperimentalModule.editableValueHandlerFactory.registerHandler(new TextInputEditableValueHandler());
-ExperimentalModule.editableValueHandlerFactory.registerHandler(new CheckboxRadioSelectEditableValueHandler());

@@ -56,7 +56,7 @@
     {
       "name": "editable-value",
       "title": "editable-value",
-      "appIndexJs": "src/pages/web-utility/editable-value/editable-value"
+      "appIndexJs": "src/pages/web-utility/editable-value/editable-value-initializer"
     },
     {
       "name": "experimental-module",

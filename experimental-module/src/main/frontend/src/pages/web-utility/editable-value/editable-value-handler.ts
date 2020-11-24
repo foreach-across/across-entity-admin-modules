@@ -1,6 +1,6 @@
 import { EditableValue } from "./editable-value";
 
-export interface EditableValueUpdateHandler {
+export interface EditableValueHandler {
   getName(): string;
 
   getOrder(): number;

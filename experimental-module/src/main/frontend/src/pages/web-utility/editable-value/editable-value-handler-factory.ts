@@ -1,11 +1,11 @@
-import { EditableValueUpdateHandler } from "./editable-value-update-handler";
+import { EditableValueHandler } from "./editable-value-handler";
 import { EditableValue } from "./editable-value";
 
 export class EditableValueHandlerFactory {
-  private handlers: EditableValueUpdateHandler[] = [];
+  private handlers: EditableValueHandler[] = [];
   private eventTypes!: Set<string>;
 
-  registerHandler(handler: EditableValueUpdateHandler) {
+  registerHandler(handler: EditableValueHandler) {
     this.removeHandler(handler.getName());
     this.handlers.push(handler);
     this.handlers.sort((a, b) => a.getOrder() - b.getOrder());
