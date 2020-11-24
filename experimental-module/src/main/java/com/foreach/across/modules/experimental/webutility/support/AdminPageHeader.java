@@ -46,8 +46,10 @@ import java.util.Optional;
 
 import static com.foreach.across.modules.adminweb.ui.PageContentStructure.ELEMENT_PAGE_TITLE;
 import static com.foreach.across.modules.adminweb.ui.PageContentStructure.ELEMENT_PAGE_TITLE_SUB_TEXT;
+import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.UI.DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE;
 import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.UI.DISABLE_ADMINPAGE_HEADER_EDITABLE_VALUE;
 import static com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory.propertyId;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
 
@@ -82,11 +84,63 @@ class AdminPageHeader
 			configurePageHeader( pageStructureRenderedEvent.getPageContentStructure().getHeader(), entityViewContext, viewFactory,
 			                     pageStructureRenderedEvent.getBuilderContext(), renderMode );
 		}
+
+		EntityViewContext originalEntityViewContext = pageStructureRenderedEvent.getEntityViewRequest().getEntityViewContext();
+		if ( originalEntityViewContext.isForAssociation() && originalEntityViewContext.holdsEntity() && viewFactory != null ) {
+			configureRefreshableControlAsBreadcrumbValue( originalEntityViewContext );
+			ViewElementMode renderMode =
+					Boolean.FALSE.equals(
+							originalEntityViewContext.getEntityConfiguration().getAttribute( DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE ) )
+							? WebUtilityViewElementMode.EDITABLE_VALUE
+							: WebUtilityViewElementMode.REFRESHABLE_VALUE;
+
+			configureAssociationPageHader( pageStructureRenderedEvent.getPageContentStructure()
+			                                                         .findAll( NodeViewElement.class, ve -> css( "tab-pane-header" ).test( ve ) )
+			                                                         .findFirst(),
+			                               originalEntityViewContext, viewFactory,
+			                               pageStructureRenderedEvent.getBuilderContext(), renderMode );
+		}
+	}
+
+	private void configureAssociationPageHader( Optional<NodeViewElement> oHeader,
+	                                            EntityViewContext entityViewContext,
+	                                            EntityViewFactory viewFactory,
+	                                            ViewElementBuilderContext builderContext,
+	                                            ViewElementMode renderMode ) {
+		EntityPropertyDescriptor labelProperty = entityViewContext.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
+		if ( labelProperty.hasAttribute( EntityAttributes.LABEL_TARGET_PROPERTY ) && oHeader.isPresent() ) {
+			NodeViewElement header = oHeader.get();
+			String targetProperty = labelProperty.getAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, String.class );
+
+			Class<Object> entityType = entityViewContext.getEntityConfiguration().getEntityType();
+			try (ScopedAttributesViewElementBuilderContext ignore = builderContext.withAttributeOverride( EntityViewModel.VIEW_CONTEXT, entityViewContext )) {
+				Map<String, ViewElement> controls = entityControlFactory
+						.createControlsForClass( entityType )
+						.showProperties( targetProperty )
+						.properties( props -> props.property( targetProperty )
+						                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER ) )
+						.defaultRenderMode( renderMode )
+						.forInstance( entityViewContext.getEntity() )
+						.build( builderContext );
+
+				String propertyAsHtml = renderViewElement( controls.get( targetProperty ) );
+
+				String titleMessageCode = resolveTitleMessageCode( viewFactory );
+				String title = resolveMessageCode( entityViewContext, titleMessageCode, propertyAsHtml );
+				String subTitle = resolveMessageCode( entityViewContext, titleMessageCode + ".subText", propertyAsHtml );
+
+				// Replace the header with the inline control
+				header.clearChildren();
+				header.addChild( createHeaderViewElement( title, subTitle ) );
+			}
+		}
+
 	}
 
 	private void alwaysRenderFeedbackSection( EntityPageStructureRenderedEvent<?> pageStructureRenderedEvent ) {
 		// required for unpoly form updates
 		pageStructureRenderedEvent.getPageContentStructure().addToFeedback( text( "" ) );
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -119,7 +173,7 @@ class AdminPageHeader
 
 				// Replace the header with the inline control
 				header.clearChildren();
-				header.addChild( createHeaderViewElement( title, subTitle ) );
+				header.addChild( createAssociationHeaderViewElement( title, subTitle ) );
 			}
 		}
 	}
@@ -192,6 +246,20 @@ class AdminPageHeader
 		return heading;
 	}
 
+	private ViewElement createAssociationHeaderViewElement( String title, String subTitle ) {
+		NodeViewElement heading = new NodeViewElement( "tab-pane-title", "h4" );
+		heading.addChild( html.unescapedText( title ) );
+
+		Optional.ofNullable( subTitle )
+		        .ifPresent( st -> {
+			        NodeViewElement actionsElement = new NodeViewElement( "tab-pane-title-subtext", "small" );
+			        actionsElement.addChild( html.unescapedText( subTitle ) );
+			        heading.addChild( actionsElement );
+		        } );
+
+		return heading;
+	}
+
 	private void configureRefreshableControlAsBreadcrumbValue( EntityViewContext entityViewContext ) {
 		Menu adminMenu = menuFactory.getMenuWithName( AdminMenu.NAME );
 		if ( adminMenu != null ) {
@@ -199,11 +267,11 @@ class AdminPageHeader
 			EntityPropertyDescriptor labelProperty = entityViewContext.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
 			editableValuesUtils.resolveEntityPropertyId( entityViewContext, labelProperty )
 			                   .ifPresent( propertyId ->
-					                                breadcrumbLeaf.setAttribute(
-							                                NavComponentBuilder.ATTR_LINK_VIEW_ELEMENT,
-							                                html.span( propertyId( propertyId ), html.text( breadcrumbLeaf.getTitle() ) )
-					                                )
-			                    );
+					                               breadcrumbLeaf.setAttribute(
+							                               NavComponentBuilder.ATTR_LINK_VIEW_ELEMENT,
+							                               html.span( propertyId( propertyId ), html.text( breadcrumbLeaf.getTitle() ) )
+					                               )
+			                   );
 		}
 	}
 }
