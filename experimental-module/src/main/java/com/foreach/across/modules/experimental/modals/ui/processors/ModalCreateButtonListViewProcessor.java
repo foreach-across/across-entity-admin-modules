@@ -19,6 +19,7 @@ public class ModalCreateButtonListViewProcessor extends AbstractModalViewProcess
 	                           EntityView entityView,
 	                           ContainerViewElement container,
 	                           ViewElementBuilderContext builderContext ) {
+		super.postRender( entityViewRequest, entityView, container, builderContext );
 		EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
 		ContainerViewElementUtils.find( container, "btn-create", ButtonViewElement.class )
 		                         .ifPresent(

@@ -46,7 +46,7 @@ public class ModalSubmitAndRefreshTableViewProcessor extends ModalFormViewProces
 				             .redirect(
 						             requestActionHandler()
 								             .partial( "::itemsTable" )
-								             .target( ".em-sortableTable-panel" ),
+								             .target( ".exm-table-refresh-target" ),
 						             closeModalHandler( getModalSelector() ),
 						             initializeFormElements( ".em-sortableTable-panel" )
 				             ) );
