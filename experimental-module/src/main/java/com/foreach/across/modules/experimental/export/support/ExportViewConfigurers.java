@@ -51,7 +51,7 @@ public class ExportViewConfigurers
 			).postProcess(
 					( view, registry ) -> {
 						Optional<EntityPropertySelector> propertySelector = Optional.ofNullable( configurer.getPropertiesToExport() );
-						if ( propertySelector.isEmpty() ) {
+						if ( !propertySelector.isPresent() ) {
 							propertySelector = registry.getProcessor( PropertyRenderingViewProcessor.class.getName(), PropertyRenderingViewProcessor.class )
 							                           .flatMap( ExportViewConfigurers::resolveEntityPropertySelector );
 						}

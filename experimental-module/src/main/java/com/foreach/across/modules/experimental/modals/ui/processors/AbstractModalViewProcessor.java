@@ -18,6 +18,7 @@ import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -112,8 +113,8 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 										           requestAction()
 												           .url( url.apply( linkViewBuilder, builderContext ) )
 												           .partial( partial )
-												           .requestConfig( Map.of( "headers",
-												                                   Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
+												           .requestConfig( ImmutableMap.of( "headers",
+																   ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
 												           .success(
 														           clearHandler( modalTarget( ".modal-title" ) ),
 														           clearHandler( modalTarget( ".modal-footer" ) ),
