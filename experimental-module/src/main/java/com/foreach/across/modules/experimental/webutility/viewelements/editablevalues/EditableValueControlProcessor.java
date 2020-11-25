@@ -85,7 +85,7 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 			return new UpdateResponse( false, new HashMap<>(), new HashMap<>(), new HashMap<>(),
 			                           buildPropertyErrors( properties.keySet(), errors, entityViewRequest ) );
 		}
-		return new UpdateResponse( true, Collections.emptyMap(), resolvePropertyValues( properties, entityViewRequest ), new HashMap<>(), new HashMap<>() );
+		return new UpdateResponse( true, new HashMap<>(), resolvePropertyValues( properties, entityViewRequest ), new HashMap<>(), new HashMap<>() );
 	}
 
 	private Map<String, Set<Error>> buildPropertyErrors( Collection<String> properties, Errors errors, EntityViewRequest entityViewRequest ) {
@@ -142,14 +142,10 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 				descriptor = parentPropertyRegistry.getProperty( propertyName );
 			}
 			if ( descriptor != null ) {
-
-				// because, java lambdas require final values!
-				EntityPropertyDescriptor actualDescriptor = descriptor;
-
 				Map<ViewElementMode, String> labels = new HashMap<>( viewElementModes.size() );
 
-				viewElementModes.forEach( mode -> {
-					ViewElement labelElement = entityViewElementBuilderService.createElementBuilder( actualDescriptor, mode ).build();
+				for ( ViewElementMode mode : viewElementModes ) {
+					ViewElement labelElement = entityViewElementBuilderService.createElementBuilder( descriptor, mode ).build();
 					if ( labelElement instanceof TextViewElement ) {
 						String label = ( (TextViewElement) labelElement ).getText();
 						labels.put( mode, label );
@@ -161,7 +157,7 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 					else {
 						labels.put( mode, "" );
 					}
-				} );
+				}
 
 				propertyValues.put( descriptor.getName(), new PropertyValue( true, labels ) );
 			}
