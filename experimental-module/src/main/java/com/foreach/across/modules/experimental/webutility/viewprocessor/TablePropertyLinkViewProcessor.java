@@ -42,7 +42,7 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
         return this;
     }
 
-    public TablePropertyLinkViewProcessor showEditIcon(boolean showIcon) {
+    public TablePropertyLinkViewProcessor showIcon(boolean showIcon) {
         this.showIcon = showIcon;
         return this;
     }
