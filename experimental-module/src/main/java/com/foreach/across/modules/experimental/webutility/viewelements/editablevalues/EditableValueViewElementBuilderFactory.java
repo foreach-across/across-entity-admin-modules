@@ -11,6 +11,7 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
+import com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes;
 import com.foreach.across.modules.experimental.webutility.viewelements.EditableValuesUtils;
 import com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -51,7 +53,6 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 {
 	public static final String ELEMENT_TYPE = EditableValueViewElementBuilderFactory.class.getName();
 	public static final String REQUIRED_VIEW = "editableValues";
-	public static final String EDITABLE_VALUE_INCLUDE_ACTIONS = "editable-value.include-actions";
 
 	/**
 	 * Base mode which can be handled by this builder factory.
@@ -126,10 +127,13 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 							if ( entity != null && entityViewContext != null && property != null ) {
 								wrapper.set(
 										new EditableValueSettings()
-												.propertyId( editableValuesUtils.resolveEntityPropertyId( builderContext ).orElseThrow() )
+												.propertyId( editableValuesUtils.resolveEntityPropertyId( builderContext )
+												                                .orElseThrow( () -> new NoSuchElementException( "No value present" ) ) )
 												.targetUrl( resolveTargetUrl( entityViewContext, entity ) )
 												.multiValueProperty( isMultiValueControl( propertyDescriptor, controlMode ) )
-												.includeActions( getAttributeOrDefault( propertyDescriptor, EDITABLE_VALUE_INCLUDE_ACTIONS, true ) )
+												.includeActions(
+														getAttributeOrDefault( propertyDescriptor, WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS,
+														                       true ) )
 								);
 							}
 

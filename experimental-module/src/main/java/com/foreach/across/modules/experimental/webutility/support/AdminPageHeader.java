@@ -47,8 +47,8 @@ import java.util.function.BiFunction;
 
 import static com.foreach.across.modules.adminweb.ui.PageContentStructure.ELEMENT_PAGE_TITLE;
 import static com.foreach.across.modules.adminweb.ui.PageContentStructure.ELEMENT_PAGE_TITLE_SUB_TEXT;
-import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.UI.DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE;
-import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.UI.DISABLE_ADMINPAGE_HEADER_EDITABLE_VALUE;
+import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.EditableValue.DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE;
+import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.EditableValue.DISABLE_ADMINPAGE_HEADER_EDITABLE_VALUE;
 import static com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory.propertyId;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
