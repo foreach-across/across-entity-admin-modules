@@ -7,20 +7,24 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
-import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupDescriptionTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupHelpTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupTooltipTextPostProcessor;
+import com.foreach.across.modules.entity.views.processors.PropertyRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode.REFRESHABLE_LIST_VALUE;
@@ -44,7 +48,7 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		ViewElementMode editableValueViewElementMode = WebUtilityViewElementMode.EDITABLE_VALUE_VIEW;
+		ViewElementMode editableValueViewElementMode = WebUtilityViewElementMode.EDITABLE_VALUE_VIEW();
 		EntityConfigurationBuilder<Object> editableValuesView =
 				new EntityConfigurationBuilder<>( moduleInfo.getApplicationContext().getAutowireCapableBeanFactory() )
 						.formView(
@@ -100,6 +104,7 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 						                           attribute.addViewElementPostProcessor( editableValueViewElementMode,
 						                                                                  new FormGroupDescriptionTextPostProcessor<>() );
 					                           } );
+					        customizeViewActionsIfNecessary( entityConfiguration );
 
 					        entityConfiguration
 							        .getAssociations()
@@ -112,9 +117,51 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 										        && association.getTargetEntityConfiguration().hasEntityModel() ) {
 									        associationEditableValuesView.accept( entityConfiguration, association );
 								        }
+								        customizeViewActionsIfNecessary( association );
 							        } );
 				        }
 		        );
+	}
+
+	private void customizeViewActionsIfNecessary( EntityViewRegistry entityViewRegistry ) {
+		handleViewActions( entityViewRegistry, EntityView.DETAIL_VIEW_NAME );
+		handleViewActions( entityViewRegistry, EntityView.UPDATE_VIEW_NAME );
+	}
+
+	private void handleViewActions( EntityViewRegistry entityViewRegistry, String viewName ) {
+		if ( entityViewRegistry.hasView( viewName ) ) {
+			EntityViewFactory viewFactory = entityViewRegistry.getViewFactory( viewName );
+			if ( viewFactory instanceof DispatchingEntityViewFactory ) {
+				EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
+				if ( !processorRegistry.contains( EditableValueViewActionsViewProcessor.class.getName() ) ) {
+					processorRegistry.getProcessor( PropertyRenderingViewProcessor.class.getName(), PropertyRenderingViewProcessor.class )
+					                 .flatMap( this::resolveViewElementMode )
+					                 .ifPresent(
+							                 vem -> {
+								                 if ( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW().equals( vem ) ) {
+									                 processorRegistry.addProcessor( new EditableValueViewActionsViewProcessor(), 1100 );
+								                 }
+							                 }
+					                 );
+				}
+
+			}
+		}
+	}
+
+	/**
+	 * Attempts to resolve the {@link ViewElementMode} registered on a {@link PropertyRenderingViewProcessor}.
+	 */
+	private Optional<ViewElementMode> resolveViewElementMode( PropertyRenderingViewProcessor viewProcessor ) {
+		ViewElementMode value = null;
+		try {
+			Field selector = PropertyRenderingViewProcessor.class.getDeclaredField( "viewElementMode" );
+			ReflectionUtils.makeAccessible( selector );
+			value = (ViewElementMode) selector.get( viewProcessor );
+		}
+		catch ( NoSuchFieldException | IllegalAccessException e ) {
+		}
+		return Optional.ofNullable( value );
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

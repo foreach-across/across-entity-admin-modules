@@ -17,12 +17,12 @@ public class CompanyUiConfiguration implements EntityConfigurer
 				        props -> props.property( "workRegulations" )
 				                      .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
 		        )
-		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW ) )
+		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() ) )
 		        .association(
 				        ab -> ab.name( "user.company" )
 				                .associationType( EntityAssociation.Type.EMBEDDED )
 				                .updateFormView(
-						                fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW )
+						                fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() )
 				                )
 		        );
 	}
