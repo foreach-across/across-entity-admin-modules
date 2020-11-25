@@ -31,7 +31,7 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
 
     private final TableLinker tableLinker;
     private String property;
-    private boolean showEditIcon = true;
+    private boolean showIcon = true;
 
     public TablePropertyLinkViewProcessor(EntityViewLinks entityViewLinks) {
         this.tableLinker = new TableLinker(entityViewLinks);
@@ -43,7 +43,7 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
     }
 
     public TablePropertyLinkViewProcessor showEditIcon(boolean showIcon) {
-        this.showEditIcon = showIcon;
+        this.showIcon = showIcon;
         return this;
     }
 
@@ -62,11 +62,18 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
 
             tableLinker.createLinkOnProperty(sortableTableBuilder, property, linkDestination, linkBuilder);
 
-            if (!showEditIcon) {
+            if (!showIcon) {
                 sortableTableBuilder.valueRowProcessor((ctx, row) ->
                         ContainerViewElementUtils.find(row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class).ifPresent(actions ->
                                 actions.getChildren().stream()
                                         .filter(c -> "edit".equals(c.get(HtmlViewElement.Functions.attribute("data-em-button-role"))))
+                                        .findFirst().ifPresent(actions::removeChild)
+                        ));
+
+                sortableTableBuilder.valueRowProcessor((ctx, row) ->
+                        ContainerViewElementUtils.find(row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class).ifPresent(actions ->
+                                actions.getChildren().stream()
+                                        .filter(c -> "view".equals(c.get(HtmlViewElement.Functions.attribute("data-em-button-role"))))
                                         .findFirst().ifPresent(actions::removeChild)
                         ));
             }
