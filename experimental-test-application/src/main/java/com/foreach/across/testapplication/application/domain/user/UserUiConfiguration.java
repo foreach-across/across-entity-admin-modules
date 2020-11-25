@@ -27,6 +27,6 @@ public class UserUiConfiguration implements EntityConfigurer
 		        .listView(
 				        lvb -> lvb.showProperties( "name", "dateOfBirth", "company" )
 		        )
-		        .updateFormView( fvb -> fvb.viewElementMode( ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) ) );
+		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW ) );
 	}
 }

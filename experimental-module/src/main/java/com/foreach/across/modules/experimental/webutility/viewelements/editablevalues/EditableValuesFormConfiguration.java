@@ -44,7 +44,7 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		ViewElementMode editableValueViewElementMode = ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE );
+		ViewElementMode editableValueViewElementMode = WebUtilityViewElementMode.EDITABLE_VALUE_VIEW;
 		EntityConfigurationBuilder<Object> editableValuesView =
 				new EntityConfigurationBuilder<>( moduleInfo.getApplicationContext().getAutowireCapableBeanFactory() )
 						.formView(

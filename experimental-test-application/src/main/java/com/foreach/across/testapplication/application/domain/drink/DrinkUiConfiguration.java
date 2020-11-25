@@ -2,7 +2,6 @@ package com.foreach.across.testapplication.application.domain.drink;
 
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
@@ -24,13 +23,13 @@ public class DrinkUiConfiguration implements EntityConfigurer
 						        dependsOn( dependsOn -> dependsOn.viewElementName( "entity.containsAlcohol" ).isChecked() )
 				        )
 		        )
-		        .detailView( fvb -> fvb.viewElementMode( ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) )
+		        .detailView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW )
 		                               .properties(
 				                               props -> props.property( "containsAlcohol" )
 				                                             .attribute( WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS, false )
 		                               )
 		        )
 		        .updateFormView(
-				        fvb -> fvb.viewElementMode( ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) ) );
+				        fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW ) );
 	}
 }
