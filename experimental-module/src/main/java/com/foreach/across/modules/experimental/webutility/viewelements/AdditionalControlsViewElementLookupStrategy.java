@@ -25,7 +25,8 @@ public class AdditionalControlsViewElementLookupStrategy implements ViewElementT
 			return RefreshableValueViewElementBuilderFactory.ELEMENT_TYPE;
 		}
 
-		if ( viewElementMode.matchesSingleTypeOf( EditableValueViewElementBuilderFactory.VIEW_ELEMENT_MODE ) ) {
+		if ( viewElementMode.matchesSingleTypeOf( EditableValueViewElementBuilderFactory.VIEW_ELEMENT_MODE )
+				|| viewElementMode.matchesSingleTypeOf( EditableValueViewElementBuilderFactory.LIST_VIEW_ELEMENT_MODE ) ) {
 			return EditableValueViewElementBuilderFactory.ELEMENT_TYPE;
 		}
 

@@ -56,6 +56,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 	 * Base mode which can be handled by this builder factory.
 	 */
 	public static final ViewElementMode VIEW_ELEMENT_MODE = ViewElementMode.of( "EDITABLE_VALUE" );
+	public static final ViewElementMode LIST_VIEW_ELEMENT_MODE = ViewElementMode.of( "LIST_EDITABLE_VALUE" );
 
 	private static final String VALUE_CHILD_MODE = "value";
 	private static final String CONTROL_CHILD_MODE = "control";
