@@ -51,6 +51,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 {
 	public static final String ELEMENT_TYPE = EditableValueViewElementBuilderFactory.class.getName();
 	public static final String REQUIRED_VIEW = "editableValues";
+	public static final String EDITABLE_VALUE_INCLUDE_ACTIONS = "editable-value.include-actions";
 
 	/**
 	 * Base mode which can be handled by this builder factory.
@@ -128,6 +129,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 												.propertyId( editableValuesUtils.resolveEntityPropertyId( builderContext ).orElseThrow() )
 												.targetUrl( resolveTargetUrl( entityViewContext, entity ) )
 												.multiValueProperty( isMultiValueControl( propertyDescriptor, controlMode ) )
+												.includeActions( getAttributeOrDefault( propertyDescriptor, EDITABLE_VALUE_INCLUDE_ACTIONS, true ) )
 								);
 							}
 
@@ -166,6 +168,12 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		                        .toUriString();
 	}
 
+	private <T> T getAttributeOrDefault( EntityPropertyDescriptor propertyDescriptor, String attributeName, T defaultValue ) {
+		return propertyDescriptor.hasAttribute( attributeName )
+				? (T) propertyDescriptor.getAttribute( attributeName )
+				: defaultValue;
+	}
+
 	private ViewElement.WitherSetter<HtmlViewElement> attributeIfDifferent( ViewElementMode viewElementMode, ViewElementMode defaultMode ) {
 		return node -> {
 			if ( !defaultMode.equals( viewElementMode ) ) {
@@ -192,6 +200,10 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		@NonNull
 		@JsonProperty
 		private boolean multiValueProperty;
+
+		@NonNull
+		@JsonProperty
+		private boolean includeActions;
 
 		@Override
 		public void applyTo( HtmlViewElement target ) {

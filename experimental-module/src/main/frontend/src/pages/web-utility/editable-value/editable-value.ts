@@ -58,7 +58,6 @@ const EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS =
   "</div></form>";
 
 export class EditableValue {
-  private showActions: string;
   private wrapper: any;
   private settings: any;
   private label: any;
@@ -71,7 +70,6 @@ export class EditableValue {
   private controlHolder: any;
 
   constructor(wrapper: any) {
-    this.showActions = wrapper.attr("show-actions");
     this.wrapper = wrapper;
     this.settings = wrapper.data("em-editable-value");
     this.label = $("[data-em-editable-value-role=value]", wrapper).first();
@@ -164,7 +162,7 @@ export class EditableValue {
     this.label.addClass("d-none");
     this.wrapper
       .removeClass("editable-value-reload")
-      .append(this.showActions === "true" ? EDITABLE_CONTROL_WRAPPER : EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS);
+      .append(this.includesActions() ? EDITABLE_CONTROL_WRAPPER : EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS);
 
     // ensure form cannot be submitted
     const controlHolder = $("form", this.wrapper);
@@ -419,7 +417,7 @@ export class EditableValue {
   }
 
   includesActions() {
-    return this.showActions === "true";
+    return this.settings.includeActions;
   }
 
   sendEvent(eventName: string): void {

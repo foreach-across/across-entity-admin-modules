@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static com.foreach.across.modules.experimental.webutility.support.WebUtilityConfigurers.dependsOn;
 import static com.foreach.across.modules.experimental.webutility.support.WebUtilityConfigurers.onProperties;
+import static com.foreach.across.modules.experimental.webutility.viewelements.editablevalues.EditableValueViewElementBuilderFactory.EDITABLE_VALUE_INCLUDE_ACTIONS;
 
 @Configuration
 public class DrinkUiConfiguration implements EntityConfigurer
@@ -20,6 +21,12 @@ public class DrinkUiConfiguration implements EntityConfigurer
 				        onProperties( "alcoholPercentage" ).enable(
 						        dependsOn( dependsOn -> dependsOn.viewElementName( "entity.containsAlcohol" ).isChecked() )
 				        )
+		        )
+		        .detailView( fvb -> fvb.viewElementMode( ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) )
+		                               .properties(
+				                               props -> props.property( "containsAlcohol" )
+				                                             .attribute( EDITABLE_VALUE_INCLUDE_ACTIONS, false )
+		                               )
 		        )
 		        .updateFormView(
 				        fvb -> fvb.viewElementMode( ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) ) );
