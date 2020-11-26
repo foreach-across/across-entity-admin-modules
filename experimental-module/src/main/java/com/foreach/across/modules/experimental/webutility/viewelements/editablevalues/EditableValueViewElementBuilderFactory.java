@@ -18,6 +18,7 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -76,6 +77,14 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 	public ViewElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
 		ViewElementMode valueMode = viewElementMode.getChildMode( VALUE_CHILD_MODE, ViewElementMode.VALUE );
 		ViewElementMode controlMode = viewElementMode.getChildMode( CONTROL_CHILD_MODE, ViewElementMode.CONTROL );
+		ViewElementBuilder valueBuilder = entityViewElementBuilderService.createElementBuilder( propertyDescriptor, valueMode );
+
+		ViewElementBuilderContextHolder.getViewElementBuilderContext()
+		                               .ifPresent( bc -> {
+			                               tryRegisterWebResources( bc );
+			                               valueBuilder.build( bc );
+		                               } );
+
 		if ( !propertyDescriptor.isWritable() ) {
 			return html.builders
 					.span()
@@ -83,11 +92,15 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 					.name( propertyDescriptor.getName() )
 					.add(
 							html.builders.span()
-							             .add( entityViewElementBuilderService.createElementBuilder( propertyDescriptor, valueMode ) ) );
+							             .add( valueBuilder ) );
 		}
 		boolean showActions = ( (SimpleEntityPropertyDescriptor) propertyDescriptor ).findAttribute( "showEditableActions" )
 		                                                                             .map( e -> (boolean) e )
 		                                                                             .orElse( true );
+
+		ViewElementBuilder controlBuilder = entityViewElementBuilderService.createElementBuilder( propertyDescriptor, controlMode );
+		ViewElementBuilderContextHolder.getViewElementBuilderContext()
+		                               .ifPresent( controlBuilder::build );
 		return html.builders
 				.span()
 				.attribute( "show-actions", showActions )
@@ -99,7 +112,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 						             .add(
 								             html.builders.span( attribute.of( EDITABLE_VALUE_ROLE ).withValue( VALUE_CHILD_MODE ) )
 								                          .with( attributeIfDifferent( valueMode, ViewElementMode.VALUE ) )
-								                          .add( entityViewElementBuilderService.createElementBuilder( propertyDescriptor, valueMode ) )
+								                          .add( valueBuilder )
 								                          .add( html.builders.span( css.of( "cta-item cta-edit" ) ) )
 						             )
 				)
@@ -111,7 +124,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 								                               .name( "editableValue-" + propertyDescriptor.getName() + "-control" )
 								                               .with( attributeIfDifferent( valueMode, ViewElementMode.CONTROL ) )
 								                               .type( MediaType.TEXT_HTML )
-								                               .add( entityViewElementBuilderService.createElementBuilder( propertyDescriptor, controlMode ) )
+								                               .add( controlBuilder )
 						             )
 				)
 				.postProcessor(

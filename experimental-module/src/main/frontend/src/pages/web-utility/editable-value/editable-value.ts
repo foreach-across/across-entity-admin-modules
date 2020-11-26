@@ -206,10 +206,18 @@ export class EditableValue {
     e.stopPropagation();
 
     ax.log.debug("Closing editable value control for", this.propertyId);
+    this.sendEvent("switch-to-value");
+    // @ts-ignore
+    const $focusedElement = $(document.activeElement);
+    // @ts-ignore
+    const focusedElementWithinControlHolder = $focusedElement.parent(this.controlHolder).length !== 0;
+    if ($focusedElement && focusedElementWithinControlHolder) {
+      // @ts-ignore
+      $focusedElement.trigger("blur");
+    }
     this.label.removeClass("d-none");
     this.controlHolder.remove();
     this.controlHolder = null;
-    this.sendEvent("switch-to-value");
   }
 
   _updateValueWithSpinner(e: any) {

@@ -35,7 +35,6 @@ public class WebUtilityModuleWebResources implements WebResourcePackage
 				WebResourceRule.add(
 						WebResource.css( "@static:/experimental/web/editable-value.css" ) )
 				               .withKey( "experimental-editable-value-css" )
-				               .after( "experimental-web-utilities" )
 				               .toBucket( CSS )
 		);
 	}
