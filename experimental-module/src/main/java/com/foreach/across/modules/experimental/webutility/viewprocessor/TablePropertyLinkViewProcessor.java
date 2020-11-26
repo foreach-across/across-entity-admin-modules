@@ -16,6 +16,8 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 
+import java.util.function.Function;
+
 /**
  * Use the property as a link to the update / detail view.
  * <p>
@@ -32,7 +34,8 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter
 
 	private final TableLinker tableLinker;
 	private String property;
-	private boolean showEditIcon = true;
+	private boolean showIcon = true;
+	private Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier;
 
 	public TablePropertyLinkViewProcessor( EntityViewLinks entityViewLinks ) {
 		this.tableLinker = new TableLinker( entityViewLinks );
@@ -43,9 +46,13 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter
 		return this;
 	}
 
-	public TablePropertyLinkViewProcessor showEditIcon( boolean showIcon ) {
-		this.showEditIcon = showIcon;
+	public TablePropertyLinkViewProcessor showIcon( boolean showIcon ) {
+		this.showIcon = showIcon;
 		return this;
+	}
+
+	public void resolveLinkDestination( Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier ) {
+		this.linkDestinationSupplier = linkDestinationSupplier;
 	}
 
 	@Override
@@ -53,7 +60,8 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter
 		SortableTableBuilder sortableTableBuilder = builderMap.get( SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class );
 
 		if ( sortableTableBuilder != null ) {
-			TableLinker.LinkDestination linkDestination = entityViewRequest.getEntityViewContext().getAllowableActions().contains(
+			TableLinker.LinkDestination linkDestination = linkDestinationSupplier != null ? linkDestinationSupplier.apply(
+					entityViewRequest ) : entityViewRequest.getEntityViewContext().getAllowableActions().contains(
 					AllowableAction.UPDATE ) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL;
 			EntityAssociation entityAssociation =
 					entityViewRequest.getEntityViewContext().isForAssociation() ? entityViewRequest.getEntityViewContext().getEntityAssociation() : null;
@@ -65,13 +73,24 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter
 
 			tableLinker.createLinkOnProperty( sortableTableBuilder, property, linkDestination, linkBuilder );
 
-			if ( !showEditIcon ) {
+			if ( !showIcon ) {
 				sortableTableBuilder.valueRowProcessor( ( ctx, row ) ->
 						                                        ContainerViewElementUtils
 								                                        .find( row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class )
 								                                        .ifPresent( actions ->
 										                                                    actions.getChildren().stream()
 										                                                           .filter( c -> "edit".equals( c.get( HtmlViewElement.Functions
+												                                                                                               .attribute(
+														                                                                                               "data-em-button-role" ) ) ) )
+										                                                           .findFirst().ifPresent( actions::removeChild )
+								                                        ) );
+
+				sortableTableBuilder.valueRowProcessor( ( ctx, row ) ->
+						                                        ContainerViewElementUtils
+								                                        .find( row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class )
+								                                        .ifPresent( actions ->
+										                                                    actions.getChildren().stream()
+										                                                           .filter( c -> "view".equals( c.get( HtmlViewElement.Functions
 												                                                                                               .attribute(
 														                                                                                               "data-em-button-role" ) ) ) )
 										                                                           .findFirst().ifPresent( actions::removeChild )

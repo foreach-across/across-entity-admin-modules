@@ -43,11 +43,12 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static com.foreach.across.modules.adminweb.ui.PageContentStructure.ELEMENT_PAGE_TITLE;
 import static com.foreach.across.modules.adminweb.ui.PageContentStructure.ELEMENT_PAGE_TITLE_SUB_TEXT;
-import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.UI.DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE;
-import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.UI.DISABLE_ADMINPAGE_HEADER_EDITABLE_VALUE;
+import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.EditableValue.DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE;
+import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.EditableValue.DISABLE_ADMINPAGE_HEADER_EDITABLE_VALUE;
 import static com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory.propertyId;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
@@ -87,54 +88,18 @@ class AdminPageHeader
 
 		EntityViewContext originalEntityViewContext = pageStructureRenderedEvent.getEntityViewRequest().getEntityViewContext();
 		if ( originalEntityViewContext.isForAssociation() && originalEntityViewContext.holdsEntity() && viewFactory != null ) {
-			configureRefreshableControlAsBreadcrumbValue( originalEntityViewContext );
 			ViewElementMode renderMode =
 					Boolean.FALSE.equals(
 							originalEntityViewContext.getEntityConfiguration().getAttribute( DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE ) )
 							? WebUtilityViewElementMode.EDITABLE_VALUE
 							: WebUtilityViewElementMode.REFRESHABLE_VALUE;
 
-			configureAssociationPageHader( pageStructureRenderedEvent.getPageContentStructure()
-			                                                         .findAll( NodeViewElement.class, ve -> css( "tab-pane-header" ).test( ve ) )
-			                                                         .findFirst(),
-			                               originalEntityViewContext, viewFactory,
-			                               pageStructureRenderedEvent.getBuilderContext(), renderMode );
+			configureAssociationPageHeader( pageStructureRenderedEvent.getPageContentStructure()
+			                                                          .findAll( NodeViewElement.class, ve -> css( "tab-pane-header" ).test( ve ) )
+			                                                          .findFirst(),
+			                                originalEntityViewContext, viewFactory,
+			                                pageStructureRenderedEvent.getBuilderContext(), renderMode );
 		}
-	}
-
-	private void configureAssociationPageHader( Optional<NodeViewElement> oHeader,
-	                                            EntityViewContext entityViewContext,
-	                                            EntityViewFactory viewFactory,
-	                                            ViewElementBuilderContext builderContext,
-	                                            ViewElementMode renderMode ) {
-		EntityPropertyDescriptor labelProperty = entityViewContext.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
-		if ( labelProperty.hasAttribute( EntityAttributes.LABEL_TARGET_PROPERTY ) && oHeader.isPresent() ) {
-			NodeViewElement header = oHeader.get();
-			String targetProperty = labelProperty.getAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, String.class );
-
-			Class<Object> entityType = entityViewContext.getEntityConfiguration().getEntityType();
-			try (ScopedAttributesViewElementBuilderContext ignore = builderContext.withAttributeOverride( EntityViewModel.VIEW_CONTEXT, entityViewContext )) {
-				Map<String, ViewElement> controls = entityControlFactory
-						.createControlsForClass( entityType )
-						.showProperties( targetProperty )
-						.properties( props -> props.property( targetProperty )
-						                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER ) )
-						.defaultRenderMode( renderMode )
-						.forInstance( entityViewContext.getEntity() )
-						.build( builderContext );
-
-				String propertyAsHtml = renderViewElement( controls.get( targetProperty ) );
-
-				String titleMessageCode = resolveTitleMessageCode( viewFactory );
-				String title = resolveMessageCode( entityViewContext, titleMessageCode, propertyAsHtml );
-				String subTitle = resolveMessageCode( entityViewContext, titleMessageCode + ".subText", propertyAsHtml );
-
-				// Replace the header with the inline control
-				header.clearChildren();
-				header.addChild( createHeaderViewElement( title, subTitle ) );
-			}
-		}
-
 	}
 
 	private void alwaysRenderFeedbackSection( EntityPageStructureRenderedEvent<?> pageStructureRenderedEvent ) {
@@ -152,29 +117,50 @@ class AdminPageHeader
 		EntityPropertyDescriptor labelProperty = entityViewContext.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
 
 		if ( labelProperty.hasAttribute( EntityAttributes.LABEL_TARGET_PROPERTY ) ) {
-			String targetProperty = labelProperty.getAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, String.class );
+			configurePageHeader( entityViewContext, viewFactory, builderContext, renderMode, header, labelProperty, this::createHeaderViewElement );
+		}
+	}
 
-			Class<Object> entityType = entityViewContext.getEntityConfiguration().getEntityType();
-			try (ScopedAttributesViewElementBuilderContext ignore = builderContext.withAttributeOverride( EntityViewModel.VIEW_CONTEXT, entityViewContext )) {
-				Map<String, ViewElement> controls = entityControlFactory
-						.createControlsForClass( entityType )
-						.showProperties( targetProperty )
-						.properties( props -> props.property( targetProperty )
-						                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER ) )
-						.defaultRenderMode( renderMode )
-						.forInstance( entityViewContext.getEntity() )
-						.build( builderContext );
+	private void configureAssociationPageHeader( Optional<NodeViewElement> oHeader,
+	                                             EntityViewContext entityViewContext,
+	                                             EntityViewFactory viewFactory,
+	                                             ViewElementBuilderContext builderContext,
+	                                             ViewElementMode renderMode ) {
+		EntityPropertyDescriptor labelProperty = entityViewContext.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
+		if ( labelProperty.hasAttribute( EntityAttributes.LABEL_TARGET_PROPERTY ) && oHeader.isPresent() ) {
+			NodeViewElement header = oHeader.get();
+			configurePageHeader( entityViewContext, viewFactory, builderContext, renderMode, header, labelProperty,
+			                     this::createAssociationHeaderViewElement );
+		}
+	}
 
-				String propertyAsHtml = renderViewElement( controls.get( targetProperty ) );
+	private void configurePageHeader( EntityViewContext entityViewContext,
+	                                  EntityViewFactory viewFactory,
+	                                  ViewElementBuilderContext builderContext,
+	                                  ViewElementMode renderMode, NodeViewElement header, EntityPropertyDescriptor labelProperty,
+	                                  BiFunction<String, String, ViewElement> headerViewElementResolver ) {
+		String targetProperty = labelProperty.getAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, String.class );
 
-				String titleMessageCode = resolveTitleMessageCode( viewFactory );
-				String title = resolveMessageCode( entityViewContext, titleMessageCode, propertyAsHtml );
-				String subTitle = resolveMessageCode( entityViewContext, titleMessageCode + ".subText", propertyAsHtml );
+		Class<Object> entityType = entityViewContext.getEntityConfiguration().getEntityType();
+		try (ScopedAttributesViewElementBuilderContext ignore = builderContext.withAttributeOverride( EntityViewModel.VIEW_CONTEXT, entityViewContext )) {
+			Map<String, ViewElement> controls = entityControlFactory
+					.createControlsForClass( entityType )
+					.showProperties( targetProperty )
+					.properties( props -> props.property( targetProperty )
+					                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER ) )
+					.defaultRenderMode( renderMode )
+					.forInstance( entityViewContext.getEntity() )
+					.build( builderContext );
 
-				// Replace the header with the inline control
-				header.clearChildren();
-				header.addChild( createAssociationHeaderViewElement( title, subTitle ) );
-			}
+			String propertyAsHtml = renderViewElement( controls.get( targetProperty ) );
+
+			String titleMessageCode = resolveTitleMessageCode( viewFactory );
+			String title = resolveMessageCode( entityViewContext, titleMessageCode, propertyAsHtml );
+			String subTitle = resolveMessageCode( entityViewContext, titleMessageCode + ".subText", propertyAsHtml );
+
+			// Replace the header with the inline control
+			header.clearChildren();
+			header.addChild( headerViewElementResolver.apply( title, subTitle ) );
 		}
 	}
 

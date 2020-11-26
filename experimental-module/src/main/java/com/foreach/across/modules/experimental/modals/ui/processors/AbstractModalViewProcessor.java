@@ -2,6 +2,7 @@ package com.foreach.across.modules.experimental.modals.ui.processors;
 
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
@@ -17,14 +18,18 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
+import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -90,6 +95,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 
 	@Override
 	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 		webResourceRegistry.apply(
 				WebResourceRule.addPackage( WebUtilityModuleWebResources.NAME ),
 				WebResourceRule.add(
@@ -98,6 +104,16 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 				               .after( WebUtilityModuleWebResources.NAME )
 				               .toBucket( JAVASCRIPT_PAGE_END )
 		);
+	}
+
+	@Override
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		Predicate<NodeViewElement> itemsTableElement = nve -> "itemsTable".equals( nve.getName() ) || "itemsTable-noresults".equals( nve.getName() );
+		ContainerViewElementUtils.findAll( container, NodeViewElement.class, itemsTableElement )
+		                         .forEach( ve -> ve.set( css.of( "exm-table-refresh-target" ) ) );
 	}
 
 	protected void configureViewElement( ViewElement viewElement,
@@ -112,8 +128,8 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 										           requestAction()
 												           .url( url.apply( linkViewBuilder, builderContext ) )
 												           .partial( partial )
-												           .requestConfig( Map.of( "headers",
-												                                   Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
+												           .requestConfig( ImmutableMap.of( "headers",
+												                                            ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
 												           .success(
 														           clearHandler( modalTarget( ".modal-title" ) ),
 														           clearHandler( modalTarget( ".modal-footer" ) ),

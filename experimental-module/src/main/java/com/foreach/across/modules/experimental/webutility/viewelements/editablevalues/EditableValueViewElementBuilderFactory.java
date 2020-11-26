@@ -11,6 +11,7 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
+import com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes;
 import com.foreach.across.modules.experimental.webutility.viewelements.EditableValuesUtils;
 import com.foreach.across.modules.experimental.webutility.viewelements.refreshablevalues.RefreshableValueViewElementBuilderFactory;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -126,9 +128,13 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 							if ( entity != null && entityViewContext != null && property != null ) {
 								wrapper.set(
 										new EditableValueSettings()
-												.propertyId( editableValuesUtils.resolveEntityPropertyId( builderContext ).orElseThrow() )
+												.propertyId( editableValuesUtils.resolveEntityPropertyId( builderContext )
+												                                .orElseThrow( () -> new NoSuchElementException( "No value present" ) ) )
 												.targetUrl( resolveTargetUrl( entityViewContext, entity ) )
 												.multiValueProperty( isMultiValueControl( propertyDescriptor, controlMode ) )
+												.includeActions(
+														getAttributeOrDefault( propertyDescriptor, WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS,
+														                       true ) )
 								);
 							}
 
@@ -167,6 +173,12 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		                        .toUriString();
 	}
 
+	private <T> T getAttributeOrDefault( EntityPropertyDescriptor propertyDescriptor, String attributeName, T defaultValue ) {
+		return propertyDescriptor.hasAttribute( attributeName )
+				? (T) propertyDescriptor.getAttribute( attributeName )
+				: defaultValue;
+	}
+
 	private ViewElement.WitherSetter<HtmlViewElement> attributeIfDifferent( ViewElementMode viewElementMode, ViewElementMode defaultMode ) {
 		return node -> {
 			if ( !defaultMode.equals( viewElementMode ) ) {
@@ -193,6 +205,10 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		@NonNull
 		@JsonProperty
 		private boolean multiValueProperty;
+
+		@NonNull
+		@JsonProperty
+		private boolean includeActions;
 
 		@Override
 		public void applyTo( HtmlViewElement target ) {

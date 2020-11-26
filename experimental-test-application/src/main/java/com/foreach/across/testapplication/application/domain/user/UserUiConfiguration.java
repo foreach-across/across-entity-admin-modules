@@ -43,7 +43,7 @@ public class UserUiConfiguration implements EntityConfigurer
 				        lvb -> lvb.showProperties( "name", "dateOfBirth", "company" )
 				                  .properties( removeLabelsWithinFormGroups( "name", "dateOfBirth", "company" ) )
 		        )
-		        .updateFormView( fvb -> fvb.viewElementMode( ViewElementMode.FORM_READ.withChildMode( "control", WebUtilityViewElementMode.EDITABLE_VALUE ) ) )
+		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() ) )
 		        .postProcessor( mec -> {
 			        EntityViewFactory listView = mec.getViewFactory( EntityView.LIST_VIEW_NAME );
 			        if ( listView instanceof DispatchingEntityViewFactory ) {

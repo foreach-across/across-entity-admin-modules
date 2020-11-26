@@ -52,7 +52,7 @@ EntityModule.registerInitializer(function (node) {
   // @ts-ignore
   $.fn.focusTextToEnd = function () {
     this.focus();
-    var $thisVal = this.val();
+    const $thisVal = this.val();
     this.val("").val($thisVal);
     return this;
   };
@@ -88,9 +88,12 @@ class TextInputEditableValueHandler implements EditableValueHandler {
 
 class CheckboxRadioSelectEditableValueHandler implements EditableValueHandler {
   canHandle(control: any, editableValueHolder: EditableValue, event: any): boolean {
-    if (event.type === "change" && !editableValueHolder.supportsMultiValueSelection()) {
+    if (
+      event.type === "change" &&
+      !(editableValueHolder.includesActions() || editableValueHolder.supportsMultiValueSelection())
+    ) {
       const $control = $(control);
-      return $control.is("input[type='checkbox']") || $control.is("inupt[type='radio']") || $control.is("select");
+      return $control.is("input[type='checkbox']") || $control.is("input[type='radio']") || $control.is("select");
     }
     return false;
   }

@@ -43,9 +43,9 @@ export function updatePropertyData(propertyId: any, propertyData: any) {
   });
 }
 
-var EDITABLE_VALUE_CTA = "<span class='cta-item cta-edit'></span>";
+const EDITABLE_VALUE_CTA = "<span class='cta-item cta-edit'></span>";
 
-var EDITABLE_CONTROL_WRAPPER =
+const EDITABLE_CONTROL_WRAPPER =
   '<form class="editable-value-form"><div class="editable-value-control"><span data-editable-value-control="true"></span>' +
   '<span class="editable-value-actions">' +
   '<a class="btn btn-sm" data-action="save"><i class="fas fa-check fa-fw"/></a>' +
@@ -53,12 +53,11 @@ var EDITABLE_CONTROL_WRAPPER =
   '<span class="btn btn-sm d-none" data-action="loading"><i class="fas fa-circle-notch fa-spin fa-fw"/></span>' +
   "</span></div></form>";
 
-var EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS =
+const EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS =
   '<form class="editable-value-form"><div class="editable-value-control"><span data-editable-value-control="true"></span>' +
   "</div></form>";
 
 export class EditableValue {
-  private showActions: string;
   private wrapper: any;
   private settings: any;
   private label: any;
@@ -71,7 +70,6 @@ export class EditableValue {
   private controlHolder: any;
 
   constructor(wrapper: any) {
-    this.showActions = wrapper.attr("show-actions");
     this.wrapper = wrapper;
     this.settings = wrapper.data("em-editable-value");
     this.label = $("[data-em-editable-value-role=value]", wrapper).first();
@@ -96,7 +94,7 @@ export class EditableValue {
   }
 
   _configureLabelHandler() {
-    var label = this.label;
+    const label = this.label;
 
     // Configure refresh from other value updates
     label.addClass("editable-value-value").attr("data-em-property-id", this.propertyId);
@@ -164,10 +162,10 @@ export class EditableValue {
     this.label.addClass("d-none");
     this.wrapper
       .removeClass("editable-value-reload")
-      .append(this.showActions === "true" ? EDITABLE_CONTROL_WRAPPER : EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS);
+      .append(this.includesActions() ? EDITABLE_CONTROL_WRAPPER : EDITABLE_CONTROL_WRAPPER_WITHOUT_ACTIONS);
 
     // ensure form cannot be submitted
-    var controlHolder = $("form", this.wrapper);
+    const controlHolder = $("form", this.wrapper);
     controlHolder.on("submit", function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -175,8 +173,8 @@ export class EditableValue {
     });
 
     // build the control DOM structure
-    var controlScript = $("[data-em-editable-value-role=control]", this.wrapper).first();
-    let $control = $("[data-editable-value-control]", controlHolder);
+    const controlScript = $("[data-em-editable-value-role=control]", this.wrapper).first();
+    const $control = $("[data-editable-value-control]", controlHolder);
     $control.html(BootstrapUiModule.refTarget(controlScript).html());
     $control.data("editableValue", this);
 
@@ -194,7 +192,7 @@ export class EditableValue {
     $("[data-action=save]", controlHolder).on("click", this._updateValueWithSpinner.bind(this));
 
     $(document).on("mousedown", (event) => {
-      var target = $(event.target);
+      const target = $(event.target);
 
       if (this.controlHolder && !target.closest(".editable-value-control").length) {
         this._cancelControl(event);
@@ -220,19 +218,19 @@ export class EditableValue {
 
     ax.log.group("Posting editable value update for", this.propertyId);
 
-    var properties = this._retrieveRefreshableValuesToUpdate();
+    const properties = this._retrieveRefreshableValuesToUpdate();
     ax.log.debug("Requesting refresh for properties", properties);
 
-    var wrapper = this.wrapper;
-    var entityPrefix = this.entityPrefix;
-    var propertyId = this.propertyId;
-    var label = this.label;
-    var propertyNameOfControl = this.propertyNameOfControl;
-    var controlHolder = this.controlHolder;
+    const wrapper = this.wrapper;
+    const entityPrefix = this.entityPrefix;
+    const propertyId = this.propertyId;
+    const label = this.label;
+    const propertyNameOfControl = this.propertyNameOfControl;
+    const controlHolder = this.controlHolder;
 
     controlHolder.addClass("loading");
-    let formControlElements = controlHolder.find(":input:not([disabled])");
-    let actionsToToggleVisibility = controlHolder.find(".editable-value-actions > [data-action]");
+    const formControlElements = controlHolder.find(":input:not([disabled])");
+    const actionsToToggleVisibility = controlHolder.find(".editable-value-actions > [data-action]");
 
     const requestConfiguration = this.getRequestConfiguration($("form", wrapper), properties);
 
@@ -272,7 +270,7 @@ export class EditableValue {
           $(".invalid-feedback", controlHolder).remove();
           $(".form-control", controlHolder).addClass("is-invalid");
 
-          var messages = $.map(jsonContent.errors[propertyNameOfControl], function (error, ix) {
+          const messages = $.map(jsonContent.errors[propertyNameOfControl], function (error, ix) {
             return '<span class="validation-message">' + error.message + "</span>";
           });
 
@@ -297,14 +295,14 @@ export class EditableValue {
 
     ax.log.group("Posting editable value update for", this.propertyId);
 
-    var properties = this._retrieveRefreshableValuesToUpdate();
+    const properties = this._retrieveRefreshableValuesToUpdate();
     ax.log.debug("Requesting refresh for properties", properties);
 
-    var wrapper = this.wrapper;
-    var entityPrefix = this.entityPrefix;
-    var propertyId = this.propertyId;
-    var propertyNameOfControl = this.propertyNameOfControl;
-    var controlHolder = this.controlHolder;
+    const wrapper = this.wrapper;
+    const entityPrefix = this.entityPrefix;
+    const propertyId = this.propertyId;
+    const propertyNameOfControl = this.propertyNameOfControl;
+    const controlHolder = this.controlHolder;
 
     const requestConfiguration = this.getRequestConfiguration($("form", wrapper), properties);
 
@@ -340,7 +338,7 @@ export class EditableValue {
           $(".invalid-feedback", controlHolder).remove();
           $(".form-control", controlHolder).addClass("is-invalid");
 
-          var messages = $.map(jsonContent.errors[propertyNameOfControl], function (error, ix) {
+          const messages = $.map(jsonContent.errors[propertyNameOfControl], function (error, ix) {
             return '<span class="validation-message">' + error.message + "</span>";
           });
 
@@ -387,13 +385,13 @@ export class EditableValue {
   }
 
   _retrieveRefreshableValuesToUpdate() {
-    var entityPrefix = this.entityPrefix;
-    var properties: { [key: string]: any } = {};
+    const entityPrefix = this.entityPrefix;
+    const properties: { [key: string]: any } = {};
 
     $("[data-em-property-id]").each(function () {
-      var propertyId = $(this).data("em-property-id");
+      const propertyId = $(this).data("em-property-id");
       if (propertyId.startsWith(entityPrefix)) {
-        var viewElementMode = resolveViewElementMode($(this));
+        const viewElementMode = resolveViewElementMode($(this));
         // todo this will probably break in the case of embedded entitiy/colleciton
         properties[
           "extensions[editableValues].properties[" + propertyNameOf(propertyId) + "]=" + viewElementMode
@@ -416,6 +414,10 @@ export class EditableValue {
 
   supportsMultiValueSelection() {
     return this.settings.multiValueProperty;
+  }
+
+  includesActions() {
+    return this.settings.includeActions;
   }
 
   sendEvent(eventName: string): void {
