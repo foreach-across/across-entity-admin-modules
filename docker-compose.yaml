@@ -7,23 +7,12 @@ services:
     #     https://github.com/carlossg/docker-maven/issues/90
     # 3.) Using > 3.5.0 because of timestamp issues with -SNAPSHOT dependencies
     #     https://issues.apache.org/jira/browse/MDEPLOY-221
-    image: 'ax-maven-with-build-tools:3.6.2-jdk-11'
-    build:
-      context: .
-      dockerfile: 'docker-build-files/Dockerfile'
+    image: 'maven:3.6.3-jdk-8'
     working_dir: '/usr/src/app'
     volumes:
       - '${PWD}:/usr/src/app:delegated'
-      - './docker-build-files/wait-for-it.sh:/root/wait-for-it.sh'
-      - './docker-build-files/wait-for-datasource.jar:/root/wait-for-datasource.jar'
-      # TODO: should we map the dev-configs volume or just include it in our repo?
-      - './docker-build-files/dev-configs:/root/dev-configs'
       # Reuse the maven repository from the host, we could omit it, but it would fetch at each build
       - '${HOME}/.m2:/root/.m2:delegated'
-      # Reuse embedded mongo db downloads
-      - '${HOME}/.embedmongo:/root/.embedmongo:delegated'
-      # Share our GPG keys with underlying container
-      - '${HOME}/.gnupg:/root/.gnupg:delegated'
       - '/var/run/docker.sock:/var/run/docker.sock'
     # WINDOWS USERS using cmd.exe:
     #- '${USERPROFILE}/.m2:/root/.m2'
@@ -36,55 +25,6 @@ services:
       LC_ALL: "C"
       # Faster maven startup https://jrebel.com/rebellabs/your-maven-build-is-slow-speed-it-up/
       MAVEN_OPTS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
-
-  ### Sonar ########
-  #
-  # docker-compose up --exit-code-from sonar --abort-on-container-exit sonar
-  # docker-compose rm -f -s -v sonar
-  #
-  ####################
-  sonar:
-    extends:
-      service: 'maven-base'
-    command: sh -c "mvn -U --batch-mode org.jacoco:jacoco-maven-plugin:prepare-agent clean install -Dmaven.javadoc.skip=true -Pcoverage-per-test && mvn --batch-mode sonar:sonar -P!sonar,ax-sonarcloud -Dsonar.projectKey=$ACROSS_PLAN_KEY -Dsonar.branch.name=$bamboo_planRepository_branchName"
-
-  ### H2 ########
-  #
-  # docker-compose up --exit-code-from crossdb-test-h2 --abort-on-container-exit crossdb-test-h2
-  # docker-compose rm -s -f -v crossdb-test-h2
-  #
-  ####################
-  crossdb-test-h2:
-    extends:
-      service: 'maven-base'
-    command: sh -c "mvn  --batch-mode clean test-compile failsafe:integration-test failsafe:verify -Dmaven.javadoc.skip=true -DacrossTest.datasource=h2"
-
-  ### MySQL ########
-  #
-  # docker-compose up --exit-code-from crossdb-test-mysql --abort-on-container-exit mysql crossdb-test-mysql
-  # docker-compose rm -s -f -v mysql crossdb-test-mysql
-  #
-  ####################
-  crossdb-test-mysql:
-    extends:
-      service: 'maven-base'
-    #command: 'mvn clean test-compile failsafe:integration-test failsafe:verify -Dmaven.javadoc.skip=true -DacrossTest.datasource=mysql'
-    command: sh -c "java -Ddatasource=mysql -jar /root/wait-for-datasource.jar && mvn --batch-mode clean test-compile failsafe:integration-test failsafe:verify -Dmaven.javadoc.skip=true -DacrossTest.datasource=mysql"
-    depends_on:
-      - 'mysql'
-  mysql:
-    image: 'mysql:5.5'
-    restart: 'always'
-    ports:
-      - "3306:3306"
-    tmpfs:
-      - /var/lib/mysql:rw
-    environment:
-      - MYSQL_ROOT_PASSWORD=
-      - MYSQL_DATABASE=axt
-      - MYSQL_USER=axt
-      - MYSQL_PASSWORD=across_test
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
 
   frontend:
     tty: false

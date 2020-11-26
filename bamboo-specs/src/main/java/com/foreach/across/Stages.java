@@ -3,6 +3,7 @@ package com.foreach.across;
 import com.atlassian.bamboo.specs.api.builders.BambooKey;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
+import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
 import com.atlassian.bamboo.specs.api.builders.plan.configuration.AllOtherPluginsConfiguration;
 import com.atlassian.bamboo.specs.api.builders.task.Task;
 import com.atlassian.bamboo.specs.builders.task.ScpTask;
@@ -29,7 +30,12 @@ public class Stages
 	public static Stage unitTests() {
 		return new Stage( "Run tests" )
 				.description( "Checks that the library can be built and all tests succeed" )
-				.jobs( new Job( "Run unit tests", new BambooKey( "JOB1" ) )
+				.jobs(new Job("Run unit tests", new BambooKey("JOB1"))
+						.artifacts(new Artifact()
+								.name("Cypress tests")
+								.copyPattern("**/*")
+								.location("experimental-test-application/target/test-classes/e2e/cypress")
+						)
 						       .pluginConfigurations( new AllOtherPluginsConfiguration() )
 						       .tasks(
 								       defaultRepositoryCheckoutTask(),

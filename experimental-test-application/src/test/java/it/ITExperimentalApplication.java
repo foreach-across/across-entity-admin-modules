@@ -7,10 +7,14 @@ import com.foreach.across.testapplication.application.domain.drink.DrinkReposito
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ContainerNetwork;
 import io.github.wimdeblauwe.testcontainers.cypress.CypressContainer;
+import io.github.wimdeblauwe.testcontainers.cypress.CypressTest;
 import io.github.wimdeblauwe.testcontainers.cypress.CypressTestResults;
+import io.github.wimdeblauwe.testcontainers.cypress.CypressTestSuite;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.DynamicContainer;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,11 +25,14 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.dockerclient.DockerClientConfigUtils;
 import org.testcontainers.utility.MountableFile;
 
+import javax.validation.constraints.NotNull;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -52,6 +59,8 @@ class ITExperimentalApplication {
 			container.start();
 
 			CypressTestResults testResults = container.getTestResults();
+
+			//return convertToJUnitDynamicTests(testResults);
 
 			if (testResults.getNumberOfFailingTests() > 0) {
 				fail("There was a failure running the Cypress tests!\n\n" + testResults);
@@ -98,6 +107,7 @@ class ITExperimentalApplication {
 		@Override
 		@SneakyThrows
 		protected void configure() {
+			//addEnv("CI", "1");
 			if (!DockerClientConfigUtils.IN_A_CONTAINER) {
 				Testcontainers.exposeHostPorts(port);
 				super.configure();
@@ -145,4 +155,23 @@ class ITExperimentalApplication {
 			}
 		}
 	}
+
+	@NotNull
+	private List<DynamicContainer> convertToJUnitDynamicTests(CypressTestResults testResults) {
+		List<DynamicContainer> dynamicContainers = new ArrayList<>();
+		List<CypressTestSuite> suites = testResults.getSuites();
+		for (CypressTestSuite suite : suites) {
+			createContainerFromSuite(dynamicContainers, suite);
+		}
+		return dynamicContainers;
+	}
+
+	private void createContainerFromSuite(List<DynamicContainer> dynamicContainers, CypressTestSuite suite) {
+		List<DynamicTest> dynamicTests = new ArrayList<>();
+		for (CypressTest test : suite.getTests()) {
+			dynamicTests.add(DynamicTest.dynamicTest(test.getDescription(), () -> assertTrue(test.isSuccess())));
+		}
+		dynamicContainers.add(DynamicContainer.dynamicContainer(suite.getTitle(), dynamicTests));
+	}
+
 }
