@@ -88,7 +88,6 @@ class AdminPageHeader
 
 		EntityViewContext originalEntityViewContext = pageStructureRenderedEvent.getEntityViewRequest().getEntityViewContext();
 		if ( originalEntityViewContext.isForAssociation() && originalEntityViewContext.holdsEntity() && viewFactory != null ) {
-			configureRefreshableControlAsBreadcrumbValue( originalEntityViewContext );
 			ViewElementMode renderMode =
 					Boolean.FALSE.equals(
 							originalEntityViewContext.getEntityConfiguration().getAttribute( DISABLE_ADMINPAGE_ASSOCIATION_HEADER_EDITABLE_VALUE ) )
