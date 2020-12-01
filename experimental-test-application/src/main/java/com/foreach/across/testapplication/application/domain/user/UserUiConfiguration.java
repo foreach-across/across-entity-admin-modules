@@ -23,7 +23,6 @@ import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilit
 import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
@@ -75,7 +74,6 @@ public class UserUiConfiguration implements EntityConfigurer
 				           .viewElementPostProcessor( ViewElementMode.FORM_READ.withChildMode( FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,
 				                                                                               WebUtilityViewElementMode.EDITABLE_LIST_VALUE ),
 				                                      formGroupElementViewElementPostProcessor )
-				           .viewElementBuilder( ViewElementMode.LABEL, ctx -> new ContainerViewElement() )
 				           .viewElementPostProcessor( ViewElementMode.CONTROL,
 				                                      (ViewElementPostProcessor<AbstractNodeViewElement>) ( builderContext, element ) -> {
 					                                      if ( FormInputElement.class.isAssignableFrom( element.getClass() ) ) {

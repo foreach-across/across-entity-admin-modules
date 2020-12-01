@@ -126,6 +126,7 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 	private void customizeViewActionsIfNecessary( EntityViewRegistry entityViewRegistry ) {
 		handleViewActions( entityViewRegistry, EntityView.DETAIL_VIEW_NAME );
 		handleViewActions( entityViewRegistry, EntityView.UPDATE_VIEW_NAME );
+		handleListViewControls( entityViewRegistry, EntityView.LIST_VIEW_NAME );
 	}
 
 	private void handleViewActions( EntityViewRegistry entityViewRegistry, String viewName ) {
@@ -145,6 +146,18 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 					                 );
 				}
 
+			}
+		}
+	}
+
+	private void handleListViewControls( EntityViewRegistry entityViewRegistry, String viewName ) {
+		if ( entityViewRegistry.hasView( viewName ) ) {
+			EntityViewFactory viewFactory = entityViewRegistry.getViewFactory( viewName );
+			if ( viewFactory instanceof DispatchingEntityViewFactory ) {
+				EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
+				if ( !processorRegistry.contains( EditableValueListViewControlsProcessor.class.getName() ) ) {
+					processorRegistry.addProcessor( new EditableValueListViewControlsProcessor(), 1100 );
+				}
 			}
 		}
 	}

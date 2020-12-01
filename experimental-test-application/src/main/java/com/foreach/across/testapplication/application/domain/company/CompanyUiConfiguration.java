@@ -3,20 +3,26 @@ package com.foreach.across.testapplication.application.domain.company;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.FormGroupElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
+import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
@@ -65,6 +71,10 @@ public class CompanyUiConfiguration implements EntityConfigurer
 											                          .showProperties( "name", "dateOfBirth", "company.name", "mentor" )
 											                          .properties(
 													                          removeLabelsWithinFormGroups( "name", "dateOfBirth", "company.name", "mentor" ) )
+											                          .properties(
+													                          props -> props.property( "company.name" )
+													                                        .displayName( "Company name" )
+											                          )
 									                )
 							        ).apply( conf );
 				        }
@@ -82,7 +92,26 @@ public class CompanyUiConfiguration implements EntityConfigurer
 				           .viewElementPostProcessor( ViewElementMode.FORM_READ.withChildMode( FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,
 				                                                                               WebUtilityViewElementMode.EDITABLE_LIST_VALUE ),
 				                                      formGroupElementViewElementPostProcessor )
-				           .viewElementBuilder( ViewElementMode.LABEL, ctx -> new ContainerViewElement() );
+				           .viewElementPostProcessor( ViewElementMode.CONTROL,
+				                                      (ViewElementPostProcessor<AbstractNodeViewElement>) ( builderContext, element ) -> {
+					                                      if ( FormInputElement.class.isAssignableFrom( element.getClass() ) ) {
+						                                      try (ScopedAttributesViewElementBuilderContext ignore = builderContext
+								                                      .withAttributeOverride( EntityPropertyControlName.class,
+								                                                              EntityPropertyControlName.root( "entity" ) )
+								                                      .withAttributeOverride( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES,
+								                                                              false )) {
+							                                      EntityPropertyDescriptor descriptor = EntityViewElementUtils.currentPropertyDescriptor(
+									                                      builderContext );
+							                                      String controlName = EntityViewElementUtils.controlName( descriptor, builderContext )
+							                                                                                 .asProperty()
+							                                                                                 .forHandlingType( EntityPropertyHandlingType
+									                                                                                                   .forProperty(
+											                                                                                                   descriptor ) )
+							                                                                                 .toString();
+							                                      ( (FormInputElement) element ).setControlName( controlName );
+						                                      }
+					                                      }
+				                                      } );
 			      } );
 		};
 	}
