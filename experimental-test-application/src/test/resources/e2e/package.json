@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@testing-library/cypress": "^7.0.2",
     "cypress-multi-reporters": "^1.4.0",
     "mocha": "^8.2.1",
     "mochawesome": "^6.2.1"

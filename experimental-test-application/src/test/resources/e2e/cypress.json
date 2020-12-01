@@ -3,5 +3,11 @@
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {
     "configFile": "reporter-config.json"
+  },
+  "compilerOptions": {
+    "types": [
+      "cypress",
+      "@testing-library/cypress"
+    ]
   }
 }

@@ -14,3 +14,10 @@ Map<String, ViewElement> userCreateControls = entityControlFactory.createControl
 ```
 
 For more examples see the `EntityControlFactoryDemoController` demo controller in the test project.
+
+# Cypress tests
+
+Uses https://github.com/wimdeblauwe/testcontainers-cypress 
+
+```
+```

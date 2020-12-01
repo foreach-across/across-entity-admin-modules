@@ -75,6 +75,8 @@ class ITExperimentalApplication {
 
 		@SneakyThrows
 		public DockerInDockerSupportingCypressContainer(int port) {
+			// >=6.0.0 to use cy.intercept for fetch()
+			super("cypress/included:6.0.1");
 			this.port = port;
 			this.hostname = InetAddress.getLocalHost().getHostName();
 		}

@@ -1,6 +1,6 @@
 import utils from "../support/utils.js";
 
-context('Bulk action tests', () => {
+context('Modal tests', () => {
 
     beforeEach(() => {
         cy.login('admin')
@@ -23,7 +23,7 @@ context('Bulk action tests', () => {
         }).as('ajaxModalDeleted');
     });
 
-    it('Create a new food using a modal and bulk assign', function () {
+    it('Create a new food using a modal and delete it', function () {
         cy.goToMenuItem('ExperimentalModuleTestApplicationModule').goToMenuItem('Food');
 
         cy.contains("Create a new food").click();
@@ -35,43 +35,24 @@ context('Bulk action tests', () => {
         cy.wait("@ajaxModalGet");
         cy.get(".modal-content").should("be.visible");
 
+        //cy.get( "textarea").type(food);
         cy.contains("Save").click();
         cy.wait("@ajaxModalPost")
         cy.contains("Unable to save, please check the form for one or more errors");
         //TODO: does not always finish typing?
         //cy.get("textarea").type(food, { delay: 0 });
         cy.get("textarea").invoke('val', food);
-        cy.get("#btn-save").click();
+        cy.contains("Save").click();
 
         cy.wait("@ajaxEntitiesList");
         cy.get(".modal-content").should("not.be.visible");
+        cy.findAllByText(food).should('exist');
+        cy.contains(food).next().should('have.value', '').next().find('.fa-times').click();
+        cy.wait("@ajaxModalDelete");
+        cy.contains('button', 'Delete').click();
+        cy.wait("@ajaxEntitiesList");
 
-        // Check everything
-        cy.get('.form-check-input').check({force: true});
-        cy.get('form[name="bulkActionForm"] .bootstrap-select select').select('Bake oven', {force: true});
-        cy.get('form[name="bulkActionForm').submit();
-
-        cy.get('.em-sortableTable-table').findAllByText("Bake stove").should('not.exist');
-        cy.get('.em-sortableTable-table').findAllByText("Baking oven").should('exist');
-        cy.get('.em-sortableTable-table').findAllByText("Stored").should('not.exist');
-
-        // Check everything
-        cy.get('.form-check-input').check({force: true});
-        cy.get('form[name="bulkActionForm"] .bootstrap-select select').select('Reset', {force: true});
-        cy.get('form[name="bulkActionForm').submit();
-
-        cy.get('.em-sortableTable-table').findAllByText("Bake stove").should('not.exist');
-        cy.get('.em-sortableTable-table').findAllByText("Baking oven").should('not.exist');
-        cy.get('.em-sortableTable-table').findAllByText("Stored").should('exist');
-
-        // Check everything
-        cy.get('.form-check-input').eq(1).check({force: true});
-        cy.get('form[name="bulkActionForm"] .bootstrap-select select').select('Bake stove', {force: true});
-        cy.get('form[name="bulkActionForm').submit();
-
-        cy.get('.em-sortableTable-table').findAllByText("Baking stove").should('exist');
-        cy.get('.em-sortableTable-table').findAllByText("Baking oven").should('not.exist');
-        cy.get('.em-sortableTable-table').findAllByText("Stored").should('exist');
+        cy.findAllByText(food).should('not.exist');
     });
 
 });
