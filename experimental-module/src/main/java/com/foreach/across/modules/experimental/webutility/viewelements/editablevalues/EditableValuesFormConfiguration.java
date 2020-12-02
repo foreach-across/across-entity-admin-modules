@@ -2,36 +2,23 @@ package com.foreach.across.modules.experimental.webutility.viewelements.editable
 
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.bootstrapui.FormGroupElementBuilderFactory;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupDescriptionTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupHelpTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupTooltipTextPostProcessor;
 import com.foreach.across.modules.entity.views.processors.PropertyRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
-import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -41,7 +28,6 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.EditableValue.LIST_VIEW_EDITABLE_VALUES;
 import static com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode.REFRESHABLE_LIST_VALUE;
 
@@ -178,7 +164,9 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 			if ( viewFactory instanceof DispatchingEntityViewFactory ) {
 				EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
 				if ( !processorRegistry.contains( EditableValueListViewControlsProcessor.class.getName() ) ) {
-					processorRegistry.addProcessor( new EditableValueListViewControlsProcessor(), 1100 );
+					EditableValueListViewControlsProcessor processor = moduleInfo.getApplicationContext().getAutowireCapableBeanFactory()
+					                                                             .createBean( EditableValueListViewControlsProcessor.class );
+					processorRegistry.addProcessor( processor, 1100 );
 				}
 			}
 		}
@@ -239,8 +227,6 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 														                                                         FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,
 														                                                         WebUtilityViewElementMode.EDITABLE_LIST_VALUE ) ) )
 								          )
-								                      .properties( props -> configurePropertyLabels(
-										                      association.getTargetEntityConfiguration().getPropertyRegistry(), props ) )
 						          )
 				)
 				.apply( entityConfiguration );
@@ -257,41 +243,7 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 												                                               FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,
 												                                               WebUtilityViewElementMode.EDITABLE_LIST_VALUE ) ) )
 						)
-						            .properties( props -> configurePropertyLabels( entityConfiguration.getPropertyRegistry(), props ) )
 				)
 				.apply( entityConfiguration );
-	}
-
-	private void configurePropertyLabels( EntityPropertyRegistry propertyRegistry, EntityPropertyRegistryBuilder props ) {
-		ViewElementPostProcessor<FormGroupElement> formGroupElementViewElementPostProcessor =
-				( builderContext, element ) -> element.getLabel().set( css.screenReaderOnly );
-
-		ViewElementPostProcessor<AbstractNodeViewElement> controlNamePostProcessor = ( builderContext, element ) -> {
-			if ( FormInputElement.class.isAssignableFrom( element.getClass() ) ) {
-				try (ScopedAttributesViewElementBuilderContext ignore = builderContext
-						.withAttributeOverride( EntityPropertyControlName.class, EntityPropertyControlName.root( "entity" ) )
-						.withAttributeOverride( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false )) {
-					EntityPropertyDescriptor descriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
-					String controlName = EntityViewElementUtils.controlName( descriptor, builderContext )
-					                                           .asProperty()
-					                                           .forHandlingType( EntityPropertyHandlingType.forProperty( descriptor ) )
-					                                           .toString();
-					( (FormInputElement) element ).setControlName( controlName );
-				}
-			}
-		};
-
-		// todo move this into a viewprocessor which selects the properties that are being rendered by the SortableTableRenderingViewProcessor
-		// so that nested (/associated) properties are also configured correctly?
-		propertyRegistry.select( EntityPropertySelector.all() )
-		                .forEach( p -> props.property( p.getName() )
-		                                    .viewElementPostProcessor( ViewElementMode.FORM_READ
-				                                                               .withChildMode(
-						                                                               FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,
-						                                                               WebUtilityViewElementMode.EDITABLE_LIST_VALUE ),
-		                                                               formGroupElementViewElementPostProcessor )
-		                                    .viewElementPostProcessor( ViewElementMode.CONTROL, controlNamePostProcessor )
-
-		                );
 	}
 }

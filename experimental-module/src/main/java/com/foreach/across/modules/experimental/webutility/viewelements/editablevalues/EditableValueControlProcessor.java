@@ -1,6 +1,8 @@
 package com.foreach.across.modules.experimental.webutility.viewelements.editablevalues;
 
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -38,6 +40,7 @@ import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -56,6 +59,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter<EditableValueControlProcessor.EditableValuesHolder>
 {
+	private final EntityRegistry entityRegistry;
 	private final EntityViewElementBuilderService entityViewElementBuilderService;
 	private final SpringTemplateEngine templateEngine;
 
@@ -85,7 +89,8 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 			return new UpdateResponse( false, new HashMap<>(), new HashMap<>(), new HashMap<>(),
 			                           buildPropertyErrors( properties.keySet(), errors, entityViewRequest ) );
 		}
-		return new UpdateResponse( true, new HashMap<>(), resolvePropertyValues( properties, entityViewRequest ), new HashMap<>(), new HashMap<>() );
+		return new UpdateResponse( true, new HashMap<>(), resolvePropertyValues( properties, entityViewRequest ),
+		                           resolveAbsolutePropertyValues( properties, entityViewRequest ), new HashMap<>() );
 	}
 
 	private Map<String, Set<Error>> buildPropertyErrors( Collection<String> properties, Errors errors, EntityViewRequest entityViewRequest ) {
@@ -134,6 +139,7 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 		command.getProperties().setBindingEnabled( false );
 
 		Map<String, PropertyValue> propertyValues = new HashMap<>( properties.size() );
+		Map<String, PropertyValue> absolutePropertyValues = new HashMap<>( properties.size() );
 		properties.forEach( ( propertyName, viewElementModes ) -> {
 			EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( propertyName );
 			// if the descriptor is null and we are in an association context, then the requested property could be for the
@@ -146,17 +152,7 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 
 				for ( ViewElementMode mode : viewElementModes ) {
 					ViewElement labelElement = entityViewElementBuilderService.createElementBuilder( descriptor, mode ).build();
-					if ( labelElement instanceof TextViewElement ) {
-						String label = ( (TextViewElement) labelElement ).getText();
-						labels.put( mode, label );
-					}
-					else if ( labelElement != null ) {
-						LOG.trace( "Not a TextViewElement - attempting inline Thymeleaf render for " + labelElement.getClass() );
-						labels.put( mode, renderViewElement( labelElement ) );
-					}
-					else {
-						labels.put( mode, "" );
-					}
+					labels.put( mode, convertViewElementToHtml( labelElement ) );
 				}
 
 				propertyValues.put( descriptor.getName(), new PropertyValue( true, labels ) );
@@ -164,6 +160,63 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 		} );
 
 		return propertyValues;
+	}
+
+	private Map<String, PropertyValue> resolveAbsolutePropertyValues( Map<String, Set<ViewElementMode>> properties, EntityViewRequest entityViewRequest ) {
+		// added babysteps for working with associations, if you have errors down below or weird shit, this might be the cause
+		// this primarily resolves to using the parent property registry to resolve unknown properties for the current context.
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		boolean forAssociation = entityViewContext.isForAssociation();
+		EntityPropertyRegistry propertyRegistry = entityViewContext.getPropertyRegistry();
+
+		Map<String, PropertyValue> absolutePropertyValues = new HashMap<>( properties.size() );
+		properties.forEach( ( propertyName, viewElementModes ) -> {
+			// nested properties can be properties of associated entities, so we'll register an absolute property for these too
+			if ( propertyName.contains( "." ) && forAssociation ) {
+				EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( propertyName );
+				EntityPropertyDescriptor parentDescriptor = descriptor.getParentDescriptor();
+				if ( parentDescriptor != null && entityRegistry.contains( parentDescriptor.getPropertyType() ) ) {
+					EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( parentDescriptor.getPropertyType() );
+					if ( entityConfiguration.hasEntityModel() ) {
+
+						Object associatedEntity = parentDescriptor.getPropertyValue( entityViewContext.getEntity() );
+						Serializable associatedEntityId = entityConfiguration.getId( associatedEntity );
+						EntityPropertyDescriptor associationPropertyDescriptor =
+								entityConfiguration.getPropertyRegistry()
+								                   .getProperty( propertyName.substring( propertyName.indexOf( "." ) + 1 ) );
+
+						if ( associationPropertyDescriptor != null ) {
+							Map<ViewElementMode, String> labels = new HashMap<>( viewElementModes.size() );
+
+							for ( ViewElementMode mode : viewElementModes ) {
+								ViewElement labelElement;
+//								try(ViewElementBuilderContext ignore = new ScopedAttributesViewElementBuilderContext()){
+								labelElement = entityViewElementBuilderService.createElementBuilder( descriptor, mode ).build();
+//								}
+								labels.put( mode, convertViewElementToHtml( labelElement ) );
+							}
+							String associationPropertyId =
+									entityConfiguration.getName() + "/" + associatedEntityId + "/" + associationPropertyDescriptor.getName();
+							absolutePropertyValues.put( associationPropertyId, new PropertyValue( true, labels ) );
+						}
+					}
+				}
+				System.out.println();
+			}
+		} );
+
+		return absolutePropertyValues;
+	}
+
+	private String convertViewElementToHtml( ViewElement labelElement ) {
+		if ( labelElement instanceof TextViewElement ) {
+			return ( (TextViewElement) labelElement ).getText();
+		}
+		else if ( labelElement != null ) {
+			LOG.trace( "Not a TextViewElement - attempting inline Thymeleaf render for " + labelElement.getClass() );
+			return renderViewElement( labelElement );
+		}
+		return "";
 	}
 
 	@Override

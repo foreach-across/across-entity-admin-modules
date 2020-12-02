@@ -250,7 +250,11 @@ class AdminPageHeader
 		Menu adminMenu = menuFactory.getMenuWithName( AdminMenu.NAME );
 		if ( adminMenu != null ) {
 			Menu breadcrumbLeaf = adminMenu.getLowestSelectedItem();
-			EntityPropertyDescriptor labelProperty = entityViewContext.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
+			EntityPropertyRegistry propertyRegistry = entityViewContext.getPropertyRegistry();
+			EntityPropertyDescriptor labelProperty = propertyRegistry.getProperty( EntityPropertyRegistry.LABEL );
+			if ( labelProperty.hasAttribute( EntityAttributes.LABEL_TARGET_PROPERTY ) ) {
+				labelProperty = propertyRegistry.getProperty( labelProperty.getAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, String.class ) );
+			}
 			editableValuesUtils.resolveEntityPropertyId( entityViewContext, labelProperty )
 			                   .ifPresent( propertyId ->
 					                               breadcrumbLeaf.setAttribute(
