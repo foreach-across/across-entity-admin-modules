@@ -1,6 +1,7 @@
 package com.foreach.across.modules.experimental.entitycontrols.support;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.builders.EntityRegistryConfigurer;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Stijn Vanhoof
  */
+@Exposed
 @Component
 @ConditionalOnAcrossModule(EntityModule.NAME)
 @RequiredArgsConstructor
