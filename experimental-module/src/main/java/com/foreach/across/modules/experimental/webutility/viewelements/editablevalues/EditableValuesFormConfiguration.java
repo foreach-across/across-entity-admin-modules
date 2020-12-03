@@ -22,10 +22,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.EditableValue.LIST_VIEW_EDITABLE_VALUES;
@@ -144,7 +141,7 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 				EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
 				if ( !processorRegistry.contains( EditableValueViewActionsViewProcessor.class.getName() ) ) {
 					processorRegistry.getProcessor( PropertyRenderingViewProcessor.class.getName(), PropertyRenderingViewProcessor.class )
-					                 .flatMap( this::resolveViewElementMode )
+					                 .flatMap( ViewFactoryUtils::resolveViewElementMode )
 					                 .ifPresent(
 							                 vem -> {
 								                 if ( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW().equals( vem ) ) {
@@ -170,21 +167,6 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 				}
 			}
 		}
-	}
-
-	/**
-	 * Attempts to resolve the {@link ViewElementMode} registered on a {@link PropertyRenderingViewProcessor}.
-	 */
-	private Optional<ViewElementMode> resolveViewElementMode( PropertyRenderingViewProcessor viewProcessor ) {
-		ViewElementMode value = null;
-		try {
-			Field selector = PropertyRenderingViewProcessor.class.getDeclaredField( "viewElementMode" );
-			ReflectionUtils.makeAccessible( selector );
-			value = (ViewElementMode) selector.get( viewProcessor );
-		}
-		catch ( NoSuchFieldException | IllegalAccessException e ) {
-		}
-		return Optional.ofNullable( value );
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

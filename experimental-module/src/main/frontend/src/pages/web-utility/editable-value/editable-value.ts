@@ -31,15 +31,53 @@ function resolveViewElementMode(node: any) {
   return viewElementMode;
 }
 
-export function updatePropertyData(propertyId: any, propertyData: any) {
-  $('[data-em-property-id="' + propertyId + '"]').each(function () {
-    $(this).data("em-property-value-changed", true);
-    var label = propertyData.labels[resolveViewElementMode($(this))];
-    $(this).html(label);
-    if ($(this).is("[data-em-editable-value-role='value']") && $(".cta-item", this).length === 0) {
-      $(this).append(EDITABLE_VALUE_CTA);
+function refreshPropertyValue($node: any, propertyData: any): boolean {
+  const label = propertyData.labels[resolveViewElementMode($(this))];
+  if (label) {
+    $node.data("em-property-value-changed", true);
+    $node.html(label);
+    if ($node.is("[data-em-editable-value-role='value']") && $(".cta-item", $node).length === 0) {
+      $node.append(EDITABLE_VALUE_CTA);
     }
-    EntityModule.initializeFormElements($(this));
+    EntityModule.initializeFormElements($node);
+    return true;
+  }
+  return false;
+}
+
+interface PropertyData {
+  properties: [{ propertyId: string; data: any }];
+  absoluteProperties: [{ propertyId: string; data: any }];
+}
+
+export function updatePropertyData(origin: EditableValue, propertyData: PropertyData) {
+  //data-em-reference-property-id
+  const updatedControls: any[] = [];
+  $.each(propertyData.properties, function (propertyName: any, propertyData) {
+    // @ts-ignore
+    $(
+      `[data-em-property-id="${origin.entityPrefix + propertyName}"],[data-em-reference-property-id="${
+        origin.entityPrefix + propertyName
+      }"]`
+    ).each(function () {
+      let $this = $(this);
+      if (!updatedControls.includes($this)) {
+        if (refreshPropertyValue($this, propertyData)) {
+          updatedControls.push($this);
+        }
+      }
+    });
+  });
+
+  $.each(propertyData.absoluteProperties, function (propertyName, propertyData) {
+    $(`[data-em-property-id="${propertyName}"],[data-em-reference-property-id="${propertyName}"]`).each(function () {
+      let $this = $(this);
+      if (!updatedControls.includes($this)) {
+        if (refreshPropertyValue($this, propertyData)) {
+          updatedControls.push($this);
+        }
+      }
+    });
   });
 }
 
@@ -63,6 +101,7 @@ export class EditableValue {
   private label: any;
   private controlContainer: any;
   private propertyId: any;
+  private propertyReferenceId: string[];
   private entityPrefix: string;
   private propertyNameOfControl: string;
   private refreshBusy: boolean = false;
@@ -77,6 +116,7 @@ export class EditableValue {
     this.propertyId = this.settings.propertyId;
     this.entityPrefix = entityPrefixOf(this.settings.propertyId);
     this.propertyNameOfControl = propertyNameOf(this.settings.propertyId);
+    this.propertyReferenceId = this.settings.propertyReferenceId;
   }
 
   activate() {
@@ -98,6 +138,9 @@ export class EditableValue {
 
     // Configure refresh from other value updates
     label.addClass("editable-value-value").attr("data-em-property-id", this.propertyId);
+    if (this.propertyReferenceId && this.propertyReferenceId.length > 1) {
+      label.attr("data-em-reference-property-id", this.propertyReferenceId);
+    }
 
     // Trigger the control reloading on mousedown, so it would fetch slightly faster if necessary
     label.on("mousedown", this._refreshControlScript.bind(this));
@@ -253,22 +296,9 @@ export class EditableValue {
         if (jsonContent.success) {
           controlHolder.removeClass("is-invalid");
 
-          updatePropertyData(propertyId, jsonContent.properties[propertyNameOfControl]);
-
+          updatePropertyData(this, jsonContent);
           label.removeClass("d-none");
           controlHolder.remove();
-
-          $.each(jsonContent.absoluteProperties, function (propertyName, propertyData) {
-            if (propertyName !== propertyNameOfControl) {
-              updatePropertyData(propertyName, propertyData);
-            }
-          });
-
-          $.each(jsonContent.properties, function (propertyName: any, propertyData) {
-            if (propertyName !== propertyNameOfControl) {
-              updatePropertyData(entityPrefix + propertyName, propertyData);
-            }
-          });
         } else {
           controlHolder.removeClass("loading");
           controlHolder.addClass("is-invalid");
@@ -321,25 +351,11 @@ export class EditableValue {
         const jsonContent: any = jsonResponse.jsonContent;
         if (jsonContent.success) {
           successFunction();
+
+          updatePropertyData(this, jsonContent);
+
           controlHolder.removeClass("is-invalid");
           $(".invalid-feedback", controlHolder).remove();
-          updatePropertyData(propertyId, jsonContent.properties[propertyNameOfControl]);
-
-          $.each(jsonContent.absoluteProperties, function (propertyName, propertyData) {
-            if (propertyName !== propertyNameOfControl) {
-              updatePropertyData(propertyName, propertyData);
-            }
-          });
-
-          $.each(jsonContent.properties, function (propertyName: string, propertyData) {
-            if (propertyName !== propertyNameOfControl) {
-              if (propertyName.startsWith(propertyId.substring(0, propertyId.indexOf("/")))) {
-                updatePropertyData(propertyName, propertyData);
-              } else {
-                updatePropertyData(entityPrefix + propertyName, propertyData);
-              }
-            }
-          });
         } else {
           failFunction();
           controlHolder.addClass("is-invalid");

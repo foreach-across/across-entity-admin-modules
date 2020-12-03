@@ -1,7 +1,9 @@
 package com.foreach.across.modules.experimental.webutility.viewelements;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class EditableValuesUtils
 {
 	private final ConversionService mvcConversionService;
+	private final EntityRegistry entityRegistry;
 
 	/**
 	 * Attempts to resolve the property id of the current property being rendered.
@@ -41,7 +44,7 @@ public class EditableValuesUtils
 			}
 
 			if ( entityViewContext != null ) {
-				return resolveEntityPropertyId( entityViewContext, property, entity );
+				return resolveEntityPropertyId( entityViewContext.getEntityConfiguration(), property, entity );
 			}
 		}
 
@@ -52,23 +55,41 @@ public class EditableValuesUtils
 	 * Attempts to resolve the property id of the given property of the entity view context.
 	 */
 	public Optional<String> resolveEntityPropertyId( @NonNull EntityViewContext entityViewContext, @NonNull EntityPropertyDescriptor propertyDescriptor ) {
-		return resolveEntityPropertyId( entityViewContext, propertyDescriptor, entityViewContext.getEntity() );
+		return resolveEntityPropertyId( entityViewContext.getEntityConfiguration(), propertyDescriptor, entityViewContext.getEntity() );
 	}
 
 	/**
 	 * Attempts to resolve the property id of the given property for the entity
 	 */
 	@SuppressWarnings("unchecked")
-	public Optional<String> resolveEntityPropertyId( @NonNull EntityViewContext entityViewContext,
-	                                                 @NonNull EntityPropertyDescriptor propertyDescriptor,
+	public Optional<String> resolveEntityPropertyId( @NonNull EntityConfiguration entityConfiguration, @NonNull EntityPropertyDescriptor propertyDescriptor,
 	                                                 Object entity ) {
-		EntityModel<Object, ?> entityModel = entityViewContext.getEntityModel();
+		EntityModel<Object, ?> entityModel = entityConfiguration.getEntityModel();
 
 		if ( entity != null && entityModel != null && !entityModel.isNew( entity ) ) {
 			String entityId = mvcConversionService.convert( entityModel.getId( entity ), String.class );
-			return Optional.of( entityViewContext.getEntityConfiguration().getName() + "/" + entityId + "/" + propertyDescriptor.getName() );
+			return Optional.of( entityConfiguration.getName() + "/" + entityId + "/" + propertyDescriptor.getName() );
 		}
 
 		return Optional.empty();
+	}
+
+	public String resolvePropertyReferenceId( ViewElementBuilderContext builderContext ) {
+		EntityPropertyDescriptor property = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
+		Object entity = EntityViewElementUtils.currentEntity( builderContext );
+
+		if ( entity != null && property.getName().contains( "." ) && property.isNestedProperty() ) {
+			EntityPropertyDescriptor parentDescriptor = property.getParentDescriptor();
+			EntityConfiguration parentEntityConfiguration = entityRegistry.getEntityConfiguration( parentDescriptor.getPropertyType() );
+			if ( parentEntityConfiguration != null && parentEntityConfiguration.hasEntityModel() ) {
+				EntityPropertyDescriptor referencedPropertyDescriptor =
+						parentEntityConfiguration.getPropertyRegistry().getProperty( property.getName().substring( property.getName().indexOf( "." ) + 1 ) );
+				Object referencedEntity = parentDescriptor.getPropertyValue( entity );
+				if ( referencedPropertyDescriptor != null && referencedEntity != null ) {
+					return resolveEntityPropertyId( parentEntityConfiguration, referencedPropertyDescriptor, referencedEntity ).orElse( "" );
+				}
+			}
+		}
+		return "";
 	}
 }

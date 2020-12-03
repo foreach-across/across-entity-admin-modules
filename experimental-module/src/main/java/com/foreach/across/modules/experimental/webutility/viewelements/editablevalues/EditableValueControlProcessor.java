@@ -6,12 +6,17 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.ExtensionViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.processors.PropertyRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.experimental.webutility.viewelements.editablevalues.dto.Error;
@@ -42,6 +47,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -66,6 +72,57 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 	@Override
 	protected String extensionName() {
 		return "editableValues";
+	}
+
+	// earliest method we can override in an ExtensionViewProcessor that contains the request
+	@Override
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		if ( entityViewContext instanceof ConfigurableEntityViewContext ) {
+			EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
+			if ( entityConfiguration != null ) {
+
+				EntityPropertySelector defaultPropertySelector = EntityPropertySelector.of( EntityPropertySelector.CONFIGURED );
+
+				EntityPropertySelector propertySelector = mergeListViewProperties( entityViewContext, entityConfiguration, defaultPropertySelector );
+
+				// merge current property selector with that of the list view
+				Optional<PropertyRenderingViewProcessor> propertyRenderingViewProcessor =
+						ViewFactoryUtils.getViewProcessorFromView( entityViewRequest.getViewFactory(), PropertyRenderingViewProcessor.class );
+				if ( propertyRenderingViewProcessor.isPresent() ) {
+					PropertyRenderingViewProcessor vp = propertyRenderingViewProcessor.get();
+					EntityPropertySelector currentSelector = ViewFactoryUtils.resolvePropertySelector( vp )
+					                                                         .orElse( defaultPropertySelector );
+					vp.setSelector( currentSelector.combine( propertySelector ) );
+				}
+			}
+		}
+	}
+
+	private EntityPropertySelector mergeListViewProperties( EntityViewContext entityViewContext,
+	                                                        EntityConfiguration entityConfiguration,
+	                                                        EntityPropertySelector defaultPropertySelector ) {
+		EntityPropertySelector propertySelector = defaultPropertySelector;
+
+		EntityViewFactory viewFactory = entityViewContext.isForAssociation()
+				? entityViewContext.getEntityAssociation().getViewFactory( EntityView.LIST_VIEW_NAME )
+				: entityConfiguration.getViewFactory( EntityView.LIST_VIEW_NAME );
+		if ( viewFactory != null ) {
+			EntityPropertySelector selectorToMerge = ViewFactoryUtils.getViewProcessorFromView( viewFactory,
+			                                                                                    SortableTableRenderingViewProcessor.class )
+			                                                         .flatMap( ViewFactoryUtils::resolvePropertySelector )
+			                                                         .orElse( defaultPropertySelector );
+			List<String> collect = selectorToMerge.propertiesToSelect()
+			                                      .entrySet()
+			                                      .stream()
+			                                      .map( e -> e.getValue() ? e.getKey() : "~" + e.getKey() )
+			                                      .collect( Collectors.toList() );
+			collect.add( EntityPropertySelector.CONFIGURED );
+			selectorToMerge = EntityPropertySelector.of( collect.toArray( new String[0] ) );
+
+			propertySelector = selectorToMerge.combine( propertySelector );
+		}
+		return propertySelector;
 	}
 
 	@Override
@@ -190,9 +247,7 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 
 							for ( ViewElementMode mode : viewElementModes ) {
 								ViewElement labelElement;
-//								try(ViewElementBuilderContext ignore = new ScopedAttributesViewElementBuilderContext()){
 								labelElement = entityViewElementBuilderService.createElementBuilder( descriptor, mode ).build();
-//								}
 								labels.put( mode, convertViewElementToHtml( labelElement ) );
 							}
 							String associationPropertyId =

@@ -48,22 +48,20 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 		EntityViewFactory viewFactory = entityViewRequest.getViewFactory();
 		if ( viewFactory instanceof DispatchingEntityViewFactory ) {
 			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-			( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry()
-			                                              .getProcessor( SortableTableRenderingViewProcessor.class.getName(),
-			                                                             SortableTableRenderingViewProcessor.class )
-			                                              .flatMap( this::resolvePropertySelector )
-			                                              .ifPresent( propertySelection -> {
-				                                              MergingEntityPropertyRegistry propertyRegistry = new MergingEntityPropertyRegistry(
-						                                              entityViewContext.getPropertyRegistry(),
-						                                              propertyRegistryProvider, propertyDescriptorFactory );
-				                                              if ( entityViewContext instanceof ConfigurableEntityViewContext ) {
-					                                              ( (ConfigurableEntityViewContext) entityViewContext ).setPropertyRegistry( propertyRegistry );
-					                                              propertyRegistry.select( propertySelection )
-					                                                              .stream()
-					                                                              .map( MutableEntityPropertyDescriptor.class::cast )
-					                                                              .forEach( this::configureProperty );
-				                                              }
-			                                              } );
+			ViewFactoryUtils.getViewProcessorFromView( viewFactory, SortableTableRenderingViewProcessor.class )
+			                .flatMap( ViewFactoryUtils::resolvePropertySelector )
+			                .ifPresent( propertySelection -> {
+				                MergingEntityPropertyRegistry propertyRegistry = new MergingEntityPropertyRegistry(
+						                entityViewContext.getPropertyRegistry(),
+						                propertyRegistryProvider, propertyDescriptorFactory );
+				                if ( entityViewContext instanceof ConfigurableEntityViewContext ) {
+					                ( (ConfigurableEntityViewContext) entityViewContext ).setPropertyRegistry( propertyRegistry );
+					                propertyRegistry.select( propertySelection )
+					                                .stream()
+					                                .map( MutableEntityPropertyDescriptor.class::cast )
+					                                .forEach( this::configureProperty );
+				                }
+			                } );
 		}
 	}
 
@@ -87,8 +85,9 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 		};
 
 		new EntityPropertyDescriptorBuilder( propertyDescriptor.getName() )
-				.viewElementPostProcessor( ViewElementMode.FORM_READ.withChildMode( FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,
-				                                                                    WebUtilityViewElementMode.EDITABLE_LIST_VALUE ),
+				.viewElementPostProcessor( ViewElementMode.FORM_READ
+						                           .withChildMode( FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,
+						                                           WebUtilityViewElementMode.EDITABLE_LIST_VALUE ),
 				                           formGroupElementViewElementPostProcessor )
 				.viewElementPostProcessor( ViewElementMode.CONTROL, controlNamePostProcessor )
 				.apply( propertyDescriptor );

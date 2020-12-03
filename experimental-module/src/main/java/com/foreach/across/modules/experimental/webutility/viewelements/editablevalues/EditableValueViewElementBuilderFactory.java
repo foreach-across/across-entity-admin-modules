@@ -143,6 +143,7 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 										new EditableValueSettings()
 												.propertyId( editableValuesUtils.resolveEntityPropertyId( builderContext )
 												                                .orElseThrow( () -> new NoSuchElementException( "No value present" ) ) )
+												.propertyReferenceId( editableValuesUtils.resolvePropertyReferenceId( builderContext ) )
 												.targetUrl( resolveTargetUrl( entityViewContext, entity ) )
 												.multiValueProperty( isMultiValueControl( propertyDescriptor, controlMode ) )
 												.includeActions(
@@ -210,6 +211,10 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		@NonNull
 		@JsonProperty
 		private String propertyId;
+
+		@NonNull
+		@JsonProperty
+		private String propertyReferenceId;
 
 		@NonNull
 		@JsonProperty
