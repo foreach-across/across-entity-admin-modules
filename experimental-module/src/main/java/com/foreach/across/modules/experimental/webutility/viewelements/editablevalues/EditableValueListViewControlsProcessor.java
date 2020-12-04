@@ -22,20 +22,22 @@ import com.foreach.across.modules.entity.views.processors.support.ViewElementBui
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.WebDataBinder;
 
-import java.lang.reflect.Field;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 
 @RequiredArgsConstructor
 public class EditableValueListViewControlsProcessor extends EntityViewProcessorAdapter
@@ -93,21 +95,6 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 				.apply( propertyDescriptor );
 	}
 
-	/**
-	 * Attempts to resolve the {@link EntityPropertySelector} registered on a {@link SortableTableRenderingViewProcessor}.
-	 */
-	private Optional<EntityPropertySelector> resolvePropertySelector( SortableTableRenderingViewProcessor viewProcessor ) {
-		EntityPropertySelector value = null;
-		try {
-			Field selector = SortableTableRenderingViewProcessor.class.getDeclaredField( "propertySelector" );
-			ReflectionUtils.makeAccessible( selector );
-			value = (EntityPropertySelector) selector.get( viewProcessor );
-		}
-		catch ( NoSuchFieldException | IllegalAccessException e ) {
-		}
-		return Optional.ofNullable( value );
-	}
-
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
 		SortableTableBuilder tableBuilder = builderMap.get( SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class );
@@ -116,6 +103,16 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 			tableBuilder.valueRowProcessor( configureHtmlIdPrefixes( idPrefix ) );
 			tableBuilder.valueRowProcessor( configureDatepickerPopUp() );
 		}
+	}
+
+	@Override
+	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.apply(
+				WebResourceRule.add(
+						WebResource.javascript( "@static:experimental/web/datepicker-positioning.js" )
+				).after( EntityModuleWebResources.NAME )
+				               .toBucket( JAVASCRIPT_PAGE_END )
+		);
 	}
 
 	private ViewElementPostProcessor<TableViewElement.Row> configureHtmlIdPrefixes( AtomicInteger idPrefix ) {
@@ -132,7 +129,7 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 			ContainerViewElementUtils.findAll( element, DateTimeFormElement.class )
 			                         .forEach( dp -> {
 				                         dp.getConfiguration()
-				                           .put( "widgetParent", ".card.em-sortableTable-panel" );
+				                           .put( "widgetParent", ".pcs-body-section" );
 			                         } );
 		};
 	}

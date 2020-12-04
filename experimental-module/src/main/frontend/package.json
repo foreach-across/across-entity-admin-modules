@@ -59,6 +59,11 @@
       "appIndexJs": "src/pages/web-utility/editable-value/editable-value-initializer"
     },
     {
+      "name": "datepicker-positioning",
+      "title": "datepicker-positioning",
+      "appIndexJs": "src/pages/web-utility/editable-value/datepicker-positioning"
+    },
+    {
       "name": "experimental-module",
       "title": "experimental-module",
       "appIndexJs": "src/pages/web-utility/experimental"
