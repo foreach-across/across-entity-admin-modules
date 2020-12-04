@@ -34,7 +34,7 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
     private final TableLinker tableLinker;
     private String property;
     private boolean showIcon = true;
-    private Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier;
+	private Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier;
 
     public TablePropertyLinkViewProcessor(EntityViewLinks entityViewLinks) {
         this.tableLinker = new TableLinker(entityViewLinks);
@@ -50,16 +50,18 @@ public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
         return this;
     }
 
-    public void resolveLinkDestination(Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier) {
-        this.linkDestinationSupplier = linkDestinationSupplier;
-    }
+	public void resolveLinkDestination( Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier ) {
+		this.linkDestinationSupplier = linkDestinationSupplier;
+	}
 
     @Override
     protected void createViewElementBuilders(EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap) {
         SortableTableBuilder sortableTableBuilder = builderMap.get(SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class);
 
         if (sortableTableBuilder != null) {
-            TableLinker.LinkDestination linkDestination = linkDestinationSupplier != null ? linkDestinationSupplier.apply(entityViewRequest) : entityViewRequest.getEntityViewContext().getAllowableActions().contains(AllowableAction.UPDATE) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL;
+	        TableLinker.LinkDestination linkDestination = linkDestinationSupplier != null ? linkDestinationSupplier.apply(
+			        entityViewRequest ) : entityViewRequest.getEntityViewContext().getAllowableActions().contains(
+			        AllowableAction.UPDATE ) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL;
             EntityAssociation entityAssociation = entityViewRequest.getEntityViewContext().isForAssociation() ? entityViewRequest.getEntityViewContext().getEntityAssociation() : null;
             EntityViewLinkBuilder linkBuilder = null;
 

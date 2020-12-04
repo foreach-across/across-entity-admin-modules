@@ -8,6 +8,7 @@ import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.ui.processors.*;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.http.HttpMethod;
 
 import java.util.Map;
@@ -81,7 +82,7 @@ public class ModalConfigurers
 										                                                             .toUriString() )
 								        )
 						).viewProcessor(
-								vp -> vp.provideBean( new ModalFormViewProcessor<>()
+								vp -> vp.provideBean( new ModalFormViewProcessor()
 								{
 									@Override
 									protected void configureViewElement( ViewElement element,
@@ -92,7 +93,7 @@ public class ModalConfigurers
 												             .url( url )
 												             .method( HttpMethod.GET )
 												             .partial( "content" )
-												             .requestConfig( Map.of( "headers", Map.of( MODAL_ORIGIN_HEADER, modalId ) ) )
+												             .requestConfig( ImmutableMap.of( "headers", ImmutableMap.of( MODAL_ORIGIN_HEADER, modalId ) ) )
 												             .success(
 														             clearHandler( modalSelector + " .modal-title" ),
 														             clearHandler( modalSelector + " .modal-footer" ),

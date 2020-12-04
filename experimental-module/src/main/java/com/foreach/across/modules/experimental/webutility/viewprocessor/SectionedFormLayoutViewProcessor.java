@@ -47,14 +47,14 @@ public class SectionedFormLayoutViewProcessor extends EntityViewProcessorAdapter
 
     @Override
     protected void postRender(EntityViewRequest entityViewRequest, EntityView entityView, ContainerViewElement container, ViewElementBuilderContext builderContext) {
-        ContainerViewElementUtils.find(container, SingleEntityFormViewProcessor.FORM, ContainerViewElement.class)
-                .ifPresentOrElse(formContainer -> {
-                    addRows(formContainer, builderContext);
-                    fixButtons(formContainer);
-                }, () -> {
-                    addRows(container, builderContext);
-                    fixButtons(container);
-                });
+        Optional<ContainerViewElement> containerViewElement = ContainerViewElementUtils.find(container, SingleEntityFormViewProcessor.FORM, ContainerViewElement.class);
+        if( containerViewElement.isPresent() ) {
+            addRows(containerViewElement.get(), builderContext);
+            fixButtons(containerViewElement.get());
+        } else {
+            addRows(container, builderContext);
+            fixButtons(container);
+        }
     }
 
     private void addRows(ContainerViewElement container, ViewElementBuilderContext builderContext) {

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 @Accessors(chain = true, fluent = true)
 public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElement>, ViewElementPostProcessor<HtmlViewElement>, Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> {
     private final Map<String, Map<String, Object>> dependencies = new LinkedHashMap<>();
-	private final Map<String, Object> options = new LinkedHashMap<>()
+	private final Map<String, Object> options = new LinkedHashMap<String, Object>()
 	{{
 		put( "hide", true );
 	}};

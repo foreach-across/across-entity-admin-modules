@@ -32,3 +32,4 @@ node_modules
 experimental-module/src/main/resources/views/static/experimental/web
 
 **/.credentials
+.flattened-pom.xml

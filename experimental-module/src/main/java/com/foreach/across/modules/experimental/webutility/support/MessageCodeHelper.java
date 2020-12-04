@@ -8,21 +8,22 @@ import org.springframework.stereotype.Component;
 import java.util.Locale;
 
 @Component
-@DependsOn( "messageSource" )
-public class MessageCodeHelper {
+@DependsOn("messageSource")
+public class MessageCodeHelper
+{
 
-    private static MessageSource messageSource;
+	private static MessageSource messageSource;
 
-    public static String getMessage( String code ) {
-        return getMessage( code, null );
-    }
+	public static String getMessage( String code ) {
+		return getMessage( code, null );
+	}
 
-    public static String getMessage( String code, Object... vars ) {
-        return messageSource.getMessage( code, vars, Locale.getDefault() );
-    }
+	public static String getMessage( String code, Object... vars ) {
+		return messageSource.getMessage( code, vars, Locale.getDefault() );
+	}
 
-    @Autowired
-    public void setMessageSource( MessageSource messageSource ) {
-        MessageCodeHelper.messageSource = messageSource;
-    }
+	@Autowired
+	public void setMessageSource( MessageSource messageSource ) {
+		MessageCodeHelper.messageSource = messageSource;
+	}
 }

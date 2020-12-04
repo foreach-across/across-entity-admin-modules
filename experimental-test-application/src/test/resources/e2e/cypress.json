@@ -1,0 +1,13 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "configFile": "reporter-config.json"
+  },
+  "compilerOptions": {
+    "types": [
+      "cypress",
+      "@testing-library/cypress"
+    ]
+  }
+}
