@@ -55,18 +55,17 @@ export function updatePropertyData(origin: EditableValue, propertyData: Property
   const updatedControls: any[] = [];
   $.each(propertyData.properties, function (propertyName: any, propertyData) {
     // @ts-ignore
-    $(
-      `[data-em-property-id="${origin.entityPrefix + propertyName}"],[data-em-reference-property-id="${
-        origin.entityPrefix + propertyName
-      }"]`
-    ).each(function () {
-      let $this = $(this);
-      if (!updatedControls.includes($this)) {
-        if (refreshPropertyValue($this, propertyData)) {
-          updatedControls.push($this);
+    const asEntityProperty = origin.entityPrefix + propertyName;
+    $(`[data-em-property-id="${asEntityProperty}"],[data-em-reference-property-id="${asEntityProperty}"]`).each(
+      function () {
+        let $this = $(this);
+        if (!updatedControls.includes($this)) {
+          if (refreshPropertyValue($this, propertyData)) {
+            updatedControls.push($this);
+          }
         }
       }
-    });
+    );
   });
 
   $.each(propertyData.absoluteProperties, function (propertyName, propertyData) {
