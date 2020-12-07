@@ -64,6 +64,11 @@
       "appIndexJs": "src/pages/web-utility/editable-value/datepicker-positioning"
     },
     {
+      "name": "autosuggest-positioning",
+      "title": "autosuggest-positioning",
+      "appIndexJs": "src/pages/web-utility/editable-value/autosuggest-positioning"
+    },
+    {
       "name": "experimental-module",
       "title": "experimental-module",
       "appIndexJs": "src/pages/web-utility/experimental"

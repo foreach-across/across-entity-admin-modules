@@ -237,7 +237,15 @@ export class EditableValue {
       const target = $(event.target);
 
       if (this.controlHolder && !target.closest(".editable-value-control").length) {
-        this._cancelControl(event);
+        // todo can we extract this? doesn't really belong within the editable value
+        if (
+          !(
+            this.controlHolder.find(".js-typeahead.tt-input").length > 0 &&
+            (target.is(".tt-suggestion") || target.closest(".tt-suggestion").length > 0)
+          )
+        ) {
+          this._cancelControl(event);
+        }
       }
     });
   }

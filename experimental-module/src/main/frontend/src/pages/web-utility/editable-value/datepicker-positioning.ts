@@ -102,7 +102,7 @@ function customizeDateTimePicker($dpNode: any) {
     const originalFn = prototype._place;
     prototype._place = function (e: any) {
       var self = (e && e.data && e.data.picker) || this;
-      if (self._element.closest(".em-sortableTable-table").length > 0) {
+      if (self._element.closest(".table-responsive").length > 0) {
         responsiveTableSupportingPlace.bind(this)(e);
       } else {
         originalFn.bind(this)(e);

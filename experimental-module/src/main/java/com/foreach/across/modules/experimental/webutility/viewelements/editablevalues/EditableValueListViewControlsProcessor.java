@@ -4,6 +4,7 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.registry.properties.*;
@@ -102,15 +103,20 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 			AtomicInteger idPrefix = new AtomicInteger( 1 );
 			tableBuilder.valueRowProcessor( configureHtmlIdPrefixes( idPrefix ) );
 			tableBuilder.valueRowProcessor( configureDatepickerPopUp() );
+			tableBuilder.valueRowProcessor( configureAutoSuggestPopUp() );
 		}
 	}
 
 	@Override
 	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.apply(
-				WebResourceRule.add(
-						WebResource.javascript( "@static:experimental/web/datepicker-positioning.js" )
-				).after( EntityModuleWebResources.NAME )
+				WebResourceRule.add( WebResource.javascript( "@static:experimental/web/datepicker-positioning.js" ) )
+				               .withKey( "ax-exp:datepicker-positioning" )
+				               .after( EntityModuleWebResources.NAME )
+				               .toBucket( JAVASCRIPT_PAGE_END ),
+				WebResourceRule.add( WebResource.javascript( "@static:experimental/web/autosuggest-positioning.js" ) )
+				               .withKey( "ax-exp:autosuggest-positioning" )
+				               .after( EntityModuleWebResources.NAME )
 				               .toBucket( JAVASCRIPT_PAGE_END )
 		);
 	}
@@ -130,6 +136,16 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 			                         .forEach( dp -> {
 				                         dp.getConfiguration()
 				                           .put( "widgetParent", ".pcs-body-section" );
+			                         } );
+		};
+	}
+
+	private ViewElementPostProcessor<TableViewElement.Row> configureAutoSuggestPopUp() {
+		return ( builderContext, element ) -> {
+			ContainerViewElementUtils.findAll( element, AutoSuggestFormElement.class )
+			                         .forEach( dp -> {
+				                         dp.getConfiguration()
+				                           .put( "menu", ".pcs-body-section" );
 			                         } );
 		};
 	}

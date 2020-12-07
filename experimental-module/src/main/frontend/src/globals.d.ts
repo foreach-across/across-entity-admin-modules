@@ -1,3 +1,9 @@
+declare interface JQuery<HTMLElement> {
+  typeahead(fn);
+
+  typeahead(fn, val);
+}
+
 declare var jQuery: JQueryStatic;
 declare var $: JQueryStatic;
 
