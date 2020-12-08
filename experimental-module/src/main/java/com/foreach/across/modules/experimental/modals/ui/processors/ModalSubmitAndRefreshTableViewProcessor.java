@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
 
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionHandlerAttribute.requestActionHandler;
+import static com.foreach.across.modules.experimental.webutility.support.action.ResponseContentHandlerAttribute.responseContentHandler;
 import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 
 /**

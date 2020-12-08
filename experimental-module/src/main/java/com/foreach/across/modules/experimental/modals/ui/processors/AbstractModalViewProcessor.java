@@ -35,6 +35,7 @@ import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.experimental.modals.support.ModalLoadAttribute.modalLoadAttribute;
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.ResponseContentHandlerAttribute.responseContentHandler;
 import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.data;
@@ -129,7 +130,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 												           .url( url.apply( linkViewBuilder, builderContext ) )
 												           .partial( partial )
 												           .requestConfig( ImmutableMap.of( "headers",
-																   ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
+												                                            ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
 												           .success(
 														           clearHandler( modalTarget( ".modal-title" ) ),
 														           clearHandler( modalTarget( ".modal-footer" ) ),
