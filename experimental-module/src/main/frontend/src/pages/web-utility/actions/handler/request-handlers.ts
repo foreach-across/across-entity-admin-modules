@@ -9,10 +9,14 @@ interface Context {
   response: JsonResponse | TextResponse;
 }
 
+interface ResponseContentActionHandler extends ActionHandler {
+  replace: boolean;
+}
+
 export class ResponseContentActionHandlerResolver implements ActionHandlerResolver {
   static readonly TYPE: string = "exm:response-content";
 
-  handle(action: ActionHandler, context: Context): Promise<any> {
+  handle(action: ResponseContentActionHandler, context: Context): Promise<any> {
     if ("jsonContent" in context.response) {
       return Promise.reject(
         new ActionHandlerError(
@@ -46,7 +50,13 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
       if ($(action.target).parent("form").length > 0) {
         contentToSet = "</form>" + contentToSet;
       }
-      $(action.target).html(contentToSet);
+
+      if (action.replace) {
+        $(action.target).replaceWith(contentToSet);
+      } else {
+        $(action.target).html(contentToSet);
+      }
+
       return Promise.resolve();
     }
   }
