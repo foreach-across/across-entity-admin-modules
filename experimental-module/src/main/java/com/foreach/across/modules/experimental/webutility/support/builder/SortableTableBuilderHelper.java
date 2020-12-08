@@ -2,7 +2,7 @@ package com.foreach.across.modules.experimental.webutility.support.builder;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
@@ -30,7 +30,7 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @Component
 @Exposed
 @RequiredArgsConstructor
-@ConditionalOnAcrossModule(allOf = { EntityModule.NAME, AdminWeb.NAME })
+@ConditionalOnAcrossModule(allOf = {EntityModule.NAME, AdminWebModule.NAME})
 public class SortableTableBuilderHelper
 {
 	private final EntityViewLinks entityViewLinks;
