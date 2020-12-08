@@ -24,4 +24,8 @@ public abstract class ActionHandlerAttribute<T extends ActionHandlerAttribute>
 		this.type = type;
 		return (T) this;
 	}
+
+	T self(){
+		return (T) this;
+	}
 }

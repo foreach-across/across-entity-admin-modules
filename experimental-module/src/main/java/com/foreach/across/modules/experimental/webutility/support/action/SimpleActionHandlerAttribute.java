@@ -36,9 +36,8 @@ public class SimpleActionHandlerAttribute extends ActionHandlerAttribute<SimpleA
 	 * {@link SimpleActionHandlerAttribute} that replaces the content of the target element with the content of the response.
 	 * If a source is defined, the target content is replaced by the content of the source instead.
 	 */
-	public static SimpleActionHandlerAttribute responseContentHandler() {
-		return simpleActionHandler()
-				.type( Type.RESPONSE_CONTENT );
+	public static ResponseContentHandlerAttribute responseContentHandler() {
+		return new ResponseContentHandlerAttribute<>();
 	}
 
 	/**
