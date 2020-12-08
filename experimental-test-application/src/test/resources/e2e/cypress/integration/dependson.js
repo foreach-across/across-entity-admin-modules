@@ -26,7 +26,13 @@ context( 'Depends On tests', () => {
 
         // Verify
         cy.goToMenuItem( 'Drink' );
-        cy.contains( drink ).next().contains( 'td', 'No' ).next().should( 'have.value', '' );
+        cy.contains( drink ).closest( 'tr' )
+                .then( element => {
+                    cy.get( element ).find( '[data-tbl-field="containsAlcohol"]' ).contains( 'No' );
+                    const alcoholPercentage = cy.get( element ).find( '[data-tbl-field="alcoholPercentage"]' );
+                    alcoholPercentage.children().should( 'have.value', '' );
+                    alcoholPercentage.should( 'have.value', '' );
+                } );
     } );
 
     it( 'show percentage when it contains alcohol', function() {
@@ -49,6 +55,10 @@ context( 'Depends On tests', () => {
 
         // Verify
         cy.goToMenuItem( 'Drink' );
-        cy.contains( drink ).next().contains( 'td', 'Yes' ).next().contains( 'td', percentage );
+        cy.contains( drink ).closest( 'tr' )
+                .then( element => {
+                    cy.get( element ).find( '[data-tbl-field="containsAlcohol"]' ).contains( 'Yes' );
+                    cy.get( element ).find( '[data-tbl-field="alcoholPercentage"]' ).contains( percentage );
+                } );
     } );
 } );

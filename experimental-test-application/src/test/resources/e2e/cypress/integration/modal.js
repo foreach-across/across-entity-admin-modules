@@ -37,7 +37,7 @@ context( 'Modal tests', () => {
 
         //cy.get( "textarea").type(food);
         cy.contains( "Save" ).click();
-        cy.wait( "@ajaxModalPost" )
+        cy.wait( "@ajaxModalPost" );
         cy.contains( "Unable to save, please check the form for one or more errors" );
         //TODO: does not always finish typing?
         //cy.get("textarea").type(food, { delay: 0 });
@@ -47,7 +47,15 @@ context( 'Modal tests', () => {
         cy.wait( "@ajaxEntitiesList" );
         cy.get( ".modal-content" ).should( "not.be.visible" );
         cy.findAllByText( food ).should( 'exist' );
-        cy.contains( food ).next().should( 'have.value', '' ).next().find( '.fa-times' ).click();
+        cy.contains( food ).closest( 'tr' )
+                .then( element => {
+                    const currentAction = cy.get( element ).find( '[data-tbl-field="currentAction"]' );
+                    currentAction.should( 'have.value', '' );
+                    currentAction.children().should( 'have.value', '' );
+                } )
+                .find( '.fa-times' )
+                .click();
+
         cy.wait( "@ajaxModalDelete" );
         cy.contains( 'button', 'Delete' ).click();
         cy.wait( "@ajaxEntitiesList" );
