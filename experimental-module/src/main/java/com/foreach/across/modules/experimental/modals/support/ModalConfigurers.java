@@ -11,11 +11,11 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.http.HttpMethod;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.ResponseContentHandlerAttribute.responseContentHandler;
 import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 
 public class ModalConfigurers

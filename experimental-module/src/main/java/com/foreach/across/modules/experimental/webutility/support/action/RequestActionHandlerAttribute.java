@@ -3,8 +3,6 @@ package com.foreach.across.modules.experimental.webutility.support.action;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.springframework.http.HttpMethod;
 
 import java.util.Map;
@@ -14,14 +12,12 @@ import java.util.Map;
  * This will trigger a client-side request based on the configured properties.
  * When the request is resolved, the content of the response will replace the {@link #target} element.
  */
-@Setter
-@Accessors(chain = true, fluent = true)
+@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("unused")
-public class RequestActionHandlerAttribute extends ActionHandlerAttribute<RequestActionHandlerAttribute>
+public class RequestActionHandlerAttribute<SELF extends RequestActionHandlerAttribute<SELF>> extends ActionHandlerAttribute<SELF>
 {
-
-	public RequestActionHandlerAttribute() {
+	protected RequestActionHandlerAttribute() {
 		type( "exm:request" );
 	}
 
@@ -51,7 +47,6 @@ public class RequestActionHandlerAttribute extends ActionHandlerAttribute<Reques
 	 * URL to which the partial request should go. If not set, the url from the {@link #form(String)} will be used
 	 * (or from the closest form if {@link #form(String)} was also not specified.
 	 */
-	@Getter
 	@JsonProperty
 	private String url;
 
@@ -66,11 +61,36 @@ public class RequestActionHandlerAttribute extends ActionHandlerAttribute<Reques
 	 * A collection of attributes that can be added to the request.
 	 * Can be used for example to add additional headers to a request.
 	 */
-	@Getter
 	@JsonProperty
 	private Map<String, Object> requestConfig;
 
-	public static RequestActionHandlerAttribute requestActionHandler() {
-		return new RequestActionHandlerAttribute();
+	@SuppressWarnings("unchecked")
+	public static <T extends RequestActionHandlerAttribute<T>> RequestActionHandlerAttribute<T> requestActionHandler() {
+		return (T) new RequestActionHandlerAttribute();
+	}
+
+	public SELF partial( String partial ) {
+		this.partial = partial;
+		return self();
+	}
+
+	public SELF form( String form ) {
+		this.form = form;
+		return self();
+	}
+
+	public SELF method( HttpMethod method ) {
+		this.method = method;
+		return self();
+	}
+
+	public SELF url( String url ) {
+		this.url = url;
+		return self();
+	}
+
+	public SELF target( String target ) {
+		this.target = target;
+		return self();
 	}
 }
