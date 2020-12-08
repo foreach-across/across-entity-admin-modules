@@ -6,6 +6,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -17,7 +18,7 @@ import lombok.NonNull;
  * @param <T> inheriting type
  */
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ActionAttribute<T extends ActionAttribute> implements ViewElement.WitherSetter<HtmlViewElement>, ViewElementPostProcessor<HtmlViewElement>
 {
@@ -37,12 +38,12 @@ public abstract class ActionAttribute<T extends ActionAttribute> implements View
 
 	public T action( String action ) {
 		this.action = action;
-		return (T) this;
+		return self();
 	}
 
 	public T event( String event ) {
 		this.event = event;
-		return (T) this;
+		return self();
 	}
 
 	@Override
@@ -53,5 +54,10 @@ public abstract class ActionAttribute<T extends ActionAttribute> implements View
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, HtmlViewElement element ) {
 		element.set( this );
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T self() {
+		return (T) this;
 	}
 }

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
@@ -20,10 +18,9 @@ import java.util.Map;
  * Currently, a request supports handling successful calls ({@link #success(ActionHandlerAttribute[])}) and redirects ({@link #redirect(ActionHandlerAttribute[])}).
  */
 @Getter
-@Setter
-@Accessors(chain = true, fluent = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RequestActionAttribute extends ActionAttribute<RequestActionAttribute> {
+public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> extends ActionAttribute<SELF>
+{
     public static final String ACTION = "exm:request";
 
     /**
@@ -51,7 +48,6 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
     /**
      * URL to which the partial request should go. If not set, the url of the current page will be reused.
      */
-    @Getter
     @JsonProperty
     private String url;
 
@@ -59,7 +55,6 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
      * A collection of attributes that can be added to the request.
      * Can be used for example to add additional headers to a request.
      */
-    @Getter
     @JsonProperty
     private Map<String, Object> requestConfig;
 
@@ -97,57 +92,83 @@ public class RequestActionAttribute extends ActionAttribute<RequestActionAttribu
     @JsonProperty
     private boolean copyOriginalRequestParameters;
 
-    public RequestActionAttribute success(Collection<ActionHandlerAttribute> success) {
+    public SELF partial( String partial ) {
+        this.partial = partial;
+        return self();
+    }
+
+    public SELF form( String form ) {
+        this.form = form;
+        return self();
+    }
+
+    public SELF method( HttpMethod method ) {
+        this.method = method;
+        return self();
+    }
+
+    public SELF url( String url ) {
+        this.url = url;
+        return self();
+    }
+
+    public SELF requestConfig( Map<String, Object> requestConfig ) {
+        this.requestConfig = requestConfig;
+        return self();
+    }
+
+    public SELF success( Collection<ActionHandlerAttribute> success ) {
         this.success = new LinkedList<>(success);
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute success(ActionHandlerAttribute... success) {
+    public SELF success( ActionHandlerAttribute... success ) {
         this.success.addAll(Arrays.asList(success));
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute redirect(Collection<ActionHandlerAttribute> redirect) {
+    public SELF redirect( Collection<ActionHandlerAttribute> redirect ) {
         this.redirect = new LinkedList<>(redirect);
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute redirect(ActionHandlerAttribute... redirect) {
+    public SELF redirect( ActionHandlerAttribute... redirect ) {
         this.redirect.addAll(Arrays.asList(redirect));
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute error(Collection<ActionHandlerAttribute> error) {
+    public SELF error( Collection<ActionHandlerAttribute> error ) {
         this.error = new LinkedList<>(error);
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute error(ActionHandlerAttribute... error) {
+    public SELF error( ActionHandlerAttribute... error ) {
         this.error.addAll(Arrays.asList(error));
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute failure(Collection<ActionHandlerAttribute> failure) {
+    public SELF failure( Collection<ActionHandlerAttribute> failure ) {
         this.failure = new LinkedList<>(failure);
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute failure(ActionHandlerAttribute... failure) {
+    public SELF failure( ActionHandlerAttribute... failure ) {
         this.failure.addAll(Arrays.asList(failure));
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute copyOriginalRequestParameters(boolean copy) {
+    public SELF copyOriginalRequestParameters( boolean copy ) {
         this.copyOriginalRequestParameters = copy;
-        return this;
+        return self();
     }
 
-    public RequestActionAttribute() {
+    protected RequestActionAttribute() {
         action(ACTION);
         event("click");
     }
 
-    public static RequestActionAttribute requestAction() {
-        return new RequestActionAttribute();
+    @SuppressWarnings("unchecked")
+    public static <T extends RequestActionAttribute<T>> RequestActionAttribute<T> requestAction() {
+        return (T) new RequestActionAttribute();
     }
 }

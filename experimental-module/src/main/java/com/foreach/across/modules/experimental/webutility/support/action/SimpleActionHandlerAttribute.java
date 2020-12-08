@@ -2,18 +2,15 @@ package com.foreach.across.modules.experimental.webutility.support.action;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 @Getter
-@Setter
-@Accessors(chain = true, fluent = true)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SimpleActionHandlerAttribute extends ActionHandlerAttribute<SimpleActionHandlerAttribute>
+public class SimpleActionHandlerAttribute<SELF extends SimpleActionHandlerAttribute<SELF>> extends ActionHandlerAttribute<SELF>
 {
 	/**
 	 * Optional CSS3 selector of the source element holding the input for the handler.
@@ -28,16 +25,19 @@ public class SimpleActionHandlerAttribute extends ActionHandlerAttribute<SimpleA
 	@NonNull
 	private String target;
 
-	public static SimpleActionHandlerAttribute simpleActionHandler() {
-		return new SimpleActionHandlerAttribute();
+	public SELF source( String source ) {
+		this.source = source;
+		return self();
 	}
 
-	/**
-	 * {@link SimpleActionHandlerAttribute} that replaces the content of the target element with the content of the response.
-	 * If a source is defined, the target content is replaced by the content of the source instead.
-	 */
-	public static ResponseContentHandlerAttribute responseContentHandler() {
-		return new ResponseContentHandlerAttribute<>();
+	public SELF target( String target ) {
+		this.target = target;
+		return self();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends SimpleActionHandlerAttribute<T>> SimpleActionHandlerAttribute<T> simpleActionHandler() {
+		return (T) new SimpleActionHandlerAttribute();
 	}
 
 	/**
