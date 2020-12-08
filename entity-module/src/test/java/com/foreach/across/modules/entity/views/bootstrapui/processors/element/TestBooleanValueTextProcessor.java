@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.springframework.context.support.StaticMessageSource;
 
 import java.util.Locale;
 
@@ -60,6 +61,7 @@ public class TestBooleanValueTextProcessor
 		} );
 
 		when( descriptor.getName() ).thenReturn( "myBoolean" );
+		localizedTextResolver.setMessageSource( null );
 	}
 
 	@Test
@@ -67,6 +69,25 @@ public class TestBooleanValueTextProcessor
 		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes" );
 		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No" );
 		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "" );
+	}
+
+	@Test
+	public void localizedDefaultValues() {
+		Locale enGB = new Locale( "en", "GB" );
+		StaticMessageSource messageSource = new StaticMessageSource();
+		localizedTextResolver.setMessageSource( messageSource );
+
+		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes" );
+		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No" );
+		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "" );
+
+		messageSource.addMessage( "EntityModule.controls.options[true]", enGB, "Yes Please" );
+		messageSource.addMessage( "EntityModule.controls.options[false]", enGB, "No Thanks" );
+		messageSource.addMessage( "EntityModule.controls.options[empty]", enGB, "I don't know" );
+
+		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes Please" );
+		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No Thanks" );
+		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "I don't know" );
 	}
 
 	@Test

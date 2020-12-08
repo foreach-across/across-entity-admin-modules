@@ -16,17 +16,12 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import lombok.val;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @author Steven Gentens
@@ -34,7 +29,7 @@ import java.util.Locale;
  */
 public final class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
 {
-		public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
+	public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 		super( propertyDescriptor );
 	}
 
@@ -45,17 +40,20 @@ public final class BooleanValueTextProcessor<T extends ConfigurableTextViewEleme
 
 	@Override
 	protected String print( Object value, Locale locale ) {
-		return null;
+		return print( value, locale, Objects.requireNonNull( ViewElementBuilderContext.retrieveGlobalBuilderContext().orElse( null ) ) );
 	}
 
 	private String convert( ViewElementBuilderContext builderContext, Boolean propertyValue ) {
 		String messageCodePath = "#{properties." + getPropertyDescriptor().getName() + ".value";
 		if ( propertyValue == null ) {
-			return builderContext.resolveText( messageCodePath + "[empty]}", "" );
+			String empty = builderContext.resolveText( "#{EntityModule.controls.options[empty]}", "" );
+			return builderContext.resolveText( messageCodePath + "[empty]}", empty );
 		}
 		else if ( propertyValue ) {
-			return builderContext.resolveText( messageCodePath + "[true]}", "Yes" );
+			String yes = builderContext.resolveText( "#{EntityModule.controls.options[true]}", "Yes" );
+			return builderContext.resolveText( messageCodePath + "[true]}", yes );
 		}
-		return builderContext.resolveText( messageCodePath + "[false]}", "No" );
+		String no = builderContext.resolveText( "#{EntityModule.controls.options[false]}", "No" );
+		return builderContext.resolveText( messageCodePath + "[false]}", no );
 	}
 }
