@@ -47,20 +47,28 @@ context( 'Modal tests', () => {
         cy.wait( "@ajaxEntitiesList" );
         cy.get( ".modal-content" ).should( "not.be.visible" );
         cy.findAllByText( food ).should( 'exist' );
-        cy.contains( food ).closest( 'tr' )
+        cy.contains( food )
+                .closest( 'tr' )
                 .then( element => {
                     const currentAction = cy.get( element ).find( '[data-tbl-field="currentAction"]' );
                     currentAction.should( 'have.value', '' );
                     currentAction.children().should( 'have.value', '' );
+
+                    cy.wrap( element );
                 } )
                 .find( '.fa-times' )
                 .click();
 
         cy.wait( "@ajaxModalDelete" );
-        cy.contains( 'button', 'Delete' ).click();
-        cy.wait( "@ajaxEntitiesList" );
 
-        cy.findAllByText( food ).should( 'not.exist' );
+        cy.get( ".modal-content" ).should( "be.visible" );
+        cy.contains( 'button', 'Delete' ).click();
+
+        cy.wait( "@ajaxEntitiesList" );
+        cy.get( ".modal-content" ).should( "not.be.visible" );
+
+        cy.get( '.em-sortableTable-table' )
+                .findAllByText( food ).should( 'not.exist' );
     } );
 
 } );
