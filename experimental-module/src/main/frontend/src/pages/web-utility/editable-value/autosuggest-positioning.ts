@@ -14,6 +14,8 @@ function repositionSuggestionList($this: any) {
       $parent = relativeParent;
     }
 
+    const parentIsRelative = $parent.css("position") === "relative";
+
     const $input = $this.find(".tt-input");
     const elementPosition = $input[0].getBoundingClientRect();
     const parentPosition = $parent[0].getBoundingClientRect();
@@ -21,8 +23,9 @@ function repositionSuggestionList($this: any) {
     $menu.show();
 
     let positioning = {
-      top: elementPosition.y + elementPosition.height - parentPosition.y + "px",
-      left: elementPosition.x - parentPosition.x + "px",
+      top:
+        (parentIsRelative ? elementPosition.y + elementPosition.height - parentPosition.y : elementPosition.y) + "px",
+      left: (parentIsRelative ? elementPosition.x - parentPosition.x : elementPosition.x) + "px",
     };
     $menu.css(positioning);
     $menu.css("max-width", $this[0].getBoundingClientRect().width);

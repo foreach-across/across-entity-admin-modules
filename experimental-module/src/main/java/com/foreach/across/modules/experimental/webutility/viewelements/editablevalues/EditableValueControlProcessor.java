@@ -256,7 +256,6 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 						}
 					}
 				}
-				System.out.println();
 			}
 		} );
 
