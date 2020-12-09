@@ -50,8 +50,7 @@ public class UserInstaller
 							                                                             .city( "Ghent" )
 							                                                             .number( 21 )
 							                                                             .street( "Werregarenstraat" )
-							                                                             .build(), BigDecimal.valueOf( 123 ), true, null, Degree.BACHELOR,
-							                                  Degree.HIGH_SCHOOL ),
+							                                                             .build(), BigDecimal.valueOf( 123 ), true, null, Degree.BACHELOR ),
 							                 getOrCreateUser( allUsers, "Jors", Address.builder()
 							                                                           .addressType( Address.AddressType.PRIMARY )
 							                                                           .city( "Amsterdam" )

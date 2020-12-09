@@ -11,6 +11,7 @@ context( "Editable value tests (User / Company entities)", () => {
                         cy.visit( url.substr( 0, url.length - "/update".length ) )
                     } );
         }
+        cy.wait( 150 );
     }
 
     function property( property ) {
@@ -37,9 +38,15 @@ context( "Editable value tests (User / Company entities)", () => {
 
     beforeEach( () => {
         cy.login( 'admin' );
+
+        cy.intercept( "POST", new RegExp( "\\/admin\\/entities\\/user\\/.*\\/update\\?view=editableValues" ), ( req ) => {
+            console.log( "Control submit has completed" );
+        } ).as( "ajaxEditableValueSubmit" );
     } );
 
-    const singleEntityPageTests = function() {
+    const singleEntityPageTests = function( name ) {
+
+        const nameReplacement = name.substring( 0, 2 ) + 1 + name.substring( 2 );
 
         it( "Datepicker", () => {
             const datepicker = () => property( "dateOfBirth" );
@@ -68,27 +75,27 @@ context( "Editable value tests (User / Company entities)", () => {
             const textInput = () => property( "email" );
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
-                    .contains( "John@local" );
+                    .contains( name + "@local" );
             openControl( textInput() );
 
             textInput().find( "input.form-control" )
                     .clear()
-                    .type( "J1ohn@local" )
-                    .should( "have.value", "J1ohn@local" );
+                    .type( nameReplacement + "@local" )
+                    .should( "have.value", nameReplacement + "@local" );
 
             submitControl( textInput() );
             cy.wait( "@ajaxEditableValueSubmit" );
 
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
-                    .contains( "J1ohn@local" );
+                    .contains( nameReplacement + "@local" );
 
             openControl( textInput() );
 
             textInput().find( "input.form-control" )
                     .clear()
-                    .type( "John@local" )
-                    .should( "have.value", "John@local" )
+                    .type( name + "@local" )
+                    .should( "have.value", name + "@local" )
                     .blur();
 
             submitControl( textInput() );
@@ -96,7 +103,7 @@ context( "Editable value tests (User / Company entities)", () => {
 
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
-                    .contains( "John@local" );
+                    .contains( name + "@local" );
 
             // openControl( textInput() );
             //
@@ -200,7 +207,7 @@ context( "Editable value tests (User / Company entities)", () => {
             const textInput = () => property( "email" );
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
-                    .contains( "John@local" );
+                    .contains( name + "@local" );
 
             openControl( textInput() );
 
@@ -223,20 +230,20 @@ context( "Editable value tests (User / Company entities)", () => {
             const textInput = () => property( "name" );
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
-                    .contains( "John" );
+                    .contains( name );
 
             cy.get( ".page-header" )
-                    .contains( "John" );
+                    .contains( name );
 
             cy.get( ".breadcrumb-item.active" )
-                    .contains( "John" );
+                    .contains( name );
 
             openControl( textInput() );
 
             textInput().find( "textarea.form-control" )
                     .clear()
-                    .type( "J1ohn" )
-                    .should( "have.value", "J1ohn" )
+                    .type( nameReplacement )
+                    .should( "have.value", nameReplacement )
                     .blur();
 
             submitControl( textInput() );
@@ -244,20 +251,20 @@ context( "Editable value tests (User / Company entities)", () => {
 
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
-                    .contains( "J1ohn" );
+                    .contains( nameReplacement );
 
             cy.get( ".page-header" )
-                    .contains( "J1ohn" );
+                    .contains( nameReplacement );
 
             cy.get( ".breadcrumb-item.active" )
-                    .contains( "J1ohn" );
+                    .contains( nameReplacement );
 
             openControl( textInput() );
 
             textInput().find( "textarea.form-control" )
                     .clear()
-                    .type( "John" )
-                    .should( "have.value", "John" )
+                    .type( name )
+                    .should( "have.value", name )
                     .blur();
 
             submitControl( textInput() );
@@ -270,14 +277,9 @@ context( "Editable value tests (User / Company entities)", () => {
         beforeEach( () => {
             cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
             navigateToUser( "John" );
-
-            // http://localhost:8080/admin/entities/user/1/update?view=editableValues
-            cy.intercept( "POST", new RegExp( "\\/admin\\/entities\\/user\\/.*\\/update\\?view=editableValues" ), ( req ) => {
-                console.log( "Control submit has completed" );
-            } ).as( "ajaxEditableValueSubmit" );
         } );
 
-        singleEntityPageTests();
+        singleEntityPageTests( "John" );
 
         it( "Select", () => {
             const select = () => property( "company" );
@@ -319,21 +321,21 @@ context( "Editable value tests (User / Company entities)", () => {
                     .contains( "No" );
         } );
     } );
-    //
-    // context( "Updating values on detail view", () => {
-    //
-    //     beforeEach( () => {
-    //         cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
-    //         navigateToUser( "Svetty", true );
-    //     } );
-    //
-    //     singleEntityPageTests();
-    //
-    //     it( "Single select and checkbox automatically submit after selection (INCLUDE_ACTIONS = false)", () => {
-    //
-    //     } );
-    //
-    // } );
+
+    context( "Updating values on detail view", () => {
+
+        beforeEach( () => {
+            cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
+            navigateToUser( "Svetty", true );
+        } );
+
+        singleEntityPageTests( "Svetty" );
+
+        // it( "Single select and checkbox automatically submit after selection (INCLUDE_ACTIONS = false)", () => {
+        //
+        // } );
+
+    } );
     //
     // context( "Updating values on list view", () => {
     //
