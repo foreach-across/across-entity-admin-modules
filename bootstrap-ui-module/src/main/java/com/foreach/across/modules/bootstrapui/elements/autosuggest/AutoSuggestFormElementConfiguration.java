@@ -224,6 +224,14 @@ public class AutoSuggestFormElementConfiguration extends ElementConfigurationMap
 		}
 
 		/**
+		 * Short-hand for setting the max number of results on the dataset
+		 */
+		public DataSet maximumResults( Integer maximumResults ) {
+			setAttribute( "limit", maximumResults );
+			return this;
+		}
+
+		/**
 		 * Short-hand for setting the prefetch url.
 		 *
 		 * @param prefetchUrl url for prefetch
