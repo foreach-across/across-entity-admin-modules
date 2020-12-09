@@ -134,10 +134,6 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 							EntityViewContext entityViewContext = builderContext.getAttribute( EntityViewModel.VIEW_CONTEXT, EntityViewContext.class );
 							Object entity = EntityViewElementUtils.currentEntity( builderContext );
 
-//							if ( !entityViewContext.holdsEntity() && entityViewContext.isForAssociation() ) {
-//								entityViewContext = entityViewContext.getParentContext();
-//							}
-							// todo multiple property ids? to support both current property, but also the same property if it references to an associated entity?
 							if ( entity != null && entityViewContext != null && property != null ) {
 								wrapper.set(
 										new EditableValueSettings()

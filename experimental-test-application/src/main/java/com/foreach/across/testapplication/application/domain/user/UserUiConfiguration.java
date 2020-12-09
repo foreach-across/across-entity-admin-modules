@@ -11,6 +11,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.FormGroupElementBuilderFactory;
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
+import com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,14 @@ public class UserUiConfiguration implements EntityConfigurer
 		        .attribute( LIST_VIEW_EDITABLE_VALUES, true )
 		        .listView( lvb -> lvb.showProperties( "name", "dateOfBirth", "company" ) )
 		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() ) )
+		        .detailView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() )
+		                               .properties(
+				                               props -> props.property( "active" )
+				                                             .attribute( WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS, false )
+				                                             .and()
+				                                             .property( "company" )
+				                                             .attribute( WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS, false )
+		                               ) )
 		        .postProcessor( mec -> {
 			        EntityViewFactory listView = mec.getViewFactory( EntityView.LIST_VIEW_NAME );
 			        if ( listView instanceof DispatchingEntityViewFactory ) {

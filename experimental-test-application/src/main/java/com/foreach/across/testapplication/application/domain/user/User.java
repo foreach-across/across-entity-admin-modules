@@ -5,9 +5,11 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import com.foreach.across.testapplication.application.domain.company.Company;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -42,6 +44,11 @@ public class User extends SettableIdBasedEntity<User>
 	@NotBlank
 	private String name;
 
+	@Column
+	@Length(max = 255)
+	@Email
+	private String email;
+
 	@ElementCollection
 	private List<Address> address;
 
@@ -59,5 +66,8 @@ public class User extends SettableIdBasedEntity<User>
 	@Column
 	@NumberFormat(style = NumberFormat.Style.CURRENCY)
 	private BigDecimal netValue;
+
+	@Column
+	private boolean active;
 
 }
