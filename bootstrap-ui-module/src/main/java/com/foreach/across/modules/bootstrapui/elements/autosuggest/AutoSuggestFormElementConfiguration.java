@@ -52,6 +52,8 @@ public class AutoSuggestFormElementConfiguration extends ElementConfigurationMap
 
 	private static final String ATTR_ENDPOINT = "endpoint";
 
+	private Consumer<AutoSuggestFormElementBuilder> builderCustomizer;
+
 	public AutoSuggestFormElementConfiguration() {
 		highlight( true ).showHint( true ).minLength( 1 ).setAttribute( ATTR_DATASETS, new ArrayList<>() );
 	}
@@ -170,6 +172,7 @@ public class AutoSuggestFormElementConfiguration extends ElementConfigurationMap
 	public AutoSuggestFormElementConfiguration translate( Function<String, String> linkBuilder ) {
 		AutoSuggestFormElementConfiguration clone = new AutoSuggestFormElementConfiguration();
 		clone.putAll( this );
+		clone.builderCustomizer = this.builderCustomizer;
 		List<DataSet> dataSets = clone.getDataSets();
 		List<DataSet> translated = new ArrayList<>( dataSets.size() );
 		dataSets.stream().map( ds -> ds.translate( linkBuilder ) ).forEach( translated::add );
@@ -193,6 +196,23 @@ public class AutoSuggestFormElementConfiguration extends ElementConfigurationMap
 	 */
 	public static DataSet createDataSet() {
 		return new DataSet();
+	}
+
+	/**
+	 * Allow customizing the {@link AutoSuggestFormElementBuilder}
+	 */
+	public AutoSuggestFormElementConfiguration customizeBuilder( Consumer<AutoSuggestFormElementBuilder> builderConsumer ) {
+		this.builderCustomizer = builderConsumer;
+		return this;
+	}
+
+	/**
+	 * @param builder
+	 */
+	public void applyBuilderCustomizer( AutoSuggestFormElementBuilder builder ) {
+		if ( this.builderCustomizer != null ) {
+			this.builderCustomizer.accept( builder );
+		}
 	}
 
 	/**
