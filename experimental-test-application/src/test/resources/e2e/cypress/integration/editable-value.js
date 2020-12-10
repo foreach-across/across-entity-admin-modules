@@ -120,7 +120,27 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Embedded collection", () => {
+            const embeddedCollection = () => property( "address" );
 
+            embeddedCollection()
+                    .find( "[data-em-property='address\[\].city']" )
+                    .contains( "Antwerp" );
+
+            openControl( embeddedCollection() );
+
+            embeddedCollection()
+                    .find( "[data-em-property='address\[\].city']" )
+                    .find( "input.form-control" )
+                    .clear()
+                    .type( "Ghent" )
+                    .should( "have.value", "Ghent" );
+
+            submitControl( embeddedCollection() );
+            cy.wait( "@ajaxEditableValueSubmit" );
+
+            embeddedCollection()
+                    .find( "[data-em-property='address\[\].city']" )
+                    .contains( "Ghent" );
         } );
 
         it( "Multi-checkbox", () => {
@@ -331,38 +351,154 @@ context( "Editable value tests (User / Company entities)", () => {
 
         singleEntityPageTests( "Svetty" );
 
-        // it( "Single select and checkbox automatically submit after selection (INCLUDE_ACTIONS = false)", () => {
-        //
-        // } );
+        it( "Select (update after selection)", () => {
+            const select = () => property( "company" );
+            valueModeOfProperty( select() )
+                    .should( "be.visible" )
+                    .should( "have.value", "" );
+
+            openControl( select() );
+
+            select().find( "select.form-control" )
+                    .select( "Kodak", {force: true} );
+            cy.wait( "@ajaxEditableValueSubmit" );
+
+            valueModeOfProperty( select() )
+                    .should( "be.visible" )
+                    .contains( "Kodak" );
+        } );
+
+        it( "Single checkbox (update after selection)", () => {
+            const checkbox = () => property( "active" );
+            valueModeOfProperty( checkbox() )
+                    .should( "be.visible" )
+                    .contains( "Yes" );
+
+            openControl( checkbox() );
+
+            checkbox().find( "input.custom-control-input" )
+                    .uncheck( {force: true} );
+
+            cy.wait( "@ajaxEditableValueSubmit" );
+
+            valueModeOfProperty( checkbox() )
+                    .should( "be.visible" )
+                    .contains( "No" );
+        } );
 
     } );
     //
-    // context( "Updating values on list view", () => {
+    context( "Updating values on list view", () => {
+
+        beforeEach( () => {
+            cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
+            cy.wait( 150 );
+        } );
+
+        it( "Update property", () => {
+            cy.contains( "Deborah" )
+                    .closest( "tr" )
+                    .then( ( row ) => {
+                        const company = () => cy.wrap( row ).find( "[data-em-property='company']" );
+
+                        valueModeOfProperty( company() )
+                                .should( "be.visible" )
+                                .contains( "AGFA" );
+
+                        openControl( company() );
+
+                        company().find( "select.form-control" )
+                                .select( "Kodak", {force: true} )
+                                .invoke( 'val' );
+
+                        submitControl( company() );
+                        cy.wait( "@ajaxEditableValueSubmit" );
+
+                        valueModeOfProperty( company() )
+                                .should( "be.visible" )
+                                .contains( "Kodak" );
+                    } );
+        } );
+    } );
     //
-    //     beforeEach( () => {
-    //         cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
-    //     } );
-    //
-    //     it( "?", {} );
-    //
-    //     it( "Updating the value of a nested property updates referencing items ", () => {
-    //
-    //     } );
-    // } );
-    //
-    // context( "Updating values on association list view", () => {
-    //
-    //     beforeEach( () => {
-    //         cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
-    //     } );
-    //
-    //     it( "?", () => {
-    //
-    //     } );
-    //
-    //     it( "Updating the value of a nested property of the association owner, updates the association title and referencing items", () => {
-    //
-    //     } );
-    // } );
+    context( "Updating values on association list view", () => {
+
+        beforeEach( () => {
+            cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
+            navigateToUser( "Deborah", true );
+            cy.get( "[data-ax-menu-path='user\.mentor'] > a" )
+                    .click();
+            cy.wait( 150 );
+        } );
+
+        it( "Update property", () => {
+            cy.contains( "Jors" )
+                    .closest( "tr" )
+                    .then( ( row ) => {
+                        const company = () => cy.wrap( row ).find( "[data-em-property='company']" );
+
+                        valueModeOfProperty( company() )
+                                .should( "be.visible" )
+                                .contains( "AGFA" );
+
+                        openControl( company() );
+
+                        company().find( "select.form-control" )
+                                .select( "Kodak", {force: true} )
+                                .invoke( 'val' );
+
+                        submitControl( company() );
+                        cy.wait( "@ajaxEditableValueSubmit" );
+
+                        valueModeOfProperty( company() )
+                                .should( "be.visible" )
+                                .contains( "Kodak" );
+                    } );
+        } );
+
+        it( "Updating the value of a nested property of the association owner, updates the association title and referencing items", () => {
+            cy.contains( "Jors" )
+                    .closest( "tr" )
+                    .then( ( row ) => {
+                        const mentorName = () => cy.wrap( row ).find( "[data-em-property='mentor\.name']" );
+
+                        valueModeOfProperty( mentorName() )
+                                .should( "be.visible" )
+                                .contains( "Deborah" );
+
+                        openControl( mentorName() );
+
+                        mentorName().find( "textarea.form-control" )
+                                .clear()
+                                .type( "Debrah" )
+                                .should( "have.value", "Debrah" );
+
+                        submitControl( mentorName() );
+                        cy.wait( "@ajaxEditableValueSubmit" );
+
+                        valueModeOfProperty( mentorName() )
+                                .should( "be.visible" )
+                                .contains( "Debrah" );
+
+                        // found whilst it really doesn't exist...
+                        cy.contains( "Deborah" )
+                                .should( 'not.exist' );
+
+                        openControl( mentorName() );
+
+                        mentorName().find( "textarea.form-control" )
+                                .clear()
+                                .type( "Deborah" )
+                                .should( "have.value", "Deborah" );
+
+                        submitControl( mentorName() );
+                        cy.wait( "@ajaxEditableValueSubmit" );
+
+                        valueModeOfProperty( mentorName() )
+                                .should( "be.visible" )
+                                .contains( "Deborah" );
+                    } );
+        } );
+    } );
 
 } );

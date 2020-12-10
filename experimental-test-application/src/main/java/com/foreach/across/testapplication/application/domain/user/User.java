@@ -18,7 +18,7 @@ import java.util.Set;
 
 @Setter
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

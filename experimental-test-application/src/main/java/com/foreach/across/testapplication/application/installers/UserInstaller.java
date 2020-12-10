@@ -17,6 +17,9 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 
+/**
+ * Data created during this installer is used as test data for cypress tests!
+ */
 @Installer(name = "User installer", description = "Ensures some default users are available", phase = InstallerPhase.AfterModuleBootstrap)
 @RequiredArgsConstructor
 @Order(20)
@@ -31,59 +34,65 @@ public class UserInstaller
 		                 .ifPresent(
 				                 agfa -> {
 					                 List<User> allUsers = userRepository.findAll();
-					                 List<User> users = Arrays.asList(
-							                 getOrCreateUser( allUsers, "John", Address.builder()
-							                                                           .addressType( Address.AddressType.PRIMARY )
-							                                                           .city( "Antwerp" )
-							                                                           .number( 21 )
-							                                                           .street( "Vrederikstraat" )
-							                                                           .build(), BigDecimal.valueOf( 123 ), true, null, Degree.BACHELOR ),
-							                 getOrCreateUser( allUsers, "Deborah", Address.builder()
-							                                                              .addressType( Address.AddressType.WORK )
-							                                                              .city( "Brussels" )
-							                                                              .number( 5 )
-							                                                              .street( "Terhoflaan" )
-							                                                              .build(), BigDecimal.valueOf( 123 ), false, agfa, Degree.BACHELOR,
-							                                  Degree.MASTER ),
-							                 getOrCreateUser( allUsers, "Svetty", Address.builder()
-							                                                             .addressType( Address.AddressType.PRIMARY )
-							                                                             .city( "Ghent" )
-							                                                             .number( 21 )
-							                                                             .street( "Werregarenstraat" )
-							                                                             .build(), BigDecimal.valueOf( 123 ), true, null, Degree.BACHELOR ),
-							                 getOrCreateUser( allUsers, "Jors", Address.builder()
-							                                                           .addressType( Address.AddressType.PRIMARY )
-							                                                           .city( "Amsterdam" )
-							                                                           .number( 72 )
-							                                                           .street( "Javastraat" )
-							                                                           .build(), BigDecimal.valueOf( 123 ), true, agfa, Degree.MASTER ),
-							                 getOrCreateUser( allUsers, "Lora", Address.builder()
-							                                                           .addressType( Address.AddressType.WORK )
-							                                                           .city( "Vienna" )
-							                                                           .number( 357 )
-							                                                           .street( "Kohlmarkt" )
-							                                                           .build(), BigDecimal.valueOf( 123 ), false, agfa )
-					                 );
-					                 userRepository.saveAll( users );
+					                 getOrCreateUser( allUsers, "John", Address.builder()
+					                                                           .addressType( Address.AddressType.PRIMARY )
+					                                                           .city( "Antwerp" )
+					                                                           .number( 21 )
+					                                                           .street( "Vrederikstraat" )
+					                                                           .build(), BigDecimal.valueOf( 123 ), true, null, null, Degree.BACHELOR );
+					                 getOrCreateUser( allUsers, "Svetty", Address.builder()
+					                                                             .addressType( Address.AddressType.PRIMARY )
+					                                                             .city( "Antwerp" )
+					                                                             .number( 22 )
+					                                                             .street( "Werregarenstraat" )
+					                                                             .build(), BigDecimal.valueOf( 123 ), true, null, null, Degree.BACHELOR );
+					                 User deborah = getOrCreateUser( allUsers, "Deborah", Address.builder()
+					                                                                             .addressType( Address.AddressType.WORK )
+					                                                                             .city( "Brussels" )
+					                                                                             .number( 5 )
+					                                                                             .street( "Terhoflaan" )
+					                                                                             .build(), BigDecimal.valueOf( 123 ), false, agfa, null,
+					                                                 Degree.BACHELOR, Degree.MASTER );
+					                 getOrCreateUser( allUsers, "Jors", Address.builder()
+					                                                           .addressType( Address.AddressType.PRIMARY )
+					                                                           .city( "Amsterdam" )
+					                                                           .number( 72 )
+					                                                           .street( "Javastraat" )
+					                                                           .build(), BigDecimal.valueOf( 123 ), true, agfa, deborah, Degree.MASTER );
+					                 getOrCreateUser( allUsers, "Lora", Address.builder()
+					                                                           .addressType( Address.AddressType.WORK )
+					                                                           .city( "Vienna" )
+					                                                           .number( 357 )
+					                                                           .street( "Kohlmarkt" )
+					                                                           .build(), BigDecimal.valueOf( 123 ), false, agfa, deborah );
 				                 }
 		                 );
 
 	}
 
-	private User getOrCreateUser( List<User> users, String name, Address address, BigDecimal netValue, boolean active, Company company, Degree... degrees ) {
-		return users.stream()
-		            .filter( c -> name.equals( c.getName() ) )
-		            .findFirst()
-		            .orElseGet( () -> User.builder()
-		                                  .name( name )
-		                                  .email( name + "@local" )
-		                                  .company( company )
-		                                  .dateOfBirth( getRandomLocalDate() )
-		                                  .degrees( new HashSet<>( Arrays.asList( degrees ) ) )
-		                                  .active( active )
-		                                  .netValue( netValue )
-		                                  .address( Collections.singletonList( address ) )
-		                                  .build() );
+	private User getOrCreateUser( List<User> users,
+	                              String name,
+	                              Address address,
+	                              BigDecimal netValue,
+	                              boolean active,
+	                              Company company, User mentor,
+	                              Degree... degrees ) {
+		User build = users.stream()
+		                  .filter( c -> name.equals( c.getName() ) )
+		                  .findFirst()
+		                  .orElseGet( User::new )
+		                  .toBuilder()
+		                  .name( name )
+		                  .email( name + "@local" )
+		                  .company( company )
+		                  .dateOfBirth( getRandomLocalDate() )
+		                  .degrees( new HashSet<>( Arrays.asList( degrees ) ) )
+		                  .active( active )
+		                  .netValue( netValue )
+		                  .address( Collections.singletonList( address ) )
+		                  .mentor( mentor )
+		                  .build();
+		return userRepository.save( build );
 
 	}
 

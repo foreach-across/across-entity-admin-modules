@@ -4,6 +4,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
@@ -36,14 +37,25 @@ public class UserUiConfiguration implements EntityConfigurer
 		        .attribute( LIST_VIEW_EDITABLE_VALUES, true )
 		        .listView( lvb -> lvb.showProperties( "name", "dateOfBirth", "company" ) )
 		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() ) )
-		        .detailView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() )
-		                               .properties(
-				                               props -> props.property( "active" )
-				                                             .attribute( WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS, false )
-				                                             .and()
-				                                             .property( "company" )
-				                                             .attribute( WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS, false )
-		                               ) )
+		        .detailView(
+				        fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() )
+				                  .properties(
+						                  props -> props.property( "active" )
+						                                .attribute( WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS, false )
+						                                .and()
+						                                .property( "company" )
+						                                .attribute( WebUtilityModuleAttributes.EditableValue.INCLUDE_ACTIONS, false )
+				                  )
+		        )
+		        .association(
+				        ab -> ab.name( "user.mentor" )
+				                .associationType( EntityAssociation.Type.EMBEDDED )
+				                .attribute( LIST_VIEW_EDITABLE_VALUES, true )
+				                .listView( lvb -> lvb.showProperties( "name", "dateOfBirth", "company", "mentor.name" )
+				                                     .properties( props -> props.property( "mentor.name" )
+				                                                                .displayName( "Mentor name" ) )
+				                )
+		        )
 		        .postProcessor( mec -> {
 			        EntityViewFactory listView = mec.getViewFactory( EntityView.LIST_VIEW_NAME );
 			        if ( listView instanceof DispatchingEntityViewFactory ) {
