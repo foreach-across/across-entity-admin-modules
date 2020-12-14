@@ -36,6 +36,11 @@ context( "Editable value tests (User / Company entities)", () => {
                 .click();
     }
 
+    function isInValueMode( property ) {
+        property.find( "form.editable-value-form" )
+                .should( 'not.exist' );
+    }
+
     beforeEach( () => {
         cy.login( 'admin' );
 
@@ -65,6 +70,8 @@ context( "Editable value tests (User / Company entities)", () => {
             submitControl( datepicker() );
             cy.wait( "@ajaxEditableValueSubmit" );
 
+            isInValueMode( datepicker() );
+
             valueModeOfProperty( datepicker() )
                     .should( "be.visible" )
                     .contains( "1 Jan 2019" );
@@ -86,6 +93,8 @@ context( "Editable value tests (User / Company entities)", () => {
             submitControl( textInput() );
             cy.wait( "@ajaxEditableValueSubmit" );
 
+            isInValueMode( textInput() );
+
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
                     .contains( nameReplacement + "@local" );
@@ -100,6 +109,8 @@ context( "Editable value tests (User / Company entities)", () => {
 
             submitControl( textInput() );
             cy.wait( "@ajaxEditableValueSubmit" );
+
+            isInValueMode( textInput() );
 
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
@@ -138,6 +149,8 @@ context( "Editable value tests (User / Company entities)", () => {
             submitControl( embeddedCollection() );
             cy.wait( "@ajaxEditableValueSubmit" );
 
+            isInValueMode( embeddedCollection() );
+
             embeddedCollection()
                     .find( "[data-em-property='address\[\].city']" )
                     .contains( "Ghent" );
@@ -160,6 +173,8 @@ context( "Editable value tests (User / Company entities)", () => {
 
             submitControl( checkboxList() );
             cy.wait( "@ajaxEditableValueSubmit" );
+
+            isInValueMode( checkboxList() );
 
             valueModeOfProperty( checkboxList() )
                     .should( "be.visible" )
@@ -185,6 +200,8 @@ context( "Editable value tests (User / Company entities)", () => {
             submitControl( autosuggest() );
             cy.wait( "@ajaxEditableValueSubmit" );
 
+            isInValueMode( autosuggest() );
+
             valueModeOfProperty( autosuggest() )
                     .should( "be.visible" )
                     .contains( "Deborah" );
@@ -205,6 +222,8 @@ context( "Editable value tests (User / Company entities)", () => {
 
             submitControl( numericInput() );
             cy.wait( "@ajaxEditableValueSubmit" );
+
+            isInValueMode( numericInput() );
 
             valueModeOfProperty( numericInput() )
                     .should( "be.visible" )
@@ -269,6 +288,8 @@ context( "Editable value tests (User / Company entities)", () => {
             submitControl( textInput() );
             cy.wait( "@ajaxEditableValueSubmit" );
 
+            isInValueMode( textInput() );
+
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
                     .contains( nameReplacement );
@@ -316,6 +337,8 @@ context( "Editable value tests (User / Company entities)", () => {
             submitControl( select() );
             cy.wait( "@ajaxEditableValueSubmit" );
 
+            isInValueMode( select() );
+
             valueModeOfProperty( select() )
                     .should( "be.visible" )
                     .contains( "Kodak" );
@@ -335,6 +358,8 @@ context( "Editable value tests (User / Company entities)", () => {
 
             submitControl( checkbox() );
             cy.wait( "@ajaxEditableValueSubmit" );
+
+            isInValueMode( checkbox() );
 
             valueModeOfProperty( checkbox() )
                     .should( "be.visible" )
@@ -363,6 +388,8 @@ context( "Editable value tests (User / Company entities)", () => {
                     .select( "Kodak", {force: true} );
             cy.wait( "@ajaxEditableValueSubmit" );
 
+            isInValueMode( select() );
+
             valueModeOfProperty( select() )
                     .should( "be.visible" )
                     .contains( "Kodak" );
@@ -378,8 +405,9 @@ context( "Editable value tests (User / Company entities)", () => {
 
             checkbox().find( "input.custom-control-input" )
                     .uncheck( {force: true} );
-
             cy.wait( "@ajaxEditableValueSubmit" );
+
+            isInValueMode( checkbox() );
 
             valueModeOfProperty( checkbox() )
                     .should( "be.visible" )
@@ -413,6 +441,8 @@ context( "Editable value tests (User / Company entities)", () => {
 
                         submitControl( company() );
                         cy.wait( "@ajaxEditableValueSubmit" );
+
+                        isInValueMode( company() );
 
                         valueModeOfProperty( company() )
                                 .should( "be.visible" )
@@ -450,6 +480,8 @@ context( "Editable value tests (User / Company entities)", () => {
                         submitControl( company() );
                         cy.wait( "@ajaxEditableValueSubmit" );
 
+                        isInValueMode( company() );
+
                         valueModeOfProperty( company() )
                                 .should( "be.visible" )
                                 .contains( "Kodak" );
@@ -476,12 +508,17 @@ context( "Editable value tests (User / Company entities)", () => {
                         submitControl( mentorName() );
                         cy.wait( "@ajaxEditableValueSubmit" );
 
+                        isInValueMode( mentorName() );
+
                         valueModeOfProperty( mentorName() )
                                 .should( "be.visible" )
                                 .contains( "Debrah" );
 
                         // found whilst it really doesn't exist...
                         cy.contains( "Deborah" )
+                                .filter( ( i, elem ) => {
+                                    return elem.closest( "[data-em-editable-value-role='control-container']" ).length === 0;
+                                } )
                                 .should( 'not.exist' );
 
                         openControl( mentorName() );
@@ -493,6 +530,8 @@ context( "Editable value tests (User / Company entities)", () => {
 
                         submitControl( mentorName() );
                         cy.wait( "@ajaxEditableValueSubmit" );
+
+                        isInValueMode( mentorName() );
 
                         valueModeOfProperty( mentorName() )
                                 .should( "be.visible" )
