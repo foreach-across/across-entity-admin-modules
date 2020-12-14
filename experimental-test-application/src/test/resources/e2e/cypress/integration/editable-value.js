@@ -57,7 +57,7 @@ context( "Editable value tests (User / Company entities)", () => {
             const datepicker = () => property( "dateOfBirth" );
             valueModeOfProperty( datepicker() )
                     .should( "be.visible" )
-                    .should( "not.have.value", "1 Jan 2019" );
+                    .should( "not.have.value", "Jan 1, 2019" );
 
             openControl( datepicker() );
 
@@ -74,7 +74,7 @@ context( "Editable value tests (User / Company entities)", () => {
 
             valueModeOfProperty( datepicker() )
                     .should( "be.visible" )
-                    .contains( "1 Jan 2019" );
+                    .contains( "Jan 1, 2019" );
 
         } );
 

@@ -1,6 +1,7 @@
 package com.foreach.across.testapplication.application.domain.user;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -16,6 +17,9 @@ import com.foreach.across.modules.experimental.webutility.support.WebUtilityModu
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Locale;
+import java.util.function.Supplier;
 
 import static com.foreach.across.modules.experimental.webutility.support.WebUtilityModuleAttributes.EditableValue.LIST_VIEW_EDITABLE_VALUES;
 
@@ -33,6 +37,15 @@ public class UserUiConfiguration implements EntityConfigurer
 				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
 				                      .attribute( autoSuggestData.entityQuery( "name ilike '%{0}%'" )
 				                                                 .control( ctrl -> ctrl.minLength( 2 ) ) )
+				                      .and()
+				                      .property( "dateOfBirth" )
+				                      .attribute( DateTimeFormElementConfiguration.class, ( (Supplier<DateTimeFormElementConfiguration>) () -> {
+					                      DateTimeFormElementConfiguration conf =
+							                      new DateTimeFormElementConfiguration( DateTimeFormElementConfiguration.Format.DATE );
+					                      conf.setLocalizePatterns( false );
+					                      conf.setLocale( Locale.forLanguageTag( "en-US" ) );
+					                      return conf;
+				                      } ).get() )
 		        )
 		        .attribute( LIST_VIEW_EDITABLE_VALUES, true )
 		        .listView( lvb -> lvb.showProperties( "name", "dateOfBirth", "company" ) )
