@@ -29,63 +29,73 @@ import java.util.function.Function;
  * </pre>
  * </p>
  */
-public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter {
+public class TablePropertyLinkViewProcessor extends EntityViewProcessorAdapter
+{
 
-    private final TableLinker tableLinker;
-    private String property;
-    private boolean showIcon = true;
+	private final TableLinker tableLinker;
+	private String property;
+	private boolean showIcon = true;
 	private Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier;
 
-    public TablePropertyLinkViewProcessor(EntityViewLinks entityViewLinks) {
-        this.tableLinker = new TableLinker(entityViewLinks);
-    }
+	public TablePropertyLinkViewProcessor( EntityViewLinks entityViewLinks ) {
+		this.tableLinker = new TableLinker( entityViewLinks );
+	}
 
-    public TablePropertyLinkViewProcessor property(String property) {
-        this.property = property;
-        return this;
-    }
+	public TablePropertyLinkViewProcessor property( String property ) {
+		this.property = property;
+		return this;
+	}
 
-    public TablePropertyLinkViewProcessor showIcon(boolean showIcon) {
-        this.showIcon = showIcon;
-        return this;
-    }
+	public TablePropertyLinkViewProcessor showIcon( boolean showIcon ) {
+		this.showIcon = showIcon;
+		return this;
+	}
 
 	public void resolveLinkDestination( Function<EntityViewRequest, TableLinker.LinkDestination> linkDestinationSupplier ) {
 		this.linkDestinationSupplier = linkDestinationSupplier;
 	}
 
-    @Override
-    protected void createViewElementBuilders(EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap) {
-        SortableTableBuilder sortableTableBuilder = builderMap.get(SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class);
+	@Override
+	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
+		SortableTableBuilder sortableTableBuilder = builderMap.get( SortableTableRenderingViewProcessor.TABLE_BUILDER, SortableTableBuilder.class );
 
-        if (sortableTableBuilder != null) {
-	        TableLinker.LinkDestination linkDestination = linkDestinationSupplier != null ? linkDestinationSupplier.apply(
-			        entityViewRequest ) : entityViewRequest.getEntityViewContext().getAllowableActions().contains(
-			        AllowableAction.UPDATE ) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL;
-            EntityAssociation entityAssociation = entityViewRequest.getEntityViewContext().isForAssociation() ? entityViewRequest.getEntityViewContext().getEntityAssociation() : null;
-            EntityViewLinkBuilder linkBuilder = null;
+		if ( sortableTableBuilder != null ) {
+			TableLinker.LinkDestination linkDestination = linkDestinationSupplier != null ? linkDestinationSupplier.apply(
+					entityViewRequest ) : entityViewRequest.getEntityViewContext().getAllowableActions().contains(
+					AllowableAction.UPDATE ) ? TableLinker.LinkDestination.UPDATE : TableLinker.LinkDestination.DETAIL;
+			EntityAssociation entityAssociation =
+					entityViewRequest.getEntityViewContext().isForAssociation() ? entityViewRequest.getEntityViewContext().getEntityAssociation() : null;
+			EntityViewLinkBuilder linkBuilder = null;
 
-            if (entityAssociation != null && EntityAssociation.Type.EMBEDDED.equals(entityAssociation.getAssociationType())) {
-                linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
-            }
+			if ( entityAssociation != null && EntityAssociation.Type.EMBEDDED.equals( entityAssociation.getAssociationType() ) ) {
+				linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
+			}
 
-            tableLinker.createLinkOnProperty(sortableTableBuilder, property, linkDestination, linkBuilder);
+			tableLinker.createLinkOnProperty( sortableTableBuilder, property, linkDestination, linkBuilder );
 
-            if (!showIcon) {
-                sortableTableBuilder.valueRowProcessor((ctx, row) ->
-                        ContainerViewElementUtils.find(row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class).ifPresent(actions ->
-                                actions.getChildren().stream()
-                                        .filter(c -> "edit".equals(c.get(HtmlViewElement.Functions.attribute("data-em-button-role"))))
-                                        .findFirst().ifPresent(actions::removeChild)
-                        ));
+			if ( !showIcon ) {
+				sortableTableBuilder.valueRowProcessor( ( ctx, row ) ->
+						                                        ContainerViewElementUtils
+								                                        .find( row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class )
+								                                        .ifPresent( actions ->
+										                                                    actions.getChildren().stream()
+										                                                           .filter( c -> "edit".equals( c.get( HtmlViewElement.Functions
+												                                                                                               .attribute(
+														                                                                                               "data-em-button-role" ) ) ) )
+										                                                           .findFirst().ifPresent( actions::removeChild )
+								                                        ) );
 
-                sortableTableBuilder.valueRowProcessor((ctx, row) ->
-                        ContainerViewElementUtils.find(row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class).ifPresent(actions ->
-                                actions.getChildren().stream()
-                                        .filter(c -> "view".equals(c.get(HtmlViewElement.Functions.attribute("data-em-button-role"))))
-                                        .findFirst().ifPresent(actions::removeChild)
-                        ));
-            }
-        }
-    }
+				sortableTableBuilder.valueRowProcessor( ( ctx, row ) ->
+						                                        ContainerViewElementUtils
+								                                        .find( row, EntityListActionsProcessor.CELL_NAME, TableViewElement.Cell.class )
+								                                        .ifPresent( actions ->
+										                                                    actions.getChildren().stream()
+										                                                           .filter( c -> "view".equals( c.get( HtmlViewElement.Functions
+												                                                                                               .attribute(
+														                                                                                               "data-em-button-role" ) ) ) )
+										                                                           .findFirst().ifPresent( actions::removeChild )
+								                                        ) );
+			}
+		}
+	}
 }

@@ -18,8 +18,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+	                <source>1.8</source>
+	                <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -54,36 +54,48 @@
             <groupId>com.foreach.across.modules</groupId>
             <artifactId>entity-module</artifactId>
         </dependency>
+	    <dependency>
+		    <groupId>com.foreach.across.modules</groupId>
+		    <artifactId>file-manager-module</artifactId>
+	    </dependency>
+        <dependency>
+            <groupId>com.foreach.across.modules</groupId>
+            <artifactId>properties-module</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.foreach.across.modules</groupId>
             <artifactId>across-hibernate-module</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.foreach.across</groupId>
-            <artifactId>across-test</artifactId>
+	        <groupId>com.foreach.across</groupId>
+	        <artifactId>across-test</artifactId>
         </dependency>
+	    <dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-jdbc</artifactId>
+	    </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <!-- https://github.com/wimdeblauwe/testcontainers-cypress -->
-            <groupId>io.github.wimdeblauwe</groupId>
-            <artifactId>testcontainers-cypress</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
+	    <dependency>
+		    <!-- https://github.com/wimdeblauwe/testcontainers-cypress -->
+		    <groupId>io.github.wimdeblauwe</groupId>
+		    <artifactId>testcontainers-cypress</artifactId>
+		    <version>1.0.0</version>
+		    <scope>test</scope>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-engine</artifactId>
+		    <scope>test</scope>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.assertj</groupId>
+		    <artifactId>assertj-core</artifactId>
+		    <scope>test</scope>
+	    </dependency>
     </dependencies>
 
 </project>

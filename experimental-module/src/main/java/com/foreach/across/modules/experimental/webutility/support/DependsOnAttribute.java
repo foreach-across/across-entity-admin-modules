@@ -51,12 +51,12 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 	/**
 	 * Set the source field using the property selector
 	 */
-	public Dependency property( @NonNull String propertyName) {
+	public Dependency property( @NonNull String propertyName ) {
 		return new Dependency( ruleSet( propertyToDependencyId( propertyName ) ), options );
 	}
 
     private Map<String, Object> ruleSet(String id) {
-        return dependencies.computeIfAbsent(id, key -> new LinkedHashMap<>());
+        return dependencies.computeIfAbsent(id, key -> new LinkedHashMap<>() );
     }
 
 	//todo used to select the actual control by specifying input, but that is not sufficient (e.g. for a select)
@@ -70,7 +70,7 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 
     @Override
     public void applyTo(HtmlViewElement node) {
-        Map<String, Map<String, Object>> attributeValue = new LinkedHashMap<>(dependencies);
+        Map<String, Map<String, Object>> attributeValue = new LinkedHashMap<>( dependencies );
 	    attributeValue.put( "options", options );
         node.setAttribute("style", "display: none;");
         node.setAttribute("data-dependson", attributeValue);

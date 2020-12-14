@@ -81,7 +81,7 @@ export function executeFormRequest(
     formConfiguration.body = getFormData(form[0], copyOriginalRequestParameters);
     formConfiguration.processData = false;
     formConfiguration.contentType = false;
-    formConfiguration.cache = false;
+    formConfiguration.cache = "no-store";
   } else {
     formConfiguration.body = new URLSearchParams(getFormData(form[0], copyOriginalRequestParameters) as any);
   }
@@ -100,7 +100,7 @@ export function executeFetchRequest(url: string, method: string, requestConfigur
     {},
     {
       method: method,
-      headers: { "X-XSRF-Token": getCookie("XSRF-TOKEN"), "Content-Type": "application/x-www-form-urlencoded" },
+      headers: { "X-XSRF-Token": getCookie("XSRF-TOKEN") },
     },
     requestConfiguration
   );

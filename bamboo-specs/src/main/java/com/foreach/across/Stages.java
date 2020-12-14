@@ -30,12 +30,12 @@ public class Stages
 	public static Stage unitTests() {
 		return new Stage( "Run tests" )
 				.description( "Checks that the library can be built and all tests succeed" )
-				.jobs(new Job("Run unit tests", new BambooKey("JOB1"))
-						.artifacts(new Artifact()
-								.name("Cypress tests")
-								.copyPattern("**/*")
-								.location("experimental-test-application/target/test-classes/e2e/cypress")
-						)
+				.jobs( new Job( "Run unit tests", new BambooKey( "JOB1" ) )
+						       .artifacts( new Artifact()
+								                   .name( "Cypress tests" )
+								                   .copyPattern( "**/*" )
+								                   .location( "experimental-test-application/target/test-classes/e2e/cypress" )
+						       )
 						       .pluginConfigurations( new AllOtherPluginsConfiguration() )
 						       .tasks(
 								       defaultRepositoryCheckoutTask(),

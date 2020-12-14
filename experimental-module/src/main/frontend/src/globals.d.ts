@@ -1,3 +1,9 @@
+declare interface JQuery<HTMLElement> {
+  typeahead(fn);
+
+  typeahead(fn, val);
+}
+
 declare var jQuery: JQueryStatic;
 declare var $: JQueryStatic;
 
@@ -13,6 +19,16 @@ declare interface ActionHandlerFactory {
   handle(action: any, context: any): void;
 }
 
+declare interface EditableValueHandlerFactory {
+  registerHandler(handler: EditableValueUpdateHandler): void;
+
+  getHandledEventTypes(): Set<string>;
+
+  removeHandler(name: string): void;
+
+  handle(control: any, editableValueHolder: EditableValue, event: any): void;
+}
+
 declare global {
   interface Window {
     ExperimentalModule: ExperimentalModuleObject;
@@ -22,6 +38,7 @@ declare global {
 declare interface ExperimentalModuleObject {
   actionFactory: ActionFactory;
   actionHandlerFactory: ActionHandlerFactory;
+  editableValueHandlerFactory: EditableValueHandlerFactory;
 }
 
 declare var ExperimentalModule: ExperimentalModuleObject;
@@ -36,7 +53,7 @@ declare var BootstrapUiModule: {
 
   initializeFormElements(node: any): void;
 
-  refTarget(node: any, recurse: any): void;
+  refTarget(node: any, recurse?: any): any;
 };
 
 declare var EntityModule: {
