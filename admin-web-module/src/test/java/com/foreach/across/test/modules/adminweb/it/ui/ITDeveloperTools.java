@@ -25,14 +25,14 @@ import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.test.AcrossTestWebContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * @author Arne Vandamme
@@ -54,6 +54,36 @@ public class ITDeveloperTools
 			   )
 			   .andExpect( status().isOk() )
 			   .andExpect( content().string( "notFound" ) );
+		}
+	}
+
+	@Test
+	public void noAuthenticationRedirectsToLogin() throws Exception {
+		try (AcrossTestWebContext ctx = web( false )
+				.modules( AdminWebModule.NAME )
+				.modules( new EmptyAcrossModule( "Test", DeveloperToolsController.class ) )
+				.build()) {
+			ctx.mockMvc()
+			   .perform(
+					   get( "/admin/devtools" )
+			   )
+			   .andExpect( status().isFound() )
+			   .andExpect( redirectedUrl( "http://localhost/admin/login" ) );
+		}
+	}
+
+	@Test
+	public void noAuthenticationDoesNotRedirectToLoginForOtherRootPath() throws Exception {
+		try (AcrossTestWebContext ctx = web( false )
+				.modules( AdminWebModule.NAME )
+				.modules( new EmptyAcrossModule( "Test", DeveloperToolsController.class, AboutController.class ) )
+				.build()) {
+			ctx.mockMvc()
+			   .perform(
+					   get( "/about" )
+			   )
+			   .andExpect( status().isOk() )
+			   .andExpect( content().string( "about this controller" ) );
 		}
 	}
 
@@ -83,6 +113,16 @@ public class ITDeveloperTools
 		public String developerToolsMenuItemFound( AdminMenu adminMenu ) {
 			Menu menu = adminMenu.getItem( MenuSelector.byTitle( "Developer tools" ) );
 			return menu == null ? "notFound" : menu.getPath();
+		}
+	}
+
+	@Controller
+	public static class AboutController
+	{
+		@ResponseBody
+		@GetMapping("/about")
+		public String aboutControllerMapping() {
+			return "about this controller";
 		}
 	}
 }
