@@ -1,234 +1,234 @@
-///**
-// * Editable value styling.
-// */
-//@import "~bootstrap/scss/mixins";
-//@import "~bootstrap/scss/functions";
-//@import "~bootstrap/scss/variables";
-//
-//$white: #ffffff;
-//$light-grey-100: #f5f5f5; // $gray-100: #efefef !default;
-//$dark-grey: #888888;
-//
-//_ {
-//  // hide the generated controls, probably a bug
-//  display: none;
-//}
-//
-//.editable-value-value {
-//  cursor: pointer;
-//
-//  .cta-item {
-//    opacity: 0;
-//    background-color: #ebecf0;
-//    //transition: opacity 150ms ease-in 0ms;
-//    color: $dark-grey;
-//
-//    background-repeat: no-repeat;
-//    background-position: 4px 4px;
-//    border-left: 1px solid #ebecf0;
-//    bottom: 0;
-//    height: auto;
-//    margin: 0;
-//    position: absolute;
-//    right: 0;
-//    top: 0;
-//    width: 24px;
-//  }
-//
-//  .cta-edit::before {
-//    font-family: "Font Awesome 5 Free";
-//    content: "\f303";
-//    font-weight: 600;
-//    font-size: 1rem;
-//    padding-left: 3px;
-//  }
-//
-//  &:hover {
-//    .cta-item {
-//      opacity: 1;
-//    }
-//  }
-//}
-//
-//.editable-value-actions {
-//  position: absolute;
-//  right: 3px;
-//  background-color: $white;
-//  border-radius: 8px;
-//  border-top-right-radius: 0;
-//  border-top-left-radius: 0;
-//  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08);
-//  white-space: nowrap;
-//  padding: 2px;
-//
-//  .btn {
-//    cursor: pointer;
-//    padding: 4px;
-//    margin-right: 0;
-//
-//    &:hover {
-//      background-color: $light-grey-100;
-//      border-radius: 8px;
-//    }
-//  }
-//
-//  a.btn {
-//    color: $dark;
-//
-//    &[data-action="save"]:hover {
-//      color: $success;
-//    }
-//
-//    &[data-action="cancel"]:hover {
-//      color: $danger;
-//    }
-//  }
-//}
-//
-//h3 .editable-value-form input.form-control {
-//  color: $primary;
-//  font-size: 48px;
-//  max-width: 75rem;
-//}
-//
-//.editable-value-form {
-//  min-width: 100px;
-//  max-width: fit-content;
-//  max-width: -moz-max-content;
-//
-//  .editable-value-control {
-//    display: inline-block;
-//    position: relative;
-//
-//    .bootstrap-select.form-control {
-//      display: block;
-//    }
-//  }
-//
-//  .invalid-feedback {
-//    display: block;
-//    margin-left: 1rem;
-//    font-size: 0.8rem;
-//    font-weight: normal;
-//    color: $danger;
-//    vertical-align: bottom;
-//  }
-//
-//  .form-control.is-invalid {
-//    background-image: none;
-//    padding-right: inherit;
-//  }
-//
-//  input.form-control {
-//    min-width: 100px;
-//  }
-//}
-//
-//.form-group {
-//  .editable-value-wrapper {
-//    display: block;
-//    margin-top: 0;
-//    margin-bottom: 1rem;
-//    height: 100%;
-//  }
-//
-//  .editable-value-value {
-//    display: inline-block;
-//    min-width: 100px;
-//    min-height: 1.5rem;
-//    height: 100%;
-//    clear: both;
-//
-//    position: relative;
-//    padding-right: 30px;
-//    border-radius: 2px;
-//
-//    &:hover {
-//      box-shadow: 0 0 0 1px #ebecf0;
-//      //transition: box-shadow 150ms ease-in 0ms;
-//
-//      padding-left: 3px;
-//      margin-left: -3px;
-//
-//      .embedded-collection-items > .embedded-collection-item:first-of-type {
-//        border-top: none;
-//      }
-//    }
-//  }
-//
-//  .editable-value-wrapper.editable-value-reload {
-//    .cta-edit::before {
-//      content: "\f1ce";
-//      -webkit-animation: fa-spin 2s infinite linear;
-//      animation: fa-spin 2s infinite linear;
-//      display: block;
-//    }
-//  }
-//}
-//
-//h1,
-//h2,
-//h3,
-//h4,
-//h5,
-//h6 {
-//  position: relative;
-//
-//  .editable-value-wrapper.editable-value-reload {
-//    .cta-edit::before {
-//      display: block;
-//      content: "\f1ce";
-//      -webkit-animation: fa-spin 2s infinite linear;
-//      animation: fa-spin 2s infinite linear;
-//    }
-//  }
-//}
-//
-//.editable-value-control {
-//  .js-form-datetimepicker {
-//    flex-wrap: unset;
-//
-//    .input-group-append {
-//      .input-group-text {
-//        background: transparent;
-//        border: unset;
-//        border-top-right-radius: 0 !important;
-//        border-bottom-right-radius: 0 !important;
-//        border-top-left-radius: 0 !important;
-//        border-bottom-left-radius: 0 !important;
-//        border-bottom: 2px solid $primary;
-//      }
-//    }
-//  }
-//}
-//
-//.editable-value-form.loading {
-//  .editable-value-control:after {
-//    content: " ";
-//    position: absolute;
-//    top: 0;
-//    left: 0;
-//    width: 100%;
-//    height: 100%;
-//    background-color: darkgray;
-//    opacity: 0.5;
-//  }
-//
-//  .editable-value-actions {
-//    [data-action="loading"] {
-//      cursor: default;
-//    }
-//
-//    &:after {
-//      content: " ";
-//      position: absolute;
-//      top: 0;
-//      left: 0;
-//      width: 100%;
-//      height: 100%;
-//      background-color: darkgray;
-//      opacity: 0.5;
-//      border-radius: 0 0 8px 8px;
-//    }
-//  }
-//}
+/**
+ * Editable value styling.
+ */
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+$white: #ffffff;
+$light-grey-100: #f5f5f5; // $gray-100: #efefef !default;
+$dark-grey: #888888;
+
+_ {
+  // hide the generated controls, probably a bug
+  display: none;
+}
+
+.editable-value-value {
+  cursor: pointer;
+
+  .cta-item {
+    opacity: 0;
+    background-color: #ebecf0;
+    //transition: opacity 150ms ease-in 0ms;
+    color: $dark-grey;
+
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    border-left: 1px solid #ebecf0;
+    bottom: 0;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 24px;
+  }
+
+  .cta-edit::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f303";
+    font-weight: 600;
+    font-size: 1rem;
+    padding-left: 3px;
+  }
+
+  &:hover {
+    .cta-item {
+      opacity: 1;
+    }
+  }
+}
+
+.editable-value-actions {
+  position: absolute;
+  right: 3px;
+  background-color: $white;
+  border-radius: 8px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+  padding: 2px;
+
+  .btn {
+    cursor: pointer;
+    padding: 4px;
+    margin-right: 0;
+
+    &:hover {
+      background-color: $light-grey-100;
+      border-radius: 8px;
+    }
+  }
+
+  a.btn {
+    color: $dark;
+
+    &[data-action="save"]:hover {
+      color: $success;
+    }
+
+    &[data-action="cancel"]:hover {
+      color: $danger;
+    }
+  }
+}
+
+h3 .editable-value-form input.form-control {
+  color: $primary;
+  font-size: 48px;
+  max-width: 75rem;
+}
+
+.editable-value-form {
+  min-width: 100px;
+  max-width: fit-content;
+  max-width: -moz-max-content;
+
+  .editable-value-control {
+    display: inline-block;
+    position: relative;
+
+    .bootstrap-select.form-control {
+      display: block;
+    }
+  }
+
+  .invalid-feedback {
+    display: block;
+    margin-left: 1rem;
+    font-size: 0.8rem;
+    font-weight: normal;
+    color: $danger;
+    vertical-align: bottom;
+  }
+
+  .form-control.is-invalid {
+    background-image: none;
+    padding-right: inherit;
+  }
+
+  input.form-control {
+    min-width: 100px;
+  }
+}
+
+.form-group {
+  .editable-value-wrapper {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    height: 100%;
+  }
+
+  .editable-value-value {
+    display: inline-block;
+    min-width: 100px;
+    min-height: 1.5rem;
+    height: 100%;
+    clear: both;
+
+    position: relative;
+    padding-right: 30px;
+    border-radius: 2px;
+
+    &:hover {
+      box-shadow: 0 0 0 1px #ebecf0;
+      //transition: box-shadow 150ms ease-in 0ms;
+
+      padding-left: 3px;
+      margin-left: -3px;
+
+      .embedded-collection-items > .embedded-collection-item:first-of-type {
+        border-top: none;
+      }
+    }
+  }
+
+  .editable-value-wrapper.editable-value-reload {
+    .cta-edit::before {
+      content: "\f1ce";
+      -webkit-animation: fa-spin 2s infinite linear;
+      animation: fa-spin 2s infinite linear;
+      display: block;
+    }
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  position: relative;
+
+  .editable-value-wrapper.editable-value-reload {
+    .cta-edit::before {
+      display: block;
+      content: "\f1ce";
+      -webkit-animation: fa-spin 2s infinite linear;
+      animation: fa-spin 2s infinite linear;
+    }
+  }
+}
+
+.editable-value-control {
+  .js-form-datetimepicker {
+    flex-wrap: unset;
+
+    .input-group-append {
+      .input-group-text {
+        background: transparent;
+        border: unset;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom: 2px solid $primary;
+      }
+    }
+  }
+}
+
+.editable-value-form.loading {
+  .editable-value-control:after {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    opacity: 0.5;
+  }
+
+  .editable-value-actions {
+    [data-action="loading"] {
+      cursor: default;
+    }
+
+    &:after {
+      content: " ";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: darkgray;
+      opacity: 0.5;
+      border-radius: 0 0 8px 8px;
+    }
+  }
+}
