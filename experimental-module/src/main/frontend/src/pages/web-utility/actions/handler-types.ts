@@ -1,6 +1,7 @@
 export interface ActionHandler {
   type: string;
   source?: string;
+  sourceElement?: string;
   target: string;
 }
 

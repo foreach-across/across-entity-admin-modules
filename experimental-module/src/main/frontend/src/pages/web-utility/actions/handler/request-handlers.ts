@@ -36,17 +36,18 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
         );
       }
 
-      const response: TextResponse = context.response;
+      const responseElement = document.createElement('div') as any;
+      responseElement.innerHTML = context.response.textContent;
+      let contentToSet = responseElement.innerHTML;
 
-      let $content = $(response.textContent);
       if (action.source) {
-        $content = $content.find(action.source);
+        contentToSet = responseElement.querySelector(action.source);
       }
 
-      const $wrapper = $("<div></div>");
-      $wrapper.append($content);
+      if (action.sourceElement) {
+        contentToSet =action.sourceElement;
+      }
 
-      let contentToSet: string = $wrapper.html();
       if ($(action.target).parent("form").length > 0) {
         contentToSet = "</form>" + contentToSet;
       }
