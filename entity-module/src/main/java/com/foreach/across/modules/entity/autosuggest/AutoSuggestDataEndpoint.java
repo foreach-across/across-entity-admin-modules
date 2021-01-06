@@ -38,9 +38,13 @@ public final class AutoSuggestDataEndpoint
 	private final Map<String, MappedDataSet> dataSetMap = new ConcurrentHashMap<>();
 
 	public AutoSuggestDataEndpoint( String baseUrl ) {
-		urlBuilder = UriComponentsBuilder.fromUriString( baseUrl )
+		//Uses .fromPath instead of .fromUriString because of a host() part check
+		String[] baseUrlParts = baseUrl.split( ":" );
+		urlBuilder = UriComponentsBuilder.fromPath( baseUrlParts[1] )
+		                                 .scheme( baseUrlParts[0] )
 		                                 .queryParam( "query", "{{query}}" )
 		                                 .queryParam( "controlName", "{{controlName}}" );
+
 	}
 
 	/**
