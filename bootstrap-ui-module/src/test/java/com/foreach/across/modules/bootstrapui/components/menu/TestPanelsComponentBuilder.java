@@ -61,14 +61,14 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void noMenuRendersEmptyList() {
-		renderAndExpect( builder.htmlId( "menu" ), "<nav id='menu' class='nav nav-panels axu-flex-column'></nav>" );
+		renderAndExpect( builder.htmlId( "menu" ), "<nav id='menu' class='nav nav-panels axu-flex-column axu-flex-nowrap'></nav>" );
 	}
 
 	@Test
 	public void namedMenuRendering() {
 		builderContext.setAttribute( "zeMenu", new PathBasedMenuBuilder().item( "two", "two" ).and().build() );
 		renderAndExpect( builder.menu( "zeMenu" ),
-		                 "<nav class='nav nav-panels axu-flex-column'>" +
+		                 "<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 				                 "<div class='list-group axu-mb-3'><a href='two' title='two' class='list-group-item list-group-item-action'>two</a></div>" +
 				                 "</nav>" );
 	}
@@ -80,7 +80,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).menu( "zeMenu" ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='list-group axu-mb-3'><a href='one' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
 						"</nav>"
 		);
@@ -96,7 +96,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='list-group axu-mb-3'><a href='context-url' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
 						"</nav>"
 		);
@@ -112,7 +112,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.linkBuilder( url -> "other-url" ).menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='list-group axu-mb-3'><a href='other-url' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
 						"</nav>"
 		);
@@ -125,7 +125,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='list-group axu-mb-3'><a href='one' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
 						"</nav>"
 		);
@@ -140,7 +140,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'><div class='list-group axu-mb-3'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'><div class='list-group axu-mb-3'>" +
 						"<a class='list-group-item list-group-item-action' href='/one' title='one'>one</a>" +
 						"<a class='list-group-item list-group-item-action' href='/two' title='two'>two</a>" +
 						"</div></nav>"
@@ -155,7 +155,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='card-header'>one</div>" +
 						"<div class='list-group list-group-flush'>" +
@@ -175,7 +175,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).includePathAsDataAttribute( true ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3' data-ax-menu-path='/one'>" +
 						"<div class='card-header'>one</div>" +
 						"<div class='list-group list-group-flush'>" +
@@ -198,7 +198,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='card-header'>" +
 						"<i class='fab fa-apple' /> one" +
@@ -220,7 +220,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).filter( item -> !item.getTitle().startsWith( "sub" ) ),
-				"<nav class='nav nav-panels axu-flex-column'></nav>"
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'></nav>"
 		);
 	}
 
@@ -232,7 +232,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='list-group list-group-flush'>" +
 						"<a class='list-group-item list-group-item-action' href='/one/sub' title='sub one'>sub one</a>" +
@@ -256,7 +256,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).with( remove( AcrossBootstrapStyles.css.flex.column ) ),
-				"<nav class='nav nav-panels'>" +
+				"<nav class='nav nav-panels axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3 axu-text-muted'>" +
 						"<div class='card-header'>My groupsuffix</div>" +
 						"<div class='list-group list-group-flush'>" +
@@ -286,7 +286,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='list-group list-group-flush'>" +
 						"<a href='/one/sub' title='sub one' class='list-group-item list-group-item-action'>sub one</a>" +
@@ -304,7 +304,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='card-header'>one</div>" +
 						"<div class='list-group list-group-flush'>" +
@@ -330,7 +330,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( built ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='card-header'>one</div>" +
 						"<div class='list-group list-group-flush'>" +
@@ -361,7 +361,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).subMenuBaseId( "sidebarMenu" ).keepGroupsAsGroup( true ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='card-header'>one</div>" +
 						"<div class='list-group list-group-flush'><a href='/one/one' title='one one' class='list-group-item list-group-item-action'>one one</a><a data-toggle='collapse' href='#asidebarMenu-1' title='one sub' class='list-group-item list-group-item-action list-group-subgroup-toggle collapsed'>one sub</a>" +
@@ -386,7 +386,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).subMenuBaseId( "sidebarMenu" ).keepGroupsAsGroup( true ).includePathAsDataAttribute( true ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3' data-ax-menu-path='/one'>" +
 						"<div class='card-header'>one</div>" +
 						"<div class='list-group list-group-flush'>" +
@@ -420,7 +420,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( built ).subMenuBaseId( "sidebarMenu" ).keepGroupsAsGroup( true ),
-				"<nav class='nav nav-panels axu-flex-column'>" +
+				"<nav class='nav nav-panels axu-flex-column axu-flex-nowrap'>" +
 						"<div class='card axu-mb-3'>" +
 						"<div class='card-header'>one</div>" +
 						"<div class='list-group list-group-flush'>" +

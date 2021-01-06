@@ -69,7 +69,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement container = apply( html.nav().set( css.nav, css.of( "nav-panels" ), AcrossBootstrapStyles.css.flex.column ), builderContext );
+		NodeViewElement container = apply( html.nav().set( css.nav, css.of( "nav-panels" ), AcrossBootstrapStyles.css.flex.column, AcrossBootstrapStyles.css.flex.nowrap ), builderContext );
 
 		NodeViewElement nonPanelList = null;
 		AtomicInteger subMenuCount = new AtomicInteger( 0 );
