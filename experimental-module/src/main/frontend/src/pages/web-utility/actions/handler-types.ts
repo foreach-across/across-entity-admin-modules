@@ -10,6 +10,7 @@ export interface RequestActionHandler extends ActionHandler {
   url?: string;
   form?: string;
   partial?: string;
+  responseUrl?: string;
 }
 
 export interface ActionHandlerResolver {

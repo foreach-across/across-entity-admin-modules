@@ -2,13 +2,16 @@ package com.foreach.across.modules.experimental.webutility.viewelements.createse
 
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
-import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
@@ -34,10 +37,13 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import java.util.Collections;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.experimental.modals.support.ModalLoadAttribute.modalLoadAttribute;
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionHandlerAttribute.UPDATE_ID_VALUE;
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionHandlerAttribute.requestActionHandler;
 import static com.foreach.across.modules.experimental.webutility.support.action.ResponseContentHandlerAttribute.responseContentHandler;
+import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionAttribute.simpleAction;
 import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
@@ -78,13 +84,14 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
 
         NodeViewElement plusButton = html.builders.button()
                 .name("create-select-" + entityPropertyDescriptor.getName())
+                .css("mt-3 ml-2")
                 .attribute("type", "button")
                 .attribute("aria-label", "Add")
                 .add(IconSet.iconSet(ICON_SET_FONT_AWESOME_SOLID).icon("plus"))
                 .build(builderContext);
         String modelName = "create-modal-" + entityPropertyDescriptor.getName();
 
-        addAttributesToOpenModal(plusButton, modelName, originalElement.getName(), urlOfCreateView);
+        addAttributesToOpenModal(plusButton, modelName, originalElement, urlOfCreateView, builderContext);
         wrappedElement.add(plusButton);
         wrappedElement.add(createModal(modelName));
     }
@@ -95,8 +102,9 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
      */
     protected void addAttributesToOpenModal(ViewElement plusButton,
                                             String modelName,
-                                            String originalElementName,
-                                            String urlOfCreateView) {
+                                            ViewElement originalElement,
+                                            String urlOfCreateView,
+                                            ViewElementBuilderContext builderContext) {
         plusButton.set(data("toggle", "modal"), data("target", modelName))
                 .set(
                         modalLoadAttribute()
@@ -119,8 +127,12 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
                                                                 .target("#" + modelName + " .modal-title"),
                                                         responseContentHandler()
                                                                 .replace()
-                                                                .sourceElement(buildModalSaveButton(urlOfCreateView, modelName, originalElementName))
+                                                                .sourceElement(buildModalSaveButton(urlOfCreateView, modelName, originalElement, builderContext))
                                                                 .target("#" + modelName + " #btn-save"),
+                                                        responseContentHandler()
+                                                                .replace()
+                                                                .sourceElement(buildModalCancelButton(modelName, originalElement, builderContext))
+                                                                .target("#" + modelName + " #btn-cancel"),
                                                         moveHandler()
                                                                 .source("#" + modelName + " .modal-body .em-form-actions")
                                                                 .target("#" + modelName + " .modal-footer"),
@@ -131,17 +143,50 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
     }
 
     /**
+     * Create the HTML of the cancel button in the modal. This button closes the modal when clicked.
+     */
+    private String buildModalCancelButton(String modelName, ViewElement originalElement, ViewElementBuilderContext builderContext) {
+        EntityViewRequest entityViewRequest = builderContext.getAttribute("entityViewRequest", EntityViewRequest.class);
+        EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
+
+        LinkViewElement cancelButton = bootstrap.link()
+                .setAttribute("data-em-button-role", "cancel")
+                .setName("btn-cancel")
+                .setHtmlId("btn-cancel")
+                .addCssClass("btn btn-link")
+                .setText(messages.messageWithFallback("actions.cancel"))
+                .set(simpleAction().handlers(closeModalHandler("#" + modelName)));
+
+        return renderViewElement(cancelButton);
+    }
+
+    /**
      * Create the HTML of the save button in the modal. This button should do an ajax request to the create form of the
      * entity instead of the normal behavior which is submitting the form.
      */
-    private String buildModalSaveButton(String urlOfCreateView, String modelName, String originalElementName) {
-        ButtonViewElement buttonViewElement = BootstrapViewElements.bootstrap.button()
+    private String buildModalSaveButton(String urlOfCreateView, String modelName, ViewElement originalElement, ViewElementBuilderContext builderContext) {
+        EntityViewRequest entityViewRequest = builderContext.getAttribute("entityViewRequest", EntityViewRequest.class);
+        EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
+
+        String originalElementNameName = originalElement.getName();
+        String originalControlName = originalElementNameName;
+
+        if (originalElement instanceof FormGroupElement) {
+            ViewElement control = ((FormGroupElement) originalElement).getControl();
+            originalControlName = control.getName();
+
+            if (control instanceof FormControlElementSupport) {
+                originalControlName = ((FormControlElementSupport) control).getControlName();
+            }
+        }
+
+        ButtonViewElement saveButton = bootstrap.button()
                 .setAttribute("data-em-button-role", "save")
                 .setName("btn-save")
                 .setHtmlId("btn-save")
                 .setType(ButtonViewElement.Type.BUTTON_SUBMIT)
                 .addCssClass("btn btn-primary")
-                .setText("Opslaan")
+                .setText(messages.messageWithFallback("actions.save"))
                 .set(RequestActionAttribute.requestAction()
                         .url(urlOfCreateView)
                         .method(HttpMethod.POST)
@@ -155,12 +200,13 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
                         })
                         .redirect(
                                 requestActionHandler()
-                                        .partial("::" + originalElementName)
+                                        .additionalQueryParameter(originalControlName, UPDATE_ID_VALUE)
+                                        .partial("::" + originalElementNameName)
                                         .target(".original-element"),
                                 closeModalHandler("#" + modelName),
                                 initializeFormElements(".create-select-wrapper")));
 
-        return renderViewElement(buttonViewElement);
+        return renderViewElement(saveButton);
     }
 
     /**
