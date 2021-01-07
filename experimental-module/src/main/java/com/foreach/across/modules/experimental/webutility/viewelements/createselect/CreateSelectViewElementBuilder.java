@@ -22,6 +22,7 @@ import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.*;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -58,11 +59,11 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
     @Override
     protected MutableViewElement createElement(ViewElementBuilderContext builderContext) {
         NodeViewElementBuilder wrappedElement = html.builders
-                .div(css("create-select-wrapper d-flex align-items-center"))
+                .div(css("create-select-wrapper"))
                 .name("create-select-wrapper");
 
         ViewElement originalElement = originalViewElementBuilder.build(builderContext);
-        originalElement.set(css("original-element"));
+        originalElement.set(css("original-element d-flex align-items-center"));
         wrappedElement.add(originalElement);
 
         createPlusButtonWithModal(builderContext, wrappedElement, originalElement);
@@ -84,7 +85,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
 
         NodeViewElement plusButton = html.builders.button()
                 .name("create-select-" + entityPropertyDescriptor.getName())
-                .css("mt-3 ml-2")
+                .css("ml-2")
                 .attribute("type", "button")
                 .attribute("aria-label", "Add")
                 .add(IconSet.iconSet(ICON_SET_FONT_AWESOME_SOLID).icon("plus"))
@@ -92,7 +93,14 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
         String modelName = "create-modal-" + entityPropertyDescriptor.getName();
 
         addAttributesToOpenModal(plusButton, modelName, originalElement, urlOfCreateView, builderContext);
-        wrappedElement.add(plusButton);
+
+        if (originalElement instanceof FormGroupElement) {
+            FormGroupElement formGroupElement = (FormGroupElement) originalElement;
+            formGroupElement.addChild(plusButton);
+        } else {
+            wrappedElement.add(plusButton);
+        }
+
         wrappedElement.add(createModal(modelName));
     }
 
