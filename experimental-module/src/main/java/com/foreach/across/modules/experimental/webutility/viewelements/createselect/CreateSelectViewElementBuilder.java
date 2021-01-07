@@ -22,7 +22,6 @@ import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.*;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -63,7 +62,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
                 .name("create-select-wrapper");
 
         ViewElement originalElement = originalViewElementBuilder.build(builderContext);
-        originalElement.set(css("original-element d-flex align-items-center"));
+        originalElement.set(css("original-element"));
         wrappedElement.add(originalElement);
 
         createPlusButtonWithModal(builderContext, wrappedElement, originalElement);
@@ -96,7 +95,8 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
 
         if (originalElement instanceof FormGroupElement) {
             FormGroupElement formGroupElement = (FormGroupElement) originalElement;
-            formGroupElement.addChild(plusButton);
+
+            formGroupElement.setControl(html.div(css("create-select-inner-wrapper d-flex")).addChild(formGroupElement.getControl()).addChild(plusButton));
         } else {
             wrappedElement.add(plusButton);
         }
