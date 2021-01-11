@@ -216,7 +216,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
                                         .partial("::" + originalElementNameName)
                                         .target(".original-element"),
                                 closeModalHandler("#" + modelName),
-                                initializeFormElements(".create-select-wrapper")));
+                                initializeFormElements(".create-select-inner-wrapper")));
 
         return renderViewElement(saveButton);
     }
