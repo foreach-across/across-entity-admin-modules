@@ -10,7 +10,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -25,10 +24,6 @@ public class CreateSelectViewElementBuilderFactory implements EntityViewElementB
     public final static String CREATE_SELECT = CreateSelectViewElementBuilderFactory.class.getName() + ".createSelectControl";
     private Collection<ViewElementTypeLookupStrategy> elementTypeLookupStrategies;
 
-    /**
-     * Templating engine to pass into the viewElementBuilder to turn a viewElement into HTML
-     */
-    private final SpringTemplateEngine templateEngine;
     private final EntityViewElementBuilderService entityViewElementBuilderService;
 
     @Override
@@ -46,7 +41,7 @@ public class CreateSelectViewElementBuilderFactory implements EntityViewElementB
         ViewElementBuilder originalViewElementBuilder = entityViewElementBuilderService.createElementBuilder(propertyDescriptor, viewElementMode,
                 originalViewElementType);
 
-        return new CreateSelectViewElementBuilder(originalViewElementBuilder, templateEngine);
+        return new CreateSelectViewElementBuilder(originalViewElementBuilder);
     }
 
     /**

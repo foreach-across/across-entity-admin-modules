@@ -16,6 +16,7 @@ import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
 import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
+import com.foreach.across.modules.experimental.webutility.support.AcrossWebDialectWithoutPartials;
 import com.foreach.across.modules.experimental.webutility.support.action.ActionHandlerAttribute;
 import com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute;
 import com.foreach.across.modules.web.resource.WebResource;
@@ -26,13 +27,17 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 import java.util.Collections;
 
@@ -53,7 +58,6 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @RequiredArgsConstructor
 public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
     private final ViewElementBuilder originalViewElementBuilder;
-    private final SpringTemplateEngine templateEngine;
 
     @Override
     protected MutableViewElement createElement(ViewElementBuilderContext builderContext) {
@@ -264,7 +268,10 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
      */
     public String renderViewElement(ViewElement viewElement) {
         ServletRequestAttributes ra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        IEngineConfiguration configuration = templateEngine.getConfiguration();
+        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(ra.getRequest().getServletContext());
+        SpringTemplateEngine springTemplateEngine = getTemplateEngine(webApplicationContext);
+
+        IEngineConfiguration configuration = springTemplateEngine.getConfiguration();
         WebExpressionContext context =
                 new WebExpressionContext(
                         configuration,
@@ -275,6 +282,25 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport {
                         Collections.singletonMap("element", viewElement)
                 );
 
-        return templateEngine.process("th/experimental/inline-view-element", context);
+        return springTemplateEngine.process("th/experimental/inline-view-element", context);
+    }
+
+    private SpringTemplateEngine getTemplateEngine(WebApplicationContext webApplicationContext) {
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setOrder(19);
+        resolver.setCharacterEncoding("UTF-8");
+        resolver.setTemplateMode("HTML");
+        resolver.setCacheable(true);
+        resolver.setCacheTTLMs(1000L);
+        resolver.setPrefix("classpath:/views/");
+        resolver.setSuffix(".html");
+        resolver.setApplicationContext(webApplicationContext);
+        resolver.setCheckExistence(true);
+
+        SpringTemplateEngine springTemplateEngine = new SpringTemplateEngine();
+        springTemplateEngine.addDialect(new AcrossWebDialectWithoutPartials());
+        springTemplateEngine.addTemplateResolver(resolver);
+
+        return springTemplateEngine;
     }
 }
