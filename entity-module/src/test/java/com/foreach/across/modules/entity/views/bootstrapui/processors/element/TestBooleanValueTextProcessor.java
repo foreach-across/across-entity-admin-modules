@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
+import com.foreach.across.modules.bootstrapui.elements.RadioFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.support.MessageCodeSupportingLocalizedTextResolver;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
@@ -47,13 +48,13 @@ public class TestBooleanValueTextProcessor
 	@Mock
 	private DefaultViewElementBuilderContext builderContext;
 
-	private MessageCodeSupportingLocalizedTextResolver localizedTextResolver = new MessageCodeSupportingLocalizedTextResolver();
+	private final MessageCodeSupportingLocalizedTextResolver localizedTextResolver = new MessageCodeSupportingLocalizedTextResolver();
 
-	private BooleanValueTextProcessor processor;
+	private BooleanValueTextProcessor<RadioFormElement> processor;
 
 	@BeforeEach
-	public void setUp() throws Exception {
-		processor = new BooleanValueTextProcessor( descriptor );
+	public void setUp() {
+		processor = new BooleanValueTextProcessor<>( descriptor );
 
 		when( builderContext.resolveText( any( String.class ), any( String.class ) ) ).then( (Answer<String>) invocation -> {
 			Object[] args = invocation.getArguments();
@@ -73,7 +74,6 @@ public class TestBooleanValueTextProcessor
 
 	@Test
 	public void localizedDefaultValues() {
-		Locale enGB = new Locale( "en", "GB" );
 		StaticMessageSource messageSource = new StaticMessageSource();
 		localizedTextResolver.setMessageSource( messageSource );
 
@@ -81,9 +81,9 @@ public class TestBooleanValueTextProcessor
 		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No" );
 		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "" );
 
-		messageSource.addMessage( "EntityModule.controls.options[true]", enGB, "Yes Please" );
-		messageSource.addMessage( "EntityModule.controls.options[false]", enGB, "No Thanks" );
-		messageSource.addMessage( "EntityModule.controls.options[empty]", enGB, "I don't know" );
+		messageSource.addMessage( "EntityModule.controls.options[true]", Locale.getDefault(), "Yes Please" );
+		messageSource.addMessage( "EntityModule.controls.options[false]", Locale.getDefault(), "No Thanks" );
+		messageSource.addMessage( "EntityModule.controls.options[empty]", Locale.getDefault(), "I don't know" );
 
 		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes Please" );
 		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No Thanks" );
@@ -96,8 +96,8 @@ public class TestBooleanValueTextProcessor
 		when( builderContext.resolveText( "#{properties.myBoolean.value[false]}", "No" ) ).thenReturn( "Not active" );
 		when( builderContext.resolveText( "#{properties.myBoolean.value[empty]}", "" ) ).thenReturn( "Not filled in" );
 
-		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Active" );
-		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "Not active" );
-		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "Not filled in" );
+		assertThat( processor.print( true, Locale.getDefault(), builderContext ) ).isEqualTo( "Active" );
+		assertThat( processor.print( false, Locale.getDefault(), builderContext ) ).isEqualTo( "Not active" );
+		assertThat( processor.print( null, Locale.getDefault(), builderContext ) ).isEqualTo( "Not filled in" );
 	}
 }
