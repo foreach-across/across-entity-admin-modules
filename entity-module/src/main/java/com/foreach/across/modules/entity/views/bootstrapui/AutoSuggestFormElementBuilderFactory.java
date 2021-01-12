@@ -224,13 +224,15 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 
 	private AutoSuggestFormElementBuilder createSingleValueControl( EntityPropertyDescriptor propertyDescriptor,
 	                                                                AutoSuggestFormElementConfiguration controlConfiguration ) {
-		return bootstrap.builders.autoSuggest()
-		                         .name( propertyDescriptor.getName() )
-		                         .controlName( propertyDescriptor.getName() )
-		                         .configuration( controlConfiguration )
-		                         .postProcessor( new RequiredControlPostProcessor<>() )
-		                         .postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
-		                         .postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) );
+		AutoSuggestFormElementBuilder builder = bootstrap.builders.autoSuggest()
+		                                                          .name( propertyDescriptor.getName() )
+		                                                          .controlName( propertyDescriptor.getName() )
+		                                                          .configuration( controlConfiguration )
+		                                                          .postProcessor( new RequiredControlPostProcessor<>() )
+		                                                          .postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
+		                                                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) );
+		controlConfiguration.applyBuilderCustomizer( builder );
+		return builder;
 	}
 
 	private <U extends AbstractNodeViewElement> ViewElementPostProcessor<U> addEntityQueryAttributes( EntityPropertyDescriptor propertyDescriptor,
