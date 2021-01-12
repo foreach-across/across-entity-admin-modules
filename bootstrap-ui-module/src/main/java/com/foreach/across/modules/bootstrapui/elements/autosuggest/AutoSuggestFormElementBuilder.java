@@ -20,8 +20,8 @@ import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -233,6 +233,8 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 
 	@Override
 	protected AutoSuggestFormElement createElement( ViewElementBuilderContext builderContext ) {
+		configuration.applyBuilderCustomizer( this );
+
 		TextboxFormElement textbox = createTextbox( builderContext );
 
 		HiddenFormElement value = new HiddenFormElement();
