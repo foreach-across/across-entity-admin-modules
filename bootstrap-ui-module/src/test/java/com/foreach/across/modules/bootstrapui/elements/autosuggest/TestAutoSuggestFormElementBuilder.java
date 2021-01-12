@@ -125,6 +125,21 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                 "</div>" );
 	}
 
+	@Test
+	public void customLinkBuilderToSetMaximumResults() {
+		builder.linkBuilder( ( link ) -> "translatedUrl" )
+		       .configuration( withDataSet( ds -> ds.maximumResults( 20 ) ) );
+
+		AutoSuggestFormElement actual = builder.createElement( context );
+
+		renderAndExpect( actual,
+		                 "<div data-bootstrapui-adapter-type=\"autosuggest\" class=\"axbum-typeahead\"\n" +
+				                 "        data-bootstrapui-autosuggest=\"{&quot;highlight&quot;:true,&quot;hint&quot;:true,&quot;minLength&quot;:1,&quot;_datasets&quot;:[{&quot;name&quot;:&quot;default&quot;,&quot;bloodhound&quot;:{},&quot;limit&quot;:20}]}\">\n" +
+				                 "        <input autocomplete=\"off\" type=\"search\" class=\"js-typeahead form-control\"></input><input type=\"hidden\"\n" +
+				                 "                class=\"js-typeahead-value\"></input>\n" +
+				                 "</div>" );
+	}
+
 	private Element single( Elements elements ) {
 		assertThat( elements ).hasSize( 1 );
 		return elements.first();
