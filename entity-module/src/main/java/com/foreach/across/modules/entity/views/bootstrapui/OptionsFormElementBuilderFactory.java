@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
@@ -32,10 +34,13 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.BooleanValueTextProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -150,18 +155,18 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 			if ( nullValuePossible && optionGenerator instanceof FilterOptionGenerator ) {
 				( (FilterOptionGenerator) optionGenerator ).setValueNotSetOption(
-						new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + ".value[notSet]=No value set}" )
-						                              .value( "NULL" )
-						                              .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+						bootstrap.builders.option().text( "#{properties." + descriptor.getName() + ".value[notSet]=No value set}" )
+						                  .value( "NULL" )
+						                  .postProcessor( LocalizedTextPostProcessor.INSTANCE )
 				);
 			}
 		}
 		else {
 			if ( nullValuePossible ) {
 				optionGenerator.setEmptyOption(
-						new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + ".value[empty]=}" )
-						                              .value( "" )
-						                              .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+						bootstrap.builders.option().text( "#{properties." + descriptor.getName() + ".value[empty]=}" )
+						                  .value( "" )
+						                  .postProcessor( new FixedBooleanValueTextProcessor( descriptor ) )
 				);
 			}
 			else {
@@ -313,12 +318,12 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 						.option().rawValue( Boolean.TRUE )
 						.text( "#{properties." + descriptor.getName() + ".value[true]=Yes}" )
 						.value( Boolean.TRUE )
-						.postProcessor( LocalizedTextPostProcessor.INSTANCE ),
+						.postProcessor( new FixedBooleanValueTextProcessor( descriptor ) ),
 				bootstrap.builders
 						.option().rawValue( Boolean.FALSE )
 						.text( "#{properties." + descriptor.getName() + ".value[false]=No}" )
 						.value( Boolean.FALSE )
-						.postProcessor( LocalizedTextPostProcessor.INSTANCE )
+						.postProcessor( new FixedBooleanValueTextProcessor( descriptor ) )
 		);
 	}
 
@@ -362,5 +367,24 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Qualifier("mvcConversionService")
 	public void setConversionService( ConversionService conversionService ) {
 		this.conversionService = conversionService;
+	}
+
+	static class FixedBooleanValueTextProcessor extends BooleanValueTextProcessor
+	{
+
+		public FixedBooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
+			super( propertyDescriptor );
+		}
+
+		@Override
+		public Object getPropertyValue( ViewElementBuilderContext builderContext, ConfigurableTextViewElement element ) {
+			if ( element instanceof SelectFormElement.Option ) {
+				return ( (SelectFormElement.Option) element ).getValue();
+			}
+			else if ( element instanceof CheckboxFormElement ) {
+				return ( (CheckboxFormElement) element ).getValue();
+			}
+			return null;
+		}
 	}
 }
