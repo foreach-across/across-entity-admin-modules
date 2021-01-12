@@ -22,19 +22,10 @@ import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.*;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.WebExpressionContext;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-
-import java.util.Collections;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -55,7 +46,6 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 {
 	private final ViewElementBuilder originalViewElementBuilder;
-	private final SpringTemplateEngine templateEngine;
 
 	@Override
 	protected MutableViewElement createElement( ViewElementBuilderContext builderContext ) {
@@ -85,16 +75,17 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 		EntityViewLinkBuilder entityViewLinkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
 		String urlOfCreateView = entityViewLinkBuilder.root().linkTo( entityPropertyDescriptor.getPropertyType() ).createView().toUriString();
 
-		NodeViewElement plusButton = html.builders.button()
-		                                          .name( "create-select-" + entityPropertyDescriptor.getName() )
-		                                          .css( "ml-2" )
-		                                          .attribute( "type", "button" )
-		                                          .attribute( "aria-label", "Add" )
-		                                          .add( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "plus" ) )
-		                                          .build( builderContext );
+		ButtonViewElement plusButton = bootstrap.builders.button()
+		                                                 .name( "create-select-" + entityPropertyDescriptor.getName() )
+		                                                 .css( "ml-2" )
+		                                                 .attribute( "type", "button" )
+		                                                 .attribute( "aria-label", "Add" )
+		                                                 .style( Style.PRIMARY )
+		                                                 .add( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "plus" ) )
+		                                                 .build( builderContext );
 		String modelName = "create-modal-" + entityPropertyDescriptor.getName();
 
-		addAttributesToOpenModal( plusButton, modelName, element, urlOfCreateView, builderContext );
+		addAttributesToOpenModal( plusButton, modelName, urlOfCreateView );
 
 		String viewElementName = element.getName();
 		String propertyControlName = viewElementName;
@@ -126,9 +117,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 	 */
 	protected void addAttributesToOpenModal( ViewElement plusButton,
 	                                         String modelName,
-	                                         ViewElement originalElement,
-	                                         String urlOfCreateView,
-	                                         ViewElementBuilderContext builderContext ) {
+	                                         String urlOfCreateView ) {
 		plusButton.set( data( "toggle", "modal" ), data( "target", modelName ) )
 		          .set(
 				          modalLoadAttribute()
@@ -141,7 +130,6 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 										                                           ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modelName ) ) )
 										          .success(
 												          clearHandler( "#" + modelName + " .modal-title" ),
-//												          clearHandler( "#" + modelName + " .modal-footer" ),
 												          clearHandler( "#" + modelName + " .modal-body" ),
 												          responseContentHandler()
 														          .source( "." + PageContentStructure.CSS_BODY_SECTION )
@@ -149,19 +137,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 												          responseContentHandler()
 														          .source( ".page-header" )
 														          .target( "#" + modelName + " .modal-title" ),
-//												          responseContentHandler()
-//														          .replace()
-//														          .sourceElement(
-//																          buildModalSaveButton( urlOfCreateView, modelName, originalElement, builderContext ) )
-//														          .target( "#" + modelName + " #btn-save" ),
-//												          responseContentHandler()
-//														          .replace()
-//														          .sourceElement( buildModalCancelButton( modelName, builderContext ) )
-//														          .target( "#" + modelName + " #btn-cancel" ),
 												          removeHandler( "#" + modelName + " .modal-body .em-form-actions" ),
-
-//														          .source( "#" + modelName + " .modal-body .em-form-actions" )
-//														          .target( "#" + modelName + " .modal-footer" ),
 												          initializeFormElements( "#" + modelName + " .modal-body" )
 										          )
 						          )
@@ -169,98 +145,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 	}
 
 	/**
-	 * Create the HTML of the cancel button in the modal. This button closes the modal when clicked.
-	 */
-	private ButtonViewElementBuilder buildModalCancelButton( String modalName, ViewElementBuilderContext builderContext ) {
-		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
-		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-
-		ButtonViewElementBuilder cancelButton =
-				bootstrap.builders.button()
-				                  .link()
-				                  .data( "em-button-role", "cancel" )
-				                  .name( "btn-cancel" )
-				                  .htmlId( "btn-cancel" )
-				                  .text( messages.messageWithFallback( "actions.cancel" ) )
-				                  .with( simpleAction().handlers( closeModalHandler( "#" + modalName ) ) );
-
-		return cancelButton;
-//		return renderViewElement( cancelButton );
-	}
-
-	/**
-	 * Create the HTML of the save button in the modal. This button should do an ajax request to the create form of the
-	 * entity instead of the normal behavior which is submitting the form.
-	 */
-	private ButtonViewElementBuilder buildModalSaveButton( String urlOfCreateView,
-	                                                       String modalName,
-	                                                       String viewElementName, String controlName,
-	                                                       ViewElementBuilderContext builderContext ) {
-		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
-		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-
-//		String viewElementName = originalElement.getName();
-//		String propertyControlName = viewElementName;
-//
-//		if ( originalElement instanceof FormGroupElement ) {
-//			ViewElement control = ( (FormGroupElement) originalElement ).getControl();
-//			propertyControlName = control.getName();
-//
-//			if ( control instanceof FormControlElementSupport ) {
-//				propertyControlName = ( (FormControlElementSupport) control ).getControlName();
-//			}
-//		}
-
-		ButtonViewElementBuilder saveButton =
-				bootstrap.builders.button()
-				                  .data( "em-button-role", "save" )
-				                  .name( "btn-save" )
-				                  .htmlId( "btn-save" )
-				                  .type( ButtonViewElement.Type.BUTTON_SUBMIT )
-				                  .style( Style.PRIMARY )
-				                  .text( messages.messageWithFallback( "actions.save" ) )
-				                  .with( RequestActionAttribute.requestAction()
-				                                               .url( urlOfCreateView )
-				                                               .method( HttpMethod.POST )
-				                                               .partial( "::body" )
-				                                               .form( "#" + modalName + " .modal-body form" )
-				                                               .success( new ActionHandlerAttribute[] {
-						                                               clearHandler( "#" + modalName + " .modal-body" ),
-						                                               responseContentHandler().target( "#" + modalName + " .modal-body" ),
-						                                               removeHandler( "#" + modalName + " .modal-body .em-form-actions" ),
-						                                               initializeFormElements( "#" + modalName + " .modal-body" )
-				                                               } )
-				                                               .redirect(
-						                                               requestActionHandler()
-								                                               .additionalQueryParameter( controlName, UPDATE_ID_VALUE )
-								                                               .partial( "::" + viewElementName )
-								                                               .target( ".original-element" ),
-						                                               closeModalHandler( "#" + modalName ),
-						                                               // todo
-						                                               initializeFormElements( ".original-element" ) ) );
-
-		return saveButton;
-//		return renderViewElement( saveButton );
-	}
-
-	/**
-	 * Add the resources needed for the modal to open
-	 */
-	private void addWebResources( ViewElementBuilderContext builderContext ) {
-		WebResourceRegistry webResourceRegistry = builderContext.getAttribute( WebResourceRegistry.class.getName(), WebResourceRegistry.class );
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-		webResourceRegistry.apply(
-				WebResourceRule.addPackage( WebUtilityModuleWebResources.NAME ),
-				WebResourceRule.add(
-						WebResource.javascript( "@static:/experimental/web/modal-loader.js" ) )
-				               .withKey( "modal-loader-js" )
-				               .after( WebUtilityModuleWebResources.NAME )
-				               .toBucket( JAVASCRIPT_PAGE_END )
-		);
-	}
-
-	/**
-	 * Create the modal that will be opened when the 'Plus' button is clicked.
+	 * Create a modal to support creating a new instance and automatically selects the created instance afterwards.
 	 */
 	protected ModalViewElementBuilder createModal( String modalName,
 	                                               String viewElementName, String controlName,
@@ -287,24 +172,73 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 	}
 
 	/**
-	 * Helper method to render a {@link ViewElement} to HTML
-	 *
-	 * @param viewElement to render
-	 * @return the html of the viewElement
+	 * Creates a button that closes the modal identified by {@code modalName}.
 	 */
-	public String renderViewElement( ViewElement viewElement ) {
-		ServletRequestAttributes ra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-		IEngineConfiguration configuration = templateEngine.getConfiguration();
-		WebExpressionContext context =
-				new WebExpressionContext(
-						configuration,
-						ra.getRequest(),
-						ra.getResponse(),
-						ra.getRequest().getServletContext(),
-						LocaleContextHolder.getLocale(),
-						Collections.singletonMap( "element", viewElement )
-				);
+	private ButtonViewElementBuilder buildModalCancelButton( String modalName, ViewElementBuilderContext builderContext ) {
+		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
+		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
 
-		return templateEngine.process( "th/experimental/inline-view-element", context );
+		return bootstrap.builders.button()
+		                         .link()
+		                         .data( "em-button-role", "cancel" )
+		                         .name( "btn-cancel" )
+		                         .htmlId( "btn-cancel" )
+		                         .text( messages.messageWithFallback( "actions.cancel" ) )
+		                         .with( simpleAction().handlers( closeModalHandler( "#" + modalName ) ) );
+	}
+
+	/**
+	 * Save button to submit the modal identified by {@code modalName}. Submits the current form and rerenders the body in case of validation errors.
+	 * If the save was successful, updates the select control with the created value.
+	 */
+	private ButtonViewElementBuilder buildModalSaveButton( String urlOfCreateView,
+	                                                       String modalName,
+	                                                       String viewElementName, String controlName,
+	                                                       ViewElementBuilderContext builderContext ) {
+		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
+		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
+
+		return bootstrap.builders.button()
+		                         .data( "em-button-role", "save" )
+		                         .name( "btn-save" )
+		                         .htmlId( "btn-save" )
+		                         .type( ButtonViewElement.Type.BUTTON_SUBMIT )
+		                         .style( Style.PRIMARY )
+		                         .text( messages.messageWithFallback( "actions.save" ) )
+		                         .with( RequestActionAttribute.requestAction()
+		                                                      .url( urlOfCreateView )
+		                                                      .method( HttpMethod.POST )
+		                                                      .partial( "::body" )
+		                                                      .form( "#" + modalName + " .modal-body form" )
+		                                                      .success( new ActionHandlerAttribute[] {
+				                                                      clearHandler( "#" + modalName + " .modal-body" ),
+				                                                      responseContentHandler().target( "#" + modalName + " .modal-body" ),
+				                                                      removeHandler( "#" + modalName + " .modal-body .em-form-actions" ),
+				                                                      initializeFormElements( "#" + modalName + " .modal-body" )
+		                                                      } )
+		                                                      .redirect(
+				                                                      requestActionHandler()
+						                                                      .additionalQueryParameter( controlName, UPDATE_ID_VALUE )
+						                                                      .partial( "::" + viewElementName )
+						                                                      .target( ".original-element" ),
+				                                                      closeModalHandler( "#" + modalName ),
+				                                                      // todo
+				                                                      initializeFormElements( ".original-element" ) ) );
+	}
+
+	/**
+	 * Add the resources needed for the modal to open
+	 */
+	private void addWebResources( ViewElementBuilderContext builderContext ) {
+		WebResourceRegistry webResourceRegistry = builderContext.getAttribute( WebResourceRegistry.class.getName(), WebResourceRegistry.class );
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
+		webResourceRegistry.apply(
+				WebResourceRule.addPackage( WebUtilityModuleWebResources.NAME ),
+				WebResourceRule.add(
+						WebResource.javascript( "@static:/experimental/web/modal-loader.js" ) )
+				               .withKey( "modal-loader-js" )
+				               .after( WebUtilityModuleWebResources.NAME )
+				               .toBucket( JAVASCRIPT_PAGE_END )
+		);
 	}
 }
