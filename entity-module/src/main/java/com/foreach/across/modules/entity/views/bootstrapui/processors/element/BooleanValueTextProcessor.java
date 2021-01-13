@@ -16,46 +16,60 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import lombok.val;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @author Steven Gentens
  * @since 2.2.0
  */
-public final class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
+public class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
 {
-		public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
+	private static final Collection<Object> nullValues = Arrays.asList( null, "" );
+
+	public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 		super( propertyDescriptor );
 	}
 
 	@Override
+	public boolean canHandlePropertyValue( Object propertyValue ) {
+		return propertyValue != null || nullValues.stream().anyMatch( i -> Objects.equals( i, propertyValue ) );
+	}
+
+	@Override
 	protected String print( Object value, Locale locale, ViewElementBuilderContext builderContext ) {
-		return convert( builderContext, (Boolean) value );
+		if ( nullValues.stream().anyMatch( i -> Objects.equals( i, value ) ) ) {
+			String empty = builderContext.resolveText( defaultMessageCode( "empty" ), "" );
+			return builderContext.resolveText( messageCodePath( "empty" ), empty );
+		}
+		else if ( Objects.equals( value, Boolean.TRUE ) ) {
+			String yes = builderContext.resolveText( defaultMessageCode( "true" ), "Yes" );
+			return builderContext.resolveText( messageCodePath( "true" ), yes );
+		}
+		else if ( Objects.equals( value, Boolean.FALSE ) ) {
+			String no = builderContext.resolveText( defaultMessageCode( "false" ), "No" );
+			return builderContext.resolveText( messageCodePath( "false" ), no );
+		}
+		return null;
+	}
+
+	protected String defaultMessageCode( String code ) {
+		return "#{EntityModule.controls.options[" + code + "]}";
+
+	}
+
+	protected String messageCodePath( String code ) {
+		return "#{properties." + getPropertyDescriptor().getName() + ".value[" + code + "]}";
 	}
 
 	@Override
 	protected String print( Object value, Locale locale ) {
-		return null;
-	}
-
-	private String convert( ViewElementBuilderContext builderContext, Boolean propertyValue ) {
-		String messageCodePath = "#{properties." + getPropertyDescriptor().getName() + ".value";
-		if ( propertyValue == null ) {
-			return builderContext.resolveText( messageCodePath + "[empty]}", "" );
-		}
-		else if ( propertyValue ) {
-			return builderContext.resolveText( messageCodePath + "[true]}", "Yes" );
-		}
-		return builderContext.resolveText( messageCodePath + "[false]}", "No" );
+		return print( value, locale, Objects.requireNonNull( ViewElementBuilderContext.retrieveGlobalBuilderContext().orElse( null ) ) );
 	}
 }

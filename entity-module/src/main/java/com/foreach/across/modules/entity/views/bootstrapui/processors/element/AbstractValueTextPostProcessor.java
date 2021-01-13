@@ -40,12 +40,20 @@ public abstract class AbstractValueTextPostProcessor<T extends ConfigurableTextV
 		return propertyDescriptor;
 	}
 
+	public Object getPropertyValue( ViewElementBuilderContext builderContext, T element ) {
+		return EntityViewElementUtils.currentPropertyValue( builderContext );
+	}
+
+	public boolean canHandlePropertyValue( Object propertyValue ) {
+		return propertyValue != null;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		Object propertyValue = EntityViewElementUtils.currentPropertyValue( builderContext );
+		Object propertyValue = getPropertyValue( builderContext, element );
 
-		if ( propertyValue != null ) {
+		if ( canHandlePropertyValue( propertyValue ) ) {
 			String textToSet = print( propertyValue, LocaleContextHolder.getLocale(), builderContext );
 			if ( textToSet != null ) {
 				element.setText( textToSet );
