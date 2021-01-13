@@ -35,7 +35,6 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.BooleanValueTextProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -49,6 +48,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.*;
@@ -150,14 +150,14 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			optionGenerator.setEmptyOption(
 					new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + "[filterNotSelected]=}" )
 					                              .value( "" )
-					                              .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+					                              .postProcessor( new FixedBooleanFilterValueTextProcessor( descriptor ) )
 			);
 
 			if ( nullValuePossible && optionGenerator instanceof FilterOptionGenerator ) {
 				( (FilterOptionGenerator) optionGenerator ).setValueNotSetOption(
 						bootstrap.builders.option().text( "#{properties." + descriptor.getName() + ".value[notSet]=No value set}" )
 						                  .value( "NULL" )
-						                  .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+						                  .postProcessor( new FixedBooleanFilterValueTextProcessor( descriptor ) )
 				);
 			}
 		}
@@ -374,6 +374,38 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		public FixedBooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 			super( propertyDescriptor );
+		}
+
+		@Override
+		public Object getPropertyValue( ViewElementBuilderContext builderContext, ConfigurableTextViewElement element ) {
+			if ( element instanceof SelectFormElement.Option ) {
+				return ( (SelectFormElement.Option) element ).getValue();
+			}
+			else if ( element instanceof CheckboxFormElement ) {
+				return ( (CheckboxFormElement) element ).getValue();
+			}
+			return null;
+		}
+	}
+
+	static class FixedBooleanFilterValueTextProcessor extends FixedBooleanValueTextProcessor
+	{
+
+		public FixedBooleanFilterValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
+			super( propertyDescriptor );
+		}
+
+		@Override
+		protected String print( Object value, Locale locale, ViewElementBuilderContext builderContext ) {
+			if ( "NULL".equals( value ) ) {
+				String notSet = builderContext.resolveText( defaultMessageCode( "notSet" ), "No value set" );
+				return builderContext.resolveText( messageCodePath( "notSet" ), notSet );
+			}
+			else if ( "".equals( value ) ) {
+				String filterNotSelected = builderContext.resolveText( defaultMessageCode( "filterNotSelected" ), "" );
+				return builderContext.resolveText( messageCodePath( "filterNotSelected" ), filterNotSelected );
+			}
+			return super.print( value, locale, builderContext );
 		}
 
 		@Override

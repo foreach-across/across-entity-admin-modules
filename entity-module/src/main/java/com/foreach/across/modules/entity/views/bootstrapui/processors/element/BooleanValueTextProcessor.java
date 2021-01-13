@@ -31,7 +31,7 @@ import java.util.Objects;
  */
 public class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
 {
-	private static final Collection<Object> nullValues = Arrays.asList( null, "", "NULL" );
+	private static final Collection<Object> nullValues = Arrays.asList( null, "" );
 
 	public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 		super( propertyDescriptor );
@@ -44,20 +44,28 @@ public class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> ex
 
 	@Override
 	protected String print( Object value, Locale locale, ViewElementBuilderContext builderContext ) {
-		String messageCodePath = "#{properties." + getPropertyDescriptor().getName() + ".value";
 		if ( nullValues.stream().anyMatch( i -> Objects.equals( i, value ) ) ) {
-			String empty = builderContext.resolveText( "#{EntityModule.controls.options[empty]}", "" );
-			return builderContext.resolveText( messageCodePath + "[empty]}", empty );
+			String empty = builderContext.resolveText( defaultMessageCode( "empty" ), "" );
+			return builderContext.resolveText( messageCodePath( "empty" ), empty );
 		}
 		else if ( Objects.equals( value, Boolean.TRUE ) ) {
-			String yes = builderContext.resolveText( "#{EntityModule.controls.options[true]}", "Yes" );
-			return builderContext.resolveText( messageCodePath + "[true]}", yes );
+			String yes = builderContext.resolveText( defaultMessageCode( "true" ), "Yes" );
+			return builderContext.resolveText( messageCodePath( "true" ), yes );
 		}
 		else if ( Objects.equals( value, Boolean.FALSE ) ) {
-			String no = builderContext.resolveText( "#{EntityModule.controls.options[false]}", "No" );
-			return builderContext.resolveText( messageCodePath + "[false]}", no );
+			String no = builderContext.resolveText( defaultMessageCode( "false" ), "No" );
+			return builderContext.resolveText( messageCodePath( "false" ), no );
 		}
 		return null;
+	}
+
+	protected String defaultMessageCode( String code ) {
+		return "#{EntityModule.controls.options[" + code + "]}";
+
+	}
+
+	protected String messageCodePath( String code ) {
+		return "#{properties." + getPropertyDescriptor().getName() + ".value[" + code + "]}";
 	}
 
 	@Override
