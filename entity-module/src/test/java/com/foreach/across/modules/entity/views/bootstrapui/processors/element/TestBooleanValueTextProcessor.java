@@ -70,6 +70,7 @@ public class TestBooleanValueTextProcessor
 		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes" );
 		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No" );
 		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "" );
+		assertThat( processor.print( "", Locale.CANADA, builderContext ) ).isEqualTo( "" );
 	}
 
 	@Test
@@ -80,6 +81,7 @@ public class TestBooleanValueTextProcessor
 		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes" );
 		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No" );
 		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "" );
+		assertThat( processor.print( "", Locale.CANADA, builderContext ) ).isEqualTo( "" );
 
 		messageSource.addMessage( "EntityModule.controls.options[true]", Locale.getDefault(), "Yes Please" );
 		messageSource.addMessage( "EntityModule.controls.options[false]", Locale.getDefault(), "No Thanks" );
@@ -88,6 +90,7 @@ public class TestBooleanValueTextProcessor
 		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes Please" );
 		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No Thanks" );
 		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "I don't know" );
+		assertThat( processor.print( "", Locale.CANADA, builderContext ) ).isEqualTo( "I don't know" );
 	}
 
 	@Test
@@ -99,5 +102,6 @@ public class TestBooleanValueTextProcessor
 		assertThat( processor.print( true, Locale.getDefault(), builderContext ) ).isEqualTo( "Active" );
 		assertThat( processor.print( false, Locale.getDefault(), builderContext ) ).isEqualTo( "Not active" );
 		assertThat( processor.print( null, Locale.getDefault(), builderContext ) ).isEqualTo( "Not filled in" );
+		assertThat( processor.print( "", Locale.getDefault(), builderContext ) ).isEqualTo( "Not filled in" );
 	}
 }

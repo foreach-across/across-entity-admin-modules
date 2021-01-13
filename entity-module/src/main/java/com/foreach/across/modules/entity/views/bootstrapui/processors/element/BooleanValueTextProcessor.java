@@ -31,7 +31,7 @@ import java.util.Objects;
  */
 public class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
 {
-	private static final Collection<Object> nullValues = Arrays.asList( null, "NULL" );
+	private static final Collection<Object> nullValues = Arrays.asList( null, "", "NULL" );
 
 	public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 		super( propertyDescriptor );
