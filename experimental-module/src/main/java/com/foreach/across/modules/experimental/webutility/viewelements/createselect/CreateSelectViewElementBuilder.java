@@ -3,7 +3,6 @@ package com.foreach.across.modules.experimental.webutility.viewelements.createse
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
@@ -15,6 +14,7 @@ import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
+import com.foreach.across.modules.experimental.webutility.icons.WebUtilityModuleIcons;
 import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
 import com.foreach.across.modules.experimental.webutility.support.action.ActionHandlerAttribute;
 import com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute;
@@ -26,6 +26,8 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
+
+import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -45,103 +47,93 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @RequiredArgsConstructor
 public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 {
-	private final ViewElementBuilder originalViewElementBuilder;
+	private final ViewElementBuilder selectControlViewElementBuilder;
+
+	private Consumer<ButtonViewElementBuilder> createNewButtonCustomizer = ( btn ) -> {
+	};
+
+	public CreateSelectViewElementBuilder customizeCreateNewButton( Consumer<ButtonViewElementBuilder> customizer ) {
+		this.createNewButtonCustomizer = customizer;
+		return this;
+	}
 
 	@Override
 	protected MutableViewElement createElement( ViewElementBuilderContext builderContext ) {
+		EntityPropertyDescriptor entityPropertyDescriptor =
+				builderContext.getAttribute( EntityPropertyDescriptor.class.getName(), EntityPropertyDescriptor.class );
+
+		String baseSelector = entityPropertyDescriptor.getName().replace( ".", "-" ) + "-create-select";
+		String wrapperId = baseSelector + "-wrapper";
 		NodeViewElementBuilder wrappedElement = html.builders
 				.div( css( "create-select-wrapper" ) )
-				.name( "create-select-wrapper" );
+				.htmlId( wrapperId )
+				.name( wrapperId );
 
-		ViewElement originalElement = originalViewElementBuilder.build( builderContext );
-		originalElement.set( css( "original-element" ) );
-		wrappedElement.add( originalElement );
+		String controlElementName = baseSelector + "-control";
+		NodeViewElementBuilder controlWrapper = html.builders
+				.div( css( controlElementName ), css.display.flex )
+				.htmlId( controlElementName )
+				.name( controlElementName );
 
-		createPlusButtonWithModal( builderContext, wrappedElement, originalElement );
+		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
+		EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
+		String createViewUrl = linkBuilder.root().linkTo( entityPropertyDescriptor.getPropertyType() ).createView().toUriString();
+		// todo wiring of entityviewlinks vs fetching via buildercontext
+		// todo linking based on property type? should we keep complex types in mind? arrays, collections...
+		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
+
+		String modalName = baseSelector + "-modal";
+		ViewElement selectControlViewElement = this.selectControlViewElementBuilder.build( builderContext );
+		controlWrapper.add( selectControlViewElement )
+		              .add( createNewButton( entityPropertyDescriptor, modalName, createViewUrl, messages ) );
+
+		String selectControlName = selectControlViewElement instanceof FormControlElementSupport
+				? ( (FormControlElementSupport) selectControlViewElement ).getControlName()
+				: selectControlViewElement.getName();
+		wrappedElement.add( controlWrapper, createModal( modalName, controlElementName, selectControlName, createViewUrl, messages ) );
 
 		addWebResources( builderContext );
-
 		return wrappedElement.build( builderContext );
 	}
 
-	/**
-	 * Add a plus button besides the original element. When clicking on the plus button a modal opens to add a new
-	 * element to the select list.
-	 */
-	private void createPlusButtonWithModal( ViewElementBuilderContext builderContext, NodeViewElementBuilder wrappedElement, ViewElement element ) {
-		EntityPropertyDescriptor entityPropertyDescriptor = builderContext.getAttribute( EntityPropertyDescriptor.class.getName(),
-		                                                                                 EntityPropertyDescriptor.class );
-		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
-		EntityViewLinkBuilder entityViewLinkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
-		String urlOfCreateView = entityViewLinkBuilder.root().linkTo( entityPropertyDescriptor.getPropertyType() ).createView().toUriString();
+	private ViewElementBuilder createNewButton( EntityPropertyDescriptor entityPropertyDescriptor,
+	                                            String modalName,
+	                                            String createViewUrl, EntityMessages messages ) {
+		ButtonViewElementBuilder createNewBuilder =
+				bootstrap.builders.button( css.margin.left.s2 )
+				                  .name( "create-select-" + entityPropertyDescriptor.getName() )
+				                  .attribute( "aria-label", "Create new" )
+				                  .style( Style.PRIMARY )
+				                  .text( messages.messageWithFallback( "properties." + entityPropertyDescriptor.getName() + ".createSelect.add" ) )
+				                  .iconOnly()
+				                  .add( WebUtilityModuleIcons.webUtilityModuleIcons.components.createSelect.addItem() );
+		createNewButtonCustomizer.accept( createNewBuilder );
 
-		ButtonViewElement plusButton = bootstrap.builders.button()
-		                                                 .name( "create-select-" + entityPropertyDescriptor.getName() )
-		                                                 .css( "ml-2" )
-		                                                 .attribute( "type", "button" )
-		                                                 .attribute( "aria-label", "Add" )
-		                                                 .style( Style.PRIMARY )
-		                                                 .add( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "plus" ) )
-		                                                 .build( builderContext );
-		String modelName = "create-modal-" + entityPropertyDescriptor.getName();
-
-		addAttributesToOpenModal( plusButton, modelName, urlOfCreateView );
-
-		String viewElementName = element.getName();
-		String propertyControlName = viewElementName;
-
-		if ( element instanceof FormGroupElement ) {
-			FormGroupElement formGroupElement = (FormGroupElement) element;
-
-			ViewElement control = ( (FormGroupElement) element ).getControl();
-			if ( control instanceof FormControlElementSupport ) {
-				propertyControlName = ( (FormControlElementSupport) control ).getControlName();
-			}
-			else {
-				propertyControlName = control.getName();
-			}
-
-			formGroupElement.setControl( html.div( css( "create-select-inner-wrapper d-flex" ) ).addChild( control )
-			                                 .addChild( plusButton ) );
-		}
-		else {
-			wrappedElement.add( plusButton );
-		}
-
-		wrappedElement.add( createModal( modelName, viewElementName, propertyControlName, urlOfCreateView, builderContext ) );
-	}
-
-	/**
-	 * Add all the necessary attributes to the plusButton so it opens a modal to the create form of the entity
-	 * the button is for.
-	 */
-	protected void addAttributesToOpenModal( ViewElement plusButton,
-	                                         String modelName,
-	                                         String urlOfCreateView ) {
-		plusButton.set( data( "toggle", "modal" ), data( "target", modelName ) )
-		          .set(
-				          modalLoadAttribute()
-						          .target( "#" + modelName )
-						          .content(
-								          requestAction()
-										          .url( urlOfCreateView )
-										          .partial( "content" )
-										          .requestConfig( ImmutableMap.of( "headers",
-										                                           ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modelName ) ) )
-										          .success(
-												          clearHandler( "#" + modelName + " .modal-title" ),
-												          clearHandler( "#" + modelName + " .modal-body" ),
-												          responseContentHandler()
-														          .source( "." + PageContentStructure.CSS_BODY_SECTION )
-														          .target( "#" + modelName + " .modal-body" ),
-												          responseContentHandler()
-														          .source( ".page-header" )
-														          .target( "#" + modelName + " .modal-title" ),
-												          removeHandler( "#" + modelName + " .modal-body .em-form-actions" ),
-												          initializeFormElements( "#" + modelName + " .modal-body" )
-										          )
-						          )
-		          );
+		createNewBuilder.with( data( "toggle", "modal" ), data( "target", modalName ) )
+		                .with(
+				                modalLoadAttribute()
+						                .target( "#" + modalName )
+						                .content(
+								                requestAction()
+										                .url( createViewUrl )
+										                .partial( "content" )
+										                .requestConfig( ImmutableMap.of( "headers",
+										                                                 ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalName ) ) )
+										                .success(
+												                clearHandler( "#" + modalName + " .modal-title" ),
+												                clearHandler( "#" + modalName + " .modal-body" ),
+												                responseContentHandler()
+														                .source( "." + PageContentStructure.CSS_BODY_SECTION )
+														                .target( "#" + modalName + " .modal-body" ),
+												                responseContentHandler()
+														                .source( ".page-header" )
+														                .target( "#" + modalName + " .modal-title" ),
+												                removeHandler( "#" + modalName + " .modal-body .em-form-actions" ),
+												                initializeFormElements( "#" + modalName + " .modal-body" )
+										                )
+						                )
+		                );
+		return createNewBuilder;
 	}
 
 	/**
@@ -149,7 +141,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 	 */
 	protected ModalViewElementBuilder createModal( String modalName,
 	                                               String viewElementName, String controlName,
-	                                               String urlOfCreateView, ViewElementBuilderContext builderContext ) {
+	                                               String urlOfCreateView, EntityMessages messages ) {
 		return new ModalViewElementBuilder()
 				.name( modalName )
 				.centered( true )
@@ -167,17 +159,14 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 				)
 				.body()
 				.footer( html.builders.div( css.of( "em-form-actions" ) )
-				                      .add( buildModalSaveButton( urlOfCreateView, modalName, viewElementName, controlName, builderContext ),
-				                            buildModalCancelButton( modalName, builderContext ) ) );
+				                      .add( modalSaveButton( urlOfCreateView, modalName, viewElementName, controlName, messages ),
+				                            modalCancelButton( modalName, messages ) ) );
 	}
 
 	/**
 	 * Creates a button that closes the modal identified by {@code modalName}.
 	 */
-	private ButtonViewElementBuilder buildModalCancelButton( String modalName, ViewElementBuilderContext builderContext ) {
-		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
-		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-
+	private ButtonViewElementBuilder modalCancelButton( String modalName, EntityMessages messages ) {
 		return bootstrap.builders.button()
 		                         .link()
 		                         .data( "em-button-role", "cancel" )
@@ -191,13 +180,9 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 	 * Save button to submit the modal identified by {@code modalName}. Submits the current form and rerenders the body in case of validation errors.
 	 * If the save was successful, updates the select control with the created value.
 	 */
-	private ButtonViewElementBuilder buildModalSaveButton( String urlOfCreateView,
-	                                                       String modalName,
-	                                                       String viewElementName, String controlName,
-	                                                       ViewElementBuilderContext builderContext ) {
-		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
-		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-
+	private ButtonViewElementBuilder modalSaveButton( String urlOfCreateView,
+	                                                  String modalName,
+	                                                  String viewElementName, String controlName, EntityMessages messages ) {
 		return bootstrap.builders.button()
 		                         .data( "em-button-role", "save" )
 		                         .name( "btn-save" )
@@ -220,10 +205,9 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 				                                                      requestActionHandler()
 						                                                      .additionalQueryParameter( controlName, UPDATE_ID_VALUE )
 						                                                      .partial( "::" + viewElementName )
-						                                                      .target( ".original-element" ),
+						                                                      .target( "#" + viewElementName ),
 				                                                      closeModalHandler( "#" + modalName ),
-				                                                      // todo
-				                                                      initializeFormElements( ".original-element" ) ) );
+				                                                      initializeFormElements( "#" + viewElementName ) ) );
 	}
 
 	/**
