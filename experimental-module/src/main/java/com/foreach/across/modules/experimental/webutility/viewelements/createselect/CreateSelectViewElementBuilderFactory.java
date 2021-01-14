@@ -5,6 +5,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class CreateSelectViewElementBuilderFactory implements EntityViewElementB
 	public final static String CREATE_SELECT = CreateSelectViewElementBuilderFactory.class.getName() + ".createSelectControl";
 
 	private final EntityViewElementBuilderService entityViewElementBuilderService;
+	private final EntityViewLinks entityViewLinks;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -34,6 +36,6 @@ public class CreateSelectViewElementBuilderFactory implements EntityViewElementB
 		ViewElementBuilder originalViewElementBuilder = entityViewElementBuilderService.createElementBuilder( propertyDescriptor, viewElementMode,
 		                                                                                                      BootstrapUiElements.SELECT );
 
-		return new CreateSelectViewElementBuilder( originalViewElementBuilder );
+		return new CreateSelectViewElementBuilder( originalViewElementBuilder, entityViewLinks );
 	}
 }

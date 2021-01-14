@@ -9,9 +9,7 @@ import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
 import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
 import com.foreach.across.modules.experimental.webutility.icons.WebUtilityModuleIcons;
@@ -27,6 +25,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
@@ -48,12 +47,28 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 {
 	private final ViewElementBuilder selectControlViewElementBuilder;
+	private final EntityViewLinks entityViewLinks;
 
 	private Consumer<ButtonViewElementBuilder> createNewButtonCustomizer = ( btn ) -> {
 	};
+	private BiFunction<EntityViewLinks, EntityPropertyDescriptor, String> urlProvider =
+			( links, descriptor ) -> links.linkTo( descriptor.getPropertyType() ).createView().toUriString();
 
-	public CreateSelectViewElementBuilder customizeCreateNewButton( Consumer<ButtonViewElementBuilder> customizer ) {
-		this.createNewButtonCustomizer = customizer;
+	/**
+	 * Supports customization for the create new button. If no customization is provided, a bootstrap primary button
+	 * containing an icon is rendered.
+	 */
+	public CreateSelectViewElementBuilder customizeCreateNewButton( Consumer<ButtonViewElementBuilder> createNewButtonCustomizer ) {
+		this.createNewButtonCustomizer = createNewButtonCustomizer;
+		return this;
+	}
+
+	/**
+	 * Supports customizing the url to the create view, from which the {@code .pcs-body-section} element is loaded into the modal.
+	 * If no customization is provided, a link will be build to the create view of the entity type of the property.
+	 */
+	public CreateSelectViewElementBuilder createViewUrl( BiFunction<EntityViewLinks, EntityPropertyDescriptor, String> urlProvider ) {
+		this.urlProvider = urlProvider;
 		return this;
 	}
 
@@ -75,22 +90,17 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 				.htmlId( controlElementName )
 				.name( controlElementName );
 
-		EntityViewRequest entityViewRequest = builderContext.getAttribute( "entityViewRequest", EntityViewRequest.class );
-		EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
-		String createViewUrl = linkBuilder.root().linkTo( entityPropertyDescriptor.getPropertyType() ).createView().toUriString();
-		// todo wiring of entityviewlinks vs fetching via buildercontext
-		// todo linking based on property type? should we keep complex types in mind? arrays, collections...
-		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-
+		String createViewUrl = urlProvider.apply( entityViewLinks, entityPropertyDescriptor );
 		String modalName = baseSelector + "-modal";
 		ViewElement selectControlViewElement = this.selectControlViewElementBuilder.build( builderContext );
 		controlWrapper.add( selectControlViewElement )
-		              .add( createNewButton( entityPropertyDescriptor, modalName, createViewUrl, messages ) );
+		              .add( createNewButton( entityPropertyDescriptor, modalName, createViewUrl, builderContext ) );
 
 		String selectControlName = selectControlViewElement instanceof FormControlElementSupport
 				? ( (FormControlElementSupport) selectControlViewElement ).getControlName()
 				: selectControlViewElement.getName();
-		wrappedElement.add( controlWrapper, createModal( modalName, controlElementName, selectControlName, createViewUrl, messages ) );
+		wrappedElement.add( controlWrapper,
+		                    createModal( modalName, controlElementName, selectControlName, createViewUrl, entityPropertyDescriptor, builderContext ) );
 
 		addWebResources( builderContext );
 		return wrappedElement.build( builderContext );
@@ -98,15 +108,17 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 
 	private ViewElementBuilder createNewButton( EntityPropertyDescriptor entityPropertyDescriptor,
 	                                            String modalName,
-	                                            String createViewUrl, EntityMessages messages ) {
+	                                            String createViewUrl, ViewElementBuilderContext builderContext ) {
 		ButtonViewElementBuilder createNewBuilder =
 				bootstrap.builders.button( css.margin.left.s2 )
 				                  .name( "create-select-" + entityPropertyDescriptor.getName() )
 				                  .attribute( "aria-label", "Create new" )
 				                  .style( Style.PRIMARY )
-				                  .text( messages.messageWithFallback( "properties." + entityPropertyDescriptor.getName() + ".createSelect.add" ) )
-				                  .iconOnly()
-				                  .add( WebUtilityModuleIcons.webUtilityModuleIcons.components.createSelect.addItem() );
+				                  .text( " " + builderContext
+						                  .resolveText( "#{properties." + entityPropertyDescriptor.getName() + ".createSelect.actions.add=Create new}" ) )
+				                  .icon( WebUtilityModuleIcons.webUtilityModuleIcons.components.createSelect.addItem() )
+				                  .iconLeft()
+				                  .iconOnly();
 		createNewButtonCustomizer.accept( createNewBuilder );
 
 		createNewBuilder.with( data( "toggle", "modal" ), data( "target", modalName ) )
@@ -141,7 +153,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 	 */
 	protected ModalViewElementBuilder createModal( String modalName,
 	                                               String viewElementName, String controlName,
-	                                               String urlOfCreateView, EntityMessages messages ) {
+	                                               String urlOfCreateView, EntityPropertyDescriptor descriptor, ViewElementBuilderContext builderContext ) {
 		return new ModalViewElementBuilder()
 				.name( modalName )
 				.centered( true )
@@ -159,20 +171,20 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 				)
 				.body()
 				.footer( html.builders.div( css.of( "em-form-actions" ) )
-				                      .add( modalSaveButton( urlOfCreateView, modalName, viewElementName, controlName, messages ),
-				                            modalCancelButton( modalName, messages ) ) );
+				                      .add( modalSaveButton( urlOfCreateView, modalName, viewElementName, controlName, descriptor, builderContext ),
+				                            modalCancelButton( modalName, descriptor, builderContext ) ) );
 	}
 
 	/**
 	 * Creates a button that closes the modal identified by {@code modalName}.
 	 */
-	private ButtonViewElementBuilder modalCancelButton( String modalName, EntityMessages messages ) {
+	private ButtonViewElementBuilder modalCancelButton( String modalName, EntityPropertyDescriptor descriptor, ViewElementBuilderContext builderContext ) {
 		return bootstrap.builders.button()
 		                         .link()
 		                         .data( "em-button-role", "cancel" )
 		                         .name( "btn-cancel" )
 		                         .htmlId( "btn-cancel" )
-		                         .text( messages.messageWithFallback( "actions.cancel" ) )
+		                         .text( builderContext.resolveText( "#{properties." + descriptor.getName() + ".createSelect.actions.cancel=Cancel}" ) )
 		                         .with( simpleAction().handlers( closeModalHandler( "#" + modalName ) ) );
 	}
 
@@ -182,14 +194,16 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 	 */
 	private ButtonViewElementBuilder modalSaveButton( String urlOfCreateView,
 	                                                  String modalName,
-	                                                  String viewElementName, String controlName, EntityMessages messages ) {
+	                                                  String viewElementName, String controlName,
+	                                                  EntityPropertyDescriptor descriptor,
+	                                                  ViewElementBuilderContext messages ) {
 		return bootstrap.builders.button()
 		                         .data( "em-button-role", "save" )
 		                         .name( "btn-save" )
 		                         .htmlId( "btn-save" )
 		                         .type( ButtonViewElement.Type.BUTTON_SUBMIT )
 		                         .style( Style.PRIMARY )
-		                         .text( messages.messageWithFallback( "actions.save" ) )
+		                         .text( messages.resolveText( "#{properties." + descriptor.getName() + ".createSelect.actions.save=Save}" ) )
 		                         .with( RequestActionAttribute.requestAction()
 		                                                      .url( urlOfCreateView )
 		                                                      .method( HttpMethod.POST )
