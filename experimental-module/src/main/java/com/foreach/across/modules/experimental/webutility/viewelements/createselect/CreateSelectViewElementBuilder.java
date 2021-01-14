@@ -33,7 +33,6 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.experimental.modals.support.ModalLoadAttribute.modalLoadAttribute;
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
-import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionHandlerAttribute.UPDATE_ID_VALUE;
 import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionHandlerAttribute.requestActionHandler;
 import static com.foreach.across.modules.experimental.webutility.support.action.ResponseContentHandlerAttribute.responseContentHandler;
 import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionAttribute.simpleAction;
@@ -216,8 +215,8 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 				                                                      initializeFormElements( "#" + modalName + " .modal-body" )
 		                                                      } )
 		                                                      .redirect(
+				                                                      responseUrlIdResolver( controlName ),
 				                                                      requestActionHandler()
-						                                                      .additionalQueryParameter( controlName, UPDATE_ID_VALUE )
 						                                                      .partial( "::" + viewElementName )
 						                                                      .target( "#" + viewElementName ),
 				                                                      closeModalHandler( "#" + modalName ),

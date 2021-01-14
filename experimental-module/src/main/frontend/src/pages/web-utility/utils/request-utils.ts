@@ -31,18 +31,8 @@ export interface RequestConfiguration {
   requestConfig?: any;
 }
 
-export const UPDATE_ID_VALUE = "$updateId";
-
 export function executeRequest(partialConfiguration: RequestConfiguration): Promise<Response> {
-  const {
-    partial,
-    form,
-    method,
-    url,
-    copyOriginalRequestParameters,
-    requestConfig,
-    responseUrl,
-  } = partialConfiguration;
+  const { partial, form, method, url, copyOriginalRequestParameters, requestConfig } = partialConfiguration;
 
   const baseUrl = url ? url : window.location.href.split("?")[0];
   const formToSerialize = form ? $(form) : undefined;
@@ -53,20 +43,6 @@ export function executeRequest(partialConfiguration: RequestConfiguration): Prom
 
   const additionalQueryParameters = { ...partialConfiguration.additionalQueryParameters };
 
-  if (additionalQueryParameters) {
-    Object.keys(additionalQueryParameters).forEach((queryParamName) => {
-      const value = additionalQueryParameters[queryParamName];
-
-      if (responseUrl && value === UPDATE_ID_VALUE) {
-        const id = getIdFromUpdateUrl(responseUrl);
-
-        if (id !== null) {
-          additionalQueryParameters[queryParamName] = id;
-        }
-      }
-    });
-  }
-
   if (copyOriginalRequestParameters) {
     const queryParams = new URLSearchParams(window.location.search);
 
@@ -75,7 +51,8 @@ export function executeRequest(partialConfiguration: RequestConfiguration): Prom
       const name = entry[0];
       const value = entry[1];
 
-      if (!additionalQueryParameters[name]) {
+      // todo: which parameters should take precedence? fixed from backend or those in the current url
+      if (additionalQueryParameters && !additionalQueryParameters[name]) {
         additionalQueryParameters[name] = value;
       }
     }
@@ -131,15 +108,6 @@ export function executeFormRequest(
   }
 
   return executeFetchRequest(url, method, formConfiguration);
-}
-
-function getIdFromUpdateUrl(responseUrl: string) {
-  const updateIdRegex = /\/([0-9]*)\/update/g;
-  const match = updateIdRegex.exec(responseUrl) as any;
-  if (match.length < 1) {
-    return null;
-  }
-  return match[1];
 }
 
 function methodDoesNotSupportBody(method: string) {
