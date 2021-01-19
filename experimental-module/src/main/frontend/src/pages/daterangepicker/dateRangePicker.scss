@@ -1,0 +1,49 @@
+.custom-date-range-picker {
+  display: inline-block;
+  vertical-align: middle;
+
+  .custom-date-range-picker-dates {
+    display: inline-block;
+
+    > div {
+      margin-left: 5px;
+      display: inline-block;
+
+      .form-control.form-control {
+        width: 145px;
+      }
+    }
+  }
+}
+
+//  Search Story
+div[data-em-entity="searchStoryBinding"] {
+  span.input-group-addon {
+    width: auto;
+  }
+
+  &[data-em-view="listView"] {
+    .entity-query-filter-form-basic {
+      display: flex;
+      padding-bottom: 1rem;
+
+      div.js-form-datetimepicker.js-form-datetimepicker {
+        display: flex;
+        flex-wrap: nowrap;
+
+        input {
+          flex: 1;
+          float: none;
+        }
+      }
+    }
+
+    .name-title-toggle {
+      font-size: smaller;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}

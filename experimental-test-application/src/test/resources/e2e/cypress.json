@@ -9,5 +9,7 @@
       "cypress",
       "@testing-library/cypress"
     ]
-  }
+  },
+  "viewportWidth": 1920,
+  "viewportHeight": 1080
 }
