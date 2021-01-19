@@ -23,8 +23,8 @@ public class DateRangeEntityTranslator implements EntityQueryConditionTranslator
 
             DateRange valueHolder = (DateRange) condition.getFirstArgument();
 
-            entityQuery.add(new EntityQueryCondition(condition.getProperty(), EntityQueryOps.GE, valueHolder.getDateFrom()));
-            entityQuery.add(new EntityQueryCondition(condition.getProperty(), EntityQueryOps.LT, valueHolder.getDateTo()));
+            entityQuery.add(new EntityQueryCondition(condition.getProperty(), EntityQueryOps.GE, valueHolder.getDateFrom().getSource()));
+            entityQuery.add(new EntityQueryCondition(condition.getProperty(), EntityQueryOps.LT, valueHolder.getDateTo().getSource()));
 
             return entityQuery;
         }

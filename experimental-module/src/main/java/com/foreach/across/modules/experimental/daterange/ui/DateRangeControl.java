@@ -21,6 +21,8 @@ import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalTime;
+import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +77,6 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement> {
         String LAST_MODIFIED_SELECTOR = propertyName + "Selector";
         DateTimeFormElementConfiguration dateTimeFormElementConfiguration = new DateTimeFormElementConfiguration(DateTimeFormElementConfiguration.Format.DATE);
         DateRange datepickerOptionValue = EntityViewElementUtils.currentPropertyValue(builderContext, DateRange.class);
-        boolean onlyOneOption = dateRanges.size() == 1;
         boolean customDateRangeIsSelected = isCustomDateRangeIsSelected(datepickerOptionValue);
 
         List<OptionFormElementBuilder> dateRangeViewElements = new ArrayList<>();
@@ -95,10 +96,18 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement> {
                 option = bootstrap.builders.option().value(dateRange.getName() + "()")
                         .controlName(LAST_MODIFIED_SELECTOR)
                         .text(Objects.equals(text, dateRange.getName()) ? EntityUtils.generateDisplayName(dateRange.getName()) : text)
-                        .selected(onlyOneOption || isSelected(datepickerOptionValue, dateRange.getName()));
+                        .selected(isSelected(datepickerOptionValue, dateRange.getName()));
             }
 
             dateRangeViewElements.add(option);
+        }
+
+        Class<?> propertyType = descriptor.getPropertyType();
+        DateTimeFormElementConfiguration.Format format = DateTimeFormElementConfiguration.Format.DATETIME;
+        if (ChronoLocalDate.class.isAssignableFrom(propertyType)) {
+            format = DateTimeFormElementConfiguration.Format.DATE;
+        } else if (LocalTime.class.isAssignableFrom(propertyType)) {
+            format = DateTimeFormElementConfiguration.Format.TIME;
         }
 
         return html.div(css.of("custom-date-range-picker"))
@@ -127,8 +136,9 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement> {
                                                         .controlName(propertyName + "DateFrom")
                                                         .htmlId(propertyName + "DateFrom")
                                                         .data("daterange", "from")
+                                                        .format(format)
                                                         .attribute(BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "datetime")
-                                                        .value(customDateRangeIsSelected ? datepickerOptionValue.getDateFrom()
+                                                        .value(customDateRangeIsSelected ? datepickerOptionValue.getDateFrom().getLocaleDateTime()
                                                                 : null).build()
                                         )
                                 )
@@ -138,9 +148,10 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement> {
                                                         .controlName(propertyName + "DateTo")
                                                         .htmlId(propertyName + "DateTo")
                                                         .data("daterange", "to")
+                                                        .format(format)
                                                         .configuration(dateTimeFormElementConfiguration)
                                                         .attribute(BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "datetime")
-                                                        .value(customDateRangeIsSelected ? datepickerOptionValue.getDateTo()
+                                                        .value(customDateRangeIsSelected ? datepickerOptionValue.getDateTo().getLocaleDateTime()
                                                                 : null).build()
                                         )
                                 )

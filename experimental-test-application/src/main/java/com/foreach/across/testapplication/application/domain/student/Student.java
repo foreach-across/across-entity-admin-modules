@@ -10,7 +10,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -38,7 +41,10 @@ public class Student extends SettableIdBasedEntity<com.foreach.across.testapplic
 
     private LocalDateTime lastModifiedDate;
 
-    private LocalDateTime createdDate;
+    private LocalDate createdDate;
 
-    private LocalDateTime enrollmentDate;
+    private Date enrollmentDate;
+    private LocalDate firstClassJoinedDate;
+    private LocalTime startsStudyingAt;
+    private LocalTime stopStudingAt;
 }

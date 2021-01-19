@@ -11,8 +11,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Handle all {@link com.foreach.across.modules.entity.query.EQFunction} related to {@link DateRangeFunctionRegistry}
@@ -31,13 +34,17 @@ public class DateRangeEqlFunctions implements EntityQueryFunctionHandler {
 
     @Override
     public boolean accepts(String functionName, TypeDescriptor desiredType) {
-        return dateRangeFunctionRegistry.forName(functionName) != null;
+        return dateRangeFunctionRegistry.forName(functionName) != null && (
+                Date.class.equals(desiredType.getObjectType())
+                        || LocalDate.class.equals(desiredType.getObjectType())
+                        || LocalTime.class.equals(desiredType.getObjectType())
+                        || LocalDateTime.class.equals(desiredType.getObjectType()));
     }
 
     @Override
     public Object apply(String functionName, EQType[] arguments, TypeDescriptor desiredType, EQTypeConverter argumentConverter) {
         //TODO: support other date types, see EntityQueryDateFunctions
-        LocalDateTime[] boundaries = Arrays.stream(argumentConverter.convertAll(desiredType, false, arguments)).toArray(LocalDateTime[]::new);
-        return dateRangeFunctionRegistry.createDateRange(functionName, boundaries);
+        LocalDateTime[] boundaries = Arrays.stream(argumentConverter.convertAll(TypeDescriptor.valueOf(LocalDateTime.class), false, arguments)).toArray(LocalDateTime[]::new);
+        return dateRangeFunctionRegistry.createDateRange(functionName, boundaries, desiredType.getObjectType());
     }
 }

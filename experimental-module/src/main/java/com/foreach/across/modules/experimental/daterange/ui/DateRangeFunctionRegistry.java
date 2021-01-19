@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,10 +22,10 @@ import java.util.function.Function;
 @Exposed
 public class DateRangeFunctionRegistry {
 
-    private final Map<String, Function<LocalDateTime[], DateRange>> items = new HashMap<>();
+    private final Map<String, Function<Object[], DateRange>> items = new HashMap<>();
 
-    public DateRangeFunctionRegistry register(String name, Function<LocalDateTime[], DateRange> dateRangeFunction) {
-        Function<LocalDateTime[], DateRange> existingFunction = items.get(name);
+    public DateRangeFunctionRegistry register(String name, Function<Object[], DateRange> dateRangeFunction) {
+        Function<Object[], DateRange> existingFunction = items.get(name);
         if (existingFunction == null) {
             items.put(name, dateRangeFunction);
         } else {
@@ -35,13 +36,19 @@ public class DateRangeFunctionRegistry {
         return this;
     }
 
-    public Function<LocalDateTime[], DateRange> forName(String functionName) {
+    public Function<Object[], DateRange> forName(String functionName) {
         return items.get(functionName);
     }
 
-    public Object createDateRange(String functionName, LocalDateTime[] boundaries) {
+    public Object createDateRange(String functionName, LocalDateTime[] boundaries, Class<?> objectType) {
         DateRange dateRange = items.get(functionName).apply(boundaries);
+        if (objectType == Date.class && (dateRange.getDateFrom().isLocalDateTime() || dateRange.getDateTo().isLocalDateTime())) {
+            // JPA requires the type of the property to match for querying
+            dateRange = new DateRange(dateRange.getDateFrom().toDate(), dateRange.getDateTo().toDate());
+        }
         dateRange.setType(functionName);
         return dateRange;
     }
+
+
 }
