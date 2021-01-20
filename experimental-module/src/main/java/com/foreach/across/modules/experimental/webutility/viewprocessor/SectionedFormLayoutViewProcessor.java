@@ -21,8 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-
 /**
  * Used to render properties in separate sections and columns.
  * Used in conjunction with the {@link SectionedFormLayoutHelper}
@@ -55,10 +53,7 @@ public class SectionedFormLayoutViewProcessor extends EntityViewProcessorAdapter
 		                                                                     .orElse( container );
 		addRows( containerToConfigure, builderContext );
 		// remove and re-add the buttons container so that it is guaranteed to be at the bottom of the container
-		containerToConfigure.removeFromTree( "buttons" ).ifPresent( buttons -> {
-			buttons.set( css.grid.row );
-			containerToConfigure.addChild( buttons );
-		} );
+		containerToConfigure.removeFromTree( "buttons" ).ifPresent( containerToConfigure::addChild );
 	}
 
 	private void addRows( ContainerViewElement container, ViewElementBuilderContext builderContext ) {
