@@ -27,8 +27,8 @@ import org.springframework.validation.SmartValidator;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 /**
@@ -49,7 +49,7 @@ public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegi
 	public static final EntityPropertyRegistryProvider INSTANCE = newInstance();
 
 	private final EntityPropertyDescriptorFactory descriptorFactory;
-	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new HashMap<>();
+	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new ConcurrentHashMap<>();
 
 	private EntityPropertyValidator defaultMemberValidator;
 	private Collection<PropertiesRegistrar> propertiesRegistrars = Collections.emptyList();
