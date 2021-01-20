@@ -85,7 +85,7 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 
 		String controlElementName = baseSelector + "-control";
 		NodeViewElementBuilder controlWrapper = html.builders
-				.div( css( controlElementName ), css.display.flex )
+				.div( css( "create-select-control" ), css.display.flex )
 				.htmlId( controlElementName )
 				.name( controlElementName );
 
@@ -118,7 +118,6 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 				                  .icon( WebUtilityModuleIcons.webUtilityModuleIcons.components.createSelect.addItem() )
 				                  .iconLeft()
 				                  .iconOnly();
-		createNewButtonCustomizer.accept( createNewBuilder );
 
 		createNewBuilder.with( data( "toggle", "modal" ), data( "target", modalName ) )
 		                .with(
@@ -144,6 +143,8 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 										                )
 						                )
 		                );
+
+		createNewButtonCustomizer.accept( createNewBuilder );
 		return createNewBuilder;
 	}
 
