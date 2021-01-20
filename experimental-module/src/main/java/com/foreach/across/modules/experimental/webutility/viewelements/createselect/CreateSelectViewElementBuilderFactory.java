@@ -1,13 +1,17 @@
 package com.foreach.across.modules.experimental.webutility.viewelements.createselect;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.web.links.EntityViewLinks;
+import com.foreach.across.modules.experimental.webutility.WebUtilityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +20,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@ConditionalOnAcrossModule(allOf = { EntityModule.NAME, WebUtilityModule.NAME })
+// EntityViewLinks requires AdminWebModule, so may not be present
+@ConditionalOnBean(EntityViewLinks.class)
 public class CreateSelectViewElementBuilderFactory implements EntityViewElementBuilderFactory
 {
 	public final static String CREATE_SELECT = CreateSelectViewElementBuilderFactory.class.getName() + ".createSelectControl";
