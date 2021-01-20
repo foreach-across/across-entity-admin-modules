@@ -33,7 +33,19 @@
 		<revision>0.0.1-SNAPSHOT</revision>
 		<!-- Overriden from spring-boot-dependencies -->
 		<maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+
+		<admin-web-module.version>4.2.0-SNAPSHOT</admin-web-module.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>admin-web-module</artifactId>
+				<version>${admin-web-module.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<modules>
 		<module>experimental-module</module>

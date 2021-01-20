@@ -15,7 +15,7 @@ export class ActionFactory {
     this.actionResolvers.set(type, handler);
   }
 
-  handle(action: Action, context: any): Promise<void> {
+  handle(action: Action, context: any): Promise<any> {
     const handler = this.actionResolvers.get(action.action);
     if (!handler) {
       return Promise.reject(new ActionError(`Missing action resolver for type ${action.action}`, action, context));

@@ -139,6 +139,7 @@ public class SectionedFormLayoutViewProcessor extends EntityViewProcessorAdapter
 	private void fixButtons( ContainerViewElement form ) {
 		NodeViewElement buttonRow = builders.row()
 		                                    .name( "buttons" )
+				                            .css("em-form-actions")
 		                                    .css( css.margin.top.s5.toCssClasses() )
 		                                    .css( css.margin.left.s1.toCssClasses() )
 		                                    .build();
