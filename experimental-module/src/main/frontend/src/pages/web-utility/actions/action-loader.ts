@@ -14,6 +14,8 @@ function initializeRequestExecutor(element: Node) {
     e.preventDefault();
 
     const config: Action = $.extend(true, {}, $node.data("action-load"));
-    ExperimentalModule.actionFactory.handle(config, {});
+    ExperimentalModule.actionFactory.handle(config, {}).catch((err: any) => {
+      console.error("Unexpected error occurred whilst handling action", err);
+    });
   });
 }
