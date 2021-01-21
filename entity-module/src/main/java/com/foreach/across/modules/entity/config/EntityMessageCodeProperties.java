@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @ConfigurationProperties("entity-module")
@@ -32,7 +32,7 @@ public class EntityMessageCodeProperties
 	 * Map of module name and list of message code prefixes.
 	 */
 	@Getter
-	private final Map<String, String[]> messageCodes = new HashMap<>();
+	private final Map<String, String[]> messageCodes = new ConcurrentHashMap<>();
 
 	/**
 	 * Get all the message code prefixes that should be attached to the {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver}.
