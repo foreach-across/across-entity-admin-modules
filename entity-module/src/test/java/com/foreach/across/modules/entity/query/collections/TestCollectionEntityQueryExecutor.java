@@ -83,7 +83,7 @@ public class TestCollectionEntityQueryExecutor
 	@Test
 	@SuppressWarnings("unchecked")
 	public void supplierIsUsedOnEveryFind() {
-		Supplier<Collection<Entry>> supplier = mock( Supplier.class );
+		Supplier<Iterable<Entry>> supplier = mock( Supplier.class );
 		when( supplier.get() ).thenReturn( Arrays.asList( john, george ) )
 		                      .thenReturn( Arrays.asList( john, jane ) );
 

@@ -22,14 +22,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.support.PageableExecutionUtils;
+import org.springframework.data.support.PageableExecutionUtils;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 
@@ -38,7 +38,7 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
  * queries on a collection of custom objects, where a {@link EntityPropertyRegistry} is used to determine
  * the property type and actual value.
  * <p/>
- * The collection can be specified either as a static collection using {@link #CollectionEntityQueryExecutor(Collection, EntityPropertyRegistry)},
+ * The collection can be specified either as a static collection using {@link #CollectionEntityQueryExecutor(Iterable, EntityPropertyRegistry)},
  * or via a {@link Supplier} using {@link #CollectionEntityQueryExecutor(Supplier, EntityPropertyRegistry)}.
  *
  * @author Arne Vandamme
@@ -47,10 +47,10 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 @RequiredArgsConstructor
 public class CollectionEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
-	private final Supplier<Collection<T>> source;
+	private final Supplier<Iterable<T>> source;
 	private final EntityPropertyRegistry propertyRegistry;
 
-	public CollectionEntityQueryExecutor( Collection<T> source, EntityPropertyRegistry propertyRegistry ) {
+	public CollectionEntityQueryExecutor( Iterable<T> source, EntityPropertyRegistry propertyRegistry ) {
 		this.source = () -> source;
 		this.propertyRegistry = propertyRegistry;
 	}
@@ -71,13 +71,12 @@ public class CollectionEntityQueryExecutor<T> extends AbstractEntityQueryExecuto
 	}
 
 	private List<T> filterAndSort( EntityQuery query, Sort sort ) {
-		return source.get()
-		             .stream()
-		             .map( item -> new CollectionEntityQueryItem<>( item, propertyRegistry ) )
-		             .filter( buildPredicate( query ) )
-		             .sorted( buildComparator( sort ) )
-		             .map( CollectionEntityQueryItem::getItem )
-		             .collect( Collectors.toList() );
+		return StreamSupport.stream( source.get().spliterator(), false )
+		                    .map( item -> new CollectionEntityQueryItem<>( item, propertyRegistry ) )
+		                    .filter( buildPredicate( query ) )
+		                    .sorted( buildComparator( sort ) )
+		                    .map( CollectionEntityQueryItem::getItem )
+		                    .collect( Collectors.toList() );
 	}
 
 	private Comparator<CollectionEntityQueryItem<T>> buildComparator( Sort sort ) {
