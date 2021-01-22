@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -21,71 +20,91 @@ import java.util.function.Function;
  * @author Stijn Vanhoof
  */
 @Data
-public class DateRange {
+public class DateRange
+{
 
-    public static final DateRangeItem DATE_RANGE = DateRange.DateRangeItem.of("dateRange", DateRange::dateRange);
-    public static final DateRangeItem TODAY = DateRange.DateRangeItem.of("today", args -> new DateRange(startOfDay(LocalDateTime.now()), endOfDay(LocalDateTime.now())));
-    public static final DateRangeItem YESTERDAY = DateRange.DateRangeItem.of("yesterday", args -> new DateRange(startOfDay(LocalDateTime.now().plusDays(-1)), endOfDay(LocalDateTime.now().plusDays(-1))));
-    public static final DateRangeItem LAST_WEEK = DateRange.DateRangeItem.of("lastWeek", args -> new DateRange(startOfDay(LocalDateTime.now().plusWeeks(-1)), LocalDateTime.now()));
-    public static final DateRangeItem LAST_MONTH = DateRange.DateRangeItem.of("lastMonth", args -> new DateRange(startOfDay(LocalDateTime.now().plusMonths(-1)), LocalDateTime.now()));
-    public static final DateRangeItem LAST_YEAR = DateRange.DateRangeItem.of("lastYear", args -> new DateRange(startOfDay(LocalDateTime.now().plusYears(-1)), LocalDateTime.now()));
+	public static final DateRangeItem DATE_RANGE = DateRange.DateRangeItem.of( "dateRange", DateRange::dateRange );
+	public static final DateRangeItem TODAY = DateRange.DateRangeItem.of( "today", args -> new DateRange( startOfDay( LocalDateTime.now() ),
+	                                                                                                      endOfDay( LocalDateTime.now() ) ) );
+	public static final DateRangeItem YESTERDAY = DateRange.DateRangeItem.of( "yesterday",
+	                                                                          args -> new DateRange( startOfDay( LocalDateTime.now().plusDays( -1 ) ),
+	                                                                                                 endOfDay( LocalDateTime.now().plusDays( -1 ) ) ) );
+	public static final DateRangeItem LAST_WEEK = DateRange.DateRangeItem.of( "lastWeek",
+	                                                                          args -> new DateRange( startOfDay( LocalDateTime.now().plusWeeks( -1 ) ),
+	                                                                                                 LocalDateTime.now() ) );
+	public static final DateRangeItem LAST_MONTH = DateRange.DateRangeItem.of( "lastMonth",
+	                                                                           args -> new DateRange( startOfDay( LocalDateTime.now().plusMonths( -1 ) ),
+	                                                                                                  LocalDateTime.now() ) );
+	public static final DateRangeItem LAST_YEAR = DateRange.DateRangeItem.of( "lastYear",
+	                                                                          args -> new DateRange( startOfDay( LocalDateTime.now().plusYears( -1 ) ),
+	                                                                                                 LocalDateTime.now() ) );
 
-    public static DateRange dateRange(Object[] args) {
-        return new DateRange(args[0], args[1]);
-    }
+	public static DateRange dateRange( Object[] args ) {
+		return new DateRange( args[0], args[1] );
+	}
 
-    private final DateOrLocalDateTime dateFrom;
-    private final DateOrLocalDateTime dateTo;
+	private final DateOrLocalDateTime dateFrom;
+	private final DateOrLocalDateTime dateTo;
 
-    public DateRange(Object from, Object to) {
-        dateFrom = DateOrLocalDateTime.wrap(from);
-        dateTo = DateOrLocalDateTime.wrap(to);
-    }
+	public DateRange( Object from, Object to ) {
+		dateFrom = DateOrLocalDateTime.wrap( from );
+		dateTo = DateOrLocalDateTime.wrap( to );
+	}
 
-    @Getter
-    private String type;
+	@Getter
+	private String type;
 
-    @AllArgsConstructor(staticName = "of")
-    @Getter
-    public static class DateRangeItem {
-        private final String name;
-        private final Function<Object[], DateRange> dateRange;
-    }
+	@AllArgsConstructor(staticName = "of")
+	@Getter
+	public static class DateRangeItem
+	{
+		private final String name;
+		private final Function<Object[], DateRange> dateRange;
+	}
 
-    private static LocalDateTime startOfDay(LocalDateTime givenDate) {
-        return givenDate.toLocalDate().atStartOfDay();
-    }
+	private static LocalDateTime startOfDay( LocalDateTime givenDate ) {
+		return givenDate.toLocalDate().atStartOfDay();
+	}
 
-    private static LocalDateTime endOfDay(LocalDateTime givenDate) {
-        return givenDate.toLocalDate().atTime(LocalTime.MAX);
-    }
+	private static LocalDateTime endOfDay( LocalDateTime givenDate ) {
+		return givenDate.toLocalDate().atTime( LocalTime.MAX );
+	}
 
-    public static class DateOrLocalDateTime {
-        private final Object dateOrLocalDateTime;
+	public static class DateOrLocalDateTime
+	{
+		private final Object dateOrLocalDateTime;
 
-        protected DateOrLocalDateTime(Object dateOrLocalDateTime) {
-            this.dateOrLocalDateTime = dateOrLocalDateTime;
-        }
+		protected DateOrLocalDateTime( Object dateOrLocalDateTime ) {
+			this.dateOrLocalDateTime = dateOrLocalDateTime;
+		}
 
-        public static DateOrLocalDateTime wrap(Object date) {
-            return new DateOrLocalDateTime(date);
-        }
+		public static DateOrLocalDateTime wrap( Object date ) {
+			return new DateOrLocalDateTime( date );
+		}
 
-        public Object getSource() {
-            return dateOrLocalDateTime;
-        }
+		public Object getSource() {
+			return dateOrLocalDateTime;
+		}
 
-        public boolean isLocalDateTime() {
-            return dateOrLocalDateTime instanceof LocalDateTime;
-        }
+		public boolean isLocalDateTime() {
+			return dateOrLocalDateTime instanceof LocalDateTime;
+		}
 
-        public LocalDateTime getLocaleDateTime() {
-            return isLocalDateTime() ? (LocalDateTime) dateOrLocalDateTime : LocalDateTime.ofInstant(Instant.ofEpochMilli(((Date) dateOrLocalDateTime).getTime()), ZoneOffset.UTC);
-        }
+		public LocalDateTime toLocalDateTime() {
+			if ( isLocalDateTime() ) {
+				return (LocalDateTime) dateOrLocalDateTime;
+			}
+			Date date = (Date) this.dateOrLocalDateTime;
+			return LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault() );
+		}
 
-        public Date toDate() {
-            return Date.from(((LocalDateTime) dateOrLocalDateTime).toInstant(ZoneOffset.UTC));
-        }
+		public Date toDate() {
+			if ( !isLocalDateTime() ) {
+				return (Date) dateOrLocalDateTime;
+			}
+			LocalDateTime localDateTime = toLocalDateTime();
+			return Date.from( ( localDateTime ).toInstant( ZoneId.systemDefault().getRules().getOffset( localDateTime ) ) );
+		}
 
-    }
+	}
 }

@@ -77,7 +77,7 @@
     {
       "name": "daterange-loader",
       "title": "daterange-loader",
-      "appIndexJs": "src/pages/daterangepicker/dateRangePicker"
+      "appIndexJs": "src/pages/daterangepicker/date-range-picker"
     }
   ],
   "eslintConfig": {
