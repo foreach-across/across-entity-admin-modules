@@ -12,24 +12,24 @@ context('Modal tests', () => {
 
         cy.get("[data-entity-query-property='lastModifiedDate']").within(($dateRangeControl) => {
             cy.get(".js-custom-date-picker-dates").should("not.be.visible");
-            cy.get("select").select("Pikkiediedate").should("have.value", "custom");
+            cy.get( "select" ).select( "Pikkiediedate", {force: true} ).should( "have.value", "custom" );
             cy.get(".js-custom-date-picker-dates").should("be.visible");
-            cy.get("select").select("Last 14 days (absolute)").should("have.value", "last14d()");
+            cy.get( "select" ).select( "Last 14 days (absolute)", {force: true} ).should( "have.value", "last14d()" );
             cy.get(".js-custom-date-picker-dates").should("not.be.visible");
-            cy.get("select").select("Yesterday").should("have.value", "yesterday()");
-            cy.get("select").select("Last week").should("have.value", "lastWeek()");
+            cy.get( "select" ).select( "Yesterday", {force: true} ).should( "have.value", "yesterday()" );
+            cy.get( "select" ).select( "Last week", {force: true} ).should( "have.value", "lastWeek()" );
         });
 
         cy.get("[data-entity-query-property='createdDate']").within(($dateRangeControl) => {
             cy.get(".js-custom-date-picker-dates").should("not.be.visible");
-            cy.get("select").select("Pikkiediedate").should("have.value", "custom");
+            cy.get( "select" ).select( "Pikkiediedate", {force: true} ).should( "have.value", "custom" );
             cy.get(".js-custom-date-picker-dates").should("be.visible");
-            cy.get("select").select("Today").should("have.value", "today()");
-            cy.get("select").select("Yesterday").should("have.value", "yesterday()");
+            cy.get( "select" ).select( "Today", {force: true} ).should( "have.value", "today()" );
+            cy.get( "select" ).select( "Yesterday", {force: true} ).should( "have.value", "yesterday()" );
             cy.get(".js-custom-date-picker-dates").should("not.be.visible");
-            cy.get("select").select("Last week").should("have.value", "lastWeek()");
-            cy.get("select").select("Last month").should("have.value", "lastMonth()");
-            cy.get("select").select("Last year").should("have.value", "lastYear()");
+            cy.get( "select" ).select( "Last week", {force: true} ).should( "have.value", "lastWeek()" );
+            cy.get( "select" ).select( "Last month", {force: true} ).should( "have.value", "lastMonth()" );
+            cy.get( "select" ).select( "Last year", {force: true} ).should( "have.value", "lastYear()" );
         });
     });
 
@@ -41,14 +41,14 @@ context('Modal tests', () => {
         let random = "Student-" + utils.randomString(20);
         cy.contains("Name").type(random);
         let today = (new Date()).toLocaleDateString('nl-BE');
-        cy.contains("Last modified date").type(today)
+        cy.contains( "Last modified date" ).type( today );
         cy.contains("Save").click();
 
         cy.goToMenuItem('ExperimentalModuleTestApplicationModule').goToMenuItem('Student');
         cy.findAllByText(random).should('exist');
 
         cy.get("[data-entity-query-property='lastModifiedDate']").within(($dateRangeControl) => {
-            cy.get("select").select("Yesterday").should("have.value", "yesterday()");
+            cy.get( "select" ).select( "Yesterday", {force: true} ).should( "have.value", "yesterday()" );
         });
 
         cy.contains("Name").type(random);
