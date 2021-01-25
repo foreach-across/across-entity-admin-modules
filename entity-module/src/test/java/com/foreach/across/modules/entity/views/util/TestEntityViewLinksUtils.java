@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
-class TestEntityViewRedirectUtils
+class TestEntityViewLinksUtils
 {
 	@Autowired
 	private ConfigurableListableBeanFactory beanFactory;
@@ -90,14 +90,14 @@ class TestEntityViewRedirectUtils
 
 	@Test
 	public void afterSave() {
-		verifyRedirectUrl( "/root/path/entity", EntityViewRedirectUtils.afterSave.toListView() );
-		verifyRedirectUrl( "/root/path/entity?view=customView", EntityViewRedirectUtils.afterSave.toListView( "customView" ) );
-		verifyRedirectUrl( "/root/path/entity/create", EntityViewRedirectUtils.afterSave.toCreateView() );
-		verifyRedirectUrl( "/root/path/entity/create?view=customView", EntityViewRedirectUtils.afterSave.toCreateView( "customView" ) );
-		verifyRedirectUrl( "/root/path/entity/2", EntityViewRedirectUtils.afterSave.toDetailView() );
-		verifyRedirectUrl( "/root/path/entity/2?view=customView", EntityViewRedirectUtils.afterSave.toDetailView( "customView" ) );
-		verifyRedirectUrl( "/root/path/entity/2/update?view=customView", EntityViewRedirectUtils.afterSave.toUpdateView( "customView" ) );
-		verifyRedirectUrl( "/a-random-url/2/chart?state=some-state", EntityViewRedirectUtils.afterSave.to(
+		verifyRedirectUrl( "/root/path/entity", EntityViewLinksUtils.afterSave.toListView() );
+		verifyRedirectUrl( "/root/path/entity?view=customView", EntityViewLinksUtils.afterSave.toListView( "customView" ) );
+		verifyRedirectUrl( "/root/path/entity/create", EntityViewLinksUtils.afterSave.toCreateView() );
+		verifyRedirectUrl( "/root/path/entity/create?view=customView", EntityViewLinksUtils.afterSave.toCreateView( "customView" ) );
+		verifyRedirectUrl( "/root/path/entity/2", EntityViewLinksUtils.afterSave.toDetailView() );
+		verifyRedirectUrl( "/root/path/entity/2?view=customView", EntityViewLinksUtils.afterSave.toDetailView( "customView" ) );
+		verifyRedirectUrl( "/root/path/entity/2/update?view=customView", EntityViewLinksUtils.afterSave.toUpdateView( "customView" ) );
+		verifyRedirectUrl( "/a-random-url/2/chart?state=some-state", EntityViewLinksUtils.afterSave.to(
 				redirectContext -> {
 					EntityViewRequest entityViewRequest = redirectContext.getEntityViewRequest();
 					return UriComponentsBuilder.fromPath( "/a-random-url" )
@@ -110,24 +110,24 @@ class TestEntityViewRedirectUtils
 				}
 		) );
 		verifyRedirectUrl( "/root/path/entity/1?view=customView",
-		                   EntityViewRedirectUtils.afterSave.to( linkBuilder -> linkBuilder.getEntityViewLinks().linkTo( Entity.class )
-		                                                                                   .forInstance( one )
-		                                                                                   .withViewName( "customView" ).toUriString() ) );
+		                   EntityViewLinksUtils.afterSave.to( linkBuilder -> linkBuilder.getEntityViewLinks().linkTo( Entity.class )
+		                                                                                .forInstance( one )
+		                                                                                .withViewName( "customView" ).toUriString() ) );
 	}
 
 	@Test
 	public void button() {
-		verifyButtonUrl( "btn-delete", "/root/path/entity", EntityViewRedirectUtils.button.toListView( "btn-delete" ) );
-		verifyButtonUrl( "btn-delete", "/root/path/entity?view=customView", EntityViewRedirectUtils.button.toListView( "btn-delete", "customView" ) );
-		verifyButtonUrl( "btn-delete", "/root/path/entity/create", EntityViewRedirectUtils.button.toCreateView( "btn-delete" ) );
-		verifyButtonUrl( "btn-delete", "/root/path/entity/create?view=customView", EntityViewRedirectUtils.button.toCreateView( "btn-delete", "customView" ) );
-		verifyButtonUrl( "btn-delete", "/root/path/entity/2", EntityViewRedirectUtils.button.toDetailView( "btn-delete" ) );
-		verifyButtonUrl( "btn-delete", "/root/path/entity/2?view=customView", EntityViewRedirectUtils.button.toDetailView( "btn-delete", "customView" ) );
-		verifyButtonUrl( "btn-delete", "/root/path/entity/2/update", EntityViewRedirectUtils.button.toUpdateView( "btn-delete" ) );
+		verifyButtonUrl( "btn-delete", "/root/path/entity", EntityViewLinksUtils.button.toListView( "btn-delete" ) );
+		verifyButtonUrl( "btn-delete", "/root/path/entity?view=customView", EntityViewLinksUtils.button.toListView( "btn-delete", "customView" ) );
+		verifyButtonUrl( "btn-delete", "/root/path/entity/create", EntityViewLinksUtils.button.toCreateView( "btn-delete" ) );
+		verifyButtonUrl( "btn-delete", "/root/path/entity/create?view=customView", EntityViewLinksUtils.button.toCreateView( "btn-delete", "customView" ) );
+		verifyButtonUrl( "btn-delete", "/root/path/entity/2", EntityViewLinksUtils.button.toDetailView( "btn-delete" ) );
+		verifyButtonUrl( "btn-delete", "/root/path/entity/2?view=customView", EntityViewLinksUtils.button.toDetailView( "btn-delete", "customView" ) );
+		verifyButtonUrl( "btn-delete", "/root/path/entity/2/update", EntityViewLinksUtils.button.toUpdateView( "btn-delete" ) );
 		verifyButtonUrl( "btn-delete", "/root/path/entity/2/update?view=customView",
-		                 EntityViewRedirectUtils.button.toUpdateView( "btn-delete", "customView" ) );
+		                 EntityViewLinksUtils.button.toUpdateView( "btn-delete", "customView" ) );
 		Consumer<EntityViewFactoryBuilder> consumer =
-				EntityViewRedirectUtils.button.to(
+				EntityViewLinksUtils.button.to(
 						"btn-delete",
 						redirectContext -> {
 							EntityViewRequest entityViewRequest = redirectContext.getEntityViewRequest();
@@ -145,15 +145,15 @@ class TestEntityViewRedirectUtils
 
 	@Test
 	public void backButton() {
-		verifyButtonUrl( "btn-back", "/root/path/entity?view=customView", EntityViewRedirectUtils.button.back.toListView( "customView" ) );
-		verifyButtonUrl( "btn-back", "/root/path/entity/create", EntityViewRedirectUtils.button.back.toCreateView() );
-		verifyButtonUrl( "btn-back", "/root/path/entity/create?view=customView", EntityViewRedirectUtils.button.back.toCreateView( "customView" ) );
-		verifyButtonUrl( "btn-back", "/root/path/entity/2", EntityViewRedirectUtils.button.back.toDetailView() );
-		verifyButtonUrl( "btn-back", "/root/path/entity/2?view=customView", EntityViewRedirectUtils.button.back.toDetailView( "customView" ) );
-		verifyButtonUrl( "btn-back", "/root/path/entity/2/update", EntityViewRedirectUtils.button.back.toUpdateView() );
-		verifyButtonUrl( "btn-back", "/root/path/entity/2/update?view=customView", EntityViewRedirectUtils.button.back.toUpdateView( "customView" ) );
+		verifyButtonUrl( "btn-back", "/root/path/entity?view=customView", EntityViewLinksUtils.button.back.toListView( "customView" ) );
+		verifyButtonUrl( "btn-back", "/root/path/entity/create", EntityViewLinksUtils.button.back.toCreateView() );
+		verifyButtonUrl( "btn-back", "/root/path/entity/create?view=customView", EntityViewLinksUtils.button.back.toCreateView( "customView" ) );
+		verifyButtonUrl( "btn-back", "/root/path/entity/2", EntityViewLinksUtils.button.back.toDetailView() );
+		verifyButtonUrl( "btn-back", "/root/path/entity/2?view=customView", EntityViewLinksUtils.button.back.toDetailView( "customView" ) );
+		verifyButtonUrl( "btn-back", "/root/path/entity/2/update", EntityViewLinksUtils.button.back.toUpdateView() );
+		verifyButtonUrl( "btn-back", "/root/path/entity/2/update?view=customView", EntityViewLinksUtils.button.back.toUpdateView( "customView" ) );
 		Consumer<EntityViewFactoryBuilder> consumer =
-				EntityViewRedirectUtils.button.back.to(
+				EntityViewLinksUtils.button.back.to(
 						redirectContext -> {
 							EntityViewRequest entityViewRequest = redirectContext.getEntityViewRequest();
 							return UriComponentsBuilder.fromPath( "/a-random-url" )
@@ -170,15 +170,15 @@ class TestEntityViewRedirectUtils
 
 	@Test
 	public void cancelButton() {
-		verifyButtonUrl( "btn-cancel", "/root/path/entity?view=customView", EntityViewRedirectUtils.button.cancel.toListView( "customView" ) );
-		verifyButtonUrl( "btn-cancel", "/root/path/entity/create", EntityViewRedirectUtils.button.cancel.toCreateView() );
-		verifyButtonUrl( "btn-cancel", "/root/path/entity/create?view=customView", EntityViewRedirectUtils.button.cancel.toCreateView( "customView" ) );
-		verifyButtonUrl( "btn-cancel", "/root/path/entity/2", EntityViewRedirectUtils.button.cancel.toDetailView() );
-		verifyButtonUrl( "btn-cancel", "/root/path/entity/2?view=customView", EntityViewRedirectUtils.button.cancel.toDetailView( "customView" ) );
-		verifyButtonUrl( "btn-cancel", "/root/path/entity/2/update", EntityViewRedirectUtils.button.cancel.toUpdateView() );
-		verifyButtonUrl( "btn-cancel", "/root/path/entity/2/update?view=customView", EntityViewRedirectUtils.button.cancel.toUpdateView( "customView" ) );
+		verifyButtonUrl( "btn-cancel", "/root/path/entity?view=customView", EntityViewLinksUtils.button.cancel.toListView( "customView" ) );
+		verifyButtonUrl( "btn-cancel", "/root/path/entity/create", EntityViewLinksUtils.button.cancel.toCreateView() );
+		verifyButtonUrl( "btn-cancel", "/root/path/entity/create?view=customView", EntityViewLinksUtils.button.cancel.toCreateView( "customView" ) );
+		verifyButtonUrl( "btn-cancel", "/root/path/entity/2", EntityViewLinksUtils.button.cancel.toDetailView() );
+		verifyButtonUrl( "btn-cancel", "/root/path/entity/2?view=customView", EntityViewLinksUtils.button.cancel.toDetailView( "customView" ) );
+		verifyButtonUrl( "btn-cancel", "/root/path/entity/2/update", EntityViewLinksUtils.button.cancel.toUpdateView() );
+		verifyButtonUrl( "btn-cancel", "/root/path/entity/2/update?view=customView", EntityViewLinksUtils.button.cancel.toUpdateView( "customView" ) );
 		Consumer<EntityViewFactoryBuilder> consumer =
-				EntityViewRedirectUtils.button.cancel.to(
+				EntityViewLinksUtils.button.cancel.to(
 						redirectContext -> {
 							EntityViewRequest entityViewRequest = redirectContext.getEntityViewRequest();
 							return UriComponentsBuilder.fromPath( "/a-random-url" )

@@ -57,7 +57,7 @@ import java.util.function.Function;
  * @since 4.1.0
  */
 @UtilityClass
-public class EntityViewRedirectUtils
+public class EntityViewLinksUtils
 {
 	public static final AfterSaveLinkHandler afterSave = new AfterSaveLinkHandler();
 	public static final ButtonLinkHandler button = new ButtonLinkHandler();
