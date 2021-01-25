@@ -21,8 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-
 /**
  * Used to render properties in separate sections and columns.
  * Used in conjunction with the {@link SectionedFormLayoutHelper}
@@ -51,16 +49,11 @@ public class SectionedFormLayoutViewProcessor extends EntityViewProcessorAdapter
 	                           EntityView entityView,
 	                           ContainerViewElement container,
 	                           ViewElementBuilderContext builderContext ) {
-		Optional<ContainerViewElement> containerViewElement = ContainerViewElementUtils.find( container, SingleEntityFormViewProcessor.FORM,
-		                                                                                      ContainerViewElement.class );
-		if ( containerViewElement.isPresent() ) {
-			addRows( containerViewElement.get(), builderContext );
-			fixButtons( containerViewElement.get() );
-		}
-		else {
-			                         addRows( container, builderContext );
-			                         fixButtons( container );
-		}
+		ContainerViewElement containerToConfigure = ContainerViewElementUtils.find( container, SingleEntityFormViewProcessor.FORM, ContainerViewElement.class )
+		                                                                     .orElse( container );
+		addRows( containerToConfigure, builderContext );
+		// remove and re-add the buttons container so that it is guaranteed to be at the bottom of the container
+		containerToConfigure.removeFromTree( "buttons" ).ifPresent( containerToConfigure::addChild );
 	}
 
 	private void addRows( ContainerViewElement container, ViewElementBuilderContext builderContext ) {
@@ -134,19 +127,5 @@ public class SectionedFormLayoutViewProcessor extends EntityViewProcessorAdapter
 			j++;
 		}
 		return colWidth;
-	}
-
-	private void fixButtons( ContainerViewElement form ) {
-		NodeViewElement buttonRow = builders.row()
-		                                    .name( "buttons" )
-				                            .css("em-form-actions")
-		                                    .css( css.margin.top.s5.toCssClasses() )
-		                                    .css( css.margin.left.s1.toCssClasses() )
-		                                    .build();
-		ContainerViewElementUtils.move( form, "btn-save", buttonRow );
-		ContainerViewElementUtils.move( form, "btn-cancel", buttonRow );
-		ContainerViewElementUtils.move( form, "btn-back", buttonRow );
-		form.removeFromTree( "buttons" );
-		form.addChild( buttonRow );
 	}
 }
