@@ -22,6 +22,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
+    "moment": "^2.29.1",
     "bootstrap": "4.3",
     "react": "^16.13.1"
   },
@@ -72,6 +73,11 @@
       "name": "experimental-module",
       "title": "experimental-module",
       "appIndexJs": "src/pages/web-utility/experimental"
+    },
+    {
+      "name": "daterange-loader",
+      "title": "daterange-loader",
+      "appIndexJs": "src/pages/daterangepicker/date-range-picker"
     }
   ],
   "eslintConfig": {

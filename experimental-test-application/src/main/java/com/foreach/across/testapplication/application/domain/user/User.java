@@ -68,6 +68,6 @@ public class User extends SettableIdBasedEntity<User>
 	private BigDecimal netValue;
 
 	@Column
-	private boolean active;
+	private Boolean active;
 
 }
