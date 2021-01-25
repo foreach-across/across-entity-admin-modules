@@ -134,8 +134,8 @@ public class EntityViewRedirectUtils
 
 	public static class ButtonLinkHandler
 	{
-		public final BackButtonLinkHandler back = new BackButtonLinkHandler();
-		public final CancelButtonLinkHandler cancel = new CancelButtonLinkHandler();
+		public final FixedButtonLinkHandler back = new FixedButtonLinkHandler( FixedButtonLinkHandler.BACK_BUTTON );
+		public final FixedButtonLinkHandler cancel = new FixedButtonLinkHandler( FixedButtonLinkHandler.CANCEL_BUTTON );
 
 		public Consumer<EntityViewFactoryBuilder> toCreateView( String button ) {
 			return toCreateView( button, null );
@@ -182,9 +182,13 @@ public class EntityViewRedirectUtils
 		}
 	}
 
-	public static class BackButtonLinkHandler
+	@RequiredArgsConstructor
+	public static class FixedButtonLinkHandler
 	{
-		public final static String BUTTON = "btn-back";
+		public final static String BACK_BUTTON = "btn-back";
+		public final static String CANCEL_BUTTON = "btn-cancel";
+
+		public final String buttonName;
 
 		public Consumer<EntityViewFactoryBuilder> toCreateView() {
 			return toCreateView( null );
@@ -217,55 +221,10 @@ public class EntityViewRedirectUtils
 		public Consumer<EntityViewFactoryBuilder> to( Function<LinkBasedEntityViewRedirectContext, String> entityViewLinksConsumer ) {
 			return entityViewFactoryBuilder -> entityViewFactoryBuilder.viewProcessor(
 					vp -> vp.createBean( ButtonRedirectEntityViewRedirectProcessor.class )
-					        .withName( ButtonRedirectEntityViewRedirectProcessor.class.getName() + "_" + button )
+					        .withName( ButtonRedirectEntityViewRedirectProcessor.class.getName() + "_" + buttonName )
 					        .updateIfPresent()
 					        .configure(
-							        rvp -> rvp.buttonElementName( BUTTON )
-							                  .redirectUrlProvider( entityViewLinksConsumer )
-					        )
-			);
-		}
-	}
-
-	public static class CancelButtonLinkHandler
-	{
-		public final static String BUTTON = "btn-cancel";
-
-		public Consumer<EntityViewFactoryBuilder> toCreateView() {
-			return toCreateView( null );
-		}
-
-		public Consumer<EntityViewFactoryBuilder> toDetailView() {
-			return toDetailView( null );
-		}
-
-		public Consumer<EntityViewFactoryBuilder> toUpdateView() {
-			return toUpdateView( null );
-		}
-
-		public Consumer<EntityViewFactoryBuilder> toCreateView( String customView ) {
-			return to( redirectCreateView( customView ) );
-		}
-
-		public Consumer<EntityViewFactoryBuilder> toDetailView( String customView ) {
-			return to( redirectDetailView( customView ) );
-		}
-
-		public Consumer<EntityViewFactoryBuilder> toUpdateView( String customView ) {
-			return to( redirectUpdateView( customView ) );
-		}
-
-		public Consumer<EntityViewFactoryBuilder> toListView( String customView ) {
-			return to( redirectListView( customView ) );
-		}
-
-		public Consumer<EntityViewFactoryBuilder> to( Function<LinkBasedEntityViewRedirectContext, String> entityViewLinksConsumer ) {
-			return entityViewFactoryBuilder -> entityViewFactoryBuilder.viewProcessor(
-					vp -> vp.createBean( ButtonRedirectEntityViewRedirectProcessor.class )
-					        .withName( ButtonRedirectEntityViewRedirectProcessor.class.getName() + "_" + button )
-					        .updateIfPresent()
-					        .configure(
-							        rvp -> rvp.buttonElementName( BUTTON )
+							        rvp -> rvp.buttonElementName( buttonName )
 							                  .redirectUrlProvider( entityViewLinksConsumer )
 					        )
 			);
