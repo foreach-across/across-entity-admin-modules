@@ -17,12 +17,16 @@
 package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.samples.entity.application.business.Friend;
 import com.foreach.across.samples.entity.application.business.Hobby;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +38,7 @@ public class FriendConfiguration implements EntityConfigurer
 {
 	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
 	private final EntityPropertyRegistrationHelper proxyPropertyRegistrar;
+	private final EntityViewLinks entityViewLinks;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
@@ -55,6 +60,23 @@ public class FriendConfiguration implements EntityConfigurer
 		        );
 
 		entities.withType( Hobby.class )
+		        .properties(
+				        props -> props.property( "name" )
+				                      .attribute( "xyz", "some attribute" )
+		        )
+		        .listView( "customListView",
+		                   lvb -> lvb.properties(
+				                   props -> props.property( "name" )
+				                                 .viewElementBuilder( ViewElementMode.LIST_VALUE, (ViewElementBuilder) ctx -> {
+					                                 Object instance = EntityViewElementUtils.currentEntity( ctx );
+					                                 String currentValue = EntityViewElementUtils.currentPropertyValue( ctx, String.class );
+					                                 return BootstrapViewElements.bootstrap.builders.link()
+					                                                                                .url( entityViewLinks.linkTo( instance ).toUriString() )
+					                                                                                .text( currentValue )
+					                                                                                .build( ctx );
+				                                 } )
+		                   )
+		        )
 		        .association(
 				        ab -> ab.name( "users" )
 				                .associationType( EntityAssociation.Type.EMBEDDED )
