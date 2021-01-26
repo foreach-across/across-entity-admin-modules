@@ -54,6 +54,8 @@ public interface EntityPropertyRegistry
 	 */
 	String LABEL = "#label";
 
+	String QUERY = "@query";
+
 	/**
 	 * @return an id for this property registry
 	 */

@@ -17,11 +17,17 @@ package com.foreach.across.modules.entity.query.jpa;
 
 import com.foreach.across.modules.entity.query.AbstractEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
+import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import static com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils.toSpecification;
 
@@ -33,6 +39,7 @@ import static com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils.to
 public class EntityQueryJpaExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
 	private final JpaSpecificationExecutor<T> jpaSpecificationExecutor;
+
 
 	public EntityQueryJpaExecutor( JpaSpecificationExecutor<T> jpaSpecificationExecutor ) {
 		this.jpaSpecificationExecutor = jpaSpecificationExecutor;
@@ -49,7 +56,16 @@ public class EntityQueryJpaExecutor<T> extends AbstractEntityQueryExecutor<T>
 	}
 
 	@Override
+	@SneakyThrows
 	protected Page<T> executeQuery( EntityQuery query, Pageable pageable ) {
-		return jpaSpecificationExecutor.findAll( toSpecification( query ), pageable );
+		InvocationHandler invocationHandler = Proxy.getInvocationHandler( jpaSpecificationExecutor );
+		Object[] arguments = ( (EntityQueryCondition) query.getExpressions().get( 0 ) ).getArguments();
+
+		Method method = (Method) arguments[0];
+		Object[] args = new Object[arguments.length];
+		System.arraycopy( arguments, 1, args, 0, arguments.length - 1 );
+		args[args.length - 1] = pageable;
+
+		return (Page<T>) invocationHandler.invoke( jpaSpecificationExecutor, method, args );
 	}
 }

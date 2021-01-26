@@ -154,6 +154,12 @@ public class EntityPropertyRegistryBuilder
 	                           String propertyName,
 	                           PropertyDescriptorBuilder builder ) {
 		MutableEntityPropertyDescriptor existing = propertyRegistry.getProperty( propertyName );
+		SimpleEntityPropertyDescriptor simpleEntityPropertyDescriptor = new SimpleEntityPropertyDescriptor( EntityPropertyRegistry.QUERY );
+		simpleEntityPropertyDescriptor.setPropertyType( String.class );
+		simpleEntityPropertyDescriptor.setHidden( true );
+		simpleEntityPropertyDescriptor.setReadable( false );
+		simpleEntityPropertyDescriptor.setWritable( false );
+		propertyRegistry.register( simpleEntityPropertyDescriptor );
 
 		if ( builder.parent != null ) {
 			MutableEntityPropertyDescriptor parentPropertyDescriptor = propertyRegistry.getProperty( builder.parent );
