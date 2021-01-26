@@ -338,11 +338,13 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 
 		ViewElementLookupRegistry existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 
-		if ( existingLookupRegistry != null ) {
-			viewElementLookupRegistry.mergeInto( existingLookupRegistry );
-		}
-		else {
+		if ( existingLookupRegistry == null ) {
 			descriptor.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry.clone() );
+		}
+		else if ( !viewElementLookupRegistry.isEmpty() ) {
+			ViewElementLookupRegistry customizedLookupRegistry = existingLookupRegistry.clone();
+			viewElementLookupRegistry.mergeInto( customizedLookupRegistry );
+			descriptor.setAttribute( ViewElementLookupRegistry.class, customizedLookupRegistry );
 		}
 	}
 }

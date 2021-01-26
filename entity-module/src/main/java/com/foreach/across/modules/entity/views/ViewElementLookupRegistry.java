@@ -124,6 +124,11 @@ public interface ViewElementLookupRegistry extends Cloneable
 	boolean isCacheable( ViewElementMode mode );
 
 	/**
+	 * Checks whether any lookup values have been applied to the registry.
+	 */
+	boolean isEmpty();
+
+	/**
 	 * @return cloned instance
 	 */
 	ViewElementLookupRegistry clone();

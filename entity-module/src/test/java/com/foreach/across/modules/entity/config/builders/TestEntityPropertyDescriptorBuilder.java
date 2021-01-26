@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
@@ -30,8 +27,11 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
+
+//import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -51,39 +51,39 @@ public class TestEntityPropertyDescriptorBuilder
 
 	@Test
 	public void nameIsRequired() {
-		assertThrows( IllegalArgumentException.class, () -> {
-			builder = new EntityPropertyDescriptorBuilder( null );
-		} );
+		assertThatThrownBy( () -> builder = new EntityPropertyDescriptorBuilder( null ) )
+				.isInstanceOf( IllegalArgumentException.class );
 	}
 
 	@Test
 	public void builderMethodOnInterfaceShouldReturnEmptyBuilder() {
 		EntityPropertyDescriptorBuilder newBuilder = EntityPropertyDescriptor.builder( "myprop" );
-		assertNotNull( newBuilder );
+		assertThat( newBuilder ).isNotNull();
 		descriptor = newBuilder.build();
-		assertEquals( "myprop", descriptor.getName() );
+		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
 	}
 
 	@Test
 	public void defaultPropertiesOnBlankDescriptor() {
 		build();
 
-		assertEquals( "myprop", descriptor.getName() );
-		assertEquals( "Myprop", descriptor.getDisplayName() );
-		assertNull( descriptor.getPropertyType() );
-		assertNull( descriptor.getPropertyTypeDescriptor() );
-		assertNull( descriptor.getPropertyRegistry() );
-		assertFalse( descriptor.isHidden() );
-		assertFalse( descriptor.isWritable() );
-		assertTrue( descriptor.isReadable() );
-		assertEquals( 1, descriptor.attributeMap().size() );
-		assertTrue( descriptor.hasAttribute( ViewElementLookupRegistry.class ) );
-		assertFalse( descriptor.isNestedProperty() );
-		assertNull( descriptor.getParentDescriptor() );
-		assertTrue( descriptor.getController() instanceof GenericEntityPropertyController );
+		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
+		assertThat( descriptor.getDisplayName() ).isEqualTo( "Myprop" );
+		assertThat( descriptor );
+		assertThat( descriptor.getPropertyType() ).isNull();
+		assertThat( descriptor.getPropertyTypeDescriptor() ).isNull();
+		assertThat( descriptor.getPropertyRegistry() ).isNull();
+		assertThat( descriptor.isHidden() ).isFalse();
+		assertThat( descriptor.isWritable() ).isFalse();
+		assertThat( descriptor.isReadable() ).isTrue();
+		assertThat( descriptor.attributeMap() ).hasSize( 1 );
+		assertThat( descriptor.hasAttribute( ViewElementLookupRegistry.class ) ).isTrue();
+		assertThat( descriptor.isNestedProperty() ).isFalse();
+		assertThat( descriptor.getParentDescriptor() ).isNull();
+		assertThat( descriptor.getController() ).isInstanceOf( GenericEntityPropertyController.class );
 
 		GenericEntityPropertyController controller = (GenericEntityPropertyController) descriptor.getController();
-		assertNull( controller.getValueFetcher() );
+		assertThat( controller.getValueFetcher() ).isNull();
 	}
 
 	@Test
@@ -95,8 +95,8 @@ public class TestEntityPropertyDescriptorBuilder
 
 		when( original.getDisplayName() ).thenReturn( "parentDisplayName" );
 
-		assertEquals( "myprop", descriptor.getName() );
-		assertEquals( "parentDisplayName", descriptor.getDisplayName() );
+		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
+		assertThat( descriptor.getDisplayName() ).isEqualTo( "parentDisplayName" );
 	}
 
 	@Test
@@ -106,8 +106,8 @@ public class TestEntityPropertyDescriptorBuilder
 
 		build();
 
-		assertTrue( descriptor.isNestedProperty() );
-		assertSame( parent, descriptor.getParentDescriptor() );
+		assertThat( descriptor.isNestedProperty() ).isTrue();
+		assertThat( descriptor.getParentDescriptor() ).isEqualTo( parent );
 	}
 
 	@Test
@@ -131,22 +131,22 @@ public class TestEntityPropertyDescriptorBuilder
 
 		build();
 
-		assertEquals( "myprop", descriptor.getName() );
-		assertEquals( "My Property", descriptor.getDisplayName() );
-		assertEquals( Long.class, descriptor.getPropertyType() );
-		assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
-		assertNull( descriptor.getPropertyRegistry() );
-		assertTrue( descriptor.isHidden() );
-		assertTrue( descriptor.isWritable() );
-		assertFalse( descriptor.isReadable() );
-		assertEquals( "someAttributeValue", descriptor.getAttribute( "someAttribute" ) );
+		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
+		assertThat( descriptor.getDisplayName() ).isEqualTo( "My Property" );
+		assertThat( descriptor.getPropertyType() ).isEqualTo( Long.class );
+		assertThat( descriptor.getPropertyTypeDescriptor() ).isEqualTo( TypeDescriptor.valueOf( Long.class ) );
+		assertThat( descriptor.getPropertyRegistry() ).isNull();
+		assertThat( descriptor.isHidden() ).isTrue();
+		assertThat( descriptor.isWritable() ).isTrue();
+		assertThat( descriptor.isReadable() ).isFalse();
+		assertThat( descriptor.getAttribute( "someAttribute" ) ).isEqualTo( "someAttributeValue" );
 
 		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
-		assertEquals( "testControl", lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) );
-		assertSame( veb, lookupRegistry.getViewElementBuilder( ViewElementMode.FORM_READ ) );
-		assertFalse( lookupRegistry.isCacheable( ViewElementMode.FORM_READ ) );
+		assertThat( lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "testControl" );
+		assertThat( lookupRegistry.getViewElementBuilder( ViewElementMode.FORM_READ ) ).isSameAs( veb );
+		assertThat( lookupRegistry.isCacheable( ViewElementMode.FORM_READ ) ).isFalse();
 
-		assertEquals( 5, descriptor.getController().getOrder() );
+		assertThat( descriptor.getController().getOrder() ).isEqualTo( 5 );
 		descriptor.getController().fetchValue( EntityPropertyBindingContext.forReading( "x" ) );
 		verify( vf ).getValue( "x" );
 	}
@@ -174,24 +174,24 @@ public class TestEntityPropertyDescriptorBuilder
 		       .apply( existing );
 
 		// name cannot be updated
-		assertEquals( "otherprop", existing.getName() );
+		assertThat( existing.getName() ).isEqualTo( "otherprop" );
+		assertThat( existing.getDisplayName() ).isEqualTo( "My Property" );
 
-		assertEquals( "My Property", existing.getDisplayName() );
-		assertEquals( Long.class, existing.getPropertyType() );
-		assertEquals( TypeDescriptor.valueOf( Long.class ), existing.getPropertyTypeDescriptor() );
-		assertNull( existing.getPropertyRegistry() );
+		assertThat( existing.getPropertyType() ).isEqualTo( Long.class );
+		assertThat( existing.getPropertyTypeDescriptor() ).isEqualTo( TypeDescriptor.valueOf( Long.class ) );
+		assertThat( existing.getPropertyRegistry() ).isNull();
 		existing.getPropertyValue( "x" );
 		verify( vf ).getValue( "x" );
-		assertTrue( existing.isHidden() );
-		assertTrue( existing.isWritable() );
-		assertFalse( existing.isReadable() );
-		assertEquals( "originalAttributeValue", existing.getAttribute( "originalAttribute" ) );
-		assertEquals( "someAttributeValue", existing.getAttribute( "someAttribute" ) );
+		assertThat( existing.isHidden() ).isTrue();
+		assertThat( existing.isWritable() ).isTrue();
+		assertThat( existing.isReadable() ).isFalse();
+		assertThat( existing.getAttribute( "originalAttribute" ) ).isEqualTo( "originalAttributeValue" );
+		assertThat( existing.getAttribute( "someAttribute" ) ).isEqualTo( "someAttributeValue" );
 
 		ViewElementLookupRegistry lookupRegistry = existing.getAttribute( ViewElementLookupRegistry.class );
-		assertEquals( "testControl", lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) );
-		assertSame( veb, lookupRegistry.getViewElementBuilder( ViewElementMode.FORM_READ ) );
-		assertFalse( lookupRegistry.isCacheable( ViewElementMode.FORM_READ ) );
+		assertThat( lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "testControl" );
+		assertThat( lookupRegistry.getViewElementBuilder( ViewElementMode.FORM_READ ) ).isSameAs( veb );
+		assertThat( lookupRegistry.isCacheable( ViewElementMode.FORM_READ ) ).isFalse();
 	}
 
 	@Test
@@ -200,8 +200,8 @@ public class TestEntityPropertyDescriptorBuilder
 
 		build();
 
-		assertEquals( Long.class, descriptor.getPropertyType() );
-		assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
+		assertThat( descriptor.getPropertyType() ).isEqualTo( Long.class );
+		assertThat( descriptor.getPropertyTypeDescriptor() ).isEqualTo( TypeDescriptor.valueOf( Long.class ) );
 	}
 
 	@Test
@@ -210,9 +210,58 @@ public class TestEntityPropertyDescriptorBuilder
 
 		build();
 
-		assertEquals( List.class, descriptor.getPropertyType() );
-		assertEquals( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Long.class ) ),
-		              descriptor.getPropertyTypeDescriptor() );
+		assertThat( descriptor.getPropertyType() ).isEqualTo( List.class );
+		assertThat( descriptor.getPropertyTypeDescriptor() ).isEqualTo( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Long.class ) ) );
+	}
+
+	@Test
+	public void viewElementLookupRegistryIsInheritedIfNotCustomized() {
+		MutableEntityPropertyDescriptor existing = new EntityPropertyDescriptorBuilder( "myprop" )
+				.viewElementType( ViewElementMode.CONTROL, "someControlType" )
+				.build();
+		builder.original( existing );
+
+		build();
+
+		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
+		ViewElementLookupRegistry existingLookupRegistry = existing.getAttribute( ViewElementLookupRegistry.class );
+
+		assertThat( existingLookupRegistry ).isNotNull();
+		assertThat( existingLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "someControlType" );
+
+		ViewElementLookupRegistry descriptorLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+		assertThat( descriptorLookupRegistry ).isNotNull()
+		                                      .isEqualTo( existingLookupRegistry )
+		                                      .isSameAs( existingLookupRegistry );
+		assertThat( descriptorLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) )
+				.isEqualTo( "someControlType" );
+	}
+
+	@Test
+	public void viewElementLookupRegistryDiffersFromExistingIfCustomized() {
+		MutableEntityPropertyDescriptor existing = new EntityPropertyDescriptorBuilder( "myprop" )
+				.viewElementType( ViewElementMode.CONTROL, "someControlType" )
+				.viewElementType( ViewElementMode.VALUE, "someValueType" )
+				.build();
+		builder.original( existing )
+		       .viewElementType( ViewElementMode.CONTROL, "someOtherControlType" );
+
+		build();
+
+		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
+		ViewElementLookupRegistry existingLookupRegistry = existing.getAttribute( ViewElementLookupRegistry.class );
+
+		assertThat( existingLookupRegistry ).isNotNull();
+		assertThat( existingLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "someControlType" );
+		assertThat( existingLookupRegistry.getViewElementType( ViewElementMode.VALUE ) ).isEqualTo( "someValueType" );
+
+		ViewElementLookupRegistry descriptorLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+		assertThat( descriptorLookupRegistry ).isNotNull()
+		                                      .isNotSameAs( existingLookupRegistry )
+		                                      .isNotEqualTo( existingLookupRegistry );
+		assertThat( descriptorLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "someOtherControlType" );
+		assertThat( descriptorLookupRegistry.getViewElementType( ViewElementMode.VALUE ) ).isEqualTo( "someValueType" );
+
 	}
 
 	private void build() {
