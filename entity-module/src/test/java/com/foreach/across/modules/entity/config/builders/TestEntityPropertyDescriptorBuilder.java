@@ -243,9 +243,9 @@ public class TestEntityPropertyDescriptorBuilder
 				.viewElementType( ViewElementMode.CONTROL, "someControlType" )
 				.viewElementType( ViewElementMode.VALUE, "someValueType" )
 				.build();
+
 		builder.original( existing )
 		       .viewElementType( ViewElementMode.CONTROL, "someOtherControlType" );
-
 		build();
 
 		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
@@ -259,6 +259,37 @@ public class TestEntityPropertyDescriptorBuilder
 		assertThat( descriptorLookupRegistry ).isNotNull()
 		                                      .isNotSameAs( existingLookupRegistry )
 		                                      .isNotEqualTo( existingLookupRegistry );
+		assertThat( descriptorLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "someOtherControlType" );
+		assertThat( descriptorLookupRegistry.getViewElementType( ViewElementMode.VALUE ) ).isEqualTo( "someValueType" );
+
+		MutableEntityPropertyDescriptor parent = new EntityPropertyDescriptorBuilder( "myprop" )
+				.original( existing )
+				.build();
+
+		builder.original( parent )
+		       .viewElementType( ViewElementMode.CONTROL, "someOtherControlType" );
+		build();
+
+		assertThat( descriptor.getName() ).isEqualTo( "myprop" );
+		existingLookupRegistry = existing.getAttribute( ViewElementLookupRegistry.class );
+
+		assertThat( existingLookupRegistry ).isNotNull();
+		assertThat( existingLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "someControlType" );
+		assertThat( existingLookupRegistry.getViewElementType( ViewElementMode.VALUE ) ).isEqualTo( "someValueType" );
+
+		ViewElementLookupRegistry parentLookupRegistry = parent.getAttribute( ViewElementLookupRegistry.class );
+		assertThat( parentLookupRegistry ).isNotNull()
+		                                  .isEqualTo( existingLookupRegistry )
+		                                  .isSameAs( existingLookupRegistry );
+		assertThat( parentLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "someControlType" );
+		assertThat( parentLookupRegistry.getViewElementType( ViewElementMode.VALUE ) ).isEqualTo( "someValueType" );
+
+		descriptorLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+		assertThat( descriptorLookupRegistry ).isNotNull()
+		                                      .isNotSameAs( existingLookupRegistry )
+		                                      .isNotEqualTo( existingLookupRegistry )
+		                                      .isNotSameAs( parentLookupRegistry )
+		                                      .isNotEqualTo( parentLookupRegistry );
 		assertThat( descriptorLookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).isEqualTo( "someOtherControlType" );
 		assertThat( descriptorLookupRegistry.getViewElementType( ViewElementMode.VALUE ) ).isEqualTo( "someValueType" );
 
