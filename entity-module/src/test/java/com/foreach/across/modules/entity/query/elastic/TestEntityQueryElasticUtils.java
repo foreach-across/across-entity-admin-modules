@@ -41,12 +41,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
@@ -57,9 +59,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,6 +74,8 @@ public class TestEntityQueryElasticUtils
 
 	@Autowired
 	private CustomerRepository repository;
+
+	private final Date TODAY = DateUtils.truncate( new Date(), Calendar.DATE );
 
 	EntityQueryParser parser;
 
@@ -96,22 +100,27 @@ public class TestEntityQueryElasticUtils
 		EntityQueryParserFactory entityQueryParserFactory = new EntityQueryParserFactory( eqTypeConverter );
 		parser = entityQueryParserFactory.createParser( registry );
 
-		long count = repository.count();
-		if ( count >= 100 ) {
-			return;
-		}
+		// Delete the index to make sure typeMappings are gone
+		elasticsearchOperations.indexOps( Customer.class ).delete();
+
 		for ( int i = 0; i < 100; i++ ) {
 			Customer elasticCustomer = new Customer();
-			elasticCustomer.setFirstName( "first-" + RandomStringUtils.randomAlphanumeric( 15 ) );
+			elasticCustomer.setFirstName( "first-abIT" + i + RandomStringUtils.randomAlphanumeric( 15 ) );
 			elasticCustomer.setLastName( "last-" + RandomStringUtils.randomAlphanumeric( 15 ) );
 			int mod = i % 10;
 
-			if ( i % 2 == 0 ) {
-				elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+			if ( i == 0 ) {
+				elasticCustomer.setCreatedDate( TODAY );
 			}
 			else {
-				elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+				if ( i % 2 == 0 ) {
+					elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+				}
+				else {
+					elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+				}
 			}
+
 			elasticCustomer.setUpdatedDate( LocalDateTime.now() );
 			repository.save( elasticCustomer );
 		}
@@ -124,26 +133,57 @@ public class TestEntityQueryElasticUtils
 		Customer firstItem = items.get( 0 );
 		Customer secondItem = items.get( 1 );
 		EntityQuery rawQuery = EntityQuery.of( "(firstName = '" + firstItem.firstName + "' or lastName = '" + secondItem.lastName + "')" );
-
-		CriteriaQuery criteriaQuery = EntityQueryElasticUtils.toCriteriaQuery( parser.prepare( rawQuery ) );
-
-		assertThat( criteriaQuery ).isNotNull();
-		SearchHits<Customer> search = elasticsearchOperations.search( criteriaQuery, Customer.class );
-		assertThat( search.getSearchHits() ).size().isEqualTo( 2 );
+		assertSame( "(firstName = '" + firstItem.firstName + "' or lastName = '" + secondItem.lastName + "')",
+		            m -> Objects.equals( firstItem.firstName, m.firstName ) || Objects.equals( secondItem.lastName, m.lastName ), 2 );
 	}
 
 	@Test
-	public void testTodayQuery() {
+	public void testLikeQuery() {
+		String searchString = "IT" + RandomStringUtils.randomNumeric( 1 );
 		Page<Customer> all = (Page<Customer>) SearchHitSupport.unwrapSearchHits( repository.findAll() );
-		List<Customer> items = all.getContent();
-
-		EntityQuery rawQuery = EntityQuery.of( "createdDate < today()" );
+		List<Customer> filteredItems = all.stream().filter( m -> m.getFirstName().contains( searchString ) ).collect( Collectors.toList() );
+		EntityQuery rawQuery = EntityQuery.of( "(firstName like '" + searchString + "')" );
 
 		CriteriaQuery criteriaQuery = EntityQueryElasticUtils.toCriteriaQuery( parser.prepare( rawQuery ) );
 
 		assertThat( criteriaQuery ).isNotNull();
 		SearchHits<Customer> search = elasticsearchOperations.search( criteriaQuery, Customer.class );
-		assertThat( search.getSearchHits() ).size().isEqualTo( 90 );
+		assertThat( search.getSearchHits() ).size().isEqualTo( filteredItems.size() );
+		assertThat( search.getSearchHits() ).map( SearchHit::getContent ).isEqualTo( filteredItems );
+	}
+
+	@Test
+	public void testTodayEqQuery() {
+		assertSame( "createdDate = today()", m -> Objects.equals( m.getCreatedDate(), TODAY ), 1 );
+	}
+
+	@Test
+	public void testLtTodayQuery() {
+		assertSame( "createdDate < today()", m -> m.getCreatedDate().before( TODAY ), 90 );
+	}
+
+	@Test
+	public void testGtTodayQuery() {
+		assertSame( "createdDate > today()", m -> m.getCreatedDate().after( TODAY ), 9 );
+	}
+
+	@Test
+	public void testGtEqTodayQuery() {
+		assertSame( "createdDate >= today()", m -> !m.getCreatedDate().before( TODAY ), 10 );
+	}
+
+	private void assertSame( String entityQuery, Predicate<Customer> p, int expectedSize ) {
+		Page<Customer> all = repository.findAll( Pageable.unpaged() );
+		List<Customer> filteredItems = all.stream().filter( p ).collect( Collectors.toList() );
+		EntityQuery rawQuery = EntityQuery.of( entityQuery );
+
+		CriteriaQuery criteriaQuery = EntityQueryElasticUtils.toCriteriaQuery( parser.prepare( rawQuery ) );
+
+		assertThat( criteriaQuery ).isNotNull();
+		SearchHits<Customer> search = elasticsearchOperations.search( criteriaQuery, Customer.class );
+		assertThat( search.getSearchHits() ).size().isEqualTo( expectedSize );
+		assertThat( search.getSearchHits() ).size().isEqualTo( filteredItems.size() );
+		assertThat( search.getSearchHits() ).map( SearchHit::getContent ).isEqualTo( filteredItems );
 	}
 
 	@Configuration
@@ -174,10 +214,10 @@ public class TestEntityQueryElasticUtils
 		@Field(type = FieldType.Keyword)
 		private String lastName;
 
-		@Field(type = FieldType.Date)
+		@Field(type = FieldType.Date, format = DateFormat.date_optional_time)
 		private Date createdDate;
 
-		@Field(type = FieldType.Date, format = DateFormat.date_time)
+		@Field(type = FieldType.Date, format = DateFormat.date_optional_time)
 		private LocalDateTime updatedDate;
 		@Version
 		private Long version;

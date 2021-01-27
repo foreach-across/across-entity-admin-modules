@@ -56,9 +56,9 @@ public abstract class EntityQueryElasticUtils
 			case IS_NOT_NULL:
 				return Criteria.where( condition.getProperty() ).exists();
 			case EQ:
-				return Criteria.where( condition.getProperty() ).is( condition.getFirstArgument() );
+				return Criteria.where( condition.getProperty() ).matchesAll( condition.getFirstArgument() );
 			case NEQ:
-				return Criteria.where( condition.getProperty() ).not().is( condition.getFirstArgument() );
+				return Criteria.where( condition.getProperty() ).not().matchesAll( condition.getFirstArgument() );
 			case GT:
 				return Criteria.where( condition.getProperty() ).greaterThan( condition.getFirstArgument() );
 			case GE:
@@ -90,13 +90,13 @@ public abstract class EntityQueryElasticUtils
 			case NOT_IN:
 				return Criteria.where( condition.getProperty() ).notIn( condition.getArguments() );
 			case LIKE:
-				return Criteria.where( condition.getProperty() ).matches( condition.getFirstArgument() );
+				return Criteria.where( condition.getProperty() ).contains( Objects.toString( condition.getFirstArgument() ) );
 			case LIKE_IC:
-				return Criteria.where( condition.getProperty() ).matches( StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
+				return Criteria.where( condition.getProperty() ).contains( StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
 			case NOT_LIKE:
-				return Criteria.where( condition.getProperty() ).not().matches( condition.getFirstArgument() );
+				return Criteria.where( condition.getProperty() ).not().contains( Objects.toString( condition.getFirstArgument() ) );
 			case NOT_LIKE_IC:
-				return Criteria.where( condition.getProperty() ).not().matches( StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
+				return Criteria.where( condition.getProperty() ).not().contains( StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
 		}
 		throw new IllegalArgumentException( "Unsupported operand for Elasticsearch query: " + condition.getOperand() );
 	}
