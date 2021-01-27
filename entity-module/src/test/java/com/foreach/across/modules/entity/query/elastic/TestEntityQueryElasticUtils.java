@@ -37,6 +37,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.annotation.Id;
@@ -57,6 +60,9 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -67,14 +73,19 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestEntityQueryElasticUtils.Config.class)
+@ContextConfiguration(classes = TestEntityQueryElasticUtils.Config.class, initializers = TestEntityQueryElasticUtils.PropertyInitializer.class)
+@Testcontainers
 public class TestEntityQueryElasticUtils
 {
+
+	@Container
+	public static ElasticsearchContainer container = new ElasticsearchContainer( "docker.elastic.co/elasticsearch/elasticsearch:7.9.3" );
+
 	@Autowired
 	ElasticsearchOperations elasticsearchOperations;
 
 	@Autowired
-	private CustomerRepository repository;
+	private CustomerRepository customerRepository;
 
 	@Autowired
 	private CountryRepository countryRepository;
@@ -109,7 +120,8 @@ public class TestEntityQueryElasticUtils
 		parser = entityQueryParserFactory.createParser( registry );
 
 		// Delete the index to make sure typeMappings are gone
-		elasticsearchOperations.indexOps( Customer.class ).delete();
+		customerRepository.deleteAll();
+		countryRepository.deleteAll();
 		elasticsearchOperations.indexOps( Country.class ).delete();
 
 		Country belgium = createCountry( "Belgium" );
@@ -141,13 +153,13 @@ public class TestEntityQueryElasticUtils
 			}
 
 			elasticCustomer.setUpdatedDate( LocalDateTime.now() );
-			repository.save( elasticCustomer );
+			customerRepository.save( elasticCustomer );
 		}
 	}
 
 	@Test
 	public void testOrQuery() {
-		Page<Customer> all = (Page<Customer>) SearchHitSupport.unwrapSearchHits( repository.findAll() );
+		Page<Customer> all = (Page<Customer>) SearchHitSupport.unwrapSearchHits( customerRepository.findAll() );
 		List<Customer> items = all.getContent();
 		Customer firstItem = items.get( 0 );
 		Customer secondItem = items.get( 1 );
@@ -159,7 +171,7 @@ public class TestEntityQueryElasticUtils
 	@Test
 	public void testLikeQuery() {
 		String searchString = "IT" + RandomStringUtils.randomNumeric( 1 );
-		Page<Customer> all = (Page<Customer>) SearchHitSupport.unwrapSearchHits( repository.findAll() );
+		Page<Customer> all = (Page<Customer>) SearchHitSupport.unwrapSearchHits( customerRepository.findAll() );
 		List<Customer> filteredItems = all.stream().filter( m -> m.getFirstName().contains( searchString ) ).collect( Collectors.toList() );
 		EntityQuery rawQuery = EntityQuery.of( "(firstName like '" + searchString + "')" );
 
@@ -199,7 +211,7 @@ public class TestEntityQueryElasticUtils
 	}
 
 	private void assertSame( String entityQuery, Predicate<Customer> p, int expectedSize ) {
-		Page<Customer> all = repository.findAll( Pageable.unpaged() );
+		Page<Customer> all = customerRepository.findAll( Pageable.unpaged() );
 		List<Customer> filteredItems = all.stream().filter( p ).collect( Collectors.toList() );
 		EntityQuery rawQuery = EntityQuery.of( entityQuery );
 
@@ -225,7 +237,7 @@ public class TestEntityQueryElasticUtils
 	{
 	}
 
-	@Document(indexName = "customeridx")
+	@Document(indexName = "itcustomeridx")
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@EqualsAndHashCode(of = "id")
@@ -255,7 +267,7 @@ public class TestEntityQueryElasticUtils
 		private Long version;
 
 		// doesn't seem to have type nested in the actual index? curl -X GET "localhost:9200/customidx/_mapping?pretty"
-		@Field(type = FieldType.Nested)
+		//@Field(type = FieldType.Nested)
 		private Country country;
 
 		@Override
@@ -271,7 +283,7 @@ public class TestEntityQueryElasticUtils
 		}
 	}
 
-	@Document(indexName = "countryidx")
+	@Document(indexName = "itcountryidx")
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@EqualsAndHashCode(of = "id")
@@ -298,6 +310,18 @@ public class TestEntityQueryElasticUtils
 		@Override
 		public boolean isNew() {
 			return getId() == null;
+		}
+	}
+
+	static class PropertyInitializer
+			implements ApplicationContextInitializer<ConfigurableApplicationContext>
+	{
+
+		@Override
+		public void initialize( ConfigurableApplicationContext context ) {
+			TestPropertyValues.of(
+					"spring.elasticsearch.rest.uris=" + container.getHttpHostAddress()
+			).applyTo( context );
 		}
 	}
 }
