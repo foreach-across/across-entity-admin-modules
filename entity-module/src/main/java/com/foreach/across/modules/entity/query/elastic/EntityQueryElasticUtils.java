@@ -35,15 +35,15 @@ public abstract class EntityQueryElasticUtils
 	}
 
 	public static CriteriaQuery toCriteriaQuery( final EntityQuery query ) {
-		return new CriteriaQuery( buildPredicate( query, Criteria.and() ) );
+		return new CriteriaQuery( buildPredicate( query ) );
 	}
 
-	private static Criteria buildPredicate( EntityQueryExpression expression, Criteria criteria ) {
+	private static Criteria buildPredicate( EntityQueryExpression expression ) {
 		if ( expression instanceof EntityQueryCondition ) {
 			return buildConditionPredicate( (EntityQueryCondition) expression );
 		}
 		else {
-			return buildQueryPredicate( (EntityQuery) expression, criteria );
+			return buildQueryPredicate( (EntityQuery) expression );
 		}
 	}
 
@@ -101,15 +101,15 @@ public abstract class EntityQueryElasticUtils
 		throw new IllegalArgumentException( "Unsupported operand for Elasticsearch query: " + condition.getOperand() );
 	}
 
-	private static Criteria buildQueryPredicate( EntityQuery query, Criteria criteria ) {
+	private static Criteria buildQueryPredicate( EntityQuery query ) {
 		List<Criteria> predicates = new ArrayList<>();
 
 		for ( EntityQueryExpression expression : query.getExpressions() ) {
-			predicates.add( buildPredicate( expression, criteria ) );
+			predicates.add( buildPredicate( expression ) );
 		}
 
 		if ( query.getOperand() == EntityQueryOps.AND ) {
-			Criteria and = criteria.and();
+			Criteria and = Criteria.and();
 			for ( Criteria c : predicates ) {
 				and.subCriteria( c );
 			}
@@ -117,7 +117,7 @@ public abstract class EntityQueryElasticUtils
 			return and;
 		}
 		else {
-			Criteria or = criteria.or();
+			Criteria or = Criteria.or();
 			for ( Criteria c : predicates ) {
 				or.subCriteria( c );
 			}

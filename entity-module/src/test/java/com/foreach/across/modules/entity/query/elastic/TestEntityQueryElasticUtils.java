@@ -110,6 +110,7 @@ public class TestEntityQueryElasticUtils
 
 		// Delete the index to make sure typeMappings are gone
 		elasticsearchOperations.indexOps( Customer.class ).delete();
+		elasticsearchOperations.indexOps( Country.class ).delete();
 
 		Country belgium = createCountry( "Belgium" );
 		Country netherlands = createCountry( "Netherlands" );
