@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryParser;
 import com.foreach.across.modules.entity.query.EntityQueryParserFactory;
+import com.foreach.across.modules.entity.query.elastic.repositories.CountryRepository;
 import com.foreach.across.modules.entity.query.elastic.repositories.CustomerRepository;
 import com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
@@ -75,6 +76,9 @@ public class TestEntityQueryElasticUtils
 	@Autowired
 	private CustomerRepository repository;
 
+	@Autowired
+	private CountryRepository countryRepository;
+
 	private final Date TODAY = DateUtils.truncate( new Date(), Calendar.DATE );
 
 	EntityQueryParser parser;
@@ -92,6 +96,10 @@ public class TestEntityQueryElasticUtils
 		registry.register( new SimpleEntityPropertyDescriptor( "updatedDate", new EntityPropertyDescriptorBuilder( "updatedDate" )
 				.propertyType( LocalDateTime.class ).build() ) );
 		registry.register( new SimpleEntityPropertyDescriptor( "age", new EntityPropertyDescriptorBuilder( "age" ).propertyType( Long.class ).build() ) );
+		registry.register( new SimpleEntityPropertyDescriptor( "country", new EntityPropertyDescriptorBuilder( "country" ).propertyType( Country.class )
+		                                                                                                                  .build() ) );
+		registry.register( new SimpleEntityPropertyDescriptor( "country.id", new EntityPropertyDescriptorBuilder( "country.id" ).propertyType( String.class )
+		                                                                                                                        .build() ) );
 		EQTypeConverter eqTypeConverter = new EQTypeConverter();
 		DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
 		conversionService.addConverter( new StringToDateTimeConverter( conversionService ) );
@@ -102,6 +110,9 @@ public class TestEntityQueryElasticUtils
 
 		// Delete the index to make sure typeMappings are gone
 		elasticsearchOperations.indexOps( Customer.class ).delete();
+
+		Country belgium = createCountry( "Belgium" );
+		Country netherlands = createCountry( "Netherlands" );
 
 		for ( int i = 0; i < 100; i++ ) {
 			Customer elasticCustomer = new Customer();
@@ -119,6 +130,13 @@ public class TestEntityQueryElasticUtils
 				else {
 					elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
 				}
+			}
+
+			if ( i % 2 == 0 ) {
+				elasticCustomer.setCountry( belgium );
+			}
+			else {
+				elasticCustomer.setCountry( netherlands );
 			}
 
 			elasticCustomer.setUpdatedDate( LocalDateTime.now() );
@@ -172,6 +190,13 @@ public class TestEntityQueryElasticUtils
 		assertSame( "createdDate >= today()", m -> !m.getCreatedDate().before( TODAY ), 10 );
 	}
 
+	@Test
+	public void testNestedIdQuery() {
+		Country belgium = countryRepository.findByName( "Belgium" );
+		assertThat( belgium ).isNotNull();
+		assertSame( "country.id = '" + belgium.getId() + "'", m -> Objects.equals( m.getCountry(), belgium ), 50 );
+	}
+
 	private void assertSame( String entityQuery, Predicate<Customer> p, int expectedSize ) {
 		Page<Customer> all = repository.findAll( Pageable.unpaged() );
 		List<Customer> filteredItems = all.stream().filter( p ).collect( Collectors.toList() );
@@ -184,6 +209,12 @@ public class TestEntityQueryElasticUtils
 		assertThat( search.getSearchHits() ).size().isEqualTo( expectedSize );
 		assertThat( search.getSearchHits() ).size().isEqualTo( filteredItems.size() );
 		assertThat( search.getSearchHits() ).map( SearchHit::getContent ).isEqualTo( filteredItems );
+	}
+
+	private Country createCountry( String name ) {
+		Country country = new Country();
+		country.setName( name );
+		return countryRepository.save( country );
 	}
 
 	@Configuration
@@ -222,11 +253,45 @@ public class TestEntityQueryElasticUtils
 		@Version
 		private Long version;
 
+		// doesn't seem to have type nested in the actual index? curl -X GET "localhost:9200/customidx/_mapping?pretty"
+		@Field(type = FieldType.Nested)
+		private Country country;
+
 		@Override
 		public String toString() {
 			return String.format(
 					"Customer[id=%s, firstName='%s', lastName='%s']",
 					id, firstName, lastName );
+		}
+
+		@Override
+		public boolean isNew() {
+			return getId() == null;
+		}
+	}
+
+	@Document(indexName = "countryidx")
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@EqualsAndHashCode(of = "id")
+	@Getter
+	@Setter
+	public static class Country implements Persistable<String>
+	{
+		@Id
+		@Length(max = 20)
+		private String id;
+
+		@NotBlank
+		@Length(max = 250)
+		@Field(type = FieldType.Keyword)
+		private String name;
+
+		@Override
+		public String toString() {
+			return String.format(
+					"Country[id=%s, name='%s']",
+					id, name );
 		}
 
 		@Override
