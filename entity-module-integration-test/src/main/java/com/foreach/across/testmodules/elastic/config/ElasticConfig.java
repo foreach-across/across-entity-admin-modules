@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class ElasticConfig implements EntityConfigurer
 				//JoinField<String> customer = new JoinField<>( "customer", nl.getId() );
 				//elasticCustomer.setMyJoinField( customer );
 			}
-			//elasticCustomer.setUpdatedDate( LocalDateTime.now() );
+			elasticCustomer.setUpdatedDate( LocalDateTime.now() );
 			elasticCustomerRepository.save( elasticCustomer );
 		}
 	}
@@ -108,6 +109,7 @@ public class ElasticConfig implements EntityConfigurer
 						                                                .setReadonly( true ) )
 				                     .and()
 				                     .property( "createdDate" ).viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.DATETIME ).and()
+				                     .property( "updatedDate" ).viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.DATETIME ).and()
 		                     //.property( "updatedDate" ).viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.DATETIME )
 
 		        )

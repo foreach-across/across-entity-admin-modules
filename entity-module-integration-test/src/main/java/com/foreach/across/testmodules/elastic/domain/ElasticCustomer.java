@@ -27,6 +27,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -61,8 +62,8 @@ public class ElasticCustomer implements Persistable<String>
 	@Field(type = FieldType.Date, format = DateFormat.date_optional_time)
 	private Date createdDate;
 
-	//@Field(type = FieldType.Date, format = DateFormat.date_time)
-	//private LocalDateTime updatedDate;
+	@Field(type = FieldType.Date, format = DateFormat.date_optional_time)
+	private LocalDateTime updatedDate;
 
 	@Version
 	private Long version;
