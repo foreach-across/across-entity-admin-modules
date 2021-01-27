@@ -25,8 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class EntityQueryElasticUtils
@@ -102,26 +100,10 @@ public abstract class EntityQueryElasticUtils
 	}
 
 	private static Criteria buildQueryPredicate( EntityQuery query ) {
-		List<Criteria> predicates = new ArrayList<>();
-
+		Criteria basePredicate = query.getOperand() == EntityQueryOps.AND ? Criteria.and() : Criteria.or();
 		for ( EntityQueryExpression expression : query.getExpressions() ) {
-			predicates.add( buildPredicate( expression ) );
+			basePredicate.subCriteria( buildPredicate( expression ) );
 		}
-
-		if ( query.getOperand() == EntityQueryOps.AND ) {
-			Criteria and = Criteria.and();
-			for ( Criteria c : predicates ) {
-				and.subCriteria( c );
-			}
-			;
-			return and;
-		}
-		else {
-			Criteria or = Criteria.or();
-			for ( Criteria c : predicates ) {
-				or.subCriteria( c );
-			}
-			return or;
-		}
+		return basePredicate;
 	}
 }
