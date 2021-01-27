@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.config.EntityMessageCodeProperties;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.PagingAndSortingEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
+import com.foreach.across.modules.entity.query.elastic.ElasticEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
@@ -43,6 +44,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
@@ -76,10 +79,11 @@ import java.util.stream.Stream;
  * @author Arne Vandamme
  */
 @Component
-class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
+public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityRegistrar.class );
 
+	private ElasticsearchOperations elasticsearchOperations;
 	private RepositoryEntityModelBuilder entityModelBuilder;
 	private RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder;
 	private RepositoryEntityAssociationsBuilder associationsBuilder;
@@ -107,6 +111,12 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 				   mappingContextRegistry.addMappingContext( bean );
 			   }
 		   } );
+
+		//TODO: better implementation
+		Map<String, ElasticsearchOperations> beanNamesForType = lbf.getBeansOfType( ElasticsearchOperations.class );
+		if ( beanNamesForType.size() >= 1 ) {
+			elasticsearchOperations = beanNamesForType.values().iterator().next();
+		}
 
 		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap = lbf.getBeansOfType( RepositoryFactoryInformation.class );
 
@@ -277,6 +287,9 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
 		if ( repository instanceof QuerydslPredicateExecutor ) {
 			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QuerydslPredicateExecutor) repository, entityConfiguration );
+		}
+		else if ( repository instanceof ElasticsearchRepository ) {
+			entityQueryExecutor = new ElasticEntityQueryExecutor( elasticsearchOperations, entityConfiguration );
 		}
 		else if ( repository instanceof JpaSpecificationExecutor ) {
 			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );

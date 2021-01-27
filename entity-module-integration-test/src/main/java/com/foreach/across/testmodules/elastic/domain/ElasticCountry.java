@@ -19,64 +19,34 @@ package com.foreach.across.testmodules.elastic.domain;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
 
-/**
- * @author Arne Vandamme
- * @since 2.2.0
- */
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "countrycustomeridx")
+@Document(indexName = "countryidx")
 @EqualsAndHashCode(of = "id")
-@Getter
-@Setter
-public class ElasticCustomer implements Persistable<String>
+public class ElasticCountry implements Persistable<String>
 {
 	@Id
+	@Getter
+	@Setter
 	@Length(max = 20)
-	private String id;
+	public String id;
 
+	@Getter
+	@Setter
 	@NotBlank
 	@Length(max = 250)
 	@Field(type = FieldType.Keyword)
-
-	private String firstName;
-
-	@Length(max = 250)
-	@Field(type = FieldType.Keyword)
-	private String lastName;
-
-	@Field(type = FieldType.Nested)
-	private ElasticCountry country;
-
-	@Field(type = FieldType.Date)
-	private Date createdDate;
-
-	//@Field(type = FieldType.Date, format = DateFormat.date_time)
-	//private LocalDateTime updatedDate;
-
-	@Version
-	private Long version;
-
-	@Override
-	public String toString() {
-		return String.format(
-				"Customer[id=%s, firstName='%s', lastName='%s']",
-				id, firstName, lastName );
-	}
+	public String name;
 
 	@Override
 	public boolean isNew() {
 		return getId() == null;
 	}
 }
-
-

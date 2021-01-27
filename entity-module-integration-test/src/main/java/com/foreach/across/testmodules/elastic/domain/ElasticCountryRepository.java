@@ -18,18 +18,9 @@ package com.foreach.across.testmodules.elastic.domain;
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-import java.util.Date;
 import java.util.List;
 
-/**
- * @author Arne Vandamme
- * @since 2.2.0
- */
-public interface ElasticCustomerRepository extends ElasticsearchRepository<ElasticCustomer, String>
+public interface ElasticCountryRepository extends ElasticsearchRepository<ElasticCountry, String>
 {
-	ElasticCustomer findByFirstName( String firstName );
-
-	List<ElasticCustomer> findByLastName( String lastName );
-
-	List<ElasticCustomer> findByCreatedDateLessThan( Date date );
+	List<ElasticCountry> findByName( String name );
 }

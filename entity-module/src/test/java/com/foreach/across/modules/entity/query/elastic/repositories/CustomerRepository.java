@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package com.foreach.across.testmodules.elastic.domain;
+package com.foreach.across.modules.entity.query.elastic.repositories;
 
+import com.foreach.across.modules.entity.query.elastic.TestEntityQueryElasticUtils;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Arne Vandamme
- * @since 2.2.0
- */
-public interface ElasticCustomerRepository extends ElasticsearchRepository<ElasticCustomer, String>
+public interface CustomerRepository extends ElasticsearchRepository<TestEntityQueryElasticUtils.Customer, String>
 {
-	ElasticCustomer findByFirstName( String firstName );
+	TestEntityQueryElasticUtils.Customer findByFirstName( String firstName );
 
-	List<ElasticCustomer> findByLastName( String lastName );
+	List<TestEntityQueryElasticUtils.Customer> findByLastName( String lastName );
 
-	List<ElasticCustomer> findByCreatedDateLessThan( Date date );
+	List<TestEntityQueryElasticUtils.Customer> findByCreatedDateLessThan( Date date );
 }

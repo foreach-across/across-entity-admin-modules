@@ -24,11 +24,7 @@ import java.util.Set;
 
 public class ElasticTestModule extends AcrossModule
 {
-	// docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.6.2
 	public static final String NAME = "ElasticTestModule";
-
-	public ElasticTestModule() {
-	}
 
 	@Override
 	public String getName() {

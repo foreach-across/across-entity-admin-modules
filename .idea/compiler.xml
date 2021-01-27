@@ -2,21 +2,24 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="entity-module-integration-test" />
-        <module name="entity-shared-test" />
+        <module name="entity-module-elastic-application" />
         <module name="entity-module-no-bootstrapui" />
-        <module name="entity-module" />
-        <module name="entity-module-test" />
-        <module name="entity-module-test-application" />
+        <module name="entity-module-integration-test" />
         <module name="entity-module-no-adminweb" />
+        <module name="entity-shared-test" />
+        <module name="entity-module-test" />
+        <module name="entity-module" />
+        <module name="entity-module-test-application" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="entity-module" target="1.8" />
+      <module name="entity-module-elastic-application" target="1.8" />
       <module name="entity-module-integration-test" target="1.8" />
       <module name="entity-module-no-adminweb" target="1.8" />
       <module name="entity-module-no-bootstrapui" target="1.8" />
