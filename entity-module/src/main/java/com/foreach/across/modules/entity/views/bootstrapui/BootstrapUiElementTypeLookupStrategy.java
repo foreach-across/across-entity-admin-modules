@@ -67,7 +67,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	public String findElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
 		ViewElementMode singleMode = viewElementMode.forSingle();
 
-		if ( ViewElementMode.FILTER_FORM.matchesTypeOf( singleMode )) {
+		if ( ViewElementMode.FILTER_FORM.matchesTypeOf( singleMode ) ) {
 			return FilterFormGroupElementBuilderFactory.VIEW_ELEMENT_TYPE;
 		}
 
@@ -282,6 +282,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	@SuppressWarnings("all")
 	private String findFilterControlElementType( EntityPropertyDescriptor descriptor, boolean multiple ) {
 		EntityTypeDescriptor typeDescriptor = EntityUtils.resolveEntityTypeDescriptor( descriptor.getPropertyTypeDescriptor(), entityRegistry );
+
+		if ( isTemporalType( typeDescriptor.getSimpleTargetType() ) ) {
+			return BootstrapUiElements.DATETIME;
+		}
 
 		if ( typeDescriptor.isTargetTypeResolved()
 				&& ( entityRegistry.contains( typeDescriptor.getSimpleTargetType() ) || typeDescriptor.getSimpleTargetType().isEnum()
