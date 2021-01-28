@@ -83,7 +83,7 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 	}
 
 	@SuppressWarnings("unchecked")
-	private <TYPE extends EntityQueryExpression> TYPE transformExpression( TYPE original ) {
+	protected <TYPE extends EntityQueryExpression> TYPE transformExpression( TYPE original ) {
 		if ( original instanceof EntityQuery ) {
 			return (TYPE) transformEntityQuery( (EntityQuery) original );
 		}
