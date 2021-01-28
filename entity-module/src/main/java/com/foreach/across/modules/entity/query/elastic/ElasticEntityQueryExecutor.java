@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Slf4j
+@ConditionalOnClass(ElasticsearchOperations.class)
 public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
 	private final ElasticsearchOperations elasticsearchOperations;

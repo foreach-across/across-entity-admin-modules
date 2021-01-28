@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.querydsl.core.types.Predicate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +31,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnClass(QuerydslPredicateExecutor.class)
 public class EntityQueryQueryDslExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
 	private final QuerydslPredicateExecutor<T> queryDslPredicateExecutor;

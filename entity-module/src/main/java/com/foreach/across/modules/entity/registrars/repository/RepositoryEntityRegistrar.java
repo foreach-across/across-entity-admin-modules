@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registrars.repository;
 
+import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.core.context.AcrossListableBeanFactory;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
@@ -25,11 +26,6 @@ import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.config.EntityMessageCodeProperties;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
-import com.foreach.across.modules.entity.query.PagingAndSortingEntityQueryExecutor;
-import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
-import com.foreach.across.modules.entity.query.elastic.ElasticEntityQueryExecutor;
-import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
-import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -44,14 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.data.repository.support.DefaultRepositoryInvokerFactory;
@@ -64,10 +54,7 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -83,7 +70,6 @@ public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoad
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityRegistrar.class );
 
-	private ElasticsearchOperations elasticsearchOperations;
 	private RepositoryEntityModelBuilder entityModelBuilder;
 	private RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder;
 	private RepositoryEntityAssociationsBuilder associationsBuilder;
@@ -95,6 +81,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoad
 	private ConversionService mvcConversionService;
 	private ClassLoader classLoader;
 	private boolean acrossDevelopmentModeIsActive;
+	private Collection<EntityQueryExecutorRegistrar> entityQueryExecutorRegistrars;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -112,11 +99,11 @@ public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoad
 			   }
 		   } );
 
-		//TODO: better implementation
-		Map<String, ElasticsearchOperations> beanNamesForType = lbf.getBeansOfType( ElasticsearchOperations.class );
-		if ( beanNamesForType.size() >= 1 ) {
-			elasticsearchOperations = beanNamesForType.values().iterator().next();
-		}
+//		//TODO: better implementation
+//		Map<String, ElasticsearchOperations> beanNamesForType = lbf.getBeansOfType( ElasticsearchOperations.class );
+//		if ( beanNamesForType.size() >= 1 ) {
+//			elasticsearchOperations = beanNamesForType.values().iterator().next();
+//		}
 
 		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap = lbf.getBeansOfType( RepositoryFactoryInformation.class );
 
@@ -279,34 +266,38 @@ public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoad
 	 */
 	@SuppressWarnings("unchecked")
 	private void registerEntityQueryExecutor( MutableEntityConfiguration entityConfiguration ) {
-		Repository repository = entityConfiguration.getAttribute( Repository.class );
-
-		EntityQueryExecutor entityQueryExecutor = null;
-
-		// Because of some bugs related to JPA - Hibernate integration, favour the use of QueryDsl if possible,
-		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
-		if ( repository instanceof QuerydslPredicateExecutor ) {
-			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QuerydslPredicateExecutor) repository, entityConfiguration );
-		}
-		else if ( repository instanceof ElasticsearchRepository ) {
-			entityQueryExecutor = new ElasticEntityQueryExecutor( elasticsearchOperations, entityConfiguration );
-		}
-		else if ( repository instanceof JpaSpecificationExecutor ) {
-			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
-		}
-		else if ( repository instanceof CrudRepository ) {
-			entityQueryExecutor = new CollectionEntityQueryExecutor( ( (CrudRepository) repository )::findAll, entityConfiguration.getPropertyRegistry() );
-
-			if ( repository instanceof PagingAndSortingRepository ) {
-				entityQueryExecutor = EntityQueryExecutor.createFallbackExecutor(
-						new PagingAndSortingEntityQueryExecutor<>( (PagingAndSortingRepository) repository ), entityQueryExecutor
-				);
-			}
-		}
-
-		if ( entityQueryExecutor != null ) {
-			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
-		}
+		entityQueryExecutorRegistrars.stream()
+		                             .filter( registrar -> registrar.supports( entityConfiguration ) )
+		                             .findFirst()
+		                             .ifPresent( registrar -> registrar.handle( entityConfiguration ) );
+//		Repository repository = entityConfiguration.getAttribute( Repository.class );
+//
+//		EntityQueryExecutor entityQueryExecutor = null;
+//
+//		// Because of some bugs related to JPA - Hibernate integration, favour the use of QueryDsl if possible,
+//		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
+//		if ( repository instanceof QuerydslPredicateExecutor ) {
+//			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QuerydslPredicateExecutor) repository, entityConfiguration );
+//		}
+//		else if ( repository instanceof ElasticsearchRepository ) {
+//			entityQueryExecutor = new ElasticEntityQueryExecutor( elasticsearchOperations, entityConfiguration );
+//		}
+//		else if ( repository instanceof JpaSpecificationExecutor ) {
+//			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
+//		}
+//		else if ( repository instanceof CrudRepository ) {
+//			entityQueryExecutor = new CollectionEntityQueryExecutor( ( (CrudRepository) repository )::findAll, entityConfiguration.getPropertyRegistry() );
+//
+//			if ( repository instanceof PagingAndSortingRepository ) {
+//				entityQueryExecutor = EntityQueryExecutor.createFallbackExecutor(
+//						new PagingAndSortingEntityQueryExecutor<>( (PagingAndSortingRepository) repository ), entityQueryExecutor
+//				);
+//			}
+//		}
+//
+//		if ( entityQueryExecutor != null ) {
+//			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
+//		}
 	}
 
 	private String determineUniqueEntityTypeName( EntityRegistry registry, Class<?> entityType ) {
@@ -377,5 +368,10 @@ public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoad
 	@Autowired
 	void setDevelopmentMode( AcrossDevelopmentMode acrossDevelopmentMode ) {
 		acrossDevelopmentModeIsActive = acrossDevelopmentMode.isActive();
+	}
+
+	@RefreshableCollection(includeModuleInternals = true, incremental = true)
+	public void setPostProcessors( Collection<EntityQueryExecutorRegistrar> entityQueryExecutorRegistrars ) {
+		this.entityQueryExecutorRegistrars = entityQueryExecutorRegistrars;
 	}
 }
