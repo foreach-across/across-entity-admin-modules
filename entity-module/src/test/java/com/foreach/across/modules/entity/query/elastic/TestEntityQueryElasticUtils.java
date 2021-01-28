@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query.elastic;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.foreach.across.core.convert.StringToDateTimeConverter;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.query.elastic.repositories.CountryRepository;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.validator.constraints.Length;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +69,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -146,7 +151,16 @@ public class TestEntityQueryElasticUtils
 				customer.setCountry( netherlands );
 			}
 
-			customer.setUpdatedDate( LocalDateTime.now() );
+			if ( i > 50 ) {
+				customer.setUpdatedDate( LocalDateTime.now().plusDays( i - 50 ) );
+			}
+			else {
+				customer.setUpdatedDate( LocalDateTime.now() );
+			}
+
+			customer.setDateOfBirth( LocalDate.now().minusYears( 20 + mod ) );
+
+			customer.setWorkDayFinishesAt( LocalTime.of( 14, 0 ).plusHours( mod ) );
 			customerRepository.save( customer );
 		}
 	}
@@ -185,6 +199,38 @@ public class TestEntityQueryElasticUtils
 	@Test
 	public void testTodayEqQuery() {
 		assertSame( "createdDate = today()", m -> Objects.equals( m.getCreatedDate(), TODAY ), 1 );
+		assertSame( "updatedDate = today()", m -> Objects.equals( m.getUpdatedDate(), LocalDateTime.now() ), 0 );
+	}
+
+	@Test
+	void localDateTimeQueries() {
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+		LocalDateTime startDate = LocalDate.now().atStartOfDay();
+		LocalDateTime endDate = LocalDate.now().plusDays( 1 ).atStartOfDay();
+		assertSame( String.format( "updatedDate >  '%s' and updatedDate < '%s'", startDate.format( formatter ), endDate.format( formatter ) ),
+		            m -> m.getUpdatedDate().isAfter( startDate ) && m.getUpdatedDate().isBefore( endDate ),
+		            51 );
+	}
+
+	@Test
+	void localDateQueries() {
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+		LocalDate startDate = LocalDate.now().minusYears( 30 ).withDayOfYear( 1 ).minusDays( 1 );
+		LocalDate endDate = LocalDate.now().minusYears( 24 ).withDayOfYear( 1 );
+		assertSame( String.format( "dateOfBirth > '%s' and dateOfBirth < '%s'", startDate.format( formatter ), endDate.format( formatter ) ),
+		            m -> m.getDateOfBirth().isAfter( startDate ) && m.getDateOfBirth().isBefore( endDate ),
+		            50 );
+	}
+
+	@Test
+	@Disabled("localtime requires a specific format when send to elastic (and is formatted incorrectly atm)")
+	void localTimeQueries() {
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_TIME;
+		LocalTime startDate = LocalTime.of( 14, 0 );
+		LocalTime endDate = LocalTime.of( 18, 0 );
+		assertSame( String.format( "workDayFinishesAt > '%s' and workDayFinishesAt < '%s'", startDate.format( formatter ), endDate.format( formatter ) ),
+		            m -> m.getWorkDayFinishesAt().isAfter( startDate ) && m.getWorkDayFinishesAt().isBefore( endDate ),
+		            50 );
 	}
 
 	@Test
@@ -265,6 +311,14 @@ public class TestEntityQueryElasticUtils
 
 		@Field(type = FieldType.Date, format = DateFormat.date_optional_time)
 		private LocalDateTime updatedDate;
+
+		@Field(type = FieldType.Date, format = DateFormat.date)
+		private LocalDate dateOfBirth;
+
+		@JsonFormat(pattern = "HHmmss.SSSZ")
+		@Field(type = FieldType.Date, format = DateFormat.time)
+		private LocalTime workDayFinishesAt;
+
 		@Version
 		private Long version;
 
