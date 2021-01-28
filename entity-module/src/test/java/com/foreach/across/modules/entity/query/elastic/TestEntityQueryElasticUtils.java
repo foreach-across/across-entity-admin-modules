@@ -17,16 +17,16 @@
 package com.foreach.across.modules.entity.query.elastic;
 
 import com.foreach.across.core.convert.StringToDateTimeConverter;
-import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
-import com.foreach.across.modules.entity.query.EQTypeConverter;
-import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryParser;
-import com.foreach.across.modules.entity.query.EntityQueryParserFactory;
+import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.query.elastic.repositories.CountryRepository;
 import com.foreach.across.modules.entity.query.elastic.repositories.CustomerRepository;
 import com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions;
-import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.DefaultEntityConfigurationProvider;
+import com.foreach.across.modules.entity.registry.EntityConfigurationImpl;
+import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
+import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -42,6 +42,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Page;
@@ -55,6 +56,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.format.support.DefaultFormattingConversionService;
@@ -77,7 +79,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 public class TestEntityQueryElasticUtils
 {
-
 	@Container
 	public static ElasticsearchContainer container = new ElasticsearchContainer( "docker.elastic.co/elasticsearch/elasticsearch:7.9.3" );
 
@@ -96,64 +97,57 @@ public class TestEntityQueryElasticUtils
 
 	@BeforeEach
 	public void setup() {
-		// TODO: simply this by parsing Customer class directly
-		DefaultEntityPropertyRegistry registry = new DefaultEntityPropertyRegistry();
-		registry.register( new SimpleEntityPropertyDescriptor( "firstName", new EntityPropertyDescriptorBuilder( "firstName" ).propertyType( String.class )
-		                                                                                                                      .build() ) );
-		registry.register( new SimpleEntityPropertyDescriptor( "lastName", new EntityPropertyDescriptorBuilder( "lastName" ).propertyType( String.class )
-		                                                                                                                    .build() ) );
-		registry.register( new SimpleEntityPropertyDescriptor( "createdDate", new EntityPropertyDescriptorBuilder( "createdDate" ).propertyType( Date.class )
-		                                                                                                                          .build() ) );
-		registry.register( new SimpleEntityPropertyDescriptor( "updatedDate", new EntityPropertyDescriptorBuilder( "updatedDate" )
-				.propertyType( LocalDateTime.class ).build() ) );
-		registry.register( new SimpleEntityPropertyDescriptor( "age", new EntityPropertyDescriptorBuilder( "age" ).propertyType( Long.class ).build() ) );
-		registry.register( new SimpleEntityPropertyDescriptor( "country", new EntityPropertyDescriptorBuilder( "country" ).propertyType( Country.class )
-		                                                                                                                  .build() ) );
-		registry.register( new SimpleEntityPropertyDescriptor( "country.id", new EntityPropertyDescriptorBuilder( "country.id" ).propertyType( String.class )
-		                                                                                                                        .build() ) );
+		EntityPropertyDescriptorFactory entityPropertyDescriptorFactory = new EntityPropertyDescriptorFactoryImpl();
+		DefaultEntityPropertyRegistryProvider entityPropertyRegistryProvider = new DefaultEntityPropertyRegistryProvider( entityPropertyDescriptorFactory );
+		entityPropertyRegistryProvider.setPropertiesRegistrars(
+				Collections.singletonList( new DefaultPropertiesRegistrar( entityPropertyDescriptorFactory ) ) );
+		DefaultEntityConfigurationProvider defaultEntityConfigurationProvider = new DefaultEntityConfigurationProvider( null, entityPropertyRegistryProvider );
+		EntityConfigurationImpl<Customer> entityConfiguration =
+				(EntityConfigurationImpl<Customer>) defaultEntityConfigurationProvider.create( "customer", Customer.class, true );
+
 		EQTypeConverter eqTypeConverter = new EQTypeConverter();
 		DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
 		conversionService.addConverter( new StringToDateTimeConverter( conversionService ) );
 		eqTypeConverter.setConversionService( conversionService );
-		eqTypeConverter.setFunctionHandlers( Collections.singletonList( new EntityQueryDateFunctions() ) );
+		eqTypeConverter.setFunctionHandlers( Arrays.asList( new EntityQueryDateFunctions(), new ElasticBoostFunctionHandler() ) );
 		EntityQueryParserFactory entityQueryParserFactory = new EntityQueryParserFactory( eqTypeConverter );
-		parser = entityQueryParserFactory.createParser( registry );
+		parser = entityQueryParserFactory.createParser( entityConfiguration.getPropertyRegistry() );
 
 		// Delete the index to make sure typeMappings are gone
 		customerRepository.deleteAll();
 		countryRepository.deleteAll();
-		elasticsearchOperations.indexOps( Country.class ).delete();
 
 		Country belgium = createCountry( "Belgium" );
 		Country netherlands = createCountry( "Netherlands" );
 
 		for ( int i = 0; i < 100; i++ ) {
-			Customer elasticCustomer = new Customer();
-			elasticCustomer.setFirstName( "first-abIT" + i + RandomStringUtils.randomAlphanumeric( 15 ) );
-			elasticCustomer.setLastName( "last-" + RandomStringUtils.randomAlphanumeric( 15 ) );
+			Customer customer = new Customer();
+			customer.setSequenceNumber( i );
+			customer.setFirstName( "first-abIT" + i + RandomStringUtils.randomAlphanumeric( 15 ) );
+			customer.setLastName( "last-" + RandomStringUtils.randomAlphanumeric( 15 ) );
 			int mod = i % 10;
 
 			if ( i == 0 ) {
-				elasticCustomer.setCreatedDate( TODAY );
+				customer.setCreatedDate( TODAY );
 			}
 			else {
 				if ( i % 2 == 0 ) {
-					elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+					customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
 				}
 				else {
-					elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+					customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
 				}
 			}
 
 			if ( i % 2 == 0 ) {
-				elasticCustomer.setCountry( belgium );
+				customer.setCountry( belgium );
 			}
 			else {
-				elasticCustomer.setCountry( netherlands );
+				customer.setCountry( netherlands );
 			}
 
-			elasticCustomer.setUpdatedDate( LocalDateTime.now() );
-			customerRepository.save( elasticCustomer );
+			customer.setUpdatedDate( LocalDateTime.now() );
+			customerRepository.save( customer );
 		}
 	}
 
@@ -166,6 +160,11 @@ public class TestEntityQueryElasticUtils
 		EntityQuery rawQuery = EntityQuery.of( "(firstName = '" + firstItem.firstName + "' or lastName = '" + secondItem.lastName + "')" );
 		assertSame( "(firstName = '" + firstItem.firstName + "' or lastName = '" + secondItem.lastName + "')",
 		            m -> Objects.equals( firstItem.firstName, m.firstName ) || Objects.equals( secondItem.lastName, m.lastName ), 2 );
+	}
+
+	@Test
+	public void testElasticBetweenFunctionQuery() {
+		assertSame( "sequenceNumber = elastic.between(95, 200)", m -> m.getSequenceNumber() >= 95, 5 );
 	}
 
 	@Test
@@ -249,6 +248,9 @@ public class TestEntityQueryElasticUtils
 		@Length(max = 20)
 		private String id;
 
+		@Field(type = FieldType.Long)
+		private long sequenceNumber;
+
 		@NotBlank
 		@Length(max = 250)
 		@Field(type = FieldType.Keyword)
@@ -322,6 +324,36 @@ public class TestEntityQueryElasticUtils
 			TestPropertyValues.of(
 					"spring.elasticsearch.rest.uris=" + container.getHttpHostAddress()
 			).applyTo( context );
+		}
+	}
+
+	static class ElasticBoostFunctionHandler implements EntityQueryFunctionHandler
+	{
+
+		@Override
+		public boolean accepts( String functionName, TypeDescriptor desiredType ) {
+			return Objects.equals( "elastic.between", functionName );
+		}
+
+		@Override
+		public Object apply( String functionName, EQType[] arguments, TypeDescriptor desiredType, EQTypeConverter argumentConverter ) {
+			return (EntityQueryConditionElasticFunctionHandler) entityQueryCondition -> {
+				if ( !( entityQueryCondition.getOperand() == EntityQueryOps.EQ || entityQueryCondition.getOperand() == EntityQueryOps.NEQ ) ) {
+					throw new RuntimeException( "Unsupported operand: " + entityQueryCondition.getOperand().name() + " for elastic.between() function." );
+				}
+
+				if ( arguments.length != 2 ) {
+					throw new RuntimeException( "Expected two arguments" );
+				}
+
+				Object[] convertedArgs = argumentConverter.convertAll( desiredType, false, arguments );
+				if ( entityQueryCondition.getOperand().isNegation() ) {
+					return Criteria.where( entityQueryCondition.getProperty() ).not().between( convertedArgs[0], convertedArgs[1] );
+				}
+				else {
+					return Criteria.where( entityQueryCondition.getProperty() ).between( convertedArgs[0], convertedArgs[1] );
+				}
+			};
 		}
 	}
 }

@@ -21,22 +21,21 @@ import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExpression;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
 import java.util.Objects;
 
-public abstract class EntityQueryElasticUtils
+@UtilityClass
+public class EntityQueryElasticUtils
 {
-	private EntityQueryElasticUtils() {
-	}
-
-	public static CriteriaQuery toCriteriaQuery( final EntityQuery query ) {
+	public CriteriaQuery toCriteriaQuery( final EntityQuery query ) {
 		return new CriteriaQuery( buildPredicate( query ) );
 	}
 
-	private static Criteria buildPredicate( EntityQueryExpression expression ) {
+	private Criteria buildPredicate( EntityQueryExpression expression ) {
 		if ( expression instanceof EntityQueryCondition ) {
 			return buildConditionPredicate( (EntityQueryCondition) expression );
 		}
@@ -47,7 +46,10 @@ public abstract class EntityQueryElasticUtils
 
 	@SuppressWarnings("unchecked")
 	@SneakyThrows
-	private static Criteria buildConditionPredicate( EntityQueryCondition condition ) {
+	private Criteria buildConditionPredicate( EntityQueryCondition condition ) {
+		if ( EntityQueryConditionElasticFunctionHandler.class.isAssignableFrom( condition.getFirstArgument().getClass() ) ) {
+			return ( (EntityQueryConditionElasticFunctionHandler) condition.getFirstArgument() ).apply( condition );
+		}
 		switch ( condition.getOperand() ) {
 			case IS_NULL:
 				return Criteria.where( condition.getProperty() ).not().exists();
@@ -99,7 +101,7 @@ public abstract class EntityQueryElasticUtils
 		throw new IllegalArgumentException( "Unsupported operand for Elasticsearch query: " + condition.getOperand() );
 	}
 
-	private static Criteria buildQueryPredicate( EntityQuery query ) {
+	private Criteria buildQueryPredicate( EntityQuery query ) {
 		Criteria basePredicate = query.getOperand() == EntityQueryOps.AND ? Criteria.and() : Criteria.or();
 		for ( EntityQueryExpression expression : query.getExpressions() ) {
 			basePredicate.subCriteria( buildPredicate( expression ) );
