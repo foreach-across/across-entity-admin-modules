@@ -38,22 +38,26 @@ public abstract class EntityQueryJpaUtils
 	}
 
 	public static <V> Specification<V> toSpecification( final EntityQuery query ) {
-		return ( root, criteriaQuery, cb ) -> EntityQueryJpaUtils.buildPredicate( query, root, cb );
+		return ( root, criteriaQuery, cb ) -> EntityQueryJpaUtils.buildPredicate( query, root, criteriaQuery, cb );
 	}
 
-	private static <V> Predicate buildPredicate( EntityQueryExpression expression, Root<V> root, CriteriaBuilder cb ) {
+	private static <V> Predicate buildPredicate( EntityQueryExpression expression, Root<V> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb ) {
 		if ( expression instanceof EntityQueryCondition ) {
-			return buildConditionPredicate( (EntityQueryCondition) expression, root, cb );
+			return buildConditionPredicate( (EntityQueryCondition) expression, root, criteriaQuery, cb );
 		}
 		else {
-			return buildQueryPredicate( (EntityQuery) expression, root, cb );
+			return buildQueryPredicate( (EntityQuery) expression, root, criteriaQuery, cb );
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <V> Predicate buildConditionPredicate( EntityQueryCondition condition,
 	                                                      Root<V> root,
+	                                                      CriteriaQuery<?> criteriaQuery,
 	                                                      CriteriaBuilder cb ) {
+		if ( condition.getFirstArgument() instanceof EntityQueryConditionJpaFunctionHandler ) {
+			return ( (EntityQueryConditionJpaFunctionHandler) condition.getFirstArgument() ).apply( condition ).toPredicate( root, criteriaQuery, cb );
+		}
 		switch ( condition.getOperand() ) {
 			case IS_NULL:
 				return cb.isNull( resolveProperty( root, condition.getProperty() ) );
@@ -161,11 +165,11 @@ public abstract class EntityQueryJpaUtils
 		return path.get( propertyName );
 	}
 
-	private static <V> Predicate buildQueryPredicate( EntityQuery query, Root<V> root, CriteriaBuilder cb ) {
+	private static <V> Predicate buildQueryPredicate( EntityQuery query, Root<V> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb ) {
 		List<Predicate> predicates = new ArrayList<>();
 
 		for ( EntityQueryExpression expression : query.getExpressions() ) {
-			predicates.add( buildPredicate( expression, root, cb ) );
+			predicates.add( buildPredicate( expression, root, criteriaQuery, cb ) );
 		}
 
 		return query.getOperand() == EntityQueryOps.AND

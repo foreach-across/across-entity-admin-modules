@@ -47,7 +47,7 @@ public class EntityQueryElasticUtils
 	@SuppressWarnings("unchecked")
 	@SneakyThrows
 	private Criteria buildConditionPredicate( EntityQueryCondition condition ) {
-		if ( EntityQueryConditionElasticFunctionHandler.class.isAssignableFrom( condition.getFirstArgument().getClass() ) ) {
+		if ( condition.getFirstArgument() instanceof EntityQueryConditionElasticFunctionHandler ) {
 			return ( (EntityQueryConditionElasticFunctionHandler) condition.getFirstArgument() ).apply( condition );
 		}
 		switch ( condition.getOperand() ) {

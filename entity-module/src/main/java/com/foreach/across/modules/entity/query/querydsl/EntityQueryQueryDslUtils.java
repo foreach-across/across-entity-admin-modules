@@ -24,6 +24,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
+import lombok.experimental.UtilityClass;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
@@ -34,14 +35,12 @@ import static com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils.to
 /**
  * @author Arne Vandamme
  */
-public abstract class EntityQueryQueryDslUtils
+@UtilityClass
+public class EntityQueryQueryDslUtils
 {
 	private static final EntityPathResolver DEFAULT_ENTITY_PATH_RESOLVER = SimpleEntityPathResolver.INSTANCE;
 
-	private EntityQueryQueryDslUtils() {
-	}
-
-	public static <V> Predicate toPredicate( EntityQuery query, EntityConfiguration entityConfiguration ) {
+	public <V> Predicate toPredicate( EntityQuery query, EntityConfiguration entityConfiguration ) {
 		try {
 			return toPredicate( query, entityConfiguration.getEntityType() );
 		}
@@ -52,20 +51,20 @@ public abstract class EntityQueryQueryDslUtils
 		return toPredicate( query, entityConfiguration.getEntityType(), entityConfiguration.getName() );
 	}
 
-	public static <V> Predicate toPredicate( EntityQuery query, Class<V> entityType ) {
+	public <V> Predicate toPredicate( EntityQuery query, Class<V> entityType ) {
 		return toPredicate( query, DEFAULT_ENTITY_PATH_RESOLVER.createPath( entityType ) );
 	}
 
-	public static <V> Predicate toPredicate( EntityQuery query, EntityPath<V> rootPath ) {
+	public <V> Predicate toPredicate( EntityQuery query, EntityPath<V> rootPath ) {
 		return toPredicate( query, rootPath.getType(), rootPath.getMetadata().getName() );
 	}
 
-	public static <V> Predicate toPredicate( EntityQuery query, Class<V> entityType, String root ) {
+	public <V> Predicate toPredicate( EntityQuery query, Class<V> entityType, String root ) {
 		PathBuilder pathBuilder = new PathBuilder<>( entityType, root );
 		return buildQueryPredicate( query, pathBuilder );
 	}
 
-	private static Predicate buildPredicate( EntityQueryExpression expression, PathBuilder pathBuilder ) {
+	private Predicate buildPredicate( EntityQueryExpression expression, PathBuilder pathBuilder ) {
 		if ( expression instanceof EntityQueryCondition ) {
 			return buildConditionPredicate( (EntityQueryCondition) expression, pathBuilder );
 		}
@@ -74,7 +73,10 @@ public abstract class EntityQueryQueryDslUtils
 		}
 	}
 
-	private static Predicate buildConditionPredicate( EntityQueryCondition condition, PathBuilder pathBuilder ) {
+	private Predicate buildConditionPredicate( EntityQueryCondition condition, PathBuilder pathBuilder ) {
+		if ( condition.getFirstArgument() instanceof EntityQueryConditionQueryDslFunctionHandler ) {
+			return ( (EntityQueryConditionQueryDslFunctionHandler) condition.getFirstArgument() ).apply( condition ).toPredicate( pathBuilder );
+		}
 		switch ( condition.getOperand() ) {
 			case IS_NULL:
 				return pathBuilder.get( condition.getProperty() ).isNull();
@@ -163,7 +165,7 @@ public abstract class EntityQueryQueryDslUtils
 		throw new IllegalArgumentException( "Unsupported operand for QueryDsl query: " + condition.getOperand() );
 	}
 
-	private static Predicate buildQueryPredicate( EntityQuery query, PathBuilder pathBuilder ) {
+	private Predicate buildQueryPredicate( EntityQuery query, PathBuilder pathBuilder ) {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		for ( EntityQueryExpression expression : query.getExpressions() ) {

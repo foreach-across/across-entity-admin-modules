@@ -35,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -71,11 +72,18 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 
 	@Test
 	public void findAllRepresentativesOrdered() {
-		List<Representative> ordered = findRepresentatives( "order by name desc", john, joe, peter, weirdo );
+		List<Representative> ordered = findRepresentatives( "order by name desc", john, joe, peter, weirdo, absolute );
 		assertEquals( peter, ordered.get( 0 ) );
 		assertEquals( john, ordered.get( 1 ) );
 		assertEquals( joe, ordered.get( 2 ) );
-		assertEquals( weirdo, ordered.get( 3 ) );
+		assertEquals( absolute, ordered.get( 3 ) );
+		assertEquals( weirdo, ordered.get( 4 ) );
+	}
+
+	@Test
+	public void findAllRepresentativesByFunction() {
+		List<Representative> representatives = findRepresentatives( "number = rep.abs(100)", absolute );
+		assertThat( representatives ).hasSize( 1 ).first().isEqualTo( absolute );
 	}
 
 	@Test
@@ -284,8 +292,8 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 			findRepresentatives( "searchText contains 'SURNAME'", john, joe, peter );
 
 			// AXEUM-127 - negation should exclude the results
-			findRepresentatives( "searchText not contains 'surname'", weirdo );
-			findRepresentatives( "searchText not contains 'SURNAME'", weirdo );
+			findRepresentatives( "searchText not contains 'surname'", weirdo, absolute );
+			findRepresentatives( "searchText not contains 'SURNAME'", weirdo, absolute );
 		}
 		finally {
 			descriptor.removeAttribute( EntityQueryConditionTranslator.class );
