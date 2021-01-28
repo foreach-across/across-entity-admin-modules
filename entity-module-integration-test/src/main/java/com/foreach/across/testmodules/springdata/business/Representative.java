@@ -45,6 +45,7 @@ public class Representative implements Persistable<String>
 
 	@Getter
 	@Setter
+	@Column(name = "rep_number")
 	private Long number;
 
 	public Representative() {

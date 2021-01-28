@@ -114,7 +114,7 @@ public class TestEntityQueryElasticUtils
 		DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
 		conversionService.addConverter( new StringToDateTimeConverter( conversionService ) );
 		eqTypeConverter.setConversionService( conversionService );
-		eqTypeConverter.setFunctionHandlers( Arrays.asList( new EntityQueryDateFunctions(), new ElasticBoostFunctionHandler() ) );
+		eqTypeConverter.setFunctionHandlers( Arrays.asList( new EntityQueryDateFunctions(), new ElasticBetweenFunctionHandler() ) );
 		EntityQueryParserFactory entityQueryParserFactory = new EntityQueryParserFactory( eqTypeConverter );
 		parser = entityQueryParserFactory.createParser( entityConfiguration.getPropertyRegistry() );
 
@@ -381,7 +381,7 @@ public class TestEntityQueryElasticUtils
 		}
 	}
 
-	static class ElasticBoostFunctionHandler implements EntityQueryFunctionHandler
+	static class ElasticBetweenFunctionHandler implements EntityQueryFunctionHandler
 	{
 
 		@Override

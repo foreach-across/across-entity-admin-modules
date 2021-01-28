@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.query.EntityQueryConditionFunctionHandl
  * @author Marc Vanbrabant
  * @since 4.2.0
  */
+@FunctionalInterface
 public interface EntityQueryConditionQueryDslFunctionHandler extends EntityQueryConditionFunctionHandler<QueryDslSpecification>
 {
 	@Override

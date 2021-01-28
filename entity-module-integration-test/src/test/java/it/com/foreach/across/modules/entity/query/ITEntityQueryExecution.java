@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.testmodules.springdata.business.Company;
+import com.foreach.across.testmodules.springdata.business.Group;
 import com.foreach.across.testmodules.springdata.business.Representative;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,13 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		assertEquals( two, ordered.get( 0 ) );
 		assertEquals( three, ordered.get( 1 ) );
 		assertEquals( one, ordered.get( 2 ) );
+	}
+
+	@Test
+	public void jpaFunction() {
+		List<Group> items = findGroups( "number = jpa.abs(400)", groupThree );
+		assertThat( items ).hasSize( 1 ).first().isEqualTo( groupThree );
+
 	}
 
 	@Test
@@ -306,6 +314,23 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		EntityQueryParser queryParser = entityConfiguration.getAttribute( EntityQueryParser.class );
 
 		List<Company> found = queryExecutor.findAll( queryParser.parse( query ) );
+		assertEquals( expected.length, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( expected ) ) );
+
+		EntityQuery rawQuery = EntityQuery.parse( query );
+		EntityQuery executableQuery = queryParser.prepare( rawQuery );
+		assertEquals( executableQuery, queryParser.prepare( executableQuery ) );
+		assertEquals( found, queryExecutor.findAll( executableQuery ) );
+
+		return found;
+	}
+
+	private List<Group> findGroups( String query, Group... expected ) {
+		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( Group.class );
+		EntityQueryExecutor<Group> queryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
+		EntityQueryParser queryParser = entityConfiguration.getAttribute( EntityQueryParser.class );
+
+		List<Group> found = queryExecutor.findAll( queryParser.parse( query ) );
 		assertEquals( expected.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( expected ) ) );
 

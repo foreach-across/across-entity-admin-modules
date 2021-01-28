@@ -55,7 +55,7 @@ public abstract class AbstractQueryTest
 
 	protected static Company one, two, three;
 	protected static Representative john, joe, peter, weirdo, absolute;
-	protected static Group groupOne, groupTwo;
+	protected static Group groupOne, groupTwo, groupThree;
 	protected static Car carOne, carTwo;
 
 	@Autowired
@@ -77,7 +77,9 @@ public abstract class AbstractQueryTest
 
 			groupOne = new Group( "groupOne" );
 			groupTwo = new Group( "groupTwo" );
-			groupRepository.saveAll( Arrays.asList( groupOne, groupTwo ) );
+			groupThree = new Group( "groupThree" );
+			groupThree.setNumber( -400L );
+			groupRepository.saveAll( Arrays.asList( groupOne, groupTwo, groupThree ) );
 
 			john = new Representative( "john", "John % Surname" );
 			joe = new Representative( "joe", "Joe ' Surname" );

@@ -26,6 +26,7 @@ import org.springframework.data.elasticsearch.core.query.Criteria;
  * @author Marc Vanbrabant
  * @since 4.2.0
  */
+@FunctionalInterface
 public interface EntityQueryConditionElasticFunctionHandler extends EntityQueryConditionFunctionHandler<Criteria>
 {
 	@Override

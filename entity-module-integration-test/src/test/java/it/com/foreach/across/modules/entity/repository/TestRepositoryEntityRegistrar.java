@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
+import com.foreach.across.modules.entity.query.jpa.EntityQueryConditionJpaFunctionHandler;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryConditionQueryDslFunctionHandler;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
@@ -47,9 +48,7 @@ import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.PathBuilder;
 import it.com.foreach.across.modules.entity.utils.EntityPropertyDescriptorVerifier;
 import it.com.foreach.across.modules.entity.utils.EntityVerifier;
 import org.junit.jupiter.api.Test;
@@ -60,6 +59,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.CrudRepository;
@@ -462,17 +462,41 @@ public class TestRepositoryEntityRegistrar
 
 						@Override
 						public QueryDslSpecification apply( EntityQueryCondition entityQueryCondition ) {
-							return new QueryDslSpecification()
-							{
-
-								@Override
-								public Predicate toPredicate( PathBuilder pathBuilder ) {
-									Path<Long> property = pathBuilder.get( entityQueryCondition.getProperty(), Long.class );
-									Expression<Object> constant = Expressions.constant( convertedArgs[0] );
-									return Expressions.predicate( Ops.EQ, Expressions.asNumber( property ).abs(), constant );
-									//return Expressions.asNumber( path ).abs().eq( entityQueryCondition.getArguments() );
-								}
+							return pathBuilder -> {
+								Path<Long> property = pathBuilder.get( entityQueryCondition.getProperty(), Long.class );
+								Expression<Object> constant = Expressions.constant( convertedArgs[0] );
+								return Expressions.predicate( Ops.EQ, Expressions.asNumber( property ).abs(), constant );
 							};
+						}
+					};
+				}
+			};
+		}
+
+		@Bean
+		@Exposed
+		public EntityQueryFunctionHandler jpaAbsFunction() {
+			return new EntityQueryFunctionHandler()
+			{
+				@Override
+				public boolean accepts( String functionName, TypeDescriptor desiredType ) {
+					return Objects.equals( "jpa.abs", functionName );
+				}
+
+				@Override
+				public Object apply( String functionName, EQType[] arguments, TypeDescriptor desiredType, EQTypeConverter argumentConverter ) {
+					if ( arguments.length != 1 ) {
+						throw new RuntimeException( "Expecting one argument" );
+					}
+
+					return new EntityQueryConditionJpaFunctionHandler()
+					{
+						Object[] convertedArgs = argumentConverter.convertAll( desiredType, false, arguments );
+
+						@Override
+						public Specification apply( EntityQueryCondition entityQueryCondition ) {
+							return ( root, criteriaQuery, criteriaBuilder ) -> criteriaBuilder.equal(
+									criteriaBuilder.abs( root.get( entityQueryCondition.getProperty() ) ), convertedArgs[0] );
 						}
 					};
 				}

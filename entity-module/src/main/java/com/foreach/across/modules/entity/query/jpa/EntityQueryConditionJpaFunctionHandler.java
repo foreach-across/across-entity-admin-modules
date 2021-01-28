@@ -26,6 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Marc Vanbrabant
  * @since 4.2.0
  */
+@FunctionalInterface
 public interface EntityQueryConditionJpaFunctionHandler extends EntityQueryConditionFunctionHandler<Specification>
 {
 	@Override
