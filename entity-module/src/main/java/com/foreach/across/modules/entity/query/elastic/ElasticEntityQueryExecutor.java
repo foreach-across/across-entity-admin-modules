@@ -24,7 +24,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,7 +40,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Slf4j
-@ConditionalOnClass(ElasticsearchOperations.class)
 public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
 	private final ElasticsearchOperations elasticsearchOperations;
@@ -124,23 +122,6 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 				LOG.error( "An unexpected error occurred whilst trying to resolve the id property for " + resolvedType.getName(), e );
 			}
 		}
-//
-//		if ( entityRegistry.contains( resolvedType ) ) {
-//			EntityConfiguration<?> propertyEntityConfiguration = entityRegistry.getEntityConfiguration( resolvedType );
-//			Optional<EntityPropertyDescriptor> resolvedProperty =
-//					propertyEntityConfiguration.getPropertyRegistry()
-//					                           .getProperties()
-//					                           .stream()
-//					                           .filter( pd -> Objects.nonNull( pd.getPropertyTypeDescriptor() ) )
-//					                           .filter( pd -> Objects.nonNull( pd.getPropertyTypeDescriptor().getAnnotation( Id.class ) ) )
-//					                           .findFirst();
-//			if ( resolvedProperty.isPresent() ) {
-//				EntityPropertyDescriptor idProperty = resolvedProperty.get();
-//				String referencedProperty = property.getName() + "." + idProperty.getName();
-//				Object[] args = Arrays.stream( original.getArguments() ).map( idProperty::getPropertyValue ).toArray();
-//				return new EntityQueryCondition( referencedProperty, original.getOperand(), args );
-//			}
-//		}
 		return original;
 	}
 

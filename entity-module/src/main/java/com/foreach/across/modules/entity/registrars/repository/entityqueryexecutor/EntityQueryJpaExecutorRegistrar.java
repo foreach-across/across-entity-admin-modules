@@ -27,7 +27,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Component;
 
-@Order(1000000)
+@Order(1_000_000)
 @Component
 @ConditionalOnClass(JpaSpecificationExecutor.class)
 public class EntityQueryJpaExecutorRegistrar implements EntityQueryExecutorRegistrar

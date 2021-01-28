@@ -21,32 +21,38 @@ import com.foreach.across.modules.entity.query.elastic.ElasticEntityQueryExecuto
 import com.foreach.across.modules.entity.registrars.repository.EntityQueryExecutorRegistrar;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
-@Order(500000)
-@RequiredArgsConstructor
+@Order(500_000)
 @ConditionalOnClass(ElasticsearchOperations.class)
-@ConditionalOnBean(ElasticsearchOperations.class)
 public class ElasticEntityQueryExecutorRegistrar implements EntityQueryExecutorRegistrar
 {
-	private final ElasticsearchOperations elasticsearchOperations;
+	private ElasticsearchOperations elasticsearchOperations;
 
 	@Override
 	public boolean supports( EntityConfiguration entityConfiguration, Repository repository ) {
-		return repository instanceof ElasticsearchRepository;
+		return Objects.nonNull( elasticsearchOperations ) && repository instanceof ElasticsearchRepository;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public EntityQueryExecutor resolveEntityQueryExecutor( MutableEntityConfiguration entityConfiguration, Repository repository ) {
 		return new ElasticEntityQueryExecutor( elasticsearchOperations, entityConfiguration );
+	}
+
+	@Autowired
+	@Lazy
+	void setElasticsearchOperations( ElasticsearchOperations elasticsearchOperations ) {
+		this.elasticsearchOperations = elasticsearchOperations;
 	}
 }

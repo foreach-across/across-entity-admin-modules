@@ -99,12 +99,6 @@ public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoad
 			   }
 		   } );
 
-//		//TODO: better implementation
-//		Map<String, ElasticsearchOperations> beanNamesForType = lbf.getBeansOfType( ElasticsearchOperations.class );
-//		if ( beanNamesForType.size() >= 1 ) {
-//			elasticsearchOperations = beanNamesForType.values().iterator().next();
-//		}
-
 		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap = lbf.getBeansOfType( RepositoryFactoryInformation.class );
 
 		Repositories repositories = new Repositories( applicationContext );
@@ -270,34 +264,6 @@ public class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoad
 		                             .filter( registrar -> registrar.supports( entityConfiguration ) )
 		                             .findFirst()
 		                             .ifPresent( registrar -> registrar.handle( entityConfiguration ) );
-//		Repository repository = entityConfiguration.getAttribute( Repository.class );
-//
-//		EntityQueryExecutor entityQueryExecutor = null;
-//
-//		// Because of some bugs related to JPA - Hibernate integration, favour the use of QueryDsl if possible,
-//		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
-//		if ( repository instanceof QuerydslPredicateExecutor ) {
-//			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QuerydslPredicateExecutor) repository, entityConfiguration );
-//		}
-//		else if ( repository instanceof ElasticsearchRepository ) {
-//			entityQueryExecutor = new ElasticEntityQueryExecutor( elasticsearchOperations, entityConfiguration );
-//		}
-//		else if ( repository instanceof JpaSpecificationExecutor ) {
-//			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
-//		}
-//		else if ( repository instanceof CrudRepository ) {
-//			entityQueryExecutor = new CollectionEntityQueryExecutor( ( (CrudRepository) repository )::findAll, entityConfiguration.getPropertyRegistry() );
-//
-//			if ( repository instanceof PagingAndSortingRepository ) {
-//				entityQueryExecutor = EntityQueryExecutor.createFallbackExecutor(
-//						new PagingAndSortingEntityQueryExecutor<>( (PagingAndSortingRepository) repository ), entityQueryExecutor
-//				);
-//			}
-//		}
-//
-//		if ( entityQueryExecutor != null ) {
-//			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
-//		}
 	}
 
 	private String determineUniqueEntityTypeName( EntityRegistry registry, Class<?> entityType ) {

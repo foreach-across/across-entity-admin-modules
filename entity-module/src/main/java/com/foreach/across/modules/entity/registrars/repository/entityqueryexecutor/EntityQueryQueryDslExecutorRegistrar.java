@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecu
 import com.foreach.across.modules.entity.registrars.repository.EntityQueryExecutorRegistrar;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
+import com.querydsl.core.BooleanBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -28,8 +29,8 @@ import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(10000)
-@ConditionalOnClass(QuerydslPredicateExecutor.class)
+@Order(10_000)
+@ConditionalOnClass(BooleanBuilder.class)
 public class EntityQueryQueryDslExecutorRegistrar implements EntityQueryExecutorRegistrar
 {
 	@Override

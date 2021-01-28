@@ -24,7 +24,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
@@ -35,7 +34,6 @@ import static com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils.to
 /**
  * @author Arne Vandamme
  */
-@ConditionalOnClass(BooleanBuilder.class)
 public abstract class EntityQueryQueryDslUtils
 {
 	private static final EntityPathResolver DEFAULT_ENTITY_PATH_RESOLVER = SimpleEntityPathResolver.INSTANCE;
