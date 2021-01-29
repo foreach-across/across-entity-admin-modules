@@ -20,7 +20,9 @@ import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.elastic.ElasticEntityQueryExecutor;
 import com.foreach.across.modules.entity.registrars.repository.EntityQueryExecutorRegistrar;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Lazy;
@@ -34,9 +36,12 @@ import java.util.Objects;
 
 @Component
 @Order(500_000)
+@RequiredArgsConstructor
 @ConditionalOnClass(ElasticsearchOperations.class)
 public class ElasticEntityQueryExecutorRegistrar implements EntityQueryExecutorRegistrar
 {
+	private final EntityRegistry entityRegistry;
+
 	private ElasticsearchOperations elasticsearchOperations;
 
 	@Override
@@ -47,7 +52,7 @@ public class ElasticEntityQueryExecutorRegistrar implements EntityQueryExecutorR
 	@Override
 	@SuppressWarnings("unchecked")
 	public EntityQueryExecutor resolveEntityQueryExecutor( MutableEntityConfiguration entityConfiguration, Repository repository ) {
-		return new ElasticEntityQueryExecutor( elasticsearchOperations, entityConfiguration );
+		return new ElasticEntityQueryExecutor( elasticsearchOperations, entityRegistry, entityConfiguration );
 	}
 
 	@Autowired

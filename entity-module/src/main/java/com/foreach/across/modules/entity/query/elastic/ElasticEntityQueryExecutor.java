@@ -16,19 +16,21 @@
 
 package com.foreach.across.modules.entity.query.elastic;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.AbstractEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExpression;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -38,17 +40,23 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
 	private final ElasticsearchOperations elasticsearchOperations;
+	private final EntityRegistry entityRegistry;
 	private final EntityConfiguration<T> entityConfiguration;
 
 	public ElasticEntityQueryExecutor(
 			ElasticsearchOperations elasticsearchOperations,
+			EntityRegistry entityRegistry,
 			EntityConfiguration<T> entityConfiguration ) {
 		this.elasticsearchOperations = elasticsearchOperations;
+		this.entityRegistry = entityRegistry;
 		this.entityConfiguration = entityConfiguration;
 	}
 
@@ -64,8 +72,10 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 	@Override
 	protected Iterable<T> executeQuery( EntityQuery query, Sort sort ) {
 		EntityQuery transformedQuery = transformExpression( query );
+		Sort transformedSort = transformSort( sort );
+
 		CriteriaQuery criteriaQuery = EntityQueryElasticUtils.toCriteriaQuery( transformedQuery );
-		criteriaQuery.addSort( sort );
+		criteriaQuery.addSort( transformedSort );
 		SearchHits<?> hits = elasticsearchOperations.search( criteriaQuery, entityConfiguration.getEntityType() );
 		return (Iterable<T>) SearchHitSupport.unwrapSearchHits( hits );
 	}
@@ -73,11 +83,50 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 	@Override
 	protected Page<T> executeQuery( EntityQuery query, Pageable pageable ) {
 		EntityQuery transformedQuery = transformExpression( query );
+		Sort transformedSort = transformSort( pageable.getSort() );
+		PageRequest pageRequest = PageRequest.of( pageable.getPageNumber(), pageable.getPageSize(), transformedSort );
+
 		CriteriaQuery criteriaQuery = EntityQueryElasticUtils.toCriteriaQuery( transformedQuery );
-		criteriaQuery.setPageable( pageable );
+		criteriaQuery.setPageable( pageRequest );
 		SearchHits<?> hits = elasticsearchOperations.search( criteriaQuery, entityConfiguration.getEntityType() );
 		List<T> items = (List<T>) SearchHitSupport.unwrapSearchHits( hits );
 		return new PageImpl<T>( items, pageable, hits.getTotalHits() );
+	}
+
+	protected Sort transformSort( Sort sort ) {
+		List<Sort.Order> transformedOrders = StreamSupport.stream( sort.spliterator(), false )
+		                                                  .map( this::mapToLabelProperty )
+		                                                  .collect( Collectors.toList() );
+		return Sort.by( transformedOrders );
+	}
+
+	/**
+	 * Reconfigures the sort for a property to the {@link EntityAttributes#LABEL_TARGET_PROPERTY}.
+	 * To actually support (efficient) sorting, the field should be of the type {@link FieldType#Keyword}.
+	 * <p>
+	 * When sorting on (fields of) nested entities, make sure they are marked as {@link FieldType#Nested}.
+	 */
+	private Sort.Order mapToLabelProperty( Sort.Order order ) {
+		EntityPropertyRegistry currentPropertyRegistry = entityConfiguration.getPropertyRegistry();
+		EntityPropertyDescriptor currentProperty = currentPropertyRegistry.getProperty( order.getProperty() );
+		Class<?> currentPropertyType = resolveObjectType( currentProperty );
+
+		var mappingContext = elasticsearchOperations.getElasticsearchConverter().getMappingContext();
+
+		if ( mappingContext.hasPersistentEntityFor( currentPropertyType ) && entityRegistry.contains( currentPropertyType ) ) {
+			EntityConfiguration<?> resolvedConfiguration = entityRegistry.getEntityConfiguration( currentPropertyType );
+			EntityPropertyDescriptor labelProperty = resolvedConfiguration.getPropertyRegistry().getProperty( "#label" );
+			String labelPropertyReference = labelProperty.getAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, String.class );
+
+			ElasticsearchPersistentEntity<?> persistentEntity = mappingContext.getPersistentEntity( currentPropertyType );
+			ElasticsearchPersistentProperty labelReferencedProperty = persistentEntity.getPersistentProperty( labelPropertyReference );
+
+			if ( Objects.nonNull( labelReferencedProperty ) ) {
+				String referencedProperty = StringUtils.stripEnd( order.getProperty(), "." ) + "." + labelReferencedProperty.getName();
+				return order.isAscending() ? Sort.Order.asc( referencedProperty ) : Sort.Order.desc( referencedProperty );
+			}
+		}
+		return order;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,10 +153,7 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 
 	private EntityQueryExpression transformEntityQueryCondition( EntityQueryCondition original ) {
 		EntityPropertyDescriptor property = entityConfiguration.getPropertyRegistry().getProperty( original.getProperty() );
-		TypeDescriptor propertyTypeDescriptor = property.getPropertyTypeDescriptor();
-		Class<?> resolvedType = propertyTypeDescriptor.isArray() || propertyTypeDescriptor.isCollection()
-				? propertyTypeDescriptor.getElementTypeDescriptor().getObjectType()
-				: propertyTypeDescriptor.getObjectType();
+		Class<?> resolvedType = resolveObjectType( property );
 
 		var mappingContext = elasticsearchOperations.getElasticsearchConverter().getMappingContext();
 		if ( mappingContext.hasPersistentEntityFor( resolvedType ) ) {
@@ -123,6 +169,13 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 			}
 		}
 		return original;
+	}
+
+	private Class<?> resolveObjectType( EntityPropertyDescriptor property ) {
+		TypeDescriptor propertyTypeDescriptor = property.getPropertyTypeDescriptor();
+		return propertyTypeDescriptor.isArray() || propertyTypeDescriptor.isCollection()
+				? propertyTypeDescriptor.getElementTypeDescriptor().getObjectType()
+				: propertyTypeDescriptor.getObjectType();
 	}
 
 	private Object[] transformArgumentsToIdValues( EntityQueryCondition original,

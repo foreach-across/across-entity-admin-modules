@@ -56,7 +56,7 @@ public class ElasticCustomer implements Persistable<String>
 	@Field(type = FieldType.Keyword)
 	private String lastName;
 
-	//@Field(type = FieldType.Nested)
+	@Field(type = FieldType.Nested, includeInParent = true)
 	private ElasticCountry country;
 
 	@Field(type = FieldType.Date, format = DateFormat.date_optional_time)

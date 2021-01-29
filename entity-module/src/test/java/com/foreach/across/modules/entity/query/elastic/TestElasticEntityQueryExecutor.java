@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityConfigurationImpl;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.when;
 public class TestElasticEntityQueryExecutor
 {
 	private ElasticEntityQueryExecutor<NestedTestEntity> executor;
+	private EntityRegistry entityRegistry;
 	private EntityConfigurationImpl<NestedTestEntity> entityConfiguration;
 
 	private ElasticsearchOperations elasticsearchOperations;
@@ -69,7 +71,7 @@ public class TestElasticEntityQueryExecutor
 		mappingContext = mock( MappingContext.class );
 		when( elasticsearchConverter.getMappingContext() ).thenReturn( (MappingContext) mappingContext );
 
-		executor = new ElasticEntityQueryExecutor<>( elasticsearchOperations, entityConfiguration );
+		executor = new ElasticEntityQueryExecutor<>( elasticsearchOperations, entityRegistry, entityConfiguration );
 	}
 
 	@Test

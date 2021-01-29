@@ -323,7 +323,7 @@ public class TestEntityQueryElasticUtils
 		private Long version;
 
 		// doesn't seem to have type nested in the actual index? curl -X GET "localhost:9200/customidx/_mapping?pretty"
-		//@Field(type = FieldType.Nested)
+		@Field(type = FieldType.Nested, includeInParent = true)
 		private Country country;
 
 		@Override
