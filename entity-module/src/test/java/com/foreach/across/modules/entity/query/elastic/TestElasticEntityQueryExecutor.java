@@ -16,19 +16,24 @@
 
 package com.foreach.across.modules.entity.query.elastic;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityConfigurationImpl;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentEntity;
@@ -51,6 +56,7 @@ public class TestElasticEntityQueryExecutor
 	@BeforeEach
 	@SuppressWarnings("unchecked")
 	void setUp() {
+		entityRegistry = mock( EntityRegistry.class );
 		entityConfiguration = new EntityConfigurationImpl<>( NestedTestEntity.class );
 		DefaultEntityPropertyRegistry propertyRegistry = new DefaultEntityPropertyRegistry();
 		propertyRegistry.register(
@@ -96,6 +102,36 @@ public class TestElasticEntityQueryExecutor
 		EntityQuery transformedQuery = executor.transformExpression( originalQuery );
 		assertThat( transformedQuery.toString() )
 				.isEqualTo( "entity.id = '" + testEntity.getId() + "' and name contains 'Joan'" );
+	}
+
+	@Test
+	@SneakyThrows
+	void convertSortForDomainObjects() {
+		when( entityRegistry.contains( TestEntity.class ) ).thenReturn( true );
+		EntityConfiguration typeConfiguration = mock( EntityConfiguration.class );
+		when( entityRegistry.getEntityConfiguration( TestEntity.class ) ).thenReturn( typeConfiguration );
+		MutableEntityPropertyDescriptor labelDescriptor = new EntityPropertyDescriptorBuilder( EntityPropertyRegistry.LABEL )
+				.attribute( EntityAttributes.LABEL_TARGET_PROPERTY, "name" )
+				.build();
+		EntityPropertyRegistry typePropertyRegistry = mock( EntityPropertyRegistry.class );
+		when( typeConfiguration.getPropertyRegistry() ).thenReturn( typePropertyRegistry );
+		when( typePropertyRegistry.getProperty( EntityPropertyRegistry.LABEL ) ).thenReturn( labelDescriptor );
+		when( mappingContext.hasPersistentEntityFor( TestEntity.class ) ).thenReturn( true );
+		ElasticsearchPersistentEntity persistentEntity = mock( ElasticsearchPersistentEntity.class );
+		when( mappingContext.getPersistentEntity( TestEntity.class ) ).thenReturn( persistentEntity );
+		ElasticsearchPersistentProperty persistentProperty = mock( ( ElasticsearchPersistentProperty.class ) );
+		when( persistentEntity.getPersistentProperty( "name" ) ).thenReturn( persistentProperty );
+		when( persistentProperty.getName() ).thenReturn( "name" );
+
+		Sort originalSort = Sort.by( Sort.Order.desc( "entity" ), Sort.Order.asc( "name" ) );
+		Sort transformedSort = executor.transformSort( originalSort );
+		assertThat( originalSort.toString() ).isEqualTo( "entity: DESC,name: ASC" );
+		assertThat( transformedSort.toString() ).isEqualTo( "entity.name: DESC,name: ASC" );
+
+		originalSort = Sort.by( Sort.Order.desc( "name" ), Sort.Order.asc( "entity" ) );
+		transformedSort = executor.transformSort( originalSort );
+		assertThat( originalSort.toString() ).isEqualTo( "name: DESC,entity: ASC" );
+		assertThat( transformedSort.toString() ).isEqualTo( "name: DESC,entity.name: ASC" );
 	}
 
 	@Data

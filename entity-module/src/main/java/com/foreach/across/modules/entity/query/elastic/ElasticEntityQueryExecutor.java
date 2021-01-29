@@ -115,7 +115,7 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 
 		if ( mappingContext.hasPersistentEntityFor( currentPropertyType ) && entityRegistry.contains( currentPropertyType ) ) {
 			EntityConfiguration<?> resolvedConfiguration = entityRegistry.getEntityConfiguration( currentPropertyType );
-			EntityPropertyDescriptor labelProperty = resolvedConfiguration.getPropertyRegistry().getProperty( "#label" );
+			EntityPropertyDescriptor labelProperty = resolvedConfiguration.getPropertyRegistry().getProperty( EntityPropertyRegistry.LABEL );
 			String labelPropertyReference = labelProperty.getAttribute( EntityAttributes.LABEL_TARGET_PROPERTY, String.class );
 
 			ElasticsearchPersistentEntity<?> persistentEntity = mappingContext.getPersistentEntity( currentPropertyType );
