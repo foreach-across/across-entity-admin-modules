@@ -12,6 +12,12 @@ Delete your index:
 curl -XDELETE localhost:9200/countrycustomeridx
 ~~~
 
+View index mapping:
+
+~~~
+curl -X GET "localhost:9200/countrycustomeridx/_mapping?pretty"
+~~~
+
 View your index:
 
 ~~~

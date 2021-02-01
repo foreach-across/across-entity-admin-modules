@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity.query.elastic;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.foreach.across.core.convert.StringToDateTimeConverter;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.query.elastic.repositories.CountryRepository;
@@ -33,7 +32,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.validator.constraints.Length;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,14 +221,14 @@ public class TestEntityQueryElasticUtils
 	}
 
 	@Test
-	@Disabled("localtime requires a specific format when send to elastic (and is formatted incorrectly atm)")
 	void localTimeQueries() {
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_TIME;
 		LocalTime startDate = LocalTime.of( 14, 0 );
 		LocalTime endDate = LocalTime.of( 18, 0 );
-		assertSame( String.format( "workDayFinishesAt > '%s' and workDayFinishesAt < '%s'", startDate.format( formatter ), endDate.format( formatter ) ),
-		            m -> m.getWorkDayFinishesAt().isAfter( startDate ) && m.getWorkDayFinishesAt().isBefore( endDate ),
-		            50 );
+		LocalTime endDateToCheck = endDate.plusMinutes( 1 );
+		assertSame( String.format( "workDayFinishesAt > '%s' and workDayFinishesAt <= '%s'", startDate.format( formatter ), endDate.format( formatter ) ),
+		            m -> m.getWorkDayFinishesAt().isAfter( startDate ) && m.getWorkDayFinishesAt().isBefore( endDateToCheck ),
+		            40 );
 	}
 
 	@Test
@@ -315,8 +313,7 @@ public class TestEntityQueryElasticUtils
 		@Field(type = FieldType.Date, format = DateFormat.date)
 		private LocalDate dateOfBirth;
 
-		@JsonFormat(pattern = "HHmmss.SSSZ")
-		@Field(type = FieldType.Date, format = DateFormat.time)
+		@Field(type = FieldType.Date, format = DateFormat.custom, pattern = "HH:mm:ss.SSS")
 		private LocalTime workDayFinishesAt;
 
 		@Version
