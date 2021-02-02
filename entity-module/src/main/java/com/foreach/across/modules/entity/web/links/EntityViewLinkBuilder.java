@@ -36,7 +36,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport<EntityViewLinkBuilder>
 		implements EntityLinkBuilder
 {
-	EntityViewLinkBuilder( UriComponentsBuilder uriComponents, EntityViewLinks links ) {
+	protected EntityViewLinkBuilder( UriComponentsBuilder uriComponents, EntityViewLinks links ) {
 		super( uriComponents, links );
 	}
 

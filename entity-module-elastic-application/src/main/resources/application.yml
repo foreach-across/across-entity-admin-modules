@@ -15,13 +15,14 @@
 #
 spring:
   datasource:
-    url: jdbc:h2:/tmp/local-data/db/entity-module
+    url: jdbc:h2:../tmp/local-data/db/entity-module
     username: sa
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration
   servlet:
     multipart:
       max-file-size: 10MB
+
 
 acrossModule:
   EntityModule:
