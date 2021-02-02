@@ -84,7 +84,10 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                   ViewElementMode viewElementMode,
 	                                                   String viewElementType ) {
-		if ( ViewElementMode.isControl( viewElementMode ) && propertyDescriptor.isWritable() ) {
+		if ( viewElementMode.matchesTypeOf( ViewElementMode.FILTER_CONTROL ) ) {
+			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
+		}
+		else if ( ViewElementMode.isControl( viewElementMode ) && propertyDescriptor.isWritable() ) {
 			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
 		}
 
