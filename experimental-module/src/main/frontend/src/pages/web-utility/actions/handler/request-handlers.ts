@@ -41,7 +41,7 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
             let contentToSet = responseElement.innerHTML;
 
             if (action.source) {
-                contentToSet = responseElement.querySelector(action.source).innerHTML;
+                contentToSet = responseElement.querySelector(action.source);
             }
 
             if (action.sourceElement) {
