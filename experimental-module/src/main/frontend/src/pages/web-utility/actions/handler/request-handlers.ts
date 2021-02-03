@@ -36,11 +36,16 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
         );
       }
 
-      const $wrapper = $("<div></div>");
-      $wrapper.append(context.response.textContent);
-      let contentToSet = $wrapper.html();
+      const responseElement = document.createElement("div") as any;
+      responseElement.innerHTML = context.response.textContent;
+      let contentToSet = responseElement.innerHTML;
+
       if (action.source) {
-        contentToSet = $wrapper.find(action.source).html();
+        const tempSource = responseElement.querySelector(action.source);
+
+        const wrap = document.createElement("div") as any;
+        wrap.appendChild(tempSource.cloneNode(true));
+        contentToSet = wrap.innerHTML;
       }
 
       if (action.sourceElement) {
