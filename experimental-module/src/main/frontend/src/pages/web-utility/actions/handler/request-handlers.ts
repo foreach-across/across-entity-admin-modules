@@ -38,11 +38,10 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
 
       const $wrapper = $("<div></div>");
       $wrapper.append(context.response.textContent);
-      let $content = $(context.response.textContent);
-      if (action.source) {
-        $content = $wrapper.find(action.source);
-      }
       let contentToSet = $wrapper.html();
+      if (action.source) {
+        contentToSet = $wrapper.find(action.source).html();
+      }
 
       if (action.sourceElement) {
         contentToSet = action.sourceElement;
