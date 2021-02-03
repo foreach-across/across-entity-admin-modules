@@ -54,8 +54,8 @@ public class EntityQueryParser
 	}
 
 	public void validateProperties() {
-		Assert.notNull( metadataProvider, "metadataProvider cannot be null" );
-		Assert.notNull( queryTranslator, "queryTranslator cannot be null" );
+		Assert.notNull( metadataProvider, () -> "metadataProvider cannot be null" );
+		Assert.notNull( queryTranslator, () -> "queryTranslator cannot be null" );
 	}
 
 	/**
@@ -96,22 +96,12 @@ public class EntityQueryParser
 		for ( EntityQueryExpression expression : query.getExpressions() ) {
 			if ( expression instanceof EntityQueryCondition ) {
 				EntityQueryCondition condition = (EntityQueryCondition) expression;
-				if ( !metadataProvider.isValidProperty( condition.getProperty() ) ) {
-					throw new EntityQueryParsingException.IllegalField( condition.getProperty() );
-				}
-				if ( !metadataProvider.isValidOperatorForProperty( condition.getOperand(),
-				                                                   condition.getProperty() ) ) {
-					throw new EntityQueryParsingException.IllegalOperator( condition.getOperand().getToken(),
-					                                                       condition.getProperty() );
-				}
+
+				metadataProvider.validatePropertyForCondition( condition );
+				metadataProvider.validateOperatorForCondition( condition );
 
 				if ( condition.hasArguments() ) {
-					if ( !metadataProvider.isValidValueForPropertyAndOperator( condition.getFirstArgument(),
-					                                                           condition.getProperty(),
-					                                                           condition.getOperand() ) ) {
-						throw new EntityQueryParsingException.IllegalValue( condition.getOperand().getToken(),
-						                                                    condition.getProperty() );
-					}
+					metadataProvider.validateValueForCondition( condition );
 				}
 			}
 			else {

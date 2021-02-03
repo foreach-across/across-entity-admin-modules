@@ -122,6 +122,8 @@ public class TestEntityQueryElasticUtils
 
 		Country belgium = createCountry( "Belgium" );
 		Country netherlands = createCountry( "Netherlands" );
+		ElasticContact alice = new ElasticContact( "Alice", "White" );
+		ElasticContact john = new ElasticContact( "John", "Smith" );
 
 		for ( int i = 0; i < 100; i++ ) {
 			Customer customer = new Customer();
@@ -143,6 +145,11 @@ public class TestEntityQueryElasticUtils
 			}
 
 			if ( i % 2 == 0 ) {
+				if ( i % 4 == 0 ) {
+					// 25 of them
+					customer.setPrimaryContacts( Arrays.asList( alice, john ) );
+				}
+
 				customer.setCountry( belgium );
 			}
 			else {
@@ -247,6 +254,12 @@ public class TestEntityQueryElasticUtils
 	}
 
 	@Test
+	public void testCollectionQuery() {
+		assertSame( "primaryContacts[].first = 'Alice'",
+		            m -> m.getPrimaryContacts() != null && m.getPrimaryContacts().stream().anyMatch( c -> Objects.equals( "Alice", c.getFirst() ) ), 25 );
+	}
+
+	@Test
 	public void testNestedIdQuery() {
 		Country belgium = countryRepository.findByName( "Belgium" );
 		assertThat( belgium ).isNotNull();
@@ -323,6 +336,9 @@ public class TestEntityQueryElasticUtils
 		@Field(type = FieldType.Nested, includeInParent = true)
 		private Country country;
 
+		@Field(type = FieldType.Nested, includeInParent = true)
+		private List<ElasticContact> primaryContacts;
+
 		@Override
 		public String toString() {
 			return String.format(
@@ -334,6 +350,21 @@ public class TestEntityQueryElasticUtils
 		public boolean isNew() {
 			return getId() == null;
 		}
+	}
+
+	@Getter
+	@Setter
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class ElasticContact
+	{
+		@Field(type = FieldType.Keyword)
+		@Length(max = 250)
+		private String first;
+
+		@Field(type = FieldType.Keyword)
+		@Length(max = 250)
+		private String last;
 	}
 
 	@Document(indexName = "itcountryidx")

@@ -49,6 +49,12 @@ public class ITEntityQueryJpaUtils extends AbstractQueryTest
 	}
 
 	@Test
+	public void companyBySubJoin() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "representatives[].name", EntityQueryOps.EQ, "John % Surname" ) );
+		assertCompanyResults( query, one, two );
+	}
+
+	@Test
 	public void findAll() {
 		EntityQuery query = new EntityQuery();
 		assertCompanyResults( query, one, two, three );

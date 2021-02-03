@@ -273,20 +273,20 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 
 		if ( settings.hasDataSetId() && StringUtils.isNotEmpty( settings.dataSetId ) ) {
 			AutoSuggestDataEndpoint endpoint = autoSuggestDataEndpoint.getIfAvailable();
-			Assert.notNull( endpoint, "An AutoSuggestDataEndpoint is required if using attributes to specify the dataset" );
+			Assert.notNull( endpoint, () -> "An AutoSuggestDataEndpoint is required if using attributes to specify the dataset" );
 
 			settings.dataSet = endpoint.getDataSet( settings.dataSetId );
-			Assert.notNull( settings.dataSet, "No registered AutoSuggestDataSet with id " + settings.dataSetId );
+			Assert.notNull( settings.dataSet, () -> "No registered AutoSuggestDataSet with id " + settings.dataSetId );
 		}
 
-		Assert.isTrue( settings.hasControlConfiguration() || settings.hasDataSet(),
-		               "Either data set id or AutoSuggestFormElementConfiguration attribute is required for using auto-suggest controls" );
+		Assert.isTrue( settings.hasControlConfiguration() || settings.hasDataSet(), () ->
+				"Either data set id or AutoSuggestFormElementConfiguration attribute is required for using auto-suggest controls" );
 
 		if ( !settings.hasResultTransformer() ) {
 			if ( settings.dataSet != null && settings.dataSet.getDataSet() instanceof AutoSuggestDataSet.ResultTransformer ) {
 				settings.resultTransformer = (AutoSuggestDataSet.ResultTransformer) settings.dataSet.getDataSet();
 			}
-			Assert.notNull( settings.resultTransformer, "No AutoSuggestDataSet.ResultTransformer could be resolved" );
+			Assert.notNull( settings.resultTransformer, () -> "No AutoSuggestDataSet.ResultTransformer could be resolved" );
 		}
 
 		return settings;

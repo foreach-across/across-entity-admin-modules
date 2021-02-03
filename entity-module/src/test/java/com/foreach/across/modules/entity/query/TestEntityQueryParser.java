@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,8 +36,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class TestEntityQueryParser
 {
-	@Mock
 	private EntityQueryMetadataProvider metadataProvider;
+
+	@Mock
+	private EntityPropertyRegistry propertyRegistry;
 
 	@Mock
 	private EntityQueryTranslator queryTranslator;
@@ -45,7 +49,7 @@ public class TestEntityQueryParser
 	@BeforeEach
 	public void before() {
 		parser = new EntityQueryParser();
-		parser.setMetadataProvider( metadataProvider );
+		parser.setMetadataProvider( new DefaultEntityQueryMetadataProvider( propertyRegistry ) );
 		parser.setQueryTranslator( queryTranslator );
 
 		parser.validateProperties();
@@ -76,21 +80,14 @@ public class TestEntityQueryParser
 
 	@Test
 	public void simpleValidQuery() {
-		when( metadataProvider.isValidProperty( "id" ) ).thenReturn( true );
-		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.EQ, "id" ) ).thenReturn( true );
-		when( metadataProvider.isValidProperty( "name" ) ).thenReturn( true );
-		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.EQ, "name" ) ).thenReturn( true );
-		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.NEQ, "name" ) ).thenReturn( true );
-		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.CONTAINS, "name" ) ).thenReturn( true );
-		when( metadataProvider.isValidValueForPropertyAndOperator( new EQValue( "123" ), "id", EntityQueryOps.EQ ) )
-				.thenReturn( true );
-		when( metadataProvider.isValidValueForPropertyAndOperator( new EQString( "bla" ), "name", EntityQueryOps.EQ ) )
-				.thenReturn( true );
-		when( metadataProvider
-				      .isValidValueForPropertyAndOperator( new EQString( "boe" ), "name", EntityQueryOps.CONTAINS ) )
-				.thenReturn( true );
-		when( metadataProvider.isValidValueForPropertyAndOperator( new EQString( "m'eh" ), "name", EntityQueryOps.NEQ ) )
-				.thenReturn( true );
+		SimpleEntityPropertyDescriptor id = new SimpleEntityPropertyDescriptor( "id" );
+		id.setPropertyType( Integer.class );
+		SimpleEntityPropertyDescriptor name = new SimpleEntityPropertyDescriptor( "name" );
+		name.setPropertyType( String.class );
+		when( propertyRegistry.contains( "id" ) ).thenReturn( true );
+		when( propertyRegistry.contains( "name" ) ).thenReturn( true );
+		when( propertyRegistry.getProperty( "id" ) ).thenReturn( id );
+		when( propertyRegistry.getProperty( "name" ) ).thenReturn( name );
 
 		EntityQuery translated = mock( EntityQuery.class );
 

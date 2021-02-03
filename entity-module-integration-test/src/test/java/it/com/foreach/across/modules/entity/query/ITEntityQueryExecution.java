@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.testmodules.springdata.business.Company;
 import com.foreach.across.testmodules.springdata.business.Group;
+import com.foreach.across.testmodules.springdata.business.QCompany;
 import com.foreach.across.testmodules.springdata.business.Representative;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -99,6 +101,23 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		List<Representative> ordered = findRepresentatives( "id like 'j%' order by name asc", john, joe );
 		assertEquals( joe, ordered.get( 0 ) );
 		assertEquals( john, ordered.get( 1 ) );
+	}
+
+	@Test
+	public void companiesByCollectionJoin() {
+		QCompany company = QCompany.company;
+		Iterable<Company> all = companyRepository.findAll( company.representatives.any().name.eq( "John % Surname" ) );
+		List<Company> companies = findCompanies( "representatives[].name = 'John % Surname'", one, two );
+		assertThat( companies ).containsAll( all );
+		assertEquals( one, companies.get( 0 ) );
+		assertEquals( two, companies.get( 1 ) );
+	}
+
+	@Test
+	public void companiesByCollectionJoinA() {
+		assertThatThrownBy(
+				() -> findCompanies( "representatives[] IN ('John % Surname')", one, two ) ).hasMessage(
+				"Illegal field: representatives[]. You can only use an indexer in the form of: collection[].name = 'John'." );
 	}
 
 	@Test

@@ -50,7 +50,7 @@ public class EQTypeConverter
 
 	@PostConstruct
 	public void validateProperties() {
-		Assert.notNull( conversionService, "conversionService cannot be null" );
+		Assert.notNull( conversionService, () -> "conversionService cannot be null" );
 	}
 
 	/**

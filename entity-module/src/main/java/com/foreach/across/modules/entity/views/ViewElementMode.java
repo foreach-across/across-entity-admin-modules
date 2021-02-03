@@ -109,7 +109,7 @@ public class ViewElementMode
 	 */
 	@Deprecated
 	public ViewElementMode( @NonNull String type ) {
-		Assert.isTrue( !StringUtils.containsAny( type, "=()," ), "ViewElementMode type cannot contain either '(', ')', ',' or '=' characters" );
+		Assert.isTrue( !StringUtils.containsAny( type, "=()," ), () -> "ViewElementMode type cannot contain either '(', ')', ',' or '=' characters" );
 		this.type = type;
 		this.childModes = Collections.emptyMap();
 	}
@@ -289,7 +289,7 @@ public class ViewElementMode
 
 		ViewElementMode mode = new ViewElementMode( type );
 		if ( groupStart >= 0 ) {
-			Assert.isTrue( viewElementModeString.charAt( viewElementModeString.length() - 1 ) == ')', "Illegal ViewElementMode string" );
+			Assert.isTrue( viewElementModeString.charAt( viewElementModeString.length() - 1 ) == ')', () -> "Illegal ViewElementMode string" );
 			String[] childModes = viewElementModeString.substring( groupStart + 1, viewElementModeString.length() - 1 ).split( "," );
 			for ( String childMode : childModes ) {
 				mode = mode.withChildMode(

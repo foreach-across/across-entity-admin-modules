@@ -29,9 +29,13 @@ import org.mockito.quality.Strictness;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -124,18 +128,23 @@ public class TestDefaultEntityQueryMetadataProvider
 	}
 
 	private void expectedOperands( EntityQueryOps... allowed ) {
+		String supported = Arrays.stream( allowed ).map( EntityQueryOps::getToken ).collect( Collectors.joining( ", " ) );
 		for ( EntityQueryOps op : EntityQueryOps.values() ) {
+			EntityQueryCondition condition = new EntityQueryCondition( "existing", op, Collections.emptyList() );
 			if ( ArrayUtils.contains( allowed, op ) ) {
 				assertTrue(
 						metadataProvider.isValidOperatorForProperty( op, "existing" ),
 						"Expected operand was not allowed: " + op
 				);
+				assertThatNoException().isThrownBy( () -> metadataProvider.validateOperatorForCondition( condition ) );
 			}
 			else {
 				assertFalse(
 						metadataProvider.isValidOperatorForProperty( op, "existing" ),
 						"Operand should not be allowed: " + op
 				);
+				assertThatThrownBy( () -> metadataProvider.validateOperatorForCondition( condition ) ).hasMessage(
+						"Invalid operator for field existing: " + op.getToken() + ", supported operators are: " + supported );
 			}
 		}
 	}

@@ -59,7 +59,7 @@ public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewE
 		if ( propertyDescriptor.getPropertyTypeDescriptor().isCollection() ) {
 			val embedded = new EmbeddedCollectionViewElementBuilder().readonly( !forWriting );
 			ViewElementBuilder<ViewElement> itemTemplate = createItemTemplate( propertyDescriptor, itemViewElementMode );
-			Assert.notNull( itemTemplate, "Unable to retrieve item template for property: " + propertyDescriptor );
+			Assert.notNull( itemTemplate, () -> "Unable to retrieve item template for property: " + propertyDescriptor );
 
 			embedded.itemTemplate( itemTemplate );
 

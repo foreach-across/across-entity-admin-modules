@@ -158,14 +158,18 @@ public class ElasticEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T
 		var mappingContext = elasticsearchOperations.getElasticsearchConverter().getMappingContext();
 		if ( mappingContext.hasPersistentEntityFor( resolvedType ) ) {
 			ElasticsearchPersistentEntity<?> persistentEntity = mappingContext.getPersistentEntity( resolvedType );
-			ElasticsearchPersistentProperty idProperty = persistentEntity.getIdProperty();
-			String referencedProperty = property.getName() + "." + idProperty.getName();
-			try {
-				Object[] args = transformArgumentsToIdValues( original, idProperty );
-				return new EntityQueryCondition( referencedProperty, original.getOperand(), args );
-			}
-			catch ( IllegalAccessException | InvocationTargetException e ) {
-				LOG.error( "An unexpected error occurred whilst trying to resolve the id property for " + resolvedType.getName(), e );
+			if ( persistentEntity != null ) {
+				ElasticsearchPersistentProperty idProperty = persistentEntity.getIdProperty();
+				if ( Objects.nonNull( idProperty ) ) {
+					String referencedProperty = property.getName() + "." + idProperty.getName();
+					try {
+						Object[] args = transformArgumentsToIdValues( original, idProperty );
+						return new EntityQueryCondition( referencedProperty, original.getOperand(), args );
+					}
+					catch ( IllegalAccessException | InvocationTargetException e ) {
+						LOG.error( "An unexpected error occurred whilst trying to resolve the id property for " + resolvedType.getName(), e );
+					}
+				}
 			}
 		}
 		return original;

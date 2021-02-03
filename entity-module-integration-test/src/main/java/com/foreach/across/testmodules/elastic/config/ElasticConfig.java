@@ -23,10 +23,7 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.testmodules.elastic.ElasticTestModule;
-import com.foreach.across.testmodules.elastic.domain.ElasticCountry;
-import com.foreach.across.testmodules.elastic.domain.ElasticCountryRepository;
-import com.foreach.across.testmodules.elastic.domain.ElasticCustomer;
-import com.foreach.across.testmodules.elastic.domain.ElasticCustomerRepository;
+import com.foreach.across.testmodules.elastic.domain.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +53,10 @@ public class ElasticConfig implements EntityConfigurer
 
 		ElasticCountry nl = createCountry( countryRepository, "Netherlands" );
 		long count = elasticCustomerRepository.count();
+
+		ElasticContact alice = new ElasticContact( "Alice", "White" );
+		ElasticContact john = new ElasticContact( "John", "Smith" );
+
 		if ( count >= 100 ) {
 			return;
 		}
@@ -65,18 +67,15 @@ public class ElasticConfig implements EntityConfigurer
 			int mod = i % 10;
 
 			if ( i % 2 == 0 ) {
-				//elasticCustomer.setCreatedDate( LocalDateTime.now().minusDays( mod ) );
 				elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
 				elasticCustomer.setCountry( belgium );
-				//JoinField<String> customer = new JoinField<>( "customer", belgium.getId() );
-				//elasticCustomer.setMyJoinField( customer );
+				if ( i % 4 == 0 ) {
+					elasticCustomer.setPrimaryContacts( Arrays.asList( alice, john ) );
+				}
 			}
 			else {
-				//elasticCustomer.setCreatedDate( LocalDateTime.now().plusDays( mod ) );
 				elasticCustomer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
 				elasticCustomer.setCountry( nl );
-				//JoinField<String> customer = new JoinField<>( "customer", nl.getId() );
-				//elasticCustomer.setMyJoinField( customer );
 			}
 			elasticCustomer.setUpdatedDate( LocalDateTime.now() );
 			elasticCustomerRepository.save( elasticCustomer );

@@ -132,7 +132,7 @@ public class AutoSuggestDataAttributeRegistrar
 			}
 
 			AutoSuggestDataEndpoint endpoint = autoSuggestDataEndpoint.getIfAvailable();
-			Assert.notNull( endpoint, "No AutoSuggestEndpoint is available for registering datasets" );
+			Assert.notNull( endpoint, () -> "No AutoSuggestEndpoint is available for registering datasets" );
 			endpoint.registerDataSet( dataSetId, autoSuggestData );
 
 			attributes.setAttribute( DATASET_ID, dataSetId );

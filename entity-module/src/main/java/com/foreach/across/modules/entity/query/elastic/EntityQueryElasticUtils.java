@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExpression;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -52,53 +53,60 @@ public class EntityQueryElasticUtils
 		}
 		switch ( condition.getOperand() ) {
 			case IS_NULL:
-				return Criteria.where( condition.getProperty() ).not().exists();
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).not().exists();
 			case IS_NOT_NULL:
-				return Criteria.where( condition.getProperty() ).exists();
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).exists();
 			case EQ:
-				return Criteria.where( condition.getProperty() ).matchesAll( condition.getFirstArgument() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).matchesAll( condition.getFirstArgument() );
 			case NEQ:
-				return Criteria.where( condition.getProperty() ).not().matchesAll( condition.getFirstArgument() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).not().matchesAll( condition.getFirstArgument() );
 			case GT:
-				return Criteria.where( condition.getProperty() ).greaterThan( condition.getFirstArgument() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).greaterThan( condition.getFirstArgument() );
 			case GE:
-				return Criteria.where( condition.getProperty() ).greaterThanEqual( condition.getFirstArgument() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).greaterThanEqual( condition.getFirstArgument() );
 			case LT:
-				return Criteria.where( condition.getProperty() ).lessThan( condition.getFirstArgument() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).lessThan( condition.getFirstArgument() );
 			case LE:
-				return Criteria.where( condition.getProperty() ).lessThanEqual( condition.getFirstArgument() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).lessThanEqual( condition.getFirstArgument() );
 /*
 			case CONTAINS: {
 				Expression<Collection> collection
-						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+						= (Expression<Collection>) resolveProperty( root, resolveProperty( condition.getProperty() ));
 				return cb.isMember( condition.getFirstArgument(), collection );
 			}
 
 			case NOT_CONTAINS: {
 				Expression<Collection> collection
-						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+						= (Expression<Collection>) resolveProperty( root, resolveProperty( condition.getProperty() ));
 				return cb.isNotMember( condition.getFirstArgument(), collection );
 			}
 
  */
 			case IS_EMPTY:
-				return Criteria.where( condition.getProperty() ).exists();
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).exists();
 			case IS_NOT_EMPTY:
-				return Criteria.where( condition.getProperty() ).not().exists();
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).not().exists();
 			case IN:
-				return Criteria.where( condition.getProperty() ).in( condition.getArguments() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).in( condition.getArguments() );
 			case NOT_IN:
-				return Criteria.where( condition.getProperty() ).notIn( condition.getArguments() );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).notIn( condition.getArguments() );
 			case LIKE:
-				return Criteria.where( condition.getProperty() ).contains( Objects.toString( condition.getFirstArgument() ) );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).contains( Objects.toString( condition.getFirstArgument() ) );
 			case LIKE_IC:
-				return Criteria.where( condition.getProperty() ).contains( StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).contains(
+						StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
 			case NOT_LIKE:
-				return Criteria.where( condition.getProperty() ).not().contains( Objects.toString( condition.getFirstArgument() ) );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).not().contains( Objects.toString( condition.getFirstArgument() ) );
 			case NOT_LIKE_IC:
-				return Criteria.where( condition.getProperty() ).not().contains( StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
+				return Criteria.where( resolveProperty( condition.getProperty() ) ).not().contains(
+						StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
 		}
 		throw new IllegalArgumentException( "Unsupported operand for Elasticsearch query: " + condition.getOperand() );
+	}
+
+	private static String resolveProperty( String property ) {
+		// Collection searches are just json document searches
+		return StringUtils.replace( property, EntityPropertyRegistry.INDEXER + ".", "." );
 	}
 
 	private Criteria buildQueryPredicate( EntityQuery query ) {

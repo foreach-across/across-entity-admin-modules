@@ -23,7 +23,9 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
 import java.time.temporal.Temporal;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 
@@ -63,20 +65,51 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 	@Override
 	public boolean isValidOperatorForProperty( EntityQueryOps operator, String property ) {
 		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );
+		Assert.notNull( descriptor, () -> "No descriptor for property '" + property + "', unable to validate EntityQuery" );
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
-		Assert.notNull( typeDescriptor, "No type descriptor for property '" + property + "', unable to validate EntityQuery" );
+		Assert.notNull( typeDescriptor, () -> "No type descriptor for property '" + property + "', unable to validate EntityQuery" );
 		return ArrayUtils.contains( retrieveOperandsForType( typeDescriptor ), operator );
 	}
 
 	@Override
 	public boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator ) {
-		TypeDescriptor valueType = TypeDescriptor.forObject( value );
-
 		if ( operator == CONTAINS || operator == NOT_CONTAINS ) {
 			return true;
 		}
 
+		TypeDescriptor valueType = TypeDescriptor.forObject( value );
 		return isValidGroupOrNonGroupOperation( valueType, operator );
+	}
+
+	@Override
+	public void validatePropertyForCondition( EntityQueryCondition condition ) {
+		if ( !isValidProperty( condition.getProperty() ) ) {
+			throw new EntityQueryParsingException.IllegalField( condition.getProperty() );
+		}
+	}
+
+	@Override
+	public void validateOperatorForCondition( EntityQueryCondition condition ) {
+		if ( !isValidOperatorForProperty( condition.getOperand(), condition.getProperty() ) ) {
+			EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( condition.getProperty() );
+			TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+			throw new EntityQueryParsingException.IllegalOperator( condition.getOperand().getToken() + ", supported operators are: " +
+					                                                       Arrays.stream(
+							                                                       retrieveOperandsForType( typeDescriptor ) ).map( EntityQueryOps::getToken )
+					                                                             .collect(
+							                                                             Collectors.joining( ", " ) ),
+			                                                       condition.getProperty() );
+		}
+	}
+
+	@Override
+	public void validateValueForCondition( EntityQueryCondition condition ) {
+		if ( !isValidValueForPropertyAndOperator( condition.getFirstArgument(),
+		                                          condition.getProperty(),
+		                                          condition.getOperand() ) ) {
+			throw new EntityQueryParsingException.IllegalValue( condition.getOperand().getToken(),
+			                                                    condition.getProperty() );
+		}
 	}
 
 	private boolean isValidGroupOrNonGroupOperation( TypeDescriptor valueType, EntityQueryOps operator ) {

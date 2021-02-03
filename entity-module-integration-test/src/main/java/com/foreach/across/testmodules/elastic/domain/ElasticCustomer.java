@@ -29,6 +29,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Arne Vandamme
@@ -64,6 +65,9 @@ public class ElasticCustomer implements Persistable<String>
 
 	@Field(type = FieldType.Date, format = DateFormat.date_optional_time)
 	private LocalDateTime updatedDate;
+
+	@Field(type = FieldType.Nested, includeInParent = true)
+	private List<ElasticContact> primaryContacts;
 
 	@Version
 	private Long version;
