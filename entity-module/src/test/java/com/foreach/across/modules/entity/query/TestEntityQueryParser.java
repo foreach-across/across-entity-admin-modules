@@ -36,8 +36,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class TestEntityQueryParser
 {
-	private EntityQueryMetadataProvider metadataProvider;
-
 	@Mock
 	private EntityPropertyRegistry propertyRegistry;
 
