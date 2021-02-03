@@ -43,7 +43,7 @@ import java.util.Objects;
 @Order()
 public class EntityElasticsearchConfiguration implements EntityConfigurer
 {
-	public static final String ATTR_ELASTIC_PROXY = "elasticsearch-referenced-entity";
+	public static final String ATTR_ELASTIC_PROXY_REFERENCE = "elasticsearch-reference-entity";
 
 	private final EntityRegistry entityRegistry;
 
@@ -63,7 +63,7 @@ public class EntityElasticsearchConfiguration implements EntityConfigurer
 	private void configureElasticSearchEntity( MutableEntityConfiguration entityConfiguration ) {
 		// custom entityviewlinkbuilder
 		if ( isElasticsearchProxy( entityConfiguration ) ) {
-			Class referencedEntity = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY, Class.class );
+			Class referencedEntity = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY_REFERENCE, Class.class );
 			if ( entityRegistry.contains( referencedEntity ) ) {
 				EntityViewLinkBuilder searchLinkBuilder = entityConfiguration.getAttribute( EntityViewLinkBuilder.class );
 				MutableEntityConfiguration referencedEntityConfiguration =
@@ -86,16 +86,16 @@ public class EntityElasticsearchConfiguration implements EntityConfigurer
 	}
 
 	private boolean isElasticsearchProxy( MutableEntityConfiguration ec ) {
-		return ec.hasAttribute( ATTR_ELASTIC_PROXY );
+		return ec.hasAttribute( ATTR_ELASTIC_PROXY_REFERENCE );
 	}
 
-	static class ProxyEntityViewLinkBuilder extends EntityViewLinkBuilder
+	public static class ProxyEntityViewLinkBuilder extends EntityViewLinkBuilder
 	{
 		private final EntityViewLinkBuilder searchLinkBuilder;
 		private final EntityViewLinkBuilder entityLinkBuilder;
 
-		ProxyEntityViewLinkBuilder( EntityViewLinkBuilder searchLinkBuilder,
-		                            EntityViewLinkBuilder entityLinkBuilder ) {
+		public ProxyEntityViewLinkBuilder( EntityViewLinkBuilder searchLinkBuilder,
+		                                   EntityViewLinkBuilder entityLinkBuilder ) {
 			super( entityLinkBuilder.toUriComponentsBuilder(), null );
 			this.searchLinkBuilder = searchLinkBuilder;
 			this.entityLinkBuilder = entityLinkBuilder;
@@ -103,7 +103,7 @@ public class EntityElasticsearchConfiguration implements EntityConfigurer
 
 		@Override
 		public EntityLinkBuilder asAssociationFor( EntityLinkBuilder sourceLinkBuilder, Object sourceEntity ) {
-			return null;
+			return entityLinkBuilder.asAssociationFor( sourceLinkBuilder, sourceEntity );
 		}
 
 		@Override

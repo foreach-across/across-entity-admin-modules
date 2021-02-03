@@ -23,14 +23,17 @@ import com.foreach.across.testmodules.elastic.domain.jpa.customer.CustomerReposi
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-@Controller("/elastic/reset-test-data")
+@RestController
+@RequestMapping(path = "/elastic/reset-test-data")
 @RequiredArgsConstructor
 public class TestDataController
 {
@@ -38,17 +41,14 @@ public class TestDataController
 	private final CountryRepository countryRepository;
 
 	@GetMapping
-	public void resetTestData() {
+	public ResponseEntity resetTestData() {
 		customerRepository.deleteAll();
 		countryRepository.deleteAll();
 
 		Country belgium = createCountry( countryRepository, "Belgium" );
 
 		Country nl = createCountry( countryRepository, "Netherlands" );
-		long count = customerRepository.count();
-		if ( count >= 100 ) {
-			return;
-		}
+
 		for ( int i = 0; i < 100; i++ ) {
 			Customer customer = new Customer();
 			customer.setFirstName( "first-" + RandomStringUtils.randomAlphanumeric( 15 ) );
@@ -72,6 +72,7 @@ public class TestDataController
 			customer.setUpdatedDate( LocalDateTime.now() );
 			customerRepository.save( customer );
 		}
+		return ResponseEntity.ok().build();
 	}
 
 	private Country createCountry( CountryRepository countryRepository, String name ) {

@@ -23,9 +23,7 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.testmodules.elastic.domain.DomainMarker;
-import com.foreach.across.testmodules.elastic.domain.elastic.country.ElasticCountry;
 import com.foreach.across.testmodules.elastic.domain.elastic.customer.ElasticCustomer;
-import com.foreach.across.testmodules.elastic.domain.jpa.country.Country;
 import com.foreach.across.testmodules.elastic.domain.jpa.customer.Customer;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
@@ -45,7 +43,7 @@ public class ElasticConfig implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( ElasticCustomer.class )
-		        .attribute( EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY, Customer.class )
+		        .attribute( EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY_REFERENCE, Customer.class )
 		        .properties( p -> p
 				                     .property( "readOnlyVersion" )
 				                     .propertyType( Long.class )
@@ -63,8 +61,7 @@ public class ElasticConfig implements EntityConfigurer
 		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.showProperties( "*" )
 		                                                           .advancedMode( true ) )
 		                             .showProperties( "*" ) );
-
-		entities.withType( ElasticCountry.class )
-		        .attribute( EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY, Country.class );
 	}
+
+
 }

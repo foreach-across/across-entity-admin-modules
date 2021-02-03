@@ -31,7 +31,7 @@ import org.springframework.context.event.EventListener;
 
 import java.util.function.Consumer;
 
-import static com.foreach.across.testmodules.elastic.config.EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY;
+import static com.foreach.across.testmodules.elastic.config.EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY_REFERENCE;
 
 // todo Elasticsearch menu configuration, should be put somewhere together with {@link EntityElasticsearchConfiguration}
 @Configuration
@@ -58,12 +58,12 @@ public class ElasticsearchMenuConfiguration
 	}
 
 	private boolean isElasticsearchProxy( EntityConfiguration entityConfiguration ) {
-		return entityConfiguration.hasAttribute( ATTR_ELASTIC_PROXY );
+		return entityConfiguration.hasAttribute( ATTR_ELASTIC_PROXY_REFERENCE );
 	}
 
 	private Consumer<EntityConfiguration> configureItemUrls( PathBasedMenuBuilder builder ) {
 		return entityConfiguration -> {
-			Class targetType = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY, Class.class );
+			Class targetType = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY_REFERENCE, Class.class );
 			EntityConfiguration targetConfiguration = entityRegistry.getEntityConfiguration( targetType );
 
 			EntityViewLinkBuilder.ForEntityConfiguration configurationLinkBuilder = entityViewLinks.linkTo( entityConfiguration.getEntityType() );
