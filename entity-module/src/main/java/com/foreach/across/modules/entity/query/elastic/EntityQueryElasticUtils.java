@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.entity.query.elastic;
 
-import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryCondition;
-import com.foreach.across.modules.entity.query.EntityQueryExpression;
-import com.foreach.across.modules.entity.query.EntityQueryOps;
+import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -27,7 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class EntityQueryElasticUtils
@@ -91,10 +91,9 @@ public class EntityQueryElasticUtils
 			case NOT_IN:
 				return Criteria.where( resolveProperty( condition.getProperty() ) ).notIn( condition.getArguments() );
 			case LIKE:
-				return Criteria.where( resolveProperty( condition.getProperty() ) ).contains( Objects.toString( condition.getFirstArgument() ) );
+				return resolveLikeCriteria( condition.getProperty(), Objects.toString( condition.getFirstArgument() ) );
 			case LIKE_IC:
-				return Criteria.where( resolveProperty( condition.getProperty() ) ).contains(
-						StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
+				return resolveLikeCriteria( condition.getProperty(), StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
 			case NOT_LIKE:
 				return Criteria.where( resolveProperty( condition.getProperty() ) ).not().contains( Objects.toString( condition.getFirstArgument() ) );
 			case NOT_LIKE_IC:
@@ -102,6 +101,69 @@ public class EntityQueryElasticUtils
 						StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ) );
 		}
 		throw new IllegalArgumentException( "Unsupported operand for Elasticsearch query: " + condition.getOperand() );
+	}
+
+	private static Criteria resolveLikeCriteria( String property, String argument ) {
+//		todo: Support args like `itemCode like 'Y%215%03%2021'` some day? Currently not supported via Criteria api.
+//		String sanitizedArgument = QueryParserBase.escape( argument ).replaceAll( "%", "*" );
+//		return queryStringQuery( sanitizedArgument ).field(property).analyzeWildcard( true ).escape(false);
+
+		Criteria where = Criteria.where( resolveProperty( property ) );
+
+		List<String> split = Arrays.stream( argument.split( "%" ) )
+		                           .filter( StringUtils::isNotEmpty )
+		                           .collect( Collectors.toList() );
+		if ( split.size() > 3 ) {
+			throw new EntityQueryParsingException.IllegalValue( property,
+			                                                    argument + ". Multiple inner wildcards are currently not supported." );
+		}
+
+		boolean startsWithWildcard = argument.startsWith( "%" );
+		boolean endsWithWildcard = argument.endsWith( "%" );
+
+		if ( split.size() == 3 ) {
+			if ( startsWithWildcard || endsWithWildcard ) {
+				throw new EntityQueryParsingException.IllegalValue( property,
+				                                                    argument + ". Multiple inner wildcards are currently not supported." );
+			}
+			// Example: Y%2021%4785
+			return Criteria.and().subCriteria( where.startsWith( split.get( 0 ) ) )
+			               .subCriteria( where.contains( split.get( 1 ) ) )
+			               .subCriteria( where.endsWith( split.get( 2 ) ) );
+		}
+
+		if ( split.size() == 2 ) {
+			// Example: %Y2021%4785
+			if ( startsWithWildcard ) {
+				return Criteria.and().subCriteria( where.contains( split.get( 0 ) ) )
+				               .subCriteria( where.endsWith( split.get( 1 ) ) );
+			}
+			// Example: Y2021%4785%
+			else if ( endsWithWildcard ) {
+				return Criteria.and().subCriteria( where.startsWith( split.get( 0 ) ) )
+				               .subCriteria( where.contains( split.get( 1 ) ) );
+			}
+			// Example: Y2021%4785
+			else {
+				return Criteria.and().subCriteria( where.startsWith( split.get( 0 ) ) )
+				               .subCriteria( where.endsWith( split.get( 1 ) ) );
+			}
+		}
+
+		// Example: %Y20214785%
+		if ( startsWithWildcard && endsWithWildcard ) {
+			return where.contains( argument.substring( 1, argument.length() - 1 ) );
+		}
+		// Example: %Y20214785
+		if ( startsWithWildcard ) {
+			return where.endsWith( argument.substring( 1 ) );
+		}
+		// Example: Y20214785%
+		if ( endsWithWildcard ) {
+			return where.startsWith( argument.substring( 0, argument.length() - 1 ) );
+		}
+		// Example: Y20214785 (same as EntityQueryOps.EQ)
+		return where.matchesAll( argument );
 	}
 
 	private static String resolveProperty( String property ) {

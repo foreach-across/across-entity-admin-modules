@@ -32,6 +32,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.validator.constraints.Length;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestCli
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.TypeDescriptor;
@@ -94,9 +96,10 @@ public class TestEntityQueryElasticUtils
 	@Autowired
 	private CountryRepository countryRepository;
 
-	private final Date TODAY = DateUtils.truncate( new Date(), Calendar.DATE );
+	final static Date TODAY = DateUtils.truncate( new Date(), Calendar.DATE );
 
-	EntityQueryParser parser;
+	private EntityQueryParser parser;
+	private Page<Customer> allCustomersCache;
 
 	@BeforeEach
 	public void setup() {
@@ -115,59 +118,6 @@ public class TestEntityQueryElasticUtils
 		eqTypeConverter.setFunctionHandlers( Arrays.asList( new EntityQueryDateFunctions(), new ElasticBetweenFunctionHandler() ) );
 		EntityQueryParserFactory entityQueryParserFactory = new EntityQueryParserFactory( eqTypeConverter );
 		parser = entityQueryParserFactory.createParser( entityConfiguration.getPropertyRegistry() );
-
-		// Delete the index to make sure typeMappings are gone
-		customerRepository.deleteAll();
-		countryRepository.deleteAll();
-
-		Country belgium = createCountry( "Belgium" );
-		Country netherlands = createCountry( "Netherlands" );
-		ElasticContact alice = new ElasticContact( "Alice", "White" );
-		ElasticContact john = new ElasticContact( "John", "Smith" );
-
-		for ( int i = 0; i < 100; i++ ) {
-			Customer customer = new Customer();
-			customer.setSequenceNumber( i );
-			customer.setFirstName( "first-abIT" + i + RandomStringUtils.randomAlphanumeric( 15 ) );
-			customer.setLastName( "last-" + RandomStringUtils.randomAlphanumeric( 15 ) );
-			int mod = i % 10;
-
-			if ( i == 0 ) {
-				customer.setCreatedDate( TODAY );
-			}
-			else {
-				if ( i % 2 == 0 ) {
-					customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
-				}
-				else {
-					customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
-				}
-			}
-
-			if ( i % 2 == 0 ) {
-				if ( i % 4 == 0 ) {
-					// 25 of them
-					customer.setPrimaryContacts( Arrays.asList( alice, john ) );
-				}
-
-				customer.setCountry( belgium );
-			}
-			else {
-				customer.setCountry( netherlands );
-			}
-
-			if ( i > 50 ) {
-				customer.setUpdatedDate( LocalDateTime.now().plusDays( i - 50 ) );
-			}
-			else {
-				customer.setUpdatedDate( LocalDateTime.now() );
-			}
-
-			customer.setDateOfBirth( LocalDate.now().minusYears( 20 + mod ) );
-
-			customer.setWorkDayFinishesAt( LocalTime.of( 14, 0 ).plusHours( mod ) );
-			customerRepository.save( customer );
-		}
 	}
 
 	@Test
@@ -189,9 +139,9 @@ public class TestEntityQueryElasticUtils
 	@Test
 	public void testLikeQuery() {
 		String searchString = "IT" + RandomStringUtils.randomNumeric( 1 );
-		Page<Customer> all = (Page<Customer>) SearchHitSupport.unwrapSearchHits( customerRepository.findAll() );
+		Page<Customer> all = getAllCustomers();
 		List<Customer> filteredItems = all.stream().filter( m -> m.getFirstName().contains( searchString ) ).collect( Collectors.toList() );
-		EntityQuery rawQuery = EntityQuery.of( "(firstName like '" + searchString + "')" );
+		EntityQuery rawQuery = EntityQuery.of( "firstName like '%" + searchString + "%'" );
 
 		CriteriaQuery criteriaQuery = EntityQueryElasticUtils.toCriteriaQuery( parser.prepare( rawQuery ) );
 
@@ -199,6 +149,66 @@ public class TestEntityQueryElasticUtils
 		SearchHits<Customer> search = elasticsearchOperations.search( criteriaQuery, Customer.class );
 		assertThat( search.getSearchHits() ).size().isEqualTo( filteredItems.size() );
 		assertThat( search.getSearchHits() ).map( SearchHit::getContent ).isEqualTo( filteredItems );
+
+		assertSame( "country.name like '%lgi%'", m -> m.getCountry().getName().contains( "lgi" ), 50 );
+	}
+
+	@Test
+	void endsWithWildcard() {
+		assertSame( "country.name like '%gium'", m -> m.getCountry().getName().endsWith( "gium" ), 50 );
+		assertSame( "country.name like '%giuM'", m -> m.getCountry().getName().endsWith( "giuM" ), 0 );
+		assertSame( "country.name ilike '%GiUm'", m -> m.getCountry().getName().toLowerCase().endsWith( "gium" ), 50 );
+	}
+
+	@Test
+	void startsWithWildcard() {
+		assertSame( "country.name like 'Bel%'", m -> m.getCountry().getName().startsWith( "Bel" ), 50 );
+		assertSame( "country.name like 'bel%'", m -> m.getCountry().getName().startsWith( "bel" ), 0 );
+	}
+
+	@Test
+	// todo
+	@Disabled("to review; Keyword fields are case sensitive?")
+	void startsWithWildcardAndKeyword() {
+		assertSame( "country.name ilike 'bel%'", m -> m.getCountry().getName().toLowerCase().startsWith( "bel" ), 50 );
+		assertSame( "country.name ilike 'b%M'", m -> {
+			String countryName = m.getCountry().getName().toLowerCase();
+			return countryName.startsWith( "b" ) && countryName.endsWith( "m" );
+		}, 50 );
+	}
+
+	@Test
+	void likeWithInnerWildcards() {
+		assertSame( "country.name like 'B%l%'", m -> {
+			            String countryName = m.getCountry().getName();
+			            return countryName.startsWith( "B" ) && countryName.contains( "l" );
+		            },
+		            50 );
+
+		assertSame( "country.name like '%l%m'", m -> {
+			            String countryName = m.getCountry().getName();
+			            return countryName.contains( "l" ) && countryName.endsWith( "m" );
+		            },
+		            50 );
+
+		assertSame( "country.name like 'B%m'",
+		            m -> {
+			            String countryName = m.getCountry().getName();
+			            return countryName.startsWith( "B" ) && countryName.endsWith( "m" );
+		            },
+		            50 );
+		assertSame( "country.name like 'b%m'", m -> {
+			String countryName = m.getCountry().getName();
+			return countryName.startsWith( "b" ) && countryName.endsWith( "m" );
+		}, 0 );
+	}
+
+	@Test
+	@Disabled(value = "Currently not supported")
+	void likeWithMultipleInnerWildcards() {
+		assertSame( "country.name like '%e%l%'", m -> m.getCountry().getName().matches( "^.*e.*l.*$" ), 100 );
+		assertSame( "country.name like '%e%L%'", m -> m.getCountry().getName().matches( "^.*e.*L.*$" ), 0 );
+		assertSame( "country.name ilike '%e%L%'", m -> m.getCountry().getName().toLowerCase().matches( "^.*e.*l.*$" ), 100 );
 	}
 
 	@Test
@@ -267,7 +277,7 @@ public class TestEntityQueryElasticUtils
 	}
 
 	private void assertSame( String entityQuery, Predicate<Customer> p, int expectedSize ) {
-		Page<Customer> all = customerRepository.findAll( Pageable.unpaged() );
+		Page<Customer> all = getAllCustomers();
 		List<Customer> filteredItems = all.stream().filter( p ).collect( Collectors.toList() );
 		EntityQuery rawQuery = EntityQuery.of( entityQuery );
 
@@ -280,10 +290,11 @@ public class TestEntityQueryElasticUtils
 		assertThat( search.getSearchHits() ).map( SearchHit::getContent ).isEqualTo( filteredItems );
 	}
 
-	private Country createCountry( String name ) {
-		Country country = new Country();
-		country.setName( name );
-		return countryRepository.save( country );
+	private Page<Customer> getAllCustomers() {
+		if ( allCustomersCache == null ) {
+			allCustomersCache = customerRepository.findAll( Pageable.unpaged() );
+		}
+		return allCustomersCache;
 	}
 
 	@Configuration
@@ -291,6 +302,10 @@ public class TestEntityQueryElasticUtils
 	@EnableElasticsearchRepositories(basePackageClasses = CustomerRepository.class)
 	static class Config
 	{
+		@Bean
+		public TestDataInitializer testDataInitializer() {
+			return new TestDataInitializer();
+		}
 	}
 
 	@Document(indexName = "itcustomeridx")
@@ -436,6 +451,71 @@ public class TestEntityQueryElasticUtils
 					return Criteria.where( entityQueryCondition.getProperty() ).between( convertedArgs[0], convertedArgs[1] );
 				}
 			};
+		}
+	}
+
+	static class TestDataInitializer
+	{
+
+		@Autowired
+		void insertTestData( CustomerRepository customerRepository, CountryRepository countryRepository ) {
+			customerRepository.deleteAll();
+			countryRepository.deleteAll();
+
+			Country belgium = createCountry( "Belgium", countryRepository );
+			Country netherlands = createCountry( "Netherlands", countryRepository );
+			ElasticContact alice = new ElasticContact( "Alice", "White" );
+			ElasticContact john = new ElasticContact( "John", "Smith" );
+
+			for ( int i = 0; i < 100; i++ ) {
+				Customer customer = new Customer();
+				customer.setSequenceNumber( i );
+				customer.setFirstName( "first-abIT" + i + RandomStringUtils.randomAlphanumeric( 15 ) );
+				customer.setLastName( "last-" + RandomStringUtils.randomAlphanumeric( 15 ) );
+				int mod = i % 10;
+
+				if ( i == 0 ) {
+					customer.setCreatedDate( TestEntityQueryElasticUtils.TODAY );
+				}
+				else {
+					if ( i % 2 == 0 ) {
+						customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+					}
+					else {
+						customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
+					}
+				}
+
+				if ( i % 2 == 0 ) {
+					if ( i % 4 == 0 ) {
+						// 25 of them
+						customer.setPrimaryContacts( Arrays.asList( alice, john ) );
+					}
+
+					customer.setCountry( belgium );
+				}
+				else {
+					customer.setCountry( netherlands );
+				}
+
+				if ( i > 50 ) {
+					customer.setUpdatedDate( LocalDateTime.now().plusDays( i - 50 ) );
+				}
+				else {
+					customer.setUpdatedDate( LocalDateTime.now() );
+				}
+
+				customer.setDateOfBirth( LocalDate.now().minusYears( 20 + mod ) );
+
+				customer.setWorkDayFinishesAt( LocalTime.of( 14, 0 ).plusHours( mod ) );
+				customerRepository.save( customer );
+			}
+		}
+
+		private Country createCountry( String name, CountryRepository countryRepository ) {
+			Country country = new Country();
+			country.setName( name );
+			return countryRepository.save( country );
 		}
 	}
 }
