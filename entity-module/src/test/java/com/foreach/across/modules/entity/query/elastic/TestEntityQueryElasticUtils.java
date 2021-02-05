@@ -167,9 +167,7 @@ public class TestEntityQueryElasticUtils
 	}
 
 	@Test
-	// todo
-	@Disabled("to review; Keyword fields are case sensitive?")
-	void startsWithWildcardAndKeyword() {
+	void keywordFieldsRequireASpecifiedAnalyzerForCaseSenitivity() {
 		assertSame( "country.name ilike 'bel%'", m -> m.getCountry().getName().toLowerCase().startsWith( "bel" ), 50 );
 		assertSame( "country.name ilike 'b%M'", m -> {
 			String countryName = m.getCountry().getName().toLowerCase();
@@ -396,7 +394,7 @@ public class TestEntityQueryElasticUtils
 
 		@NotBlank
 		@Length(max = 250)
-		@Field(type = FieldType.Keyword)
+		@Field(type = FieldType.Keyword, searchAnalyzer = "standard")
 		private String name;
 
 		@Override
