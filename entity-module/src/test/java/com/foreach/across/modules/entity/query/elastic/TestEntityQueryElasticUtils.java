@@ -167,7 +167,7 @@ public class TestEntityQueryElasticUtils
 	}
 
 	@Test
-	void keywordFieldsRequireASpecifiedAnalyzerForCaseSenitivity() {
+	void keywordFieldsRequireAnAnalyzerSpecifiedForCaseSensitivity() {
 		assertSame( "country.name ilike 'bel%'", m -> m.getCountry().getName().toLowerCase().startsWith( "bel" ), 50 );
 		assertSame( "country.name ilike 'b%M'", m -> {
 			String countryName = m.getCountry().getName().toLowerCase();
