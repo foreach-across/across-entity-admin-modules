@@ -167,9 +167,14 @@ public class TestEntityQueryElasticUtils
 	}
 
 	@Test
-	void keywordFieldsRequireAnAnalyzerSpecifiedForCaseSensitivity() {
-		assertSame( "country.name ilike 'bel%'", m -> m.getCountry().getName().toLowerCase().startsWith( "bel" ), 50 );
-		assertSame( "country.name ilike 'b%M'", m -> {
+	@Disabled("TBD: setting an analyzer on _one_ keyword field, enables it on other keyword fields as well?")
+	void caseSensitivityDependsOnAnalyzerOnKeywordFields() {
+		String firstNameSearch = "IT" + RandomStringUtils.randomNumeric( 1 );
+		assertSame( "firstName ilike '%" + firstNameSearch + "%'", m -> m.getCountry().getName().toLowerCase().contains( firstNameSearch ), 50 );
+
+		String lastNameSearchEnd = RandomStringUtils.randomNumeric( 1 );
+		String lastNameSearch = "last-%" + lastNameSearchEnd;
+		assertSame( "lastName ilike '" + lastNameSearch + "'", m -> {
 			String countryName = m.getCountry().getName().toLowerCase();
 			return countryName.startsWith( "b" ) && countryName.endsWith( "m" );
 		}, 50 );
