@@ -17,11 +17,14 @@
 package com.foreach.across.testmodules.elastic;
 
 import com.foreach.across.core.AcrossModule;
+import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 
 import java.util.Set;
 
+@AcrossDepends(required = AcrossHibernateJpaModule.NAME)
 public class ElasticTestModule extends AcrossModule
 {
 	public static final String NAME = "ElasticTestModule";
@@ -38,6 +41,6 @@ public class ElasticTestModule extends AcrossModule
 
 	@Override
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
-		contextConfigurers.add( new ComponentScanConfigurer( getClass().getPackage().getName() ) );
+		contextConfigurers.add( ComponentScanConfigurer.forAcrossModule( ElasticTestModule.class ) );
 	}
 }

@@ -16,11 +16,6 @@
 
 package com.foreach.across.testmodules.elastic.domain;
 
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-
-import java.util.List;
-
-public interface ElasticCountryRepository extends ElasticsearchRepository<ElasticCountry, String>
+public class DomainMarker
 {
-	List<ElasticCountry> findByName( String name );
 }

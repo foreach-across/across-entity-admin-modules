@@ -20,9 +20,11 @@ import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.testmodules.elastic.ElasticTestModule;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Bean;
 
 /**
  * @author Arne Vandamme
@@ -40,5 +42,12 @@ public class EntityModuleElasticApplication
 {
 	public static void main( String[] args ) {
 		SpringApplication.run( EntityModuleElasticApplication.class, args );
+	}
+
+	@Bean
+	public AcrossHibernateJpaModule acrossHibernateJpaModule() {
+		AcrossHibernateJpaModule hibernateModule = new AcrossHibernateJpaModule();
+		hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "update" );
+		return hibernateModule;
 	}
 }

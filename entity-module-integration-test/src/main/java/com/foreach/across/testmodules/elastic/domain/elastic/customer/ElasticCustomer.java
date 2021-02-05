@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.foreach.across.testmodules.elastic.domain;
+package com.foreach.across.testmodules.elastic.domain.elastic.customer;
 
+import com.foreach.across.testmodules.elastic.domain.elastic.country.ElasticCountry;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
@@ -30,6 +31,7 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Arne Vandamme
@@ -41,11 +43,11 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 @Getter
 @Setter
-public class ElasticCustomer implements Persistable<String>
+public class ElasticCustomer implements Persistable<Long>
 {
 	@Id
-	@Length(max = 20)
-	private String id;
+	@Field(type = FieldType.Long)
+	private Long id;
 
 	@NotBlank
 	@Length(max = 250)
@@ -81,7 +83,7 @@ public class ElasticCustomer implements Persistable<String>
 
 	@Override
 	public boolean isNew() {
-		return getId() == null;
+		return Objects.isNull( getId() ) || getId() == 0;
 	}
 }
 

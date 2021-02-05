@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package com.foreach.across.testmodules.elastic.domain;
+package com.foreach.across.testmodules.elastic.domain.jpa.contact;
 
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import com.foreach.across.modules.hibernate.jpa.repositories.CommonJpaRepository;
 
-import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
-/**
- * @author Arne Vandamme
- * @since 2.2.0
- */
-public interface ElasticCustomerRepository extends ElasticsearchRepository<ElasticCustomer, String>
+public interface ContactRepository extends CommonJpaRepository<Contact, Long>
 {
-	ElasticCustomer findByFirstName( String firstName );
-
-	List<ElasticCustomer> findByLastName( String lastName );
-
-	List<ElasticCustomer> findByCreatedDateLessThan( Date date );
+	Optional<Contact> findByFirstAndLast( String first, String last );
 }

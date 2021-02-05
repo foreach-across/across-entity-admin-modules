@@ -14,27 +14,36 @@
  * limitations under the License.
  */
 
-package com.foreach.across.testmodules.elastic.domain;
+package com.foreach.across.testmodules.elastic.domain.jpa.country;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.domain.Persistable;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.Objects;
+
+@Entity
 @Getter
 @Setter
-@AllArgsConstructor
+@Table(name = "tbl_es_country")
 @NoArgsConstructor
-public class ElasticContact
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
+public class Country implements Persistable<Long>
 {
-	@Field(type = FieldType.Keyword)
-	@Length(max = 250)
-	private String first;
+	@Id
+	@GeneratedValue
+	private Long id;
 
-	@Field(type = FieldType.Keyword)
+	@NotBlank
 	@Length(max = 250)
-	private String last;
+	@Column(name = "name")
+	public String name;
+
+	@Override
+	public boolean isNew() {
+		return Objects.isNull( getId() ) || getId() == 0;
+	}
 }
