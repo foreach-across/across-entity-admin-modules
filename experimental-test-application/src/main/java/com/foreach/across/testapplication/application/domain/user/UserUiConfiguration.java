@@ -48,7 +48,10 @@ public class UserUiConfiguration implements EntityConfigurer
 				                      } ).get() )
 		        )
 		        .attribute( LIST_VIEW_EDITABLE_VALUES, true )
-		        .listView( lvb -> lvb.showProperties( "name", "dateOfBirth", "company" ) )
+		        .listView(
+				        lvb -> lvb.showProperties( "name", "dateOfBirth", "company", "active" )
+				                  .entityQueryFilter( eqf -> eqf.showProperties( "active", "company", "name" ) )
+		        )
 		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() ) )
 		        .detailView(
 				        fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() )

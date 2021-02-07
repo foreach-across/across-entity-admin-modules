@@ -13,6 +13,26 @@ interface ResponseContentActionHandler extends ActionHandler {
   replace: boolean;
 }
 
+function originalFlow(action: any, response: any) {
+  console.log("==== original flow");
+  let $content = $(response.textContent);
+  console.log("response is", $(response.textContent), "content to set is", $content);
+  if (action.source) {
+    console.log("action.source is present", action.source, $content, "new content", $content.find(action.source));
+    console.log("action.source is present", action.source, $content);
+    $content = $content.find(action.source);
+  }
+
+  const $wrapper = $("<div></div>");
+  $wrapper.append($content);
+  console.log("content to set result:", $wrapper, $wrapper.html());
+
+  let contentToSet: string = $wrapper.html();
+  if ($(action.target).parent("form").length > 0) {
+    contentToSet = "</form>" + contentToSet;
+  }
+}
+
 export class ResponseContentActionHandlerResolver implements ActionHandlerResolver {
   static readonly TYPE: string = "exm:response-content";
 
@@ -36,17 +56,25 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
         );
       }
 
-      const responseElement = document.createElement("div") as any;
-      responseElement.innerHTML = context.response.textContent;
-      let contentToSet = responseElement.innerHTML;
+      originalFlow(action, context.response);
 
+      console.log("==== new flow");
+      const $wrapper = $("<div></div>");
+      $wrapper.append(context.response.textContent);
+      let contentToSet = $wrapper.html();
+      console.log("response is", $(context.response.textContent), "content to set is", $(contentToSet));
       if (action.source) {
-        const tempSource = responseElement.querySelector(action.source);
-
-        const wrap = document.createElement("div") as any;
-        wrap.appendChild(tempSource.cloneNode(true));
-        contentToSet = wrap.innerHTML;
+        console.log(
+          "action.source is present",
+          action.source,
+          $(contentToSet),
+          "new content",
+          $wrapper.find(action.source)
+        );
+        contentToSet = $wrapper.find(action.source).html();
       }
+
+      console.log("content to set result:", $(contentToSet), contentToSet);
 
       if (action.sourceElement) {
         contentToSet = action.sourceElement;
