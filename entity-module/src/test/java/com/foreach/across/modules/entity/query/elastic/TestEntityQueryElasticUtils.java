@@ -328,7 +328,7 @@ public class TestEntityQueryElasticUtils
 
 		@NotBlank
 		@Length(max = 250)
-		@Field(type = FieldType.Keyword, searchAnalyzer = "standard")
+		@Field(type = FieldType.Keyword/*, searchAnalyzer = "standard"*/)
 		private String firstName;
 
 		@Length(max = 250)
