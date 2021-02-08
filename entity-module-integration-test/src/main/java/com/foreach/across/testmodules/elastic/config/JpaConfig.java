@@ -16,12 +16,14 @@
 
 package com.foreach.across.testmodules.elastic.config;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.testmodules.elastic.domain.DomainMarker;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAcrossJpaRepositories(basePackageClasses = DomainMarker.class)
+@ConditionalOnAcrossModule("AcrossHibernateJpaModule")
 public class JpaConfig
 {
 }

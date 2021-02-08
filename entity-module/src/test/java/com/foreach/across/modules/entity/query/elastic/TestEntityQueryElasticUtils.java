@@ -328,11 +328,11 @@ public class TestEntityQueryElasticUtils
 
 		@NotBlank
 		@Length(max = 250)
-		@Field(type = FieldType.Keyword)
+		@Field(type = FieldType.Keyword, searchAnalyzer = "standard")
 		private String firstName;
 
 		@Length(max = 250)
-		@Field(type = FieldType.Keyword)
+		@Field(type = FieldType.Keyword/*, searchAnalyzer = "standard"*/)
 		private String lastName;
 
 		@Field(type = FieldType.Date, format = DateFormat.date_optional_time)
@@ -399,7 +399,7 @@ public class TestEntityQueryElasticUtils
 
 		@NotBlank
 		@Length(max = 250)
-		@Field(type = FieldType.Keyword, searchAnalyzer = "standard")
+		@Field(type = FieldType.Keyword)
 		private String name;
 
 		@Override

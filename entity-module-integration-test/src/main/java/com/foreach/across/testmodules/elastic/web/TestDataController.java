@@ -16,6 +16,7 @@
 
 package com.foreach.across.testmodules.elastic.web;
 
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.testmodules.elastic.domain.jpa.contact.Contact;
 import com.foreach.across.testmodules.elastic.domain.jpa.contact.ContactRepository;
 import com.foreach.across.testmodules.elastic.domain.jpa.country.Country;
@@ -25,6 +26,7 @@ import com.foreach.across.testmodules.elastic.domain.jpa.customer.CustomerReposi
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +40,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/elastic/reset-test-data")
 @RequiredArgsConstructor
+@ConditionalOnClass(AcrossHibernateJpaModule.class)
 public class TestDataController
 {
 	private final CustomerRepository customerRepository;

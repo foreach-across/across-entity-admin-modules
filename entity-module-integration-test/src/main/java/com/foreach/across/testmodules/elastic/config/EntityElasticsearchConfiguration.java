@@ -16,6 +16,7 @@
 
 package com.foreach.across.testmodules.elastic.config;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -41,6 +42,7 @@ import java.util.Objects;
 @Configuration
 @RequiredArgsConstructor
 @Order()
+@ConditionalOnAcrossModule("AcrossHibernateJpaModule")
 public class EntityElasticsearchConfiguration implements EntityConfigurer
 {
 	public static final String ATTR_ELASTIC_PROXY_REFERENCE = "elasticsearch-reference-entity";

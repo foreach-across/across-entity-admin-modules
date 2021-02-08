@@ -24,7 +24,7 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 
 import java.util.Set;
 
-@AcrossDepends(required = AcrossHibernateJpaModule.NAME)
+@AcrossDepends(optional = AcrossHibernateJpaModule.NAME)
 public class ElasticTestModule extends AcrossModule
 {
 	public static final String NAME = "ElasticTestModule";
