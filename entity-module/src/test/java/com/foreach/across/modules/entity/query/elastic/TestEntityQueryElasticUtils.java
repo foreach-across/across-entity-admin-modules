@@ -44,6 +44,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -62,6 +63,7 @@ import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -82,6 +84,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestEntityQueryElasticUtils.Config.class, initializers = TestEntityQueryElasticUtils.PropertyInitializer.class)
 @Testcontainers
+@ActiveProfiles("em-tests-elasticsearch")
 public class TestEntityQueryElasticUtils
 {
 	@Container
@@ -303,6 +306,8 @@ public class TestEntityQueryElasticUtils
 	@Configuration
 	@Import(value = { ElasticsearchRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class })
 	@EnableElasticsearchRepositories(basePackageClasses = CustomerRepository.class)
+	// todo: TestEntityModule picks up this configuration class when bootstrapping EntityModule. ClasspathScanning in tests?
+	@Profile("em-tests-elasticsearch")
 	static class Config
 	{
 		@Bean
