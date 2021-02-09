@@ -76,6 +76,12 @@ public class RequestActionHandlerAttribute<SELF extends RequestActionHandlerAttr
     @JsonProperty
     private Map<String, Object> additionalQueryParameters = new HashMap<>();
 
+    /**
+     * Determines whether or not the request parameters of the current view are reused when building the url.
+     */
+    @JsonProperty
+    private boolean copyOriginalRequestParameters;
+
     @SuppressWarnings("unchecked")
     public static <T extends RequestActionHandlerAttribute<T>> RequestActionHandlerAttribute<T> requestActionHandler() {
         return (T) new RequestActionHandlerAttribute();
@@ -108,6 +114,11 @@ public class RequestActionHandlerAttribute<SELF extends RequestActionHandlerAttr
 
     public SELF additionalQueryParameter(String key, Object value) {
         this.additionalQueryParameters.put(key, value);
+        return self();
+    }
+
+    public SELF copyOriginalRequestParameters( boolean copy ) {
+        this.copyOriginalRequestParameters = copy;
         return self();
     }
 }

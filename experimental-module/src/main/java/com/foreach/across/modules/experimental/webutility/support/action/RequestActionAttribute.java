@@ -123,8 +123,7 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
     }
 
     public SELF success( ActionHandlerAttribute... success ) {
-        this.success.addAll(Arrays.asList(success));
-        return self();
+        return success( Arrays.asList( success ) );
     }
 
     public SELF redirect( Collection<ActionHandlerAttribute> redirect ) {
@@ -133,8 +132,7 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
     }
 
     public SELF redirect( ActionHandlerAttribute... redirect ) {
-        this.redirect.addAll(Arrays.asList(redirect));
-        return self();
+        return redirect( Arrays.asList( redirect ) );
     }
 
     public SELF error( Collection<ActionHandlerAttribute> error ) {
@@ -143,8 +141,7 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
     }
 
     public SELF error( ActionHandlerAttribute... error ) {
-        this.error.addAll(Arrays.asList(error));
-        return self();
+        return error( Arrays.asList( error ) );
     }
 
     public SELF failure( Collection<ActionHandlerAttribute> failure ) {
@@ -153,8 +150,7 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
     }
 
     public SELF failure( ActionHandlerAttribute... failure ) {
-        this.failure.addAll(Arrays.asList(failure));
-        return self();
+        return failure( Arrays.asList( failure ) );
     }
 
     public SELF copyOriginalRequestParameters( boolean copy ) {
