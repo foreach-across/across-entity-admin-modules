@@ -13,26 +13,6 @@ interface ResponseContentActionHandler extends ActionHandler {
   replace: boolean;
 }
 
-function originalFlow(action: any, response: any) {
-  console.log("==== original flow");
-  let $content = $(response.textContent);
-  console.log("response is", $(response.textContent), "content to set is", $content);
-  if (action.source) {
-    console.log("action.source is present", action.source, $content, "new content", $content.find(action.source));
-    console.log("action.source is present", action.source, $content);
-    $content = $content.find(action.source);
-  }
-
-  const $wrapper = $("<div></div>");
-  $wrapper.append($content);
-  console.log("content to set result:", $wrapper, $wrapper.html());
-
-  let contentToSet: string = $wrapper.html();
-  if ($(action.target).parent("form").length > 0) {
-    contentToSet = "</form>" + contentToSet;
-  }
-}
-
 export class ResponseContentActionHandlerResolver implements ActionHandlerResolver {
   static readonly TYPE: string = "exm:response-content";
 
@@ -56,28 +36,26 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
         );
       }
 
-      originalFlow(action, context.response);
-
-      console.log("==== new flow");
-      const $wrapper = $("<div></div>");
-      $wrapper.append(context.response.textContent);
-      let contentToSet = $wrapper.html();
-      console.log("response is", $(context.response.textContent), "content to set is", $(contentToSet));
-      if (action.source) {
-        console.log(
-          "action.source is present",
-          action.source,
-          $(contentToSet),
-          "new content",
-          $wrapper.find(action.source)
-        );
-        contentToSet = $wrapper.find(action.source).html();
-      }
-
-      console.log("content to set result:", $(contentToSet), contentToSet);
-
+      let contentToSet: string = "";
+      /*
+            todo:
+                support providing your own html within this action handler?
+                doesn't make much sense when considering response content, would make more sense if it's custom action handler (that perhaps checks the response attributes)
+                if it's really fixed html content, why not configure the modal with the fixed content instead of replacing it?
+            */
       if (action.sourceElement) {
         contentToSet = action.sourceElement;
+      } else {
+        const $responseElement = $("<div></div>");
+        $responseElement.append(context.response.textContent);
+
+        if (action.source) {
+          let tempContent = $responseElement.find(action.source);
+          $responseElement.empty();
+          $responseElement.append(tempContent);
+        }
+
+        contentToSet = $responseElement.html();
       }
 
       if ($(action.target).closest("form").length > 0) {

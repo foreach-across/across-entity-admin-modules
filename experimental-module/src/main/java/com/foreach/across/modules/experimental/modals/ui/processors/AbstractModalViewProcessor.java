@@ -29,6 +29,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
@@ -60,7 +61,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 	private String partial = null;
 
 	@Setter(AccessLevel.PROTECTED)
-	private BiFunction<RequestActionAttribute, ViewElementBuilderContext, ActionAttribute> actionCustomizer = ( action, bc ) -> action;
+	private Function<ModalActionCustomizationContext, ActionAttribute> actionCustomizer = ModalActionCustomizationContext::action;
 
 	public T modalId( String modalId ) {
 		this.modalId = modalId;
@@ -88,8 +89,22 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 	 * Offers more advanced configuration as well as overriding of previously configured methods.
 	 * </p>
 	 * The customizer should return the final action that should be used. Overrides applied through the customizer always take precedence.
+	 *
+	 * @deprecated in favour of {@link #action(Function)}.
 	 */
+	@Deprecated
 	public T action( BiFunction<RequestActionAttribute, ViewElementBuilderContext, ActionAttribute> actionCustomizer ) {
+		this.actionCustomizer = ( ctx ) -> actionCustomizer.apply( ctx.action(), ctx.builderContext() );
+		return (T) this;
+	}
+
+	/**
+	 * Supports customizing the default action attribute that is registered to fetch the modal content.
+	 * Offers more advanced configuration as well as overriding of previously configured methods.
+	 * </p>
+	 * The customizer should return the final action that should be used. Overrides applied through the customizer always take precedence.
+	 */
+	public T action( Function<ModalActionCustomizationContext, ActionAttribute> actionCustomizer ) {
 		this.actionCustomizer = actionCustomizer;
 		return (T) this;
 	}
@@ -120,34 +135,35 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 	protected void configureViewElement( ViewElement viewElement,
 	                                     EntityViewLinkBuilder linkViewBuilder,
 	                                     ViewElementBuilderContext builderContext ) {
+		RequestActionAttribute actionAttribute = requestAction()
+				.url( url.apply( linkViewBuilder, builderContext ) )
+				.partial( partial )
+				.requestConfig( ImmutableMap.of( "headers",
+				                                 ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
+				.success(
+						clearHandler( modalTarget( ".modal-title" ) ),
+						clearHandler( modalTarget( ".modal-footer" ) ),
+						clearHandler( modalTarget( ".modal-body" ) ),
+						responseContentHandler()
+								.source( "." + PageContentStructure.CSS_BODY_SECTION )
+								.target( modalTarget( ".modal-body" ) ),
+						responseContentHandler()
+								.source( ".page-header" )
+								.target( modalTarget( ".modal-title" ) ),
+						moveHandler()
+								.source( modalTarget( ".modal-body .em-form-actions" ) )
+								.target( modalTarget( ".modal-footer" ) ),
+						initializeFormElements( modalSelector() )
+				);
+
+		ModalActionCustomizationContext customizationContext =
+				new ModalActionCustomizationContext( modalSelector(), ( selector ) -> modalSelector() + " " + selector, actionAttribute, builderContext );
+
 		viewElement.set( data( "toggle", "modal" ), data( "target", modalSelector() ) )
 		           .set(
 				           modalLoadAttribute()
 						           .target( modalSelector() )
-						           .content(
-								           actionCustomizer.apply(
-										           requestAction()
-												           .url( url.apply( linkViewBuilder, builderContext ) )
-												           .partial( partial )
-												           .requestConfig( ImmutableMap.of( "headers",
-												                                            ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
-												           .success(
-														           clearHandler( modalTarget( ".modal-title" ) ),
-														           clearHandler( modalTarget( ".modal-footer" ) ),
-														           clearHandler( modalTarget( ".modal-body" ) ),
-														           responseContentHandler()
-																           .source( "." + PageContentStructure.CSS_BODY_SECTION )
-																           .target( modalTarget( ".modal-body" ) ),
-														           responseContentHandler()
-																           .source( ".page-header" )
-																           .target( modalTarget( ".modal-title" ) ),
-														           moveHandler()
-																           .source( modalTarget( ".modal-body .em-form-actions" ) )
-																           .target( modalTarget( ".modal-footer" ) ),
-														           initializeFormElements( modalSelector() )
-												           ), builderContext
-								           )
-						           )
+						           .content( actionCustomizer.apply( customizationContext ) )
 		           );
 	}
 

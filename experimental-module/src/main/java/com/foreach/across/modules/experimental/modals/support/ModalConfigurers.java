@@ -28,6 +28,8 @@ public class ModalConfigurers
 	 */
 	public static final String MODAL_ORIGIN_HEADER = "X-MODAL-ORIGIN";
 
+	public static final AssociationModalConfigurers association = new AssociationModalConfigurers();
+
 	/**
 	 * Creates a bootstrap modal with id {@code createModal} that is linked to the create button on the listView.
 	 */
