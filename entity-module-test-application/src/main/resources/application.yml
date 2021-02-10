@@ -46,6 +46,13 @@ entityModule:
   message-codes:
     SpringDataJpaModule: spring-data
 
+acrossHibernate:
+  hibernate-properties:
+    hibernate.format_sql: true
+    hibernate.use_sql_comments: true
+    hibernate.show_sql: true
+    hibernate.hbm2ddl.auto: update
+
 server:
   error:
     include-stacktrace: always

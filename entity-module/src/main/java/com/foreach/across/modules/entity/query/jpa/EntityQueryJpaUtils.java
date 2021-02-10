@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExpression;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -94,23 +95,23 @@ public abstract class EntityQueryJpaUtils
 				return cb.isNotMember( condition.getFirstArgument(), collection );
 			}
 			case IS_EMPTY: {
-				Path<V> path = resolveProperty( root, condition.getProperty() );
+				Path<?> path = resolveProperty( root, condition.getProperty() );
 
 				if ( path.getModel() instanceof SingularAttribute ) {
 					throw new IllegalArgumentException( "Unable to perform 'IS EMPTY' on single value property - use 'IS NULL' instead" );
 				}
 
-				Expression<Collection> collection = (Expression<Collection>) path;
+				Expression<Collection<?>> collection = (Expression<Collection<?>>) path;
 				return cb.isEmpty( collection );
 			}
 			case IS_NOT_EMPTY: {
-				Path<V> path = resolveProperty( root, condition.getProperty() );
+				Path<?> path = resolveProperty( root, condition.getProperty() );
 
 				if ( path.getModel() instanceof SingularAttribute ) {
 					throw new IllegalArgumentException( "Unable to perform 'IS NOT EMPTY' on single value property - use 'IS NOT NULL' instead" );
 				}
 
-				Expression<Collection> collection = (Expression<Collection>) path;
+				Expression<Collection<?>> collection = (Expression<Collection<?>>) path;
 				return cb.isNotEmpty( collection );
 			}
 			case IN:
@@ -153,13 +154,25 @@ public abstract class EntityQueryJpaUtils
 		return escaped;
 	}
 
-	private static <V> Path<V> resolveProperty( Path<V> path, String propertyName ) {
+	private static Path<?> resolveProperty( Path<?> path, String propertyName ) {
 		int ix = propertyName.indexOf( "." );
 		if ( ix >= 0 ) {
 			String name = StringUtils.left( propertyName, ix );
 			String remainder = StringUtils.substring( propertyName, ix + 1 );
 
-			return resolveProperty( path.<V>get( name ), remainder );
+			Path<?> nestedPath;
+			if ( StringUtils.endsWith( name, EntityPropertyRegistry.INDEXER ) ) {
+				name = StringUtils.removeEnd( name, EntityPropertyRegistry.INDEXER );
+				nestedPath = path.get( name );
+				if ( Collection.class.isAssignableFrom( nestedPath.getJavaType() ) ) {
+					nestedPath = ( (From<?, ?>) path ).join( name );
+				}
+			}
+			else {
+				nestedPath = path.get( name );
+			}
+
+			return resolveProperty( nestedPath, remainder );
 		}
 
 		return path.get( propertyName );
@@ -173,7 +186,7 @@ public abstract class EntityQueryJpaUtils
 		}
 
 		return query.getOperand() == EntityQueryOps.AND
-				? cb.and( predicates.toArray( new Predicate[predicates.size()] ) )
-				: cb.or( predicates.toArray( new Predicate[predicates.size()] ) );
+				? cb.and( predicates.toArray( new Predicate[0] ) )
+				: cb.or( predicates.toArray( new Predicate[0] ) );
 	}
 }

@@ -16,6 +16,9 @@
 
 package com.foreach.across.testmodules.elastic.web;
 
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
+import com.foreach.across.testmodules.elastic.domain.jpa.contact.Contact;
+import com.foreach.across.testmodules.elastic.domain.jpa.contact.ContactRepository;
 import com.foreach.across.testmodules.elastic.domain.jpa.country.Country;
 import com.foreach.across.testmodules.elastic.domain.jpa.country.CountryRepository;
 import com.foreach.across.testmodules.elastic.domain.jpa.customer.Customer;
@@ -23,31 +26,38 @@ import com.foreach.across.testmodules.elastic.domain.jpa.customer.CustomerReposi
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/elastic/reset-test-data")
 @RequiredArgsConstructor
+@ConditionalOnClass(AcrossHibernateJpaModule.class)
 public class TestDataController
 {
 	private final CustomerRepository customerRepository;
 	private final CountryRepository countryRepository;
+	private final ContactRepository contactRepository;
 
 	@GetMapping
 	public ResponseEntity resetTestData() {
 		customerRepository.deleteAll();
 		countryRepository.deleteAll();
+		contactRepository.deleteAll();
 
-		Country belgium = createCountry( countryRepository, "Belgium" );
+		Country belgium = createCountry( "Belgium" );
+		Country nl = createCountry( "Netherlands" );
 
-		Country nl = createCountry( countryRepository, "Netherlands" );
+		Contact alice = createContact( "Alice", "White" );
+		Contact john = createContact( "John", "Smith" );
 
 		for ( int i = 0; i < 100; i++ ) {
 			Customer customer = new Customer();
@@ -56,18 +66,15 @@ public class TestDataController
 			int mod = i % 10;
 
 			if ( i % 2 == 0 ) {
-				//elasticCustomer.setCreatedDate( LocalDateTime.now().minusDays( mod ) );
 				customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
 				customer.setCountry( belgium );
-				//JoinField<String> customer = new JoinField<>( "customer", belgium.getId() );
-				//elasticCustomer.setMyJoinField( customer );
+				if ( i % 4 == 0 ) {
+					customer.setPrimaryContacts( Arrays.asList( alice, john ) );
+				}
 			}
 			else {
-				//elasticCustomer.setCreatedDate( LocalDateTime.now().plusDays( mod ) );
 				customer.setCreatedDate( DateUtils.addDays( new Date(), -mod ) );
 				customer.setCountry( nl );
-				//JoinField<String> customer = new JoinField<>( "customer", nl.getId() );
-				//elasticCustomer.setMyJoinField( customer );
 			}
 			customer.setUpdatedDate( LocalDateTime.now() );
 			customerRepository.save( customer );
@@ -75,7 +82,7 @@ public class TestDataController
 		return ResponseEntity.ok().build();
 	}
 
-	private Country createCountry( CountryRepository countryRepository, String name ) {
+	private Country createCountry( String name ) {
 		List<Country> items = countryRepository.findByName( name );
 		Country country;
 		if ( items.size() == 0 ) {
@@ -87,5 +94,13 @@ public class TestDataController
 			country = items.get( 0 );
 		}
 		return country;
+	}
+
+	private Contact createContact( String first, String last ) {
+		Contact contact = contactRepository.findByFirstAndLast( first, last )
+		                                   .orElseGet( Contact::new );
+		contact.setFirst( first );
+		contact.setLast( last );
+		return contactRepository.save( contact );
 	}
 }

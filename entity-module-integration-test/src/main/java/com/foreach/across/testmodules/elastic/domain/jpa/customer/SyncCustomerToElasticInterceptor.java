@@ -18,17 +18,24 @@ package com.foreach.across.testmodules.elastic.domain.jpa.customer;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.testmodules.elastic.domain.elastic.country.ElasticCountryRepository;
+import com.foreach.across.testmodules.elastic.domain.elastic.customer.ElasticContact;
 import com.foreach.across.testmodules.elastic.domain.elastic.customer.ElasticCustomer;
 import com.foreach.across.testmodules.elastic.domain.elastic.customer.ElasticCustomerRepository;
+import com.foreach.across.testmodules.elastic.domain.jpa.contact.Contact;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 @Exposed
+@ConditionalOnClass(AcrossHibernateJpaModule.class)
 public class SyncCustomerToElasticInterceptor extends EntityInterceptorAdapter<Customer>
 {
 	private final ElasticCustomerRepository elasticCustomerRepository;
@@ -61,6 +68,22 @@ public class SyncCustomerToElasticInterceptor extends EntityInterceptorAdapter<C
 		elasticCustomer.setFirstName( entity.getFirstName() );
 		elasticCustomer.setLastName( entity.getLastName() );
 		elasticCustomer.setUpdatedDate( entity.getUpdatedDate() );
+		if ( entity.getPrimaryContacts() != null ) {
+			elasticCustomer.setPrimaryContacts( convert( entity.getPrimaryContacts() ) );
+		}
+	}
+
+	private List<ElasticContact> convert( List<Contact> contacts ) {
+		return contacts.stream()
+		               .map( this::convert )
+		               .collect( Collectors.toList() );
+	}
+
+	private ElasticContact convert( Contact contact ) {
+		ElasticContact elasticContact = new ElasticContact();
+		elasticContact.setFirst( contact.getFirst() );
+		elasticContact.setLast( contact.getLast() );
+		return elasticContact;
 	}
 
 	@Override
@@ -68,6 +91,9 @@ public class SyncCustomerToElasticInterceptor extends EntityInterceptorAdapter<C
 		ElasticCustomer elasticCustomer = elasticCustomerRepository.findById( entity.getId() )
 		                                                           .orElseGet( ElasticCustomer::new );
 		copyOver( entity, elasticCustomer );
+		if ( Objects.nonNull( elasticCustomer.getVersion() ) ) {
+			elasticCustomer.setVersion( null );
+		}
 		elasticCustomerRepository.save( elasticCustomer );
 	}
 

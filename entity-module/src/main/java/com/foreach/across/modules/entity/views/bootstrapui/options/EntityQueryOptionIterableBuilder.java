@@ -58,7 +58,7 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 
 	@SuppressWarnings("unchecked")
 	public void setEntityModel( EntityModel entityModel ) {
-		Assert.notNull( entityModel, "entityModel is required" );
+		Assert.notNull( entityModel, () -> "entityModel is required" );
 		this.entityModel = entityModel;
 	}
 
@@ -79,7 +79,7 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	 * @param eql statement that represents the query to execute
 	 */
 	public void setEntityQuery( String eql ) {
-		Assert.notNull( eql, "EQL statement is required" );
+		Assert.notNull( eql, () -> "EQL statement is required" );
 		this.entityQuery = EntityQuery.parse( eql );
 	}
 
@@ -89,13 +89,13 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	 * @param entityQuery to use
 	 */
 	public void setEntityQuery( EntityQuery entityQuery ) {
-		Assert.notNull( entityQuery, "entityQuery is required" );
+		Assert.notNull( entityQuery, () -> "entityQuery is required" );
 		this.entityQuery = entityQuery;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void setEntityQueryExecutor( EntityQueryExecutor entityQueryExecutor ) {
-		Assert.notNull( entityQueryExecutor, "entityQueryExecutor is required" );
+		Assert.notNull( entityQueryExecutor, () -> "entityQueryExecutor is required" );
 		this.entityQueryExecutor = entityQueryExecutor;
 	}
 
@@ -112,9 +112,9 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
 		EntityQuery query = prepareEntityQuery();
 
-		Assert.notNull( entityModel, "no EntityModel set" );
-		Assert.notNull( entityQuery, "no EntityQuery set" );
-		Assert.notNull( entityQueryExecutor, "no EntityQueryExecutor set" );
+		Assert.notNull( entityModel, () -> "no EntityModel set" );
+		Assert.notNull( entityQuery, () -> "no EntityQuery set" );
+		Assert.notNull( entityQueryExecutor, () -> "no EntityQueryExecutor set" );
 
 		List<OptionFormElementBuilder> options = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	}
 
 	private EntityQuery prepareEntityQuery() {
-		Assert.notNull( entityQueryParser, "No EntityQueryParser is available to prepare the EntityQuery" );
+		Assert.notNull( entityQueryParser, () -> "No EntityQueryParser is available to prepare the EntityQuery" );
 		return entityQueryParser.prepare( entityQuery );
 	}
 

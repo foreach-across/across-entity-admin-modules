@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
-package com.foreach.across.testmodules.elastic.config;
+package com.foreach.across.testmodules.elastic.domain.elastic.customer;
 
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
-import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
-import com.foreach.across.testmodules.elastic.domain.DomainMarker;
-import org.springframework.context.annotation.Configuration;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Configuration
-@EnableAcrossJpaRepositories(basePackageClasses = DomainMarker.class)
-@ConditionalOnAcrossModule("AcrossHibernateJpaModule")
-public class JpaConfig
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ElasticContact
 {
+	@Field(type = FieldType.Keyword)
+	@Length(max = 250)
+	private String first;
+
+	@Field(type = FieldType.Keyword)
+	@Length(max = 250)
+	private String last;
 }

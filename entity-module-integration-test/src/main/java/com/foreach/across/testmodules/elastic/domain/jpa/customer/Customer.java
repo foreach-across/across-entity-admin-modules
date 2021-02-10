@@ -16,6 +16,7 @@
 
 package com.foreach.across.testmodules.elastic.domain.jpa.customer;
 
+import com.foreach.across.testmodules.elastic.domain.jpa.contact.Contact;
 import com.foreach.across.testmodules.elastic.domain.jpa.country.Country;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -26,6 +27,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -63,6 +65,14 @@ public class Customer implements Persistable<Long>
 	@Version
 	@Column(name = "version")
 	private Long version;
+
+	@ManyToMany
+	@JoinTable(
+			name = "tbl_es_customer_contact",
+			joinColumns = @JoinColumn(name = "contact_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id")
+	)
+	private List<Contact> primaryContacts;
 
 	@Override
 	public boolean isNew() {

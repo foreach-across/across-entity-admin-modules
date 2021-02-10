@@ -63,5 +63,4 @@ public class ElasticConfig implements EntityConfigurer
 		                             .showProperties( "*" ) );
 	}
 
-
 }

@@ -122,7 +122,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		Collection selectedValues = retrieveSelectedValues( builderContext );
 
 		OptionsFormElementBuilder optionsBuilder = builderContext.getAttribute( OptionsFormElementBuilder.class );
-		Assert.notNull( optionsBuilder, "no optionsBuilder was found" );
+		Assert.notNull( optionsBuilder, () -> "no optionsBuilder was found" );
 
 		boolean hasSelected = false;
 		List<OptionFormElementBuilder> actual = new ArrayList<>();

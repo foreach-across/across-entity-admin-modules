@@ -69,18 +69,7 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>across-hibernate-module</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
+
 		<dependency>
 			<!-- FIX: TemporalFormatterFactory from EntityModuleConfiguration -->
 			<groupId>javax.persistence</groupId>
@@ -88,8 +77,28 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>elastic-include-hibernate</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.foreach.across.modules</groupId>
+					<artifactId>across-hibernate-module</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-jdbc</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
 	<build>
-		<finalName>entity-module-test-application</finalName>
+		<finalName>entity-module-elastic-test-application</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

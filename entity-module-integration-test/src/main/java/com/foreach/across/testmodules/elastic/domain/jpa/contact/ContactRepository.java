@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package com.foreach.across.testmodules.elastic.config;
+package com.foreach.across.testmodules.elastic.domain.jpa.contact;
 
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
-import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
-import com.foreach.across.testmodules.elastic.domain.DomainMarker;
-import org.springframework.context.annotation.Configuration;
+import com.foreach.across.modules.hibernate.jpa.repositories.CommonJpaRepository;
 
-@Configuration
-@EnableAcrossJpaRepositories(basePackageClasses = DomainMarker.class)
-@ConditionalOnAcrossModule("AcrossHibernateJpaModule")
-public class JpaConfig
+import java.util.Optional;
+
+public interface ContactRepository extends CommonJpaRepository<Contact, Long>
 {
+	Optional<Contact> findByFirstAndLast( String first, String last );
 }

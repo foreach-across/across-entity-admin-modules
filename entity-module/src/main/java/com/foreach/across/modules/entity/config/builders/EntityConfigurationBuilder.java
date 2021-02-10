@@ -402,7 +402,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	MutableEntityConfiguration<T> build( boolean applyPostProcessors ) {
-		Assert.notNull( entityType, "EntityType should not be null" );
+		Assert.notNull( entityType, () -> "EntityType should not be null" );
 
 		EntityConfigurationProvider configurationProvider = beanFactory.getBean( EntityConfigurationProvider.class );
 		String defaultName = name != null ? name : EntityUtils.generateEntityName( entityType );

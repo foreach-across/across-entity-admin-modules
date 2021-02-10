@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.entity.EntityModule;
@@ -50,6 +51,7 @@ import java.util.function.Consumer;
  * See {@link EntityElasticsearchConfiguration} and {@link ElasticsearchMenuConfiguration} for configuration related to non-association views
  */
 @Configuration
+@ConditionalOnAcrossModule("AcrossHibernateJpaModule")
 public class CountryConfiguration implements EntityConfigurer
 {
 
@@ -125,7 +127,7 @@ public class CountryConfiguration implements EntityConfigurer
 		String associationName = "elasticCustomer.country";
 		EntityViewContext viewContext = menuEvent.getViewContext();
 
-		if ( Country.class.equals( viewContext.getEntityConfiguration().getEntityType() ) ) {
+		if ( menuEvent.isForUpdate() && Country.class.equals( viewContext.getEntityConfiguration().getEntityType() ) ) {
 			EntityViewLinkBuilder instanceLinkBuilder = resolveAssociationLinkBuilder( viewContext, targetAssociation );
 			menuEvent.builder()
 			         .item( associationName )

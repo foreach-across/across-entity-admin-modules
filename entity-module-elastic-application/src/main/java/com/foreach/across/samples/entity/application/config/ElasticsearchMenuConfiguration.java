@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -36,6 +37,7 @@ import static com.foreach.across.testmodules.elastic.config.EntityElasticsearchC
 // todo Elasticsearch menu configuration, should be put somewhere together with {@link EntityElasticsearchConfiguration}
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnAcrossModule("AcrossHibernateJpaModule")
 public class ElasticsearchMenuConfiguration
 {
 	private final EntityRegistry entityRegistry;

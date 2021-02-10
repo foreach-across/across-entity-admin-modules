@@ -324,7 +324,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param configuration to register the association in
 	 */
 	void apply( MutableEntityConfiguration configuration ) {
-		Assert.notNull( name, "A name() is required for an AssociationBuilder." );
+		Assert.notNull( name, () -> "A name() is required for an AssociationBuilder." );
 		MutableEntityAssociation association = configuration.association( name );
 
 		if ( association == null ) {

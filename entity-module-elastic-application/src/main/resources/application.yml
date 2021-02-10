@@ -51,3 +51,6 @@ server:
   error:
     include-stacktrace: always
   port: 8081
+across-hibernate:
+  hibernate-properties:
+    hibernate.hbm2ddl.auto: update

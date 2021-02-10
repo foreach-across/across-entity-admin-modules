@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -55,7 +56,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -123,6 +126,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	private EntityQueryFacadeResolver entityQueryFacadeResolver;
 	private EntityRegistry entityRegistry;  // todo check if different way to resolve the EntityTypeDescriptor ?
 	private EQTypeConverter eqTypeConverter;
+	private AcrossContextInfo acrossContextInfo;
 
 	/**
 	 * Holds the configuration for this query filter processor.
@@ -174,7 +178,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 		try {
 			EntityQueryFacade queryFacade = resolveEntityQueryFacade( entityViewRequest );
-			Assert.notNull( queryFacade, "No EntityQueryExecutor or EntityQueryFacade is available" );
+			Assert.notNull( queryFacade, () -> "No EntityQueryExecutor or EntityQueryFacade is available" );
 
 			EntityQuery query = EntityQueryParser.parseRawQuery( filter );
 			entityQueryRequest.setRawQuery( query );
@@ -218,7 +222,16 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 		}
 		catch ( Exception e ) {
-			String message = ExceptionUtils.getRootCauseMessage( e );
+			String message;
+			if ( acrossContextInfo.getContext().isDevelopmentMode() ) {
+				StringWriter stringWriter = new StringWriter();
+				PrintWriter print = new PrintWriter( stringWriter );
+				ExceptionUtils.printRootCauseStackTrace( e, print );
+				message = stringWriter.toString();
+			}
+			else {
+				message = ExceptionUtils.getRootCauseMessage( e );
+			}
 			LOG.error( message, e );
 			entityView.addAttribute( "filterError", message );
 		}
@@ -370,5 +383,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	@Autowired
 	void setEqTypeConverter( EQTypeConverter eqTypeConverter ) {
 		this.eqTypeConverter = eqTypeConverter;
+	}
+
+	@Autowired
+	void setAcrossContextInfo( AcrossContextInfo acrossContextInfo ) {
+		this.acrossContextInfo = acrossContextInfo;
 	}
 }

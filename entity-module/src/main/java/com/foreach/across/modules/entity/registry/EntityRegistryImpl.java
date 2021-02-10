@@ -57,8 +57,8 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	public void register( @NonNull MutableEntityConfiguration<?> entityConfiguration ) {
-		Assert.notNull( entityConfiguration.getEntityType(), "entityType of entityConfiguration cannot be null" );
-		Assert.notNull( entityConfiguration.getName(), "name of entityConfiguration cannot be null" );
+		Assert.notNull( entityConfiguration.getEntityType(), () -> "entityType of entityConfiguration cannot be null" );
+		Assert.notNull( entityConfiguration.getName(), () -> "name of entityConfiguration cannot be null" );
 
 		EntityConfiguration existingByName = getEntityConfiguration( entityConfiguration.getName() );
 

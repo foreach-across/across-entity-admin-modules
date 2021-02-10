@@ -18,14 +18,17 @@ package com.foreach.across.testmodules.elastic.domain.jpa.country;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.hibernate.aop.EntityInterceptorAdapter;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.testmodules.elastic.domain.elastic.country.ElasticCountry;
 import com.foreach.across.testmodules.elastic.domain.elastic.country.ElasticCountryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @Exposed
+@ConditionalOnClass(AcrossHibernateJpaModule.class)
 public class SyncCountryToElasticInterceptor extends EntityInterceptorAdapter<Country>
 {
 	private final ElasticCountryRepository elasticCountryRepository;
