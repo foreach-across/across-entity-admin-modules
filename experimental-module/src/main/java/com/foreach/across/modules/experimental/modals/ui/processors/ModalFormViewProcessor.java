@@ -42,7 +42,7 @@ public abstract class ModalFormViewProcessor<T extends ModalFormViewProcessor> e
 	                           ViewElementBuilderContext builderContext ) {
 		String modalName = entityViewRequest.getWebRequest().getHeader( ModalConfigurers.MODAL_ORIGIN_HEADER );
 		if ( StringUtils.isNotBlank( modalName ) ) {
-			modalSelector( "#" + modalName );
+			modalSelector( modalName );
 			EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
 			ContainerViewElementUtils.find( container, elementName )
 			                         .ifPresent(

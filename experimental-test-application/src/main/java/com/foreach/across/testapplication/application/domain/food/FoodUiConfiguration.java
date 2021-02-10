@@ -16,7 +16,6 @@ import com.foreach.across.modules.experimental.bulkactions.ui.viewprocessors.Bul
 import com.foreach.across.modules.experimental.export.support.ExportViewConfigurers;
 import com.foreach.across.modules.experimental.export.support.csv.CsvExportViewConfigurer;
 import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
-import com.foreach.across.modules.experimental.modals.ui.processors.ModalSubmitAndRefreshTableViewProcessor;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.testapplication.application.domain.food.processors.FoodBulkActionViewProcessor;
@@ -31,9 +30,6 @@ import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.experimental.bulkactions.support.BulkActionsEntityConfigurers.configureBulkActions;
-import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionHandlerAttribute.requestActionHandler;
-import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.closeModalHandler;
-import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.initializeFormElements;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.testapplication.application.domain.food.controllers.FoodBulkActionsController.FOOD_BULK_ACTIONS;
@@ -50,32 +46,12 @@ public class FoodUiConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Food.class )
-		        .and( ModalConfigurers.createViewAsModal() )
-		        .and( ModalConfigurers.updateViewAsModal() )
-		        .and( ModalConfigurers.deleteViewAsModal() )
+		        .and( ModalConfigurers.modalConfigurers.createViewAsModal() )
+		        .and( ModalConfigurers.modalConfigurers.updateViewAsModal() )
+		        .and( ModalConfigurers.modalConfigurers.deleteViewAsModal() )
 		        .listView(
 				        lvb -> lvb.entityQueryFilter(
 						        eqf -> eqf.showProperties( "name", "currentAction" )
-				        )
-		        )
-		        .createOrUpdateFormView(
-				        fvb -> fvb.viewProcessor(
-						        vp -> vp.withType( ModalSubmitAndRefreshTableViewProcessor.class )
-						                .skipIfMissing()
-						                .configure(
-								                msartvp -> msartvp.action(
-										                ctx -> ctx.action()
-										                          .redirect(
-												                          requestActionHandler()
-														                          .copyOriginalRequestParameters( true )
-														                          .form( "form.em-list-form" )
-														                          .partial( "::itemsTable" )
-														                          .target( ".exm-table-refresh-target" ),
-												                          closeModalHandler( ctx.modalSelector() ),
-												                          initializeFormElements( ".em-sortableTable-panel" )
-										                          )
-								                )
-						                )
 				        )
 		        )
 		        .listView(

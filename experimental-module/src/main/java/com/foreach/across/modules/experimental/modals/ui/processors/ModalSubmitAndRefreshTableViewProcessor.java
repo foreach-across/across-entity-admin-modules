@@ -34,7 +34,7 @@ public class ModalSubmitAndRefreshTableViewProcessor extends ModalFormViewProces
 	private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url;
 
 	@Setter(AccessLevel.PROTECTED)
-	private Function<ModalActionCustomizationContext, ActionAttribute> actionCustomizer = ModalActionCustomizationContext::action;
+	private Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> actionCustomizer = ModalActionCustomizationContext::action;
 
 	public ModalSubmitAndRefreshTableViewProcessor url( BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url ) {
 		this.url = url;
@@ -42,7 +42,7 @@ public class ModalSubmitAndRefreshTableViewProcessor extends ModalFormViewProces
 	}
 
 	// SELF referencing , how? :(
-	public ModalSubmitAndRefreshTableViewProcessor action( Function<ModalActionCustomizationContext, ActionAttribute> actionCustomizer ) {
+	public ModalSubmitAndRefreshTableViewProcessor action( Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> actionCustomizer ) {
 		this.actionCustomizer = actionCustomizer;
 		return self();
 	}
@@ -70,8 +70,9 @@ public class ModalSubmitAndRefreshTableViewProcessor extends ModalFormViewProces
 						initializeFormElements( ".em-sortableTable-panel" )
 				);
 
-		ModalActionCustomizationContext customizationContext =
-				new ModalActionCustomizationContext( getModalSelector(), ( selector ) -> getModalSelector() + " " + selector, actionAttribute, builderContext );
+		ModalActionCustomizationContext<RequestActionAttribute> customizationContext =
+				new ModalActionCustomizationContext<>( getModalSelector(), ( selector ) -> getModalSelector() + " " + selector, actionAttribute,
+				                                       builderContext );
 		element.set( actionCustomizer.apply( customizationContext ) );
 	}
 }

@@ -1,6 +1,6 @@
 package com.foreach.across.modules.experimental.modals.ui.processors;
 
-import com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute;
+import com.foreach.across.modules.experimental.webutility.support.action.ActionAttribute;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -8,17 +8,17 @@ import lombok.RequiredArgsConstructor;
 import java.util.function.Function;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class ModalActionCustomizationContext
+public class ModalActionCustomizationContext<T extends ActionAttribute>
 {
 	private final String modalSelector;
 	private final Function<String, String> modalSelectorProvider;
-	private final RequestActionAttribute requestActionAttribute;
+	private final T requestActionAttribute;
 	private final ViewElementBuilderContext viewElementBuilderContext;
 
 	/**
 	 * The original action that is configured for the modal. If nothing is customized, this action will be used.
 	 */
-	public RequestActionAttribute action() {
+	public T action() {
 		return requestActionAttribute;
 	}
 

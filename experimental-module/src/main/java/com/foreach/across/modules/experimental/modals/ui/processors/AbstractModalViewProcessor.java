@@ -61,7 +61,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 	private String partial = null;
 
 	@Setter(AccessLevel.PROTECTED)
-	private Function<ModalActionCustomizationContext, ActionAttribute> actionCustomizer = ModalActionCustomizationContext::action;
+	private Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> actionCustomizer = ModalActionCustomizationContext::action;
 
 	public T modalId( String modalId ) {
 		this.modalId = modalId;
@@ -104,7 +104,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 	 * </p>
 	 * The customizer should return the final action that should be used. Overrides applied through the customizer always take precedence.
 	 */
-	public T action( Function<ModalActionCustomizationContext, ActionAttribute> actionCustomizer ) {
+	public T action( Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> actionCustomizer ) {
 		this.actionCustomizer = actionCustomizer;
 		return (T) this;
 	}
@@ -139,7 +139,7 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 				.url( url.apply( linkViewBuilder, builderContext ) )
 				.partial( partial )
 				.requestConfig( ImmutableMap.of( "headers",
-				                                 ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalId ) ) )
+				                                 ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalSelector() ) ) )
 				.success(
 						clearHandler( modalTarget( ".modal-title" ) ),
 						clearHandler( modalTarget( ".modal-footer" ) ),
@@ -156,8 +156,8 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 						initializeFormElements( modalSelector() )
 				);
 
-		ModalActionCustomizationContext customizationContext =
-				new ModalActionCustomizationContext( modalSelector(), ( selector ) -> modalSelector() + " " + selector, actionAttribute, builderContext );
+		ModalActionCustomizationContext<RequestActionAttribute> customizationContext =
+				new ModalActionCustomizationContext<>( modalSelector(), ( selector ) -> modalSelector() + " " + selector, actionAttribute, builderContext );
 
 		viewElement.set( data( "toggle", "modal" ), data( "target", modalSelector() ) )
 		           .set(
