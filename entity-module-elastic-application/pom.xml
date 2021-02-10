@@ -98,7 +98,7 @@
 	</profiles>
 
 	<build>
-		<finalName>entity-module-test-application</finalName>
+		<finalName>entity-module-elastic-test-application</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
