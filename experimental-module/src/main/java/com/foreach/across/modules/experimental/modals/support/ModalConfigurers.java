@@ -38,8 +38,8 @@ public class ModalConfigurers
 		} );
 	}
 
-	public <U extends EntityConfigurationBuilder<?>> Consumer<U> createViewAsModal( Consumer<CreateModalConfigurer> consumer ) {
-		CreateModalConfigurer configurer = new CreateModalConfigurer<>();
+	public <U extends EntityConfigurationBuilder<?>, T extends CreateModalConfigurer<T>> Consumer<U> createViewAsModal( Consumer<T> consumer ) {
+		T configurer = CreateModalConfigurer.instance();
 		consumer.accept( configurer );
 		return configurer::consume;
 	}
@@ -49,8 +49,8 @@ public class ModalConfigurers
 		} );
 	}
 
-	public <U extends EntityConfigurationBuilder<?>> Consumer<U> updateViewAsModal( Consumer<UpdateModalConfigurer> consumer ) {
-		UpdateModalConfigurer configurer = new UpdateModalConfigurer<>();
+	public <U extends EntityConfigurationBuilder<?>, T extends UpdateModalConfigurer<T>> Consumer<U> updateViewAsModal( Consumer<T> consumer ) {
+		T configurer = UpdateModalConfigurer.instance();
 		consumer.accept( configurer );
 		return configurer::consume;
 	}
@@ -60,8 +60,8 @@ public class ModalConfigurers
 		} );
 	}
 
-	public <U extends EntityConfigurationBuilder<?>> Consumer<U> deleteViewAsModal( Consumer<DeleteModalConfigurer> consumer ) {
-		DeleteModalConfigurer configurer = new DeleteModalConfigurer<>();
+	public <U extends EntityConfigurationBuilder<?>, T extends DeleteModalConfigurer<T>> Consumer<U> deleteViewAsModal( Consumer<T> consumer ) {
+		T configurer = DeleteModalConfigurer.instance();
 		consumer.accept( configurer );
 		return configurer::consume;
 	}
@@ -74,8 +74,8 @@ public class ModalConfigurers
 			} );
 		}
 
-		public <U extends EntityAssociationBuilder> Consumer<U> createViewAsModal( Consumer<CreateModalConfigurer> consumer ) {
-			CreateModalConfigurer configurer = new CreateModalConfigurer<>()
+		public <U extends EntityAssociationBuilder, T extends CreateModalConfigurer<T>> Consumer<U> createViewAsModal( Consumer<T> consumer ) {
+			T configurer = CreateModalConfigurer.<T>instance()
 					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
 					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
 			consumer.accept( configurer );
@@ -87,8 +87,8 @@ public class ModalConfigurers
 			} );
 		}
 
-		public <U extends EntityAssociationBuilder> Consumer<U> updateViewAsModal( Consumer<UpdateModalConfigurer> consumer ) {
-			UpdateModalConfigurer configurer = new UpdateModalConfigurer<>()
+		public <U extends EntityAssociationBuilder, T extends UpdateModalConfigurer<T>> Consumer<U> updateViewAsModal( Consumer<T> consumer ) {
+			T configurer = UpdateModalConfigurer.<T>instance()
 					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
 					.delete( vp -> vp.action( reconfigureModalActionHandlers() ) )
 					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
@@ -101,8 +101,8 @@ public class ModalConfigurers
 			} );
 		}
 
-		public <U extends EntityAssociationBuilder> Consumer<U> deleteViewAsModal( Consumer<DeleteModalConfigurer> consumer ) {
-			DeleteModalConfigurer configurer = new DeleteModalConfigurer<>()
+		public <U extends EntityAssociationBuilder, T extends DeleteModalConfigurer<T>> Consumer<U> deleteViewAsModal( Consumer<T> consumer ) {
+			T configurer = DeleteModalConfigurer.<T>instance()
 					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
 					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
 			consumer.accept( configurer );

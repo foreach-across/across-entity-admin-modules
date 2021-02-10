@@ -12,15 +12,12 @@ import lombok.Setter;
 
 import java.util.function.Consumer;
 
-public abstract class BaseModalConfigurer<T extends BaseModalConfigurer<T>>
+@Setter(AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
+public abstract class BaseModalConfigurer<T extends BaseModalConfigurer>
 {
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PROTECTED)
 	private Consumer<? extends ModalSubmitAndRefreshTableViewProcessor> submissionCustomizer = vp -> {
 	};
-
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PROTECTED)
 	private Consumer<? extends ModalCancelViewProcessor> cancelCustomizer = vp -> {
 	};
 

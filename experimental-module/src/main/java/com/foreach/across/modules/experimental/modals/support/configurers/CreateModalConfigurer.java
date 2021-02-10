@@ -7,16 +7,23 @@ import com.foreach.across.modules.experimental.modals.ui.processors.ModalCreateB
 import com.foreach.across.modules.experimental.modals.ui.processors.ModalSubmitAndRefreshTableViewProcessor;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.function.Consumer;
 
+@Setter(AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateModalConfigurer<T extends CreateModalConfigurer<T>> extends BaseModalConfigurer<T>
 {
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PROTECTED)
 	private Consumer<? extends ModalCreateButtonListViewProcessor> modalCustomizer = vp -> {
 	};
+
+	@SuppressWarnings("unchecked")
+	public static <T extends CreateModalConfigurer<T>> T instance() {
+		return (T) new CreateModalConfigurer<T>();
+	}
 
 	public T modal( Consumer<? extends ModalCreateButtonListViewProcessor> customizer ) {
 		this.modalCustomizer = customizer;

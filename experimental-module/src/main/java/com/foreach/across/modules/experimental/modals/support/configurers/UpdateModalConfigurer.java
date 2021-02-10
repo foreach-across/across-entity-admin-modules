@@ -8,23 +8,27 @@ import com.foreach.across.modules.experimental.modals.ui.processors.ModalItemAct
 import com.foreach.across.modules.experimental.modals.ui.processors.ModalSubmitAndRefreshTableViewProcessor;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
 
+@Setter(AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateModalConfigurer<T extends UpdateModalConfigurer<T>> extends BaseModalConfigurer<T>
 {
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PROTECTED)
 	private Consumer<? extends ModalItemActionViewProcessor> modalCustomizer = vp -> {
 	};
-
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PROTECTED)
 	private Consumer<? extends ModalDeleteViewProcessor> deleteCustomizer = vp -> {
 	};
+
+	@SuppressWarnings("unchecked")
+	public static <T extends UpdateModalConfigurer<T>> T instance() {
+		return (T) new UpdateModalConfigurer<T>();
+	}
 
 	public T modal( Consumer<? extends ModalItemActionViewProcessor> customizer ) {
 		this.modalCustomizer = customizer;
