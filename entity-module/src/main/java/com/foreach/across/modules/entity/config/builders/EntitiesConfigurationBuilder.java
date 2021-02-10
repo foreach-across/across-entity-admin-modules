@@ -20,6 +20,8 @@ import com.foreach.across.modules.entity.registry.EntityConfigurationProvider;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import lombok.NonNull;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.BeanFactory;
@@ -107,6 +109,20 @@ public class EntitiesConfigurationBuilder
 	 */
 	public <U> EntityConfigurationBuilder<U> withType( Class<U> entityType ) {
 		return typeBuilders.computeIfAbsent( entityType, c -> createConfigurationBuilder() ).as( entityType );
+	}
+
+	public <U> EntityConfigurationBuilder<?> represent( Class<U> entityType, String name ) {
+		Class<?> dynamicType = new ByteBuddy()
+				.subclass( entityType )
+				.implement( EntityConfigurationView.class )
+				//.method( ElementMatchers.named( "toString"))
+				//.intercept( FixedValue.value( "Hello World!"))
+				.make()
+				.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
+				.getLoaded();
+
+		return withType( dynamicType ).name( name );
+		//return typeBuilders.computeIfAbsent( dynamicType, c -> createConfigurationBuilder().name( name ) );
 	}
 
 	/**

@@ -38,7 +38,13 @@ public class UserConfiguration implements EntityConfigurer
 {
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		entities.withType( User.class )
+		/*
+		entities.create().name( "repuser" ).attribute( "EntityConfigurationViewFor", User.class ).entityType( User.class, true )
+		        .listView(lvb -> lvb.showProperties( "*" )).show();
+
+		 */
+		entities.represent( User.class, "repuser" );
+		entities.withName( "user" ).as( User.class )
 		        .properties(
 				        props ->
 						        props.property( "name" ).attribute( EntityAttributes.PROPERTY_REQUIRED, false ).and()

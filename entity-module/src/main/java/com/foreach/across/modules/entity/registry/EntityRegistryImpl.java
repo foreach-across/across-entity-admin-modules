@@ -69,11 +69,6 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 		EntityConfiguration existingByType = getEntityConfiguration( entityConfiguration.getEntityType() );
 
-		if ( existingByType != null && existingByType != entityConfiguration ) {
-			throw new IllegalArgumentException( "There is another EntityConfiguration for " + existingByType
-					.getEntityType() + " with name " + existingByType.getName() );
-		}
-
 		if ( existingByName == entityConfiguration || existingByType == entityConfiguration ) {
 			LOG.trace( "Attempt to re-register EntityConfiguration for " + entityConfiguration
 					.getEntityType() + " with name " + entityConfiguration.getName() );
