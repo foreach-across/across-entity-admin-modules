@@ -23,7 +23,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.Repository;
@@ -45,7 +44,6 @@ final class EntityConfigurationViewProcessor implements DefaultEntityConfigurati
 	private final EntityRegistry entityRegistry;
 
 	@Override
-	@SneakyThrows
 	public void accept( MutableEntityConfiguration<?> mutableEntityConfiguration ) {
 		Class<?> entityType = mutableEntityConfiguration.getEntityType();
 
