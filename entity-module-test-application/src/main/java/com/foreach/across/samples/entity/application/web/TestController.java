@@ -20,7 +20,6 @@ import com.blazebit.persistence.view.EntityViewManager;
 import com.foreach.across.samples.entity.application.repositories.SimpleUserRepository;
 import com.foreach.across.samples.entity.application.view.GroupView;
 import com.foreach.across.samples.entity.application.view.UserSimpleView;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +39,10 @@ public class TestController
 	@ResponseBody
 	public String test() {
 		UserSimpleView userSimpleView = entityViewManager.create( UserSimpleView.class );
-		userSimpleView.setName( RandomStringUtils.randomAlphanumeric( 30 ) );
+		//userSimpleView.setName( RandomStringUtils.randomAlphanumeric( 30 ) );
 		GroupView groupView = entityViewManager.create( GroupView.class );
-		groupView.setName( RandomStringUtils.randomAlphanumeric( 30 ) );
-		userSimpleView.setGroup( groupView );
+		//groupView.setName( RandomStringUtils.randomAlphanumeric( 30 ) );
+		//userSimpleView.setGroup( groupView );
 		userRepository.save( userSimpleView );
 		return userRepository.findAll().stream().map( u -> u.getName() ).collect( Collectors.joining( ", " ) );
 	}

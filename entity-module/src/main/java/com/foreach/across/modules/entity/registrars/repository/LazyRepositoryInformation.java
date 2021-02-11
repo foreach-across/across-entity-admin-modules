@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registrars.repository;
 
+import com.foreach.across.core.context.AcrossListableBeanFactory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.aop.TargetSource;
@@ -37,6 +38,7 @@ import org.springframework.data.repository.support.RepositoryInvokerFactory;
 @Getter
 public class LazyRepositoryInformation
 {
+	private final AcrossListableBeanFactory acrossListableBeanFactory;
 	private final boolean acrossDevelopmentModeIsActive;
 	private final ClassLoader classLoader;
 	private final Repositories repositories;
@@ -81,7 +83,7 @@ public class LazyRepositoryInformation
 
 	public Repository getRepository() {
 		if ( !acrossDevelopmentModeIsActive ) {
-			return (Repository) repositories.getRepositoryFor( entityType ).get();
+			return (Repository) acrossListableBeanFactory.getBean( repositoryFactoryInformation.getRepositoryInformation().getRepositoryInterface() );
 		}
 		TargetSource ts = new TargetSource()
 		{
@@ -97,7 +99,7 @@ public class LazyRepositoryInformation
 
 			@Override
 			public Object getTarget() {
-				return repositories.getRepositoryFor( entityType ).get();
+				return acrossListableBeanFactory.getBean( repositoryFactoryInformation.getRepositoryInformation().getRepositoryInterface() );
 			}
 
 			@Override

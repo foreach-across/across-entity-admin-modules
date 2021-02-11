@@ -145,7 +145,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 				LOG.debug( "Auto registering entity type {} as repository", entityType.getName() );
 
 				MutableEntityConfiguration entityConfiguration
-						= registerEntity( moduleInfo, entityRegistry, entityType, repositoryFactoryInformation, repositories, repositoryInvokerFactory );
+						= registerEntity( lbf, moduleInfo, entityRegistry, entityType, repositoryFactoryInformation, repositories, repositoryInvokerFactory );
 
 				if ( entityConfiguration != null ) {
 					registered.add( entityConfiguration );
@@ -175,6 +175,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 
 	@SuppressWarnings("unchecked")
 	private MutableEntityConfiguration registerEntity(
+			AcrossListableBeanFactory lbf,
 			AcrossModuleInfo moduleInfo,
 			MutableEntityRegistry entityRegistry,
 			Class<?> entityType,
@@ -182,7 +183,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 			Repositories repositories,
 			RepositoryInvokerFactory repositoryInvokerFactory ) {
 		String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
-		LazyRepositoryInformation lazyRepositoryInformation = new LazyRepositoryInformation( acrossDevelopmentModeIsActive, classLoader, repositories,
+		LazyRepositoryInformation lazyRepositoryInformation = new LazyRepositoryInformation( lbf, acrossDevelopmentModeIsActive, classLoader, repositories,
 		                                                                                     repositoryFactoryInformation,
 		                                                                                     repositoryFactoryInformation.getRepositoryInformation()
 		                                                                                                                 .getDomainType(),

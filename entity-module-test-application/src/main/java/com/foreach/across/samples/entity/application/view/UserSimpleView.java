@@ -16,16 +16,13 @@
 
 package com.foreach.across.samples.entity.application.view;
 
-import com.blazebit.persistence.view.CreatableEntityView;
 import com.blazebit.persistence.view.EntityView;
 import com.blazebit.persistence.view.IdMapping;
-import com.blazebit.persistence.view.UpdatableEntityView;
 import com.foreach.across.samples.entity.application.business.User;
 import org.springframework.data.domain.Persistable;
 
 @EntityView(User.class)
-@UpdatableEntityView
-@CreatableEntityView
+
 public interface UserSimpleView extends Persistable<Long>
 {
 
@@ -35,11 +32,6 @@ public interface UserSimpleView extends Persistable<Long>
     String getName();
 
     GroupView getGroup();
-
-    void setName( String name );
-
-    //@UpdatableMapping(cascade = CascadeType.PERSIST)
-    void setGroup( GroupView group );
 
     default boolean isNew() {
         return getId() != null;
