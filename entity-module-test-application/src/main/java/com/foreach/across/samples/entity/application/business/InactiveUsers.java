@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.config.builders;
+package com.foreach.across.samples.entity.application.business;
 
-import java.lang.annotation.*;
+import com.foreach.across.modules.entity.config.builders.EntityConfigurationView;
 
-@Target({ ElementType.TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface EntityConfigurationView
+@EntityConfigurationView(originalType = User.class)
+public class InactiveUsers extends User
 {
-	Class<?> originalType();
 }

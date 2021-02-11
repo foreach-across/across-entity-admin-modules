@@ -22,10 +22,9 @@ import com.foreach.across.modules.entity.registry.DefaultEntityConfigurationProv
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.util.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
@@ -50,15 +49,17 @@ final class EntityConfigurationViewProcessor implements DefaultEntityConfigurati
 	public void accept( MutableEntityConfiguration<?> mutableEntityConfiguration ) {
 		Class<?> entityType = mutableEntityConfiguration.getEntityType();
 
-		if ( entityType != null && StringUtils.contains( entityType.getName(), "$ByteBuddy$" ) ) {
-			EntityConfigurationView originalType = (EntityConfigurationView) entityType.newInstance();
-			EntityConfiguration original = entityRegistry.getEntityConfiguration( EntityUtils.generateEntityName( originalType.getOriginalType() ) );
-			mutableEntityConfiguration.setEntityModel( original.getEntityModel() );
-			mutableEntityConfiguration.setAttribute( RepositoryFactoryInformation.class, original.getAttribute( RepositoryFactoryInformation.class ) );
-			mutableEntityConfiguration.setAttribute( Repository.class, original.getAttribute( Repository.class ) );
-			mutableEntityConfiguration.setAttribute( PersistentEntity.class, original.getAttribute( PersistentEntity.class ) );
-			mutableEntityConfiguration.setAttribute( RepositoryInvoker.class, original.getAttribute( RepositoryInvoker.class ) );
-			mutableEntityConfiguration.setAttribute( EntityQueryExecutor.class, original.getAttribute( EntityQueryExecutor.class ) );
+		if ( entityType != null ) {
+			EntityConfigurationView annotation = AnnotationUtils.findAnnotation( entityType, EntityConfigurationView.class );
+			if ( annotation != null ) {
+				EntityConfiguration original = entityRegistry.getEntityConfiguration( annotation.originalType() );
+				mutableEntityConfiguration.setEntityModel( original.getEntityModel() );
+				mutableEntityConfiguration.setAttribute( RepositoryFactoryInformation.class, original.getAttribute( RepositoryFactoryInformation.class ) );
+				mutableEntityConfiguration.setAttribute( Repository.class, original.getAttribute( Repository.class ) );
+				mutableEntityConfiguration.setAttribute( PersistentEntity.class, original.getAttribute( PersistentEntity.class ) );
+				mutableEntityConfiguration.setAttribute( RepositoryInvoker.class, original.getAttribute( RepositoryInvoker.class ) );
+				mutableEntityConfiguration.setAttribute( EntityQueryExecutor.class, original.getAttribute( EntityQueryExecutor.class ) );
+			}
 		}
 	}
 }

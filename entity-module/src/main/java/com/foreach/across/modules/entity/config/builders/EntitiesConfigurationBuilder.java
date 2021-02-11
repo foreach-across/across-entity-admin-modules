@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import lombok.NonNull;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -119,7 +120,9 @@ public class EntitiesConfigurationBuilder
 			public Class<? extends U> get() {
 				return new ByteBuddy()
 						.subclass( entityType )
-						.implement( EntityConfigurationView.class )
+						.annotateType( AnnotationDescription.Builder.ofType( EntityConfigurationView.class )
+						                                            .define( "originalType", entityType )
+						                                            .build() )
 						.make()
 						.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
 						.getLoaded();
