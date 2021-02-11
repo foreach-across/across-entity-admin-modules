@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.registry.processors;
 
+import com.blazebit.persistence.view.EntityView;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationView;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.DefaultEntityConfigurationProvider;
@@ -25,13 +27,15 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.Validator;
 
-import java.util.Objects;
+import javax.validation.metadata.BeanDescriptor;
 
 /**
  * Checks if the entity type is an enum, and if so, builds a default entity model if there is none yet.
@@ -51,15 +55,50 @@ final class EntityConfigurationViewProcessor implements DefaultEntityConfigurati
 	public void accept( MutableEntityConfiguration<?> mutableEntityConfiguration ) {
 		Class<?> entityType = mutableEntityConfiguration.getEntityType();
 
-		if ( entityType != null && Objects.equals( mutableEntityConfiguration.getName(), "repuser" ) ) {
-			EntityConfigurationView o = (EntityConfigurationView) entityType.newInstance();
-			EntityConfiguration original = entityRegistry.getEntityConfiguration( EntityUtils.generateEntityName( o.getType() ) );
-			mutableEntityConfiguration.setEntityModel( original.getEntityModel() );
-			mutableEntityConfiguration.setAttribute( RepositoryFactoryInformation.class, original.getAttribute( RepositoryFactoryInformation.class ) );
-			mutableEntityConfiguration.setAttribute( Repository.class, original.getAttribute( Repository.class ) );
-			mutableEntityConfiguration.setAttribute( PersistentEntity.class, original.getAttribute( PersistentEntity.class ) );
-			mutableEntityConfiguration.setAttribute( RepositoryInvoker.class, original.getAttribute( RepositoryInvoker.class ) );
-			mutableEntityConfiguration.setAttribute( EntityQueryExecutor.class, original.getAttribute( EntityQueryExecutor.class ) );
+		if ( entityType != null ) {
+			Class originalType = null;
+			if ( EntityConfigurationView.class.isAssignableFrom( entityType ) ) {
+				EntityConfigurationView byteBuddyClass = (EntityConfigurationView) entityType.newInstance();
+				originalType = byteBuddyClass.getOriginalType();
+
+				EntityConfiguration original = entityRegistry.getEntityConfiguration( EntityUtils.generateEntityName( originalType ) );
+				mutableEntityConfiguration.setEntityModel( original.getEntityModel() );
+				mutableEntityConfiguration.setAttribute( RepositoryFactoryInformation.class, original.getAttribute( RepositoryFactoryInformation.class ) );
+				mutableEntityConfiguration.setAttribute( Repository.class, original.getAttribute( Repository.class ) );
+				mutableEntityConfiguration.setAttribute( PersistentEntity.class, original.getAttribute( PersistentEntity.class ) );
+				mutableEntityConfiguration.setAttribute( RepositoryInvoker.class, original.getAttribute( RepositoryInvoker.class ) );
+				mutableEntityConfiguration.setAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME,
+				                                         original.getAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME ) );
+				mutableEntityConfiguration.setAttribute( Validator.class, original.getAttribute( Validator.class ) );
+				mutableEntityConfiguration.setAttribute( BeanDescriptor.class, original.getAttribute( BeanDescriptor.class ) );
+
+				mutableEntityConfiguration.setAttribute( EntityQueryExecutor.class, original.getAttribute( EntityQueryExecutor.class ) );
+			}
+
+			EntityView annotation = AnnotationUtils.findAnnotation( entityType, EntityView.class );
+			if ( annotation != null ) {
+
+				Class<?> value = annotation.value();
+
+				EntityConfiguration original = entityRegistry.getEntityConfiguration( EntityUtils.generateEntityName( value ) );
+				mutableEntityConfiguration.setEntityModel( original.getEntityModel() );
+				mutableEntityConfiguration.setAttribute( RepositoryFactoryInformation.class, original.getAttribute( RepositoryFactoryInformation.class ) );
+				mutableEntityConfiguration.setAttribute( Repository.class, original.getAttribute( Repository.class ) );
+				mutableEntityConfiguration.setAttribute( PersistentEntity.class, original.getAttribute( PersistentEntity.class ) );
+				mutableEntityConfiguration.setAttribute( RepositoryInvoker.class, original.getAttribute( RepositoryInvoker.class ) );
+				mutableEntityConfiguration.setAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME,
+				                                         original.getAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME ) );
+				mutableEntityConfiguration.setAttribute( Validator.class, original.getAttribute( Validator.class ) );
+				mutableEntityConfiguration.setAttribute( BeanDescriptor.class, original.getAttribute( BeanDescriptor.class ) );
+
+				mutableEntityConfiguration.setAttribute( EntityQueryExecutor.class, original.getAttribute( EntityQueryExecutor.class ) );
+
+			}
+
+			if ( originalType != null ) {
+
+			}
+
 		}
 	}
 }

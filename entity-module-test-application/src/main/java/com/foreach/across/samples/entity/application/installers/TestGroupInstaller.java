@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.stream.Stream;
 
@@ -51,7 +52,7 @@ public class TestGroupInstaller
 		      } );
 
 		// verify installed groups
-		Page<Group> filteredGroups = groupRepository.findByNameContaining( "people", PageRequest.of( 0, 30 ) );
+		Page<Group> filteredGroups = groupRepository.findByNameContaining( "people", PageRequest.of( 0, 30, Sort.by( "id" ) ) );
 		if ( filteredGroups.getTotalElements() != 45 ) {
 			throw new RuntimeException( "Incorrect results returned for groups containing 'people'" );
 		}

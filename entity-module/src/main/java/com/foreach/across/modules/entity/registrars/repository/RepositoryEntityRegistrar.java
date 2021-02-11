@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registrars.repository;
 
+import com.blazebit.persistence.spring.data.impl.query.EntityViewAwareRepositoryInformation;
 import com.foreach.across.core.context.AcrossListableBeanFactory;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
@@ -33,6 +34,7 @@ import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -94,6 +96,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@SneakyThrows
 	public void registerEntities( MutableEntityRegistry entityRegistry,
 	                              AcrossModuleInfo moduleInfo,
 	                              AcrossContextBeanRegistry beanRegistry ) {
@@ -131,6 +134,12 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 			}
 
 			Class<?> entityType = ClassUtils.getUserClass( repositoryFactoryInformation.getRepositoryInformation().getDomainType() );
+			if ( repositoryFactoryInformation.getRepositoryInformation() instanceof EntityViewAwareRepositoryInformation ) {
+				Class entityViewType = ( (EntityViewAwareRepositoryInformation) repositoryFactoryInformation.getRepositoryInformation() ).getEntityViewType();
+				if ( entityViewType != null ) {
+					entityType = ClassUtils.forName( entityViewType.getName() + "Impl", null );
+				}
+			}
 
 			if ( !entityRegistry.contains( entityType ) ) {
 				LOG.debug( "Auto registering entity type {} as repository", entityType.getName() );
@@ -174,7 +183,9 @@ class RepositoryEntityRegistrar implements EntityRegistrar, BeanClassLoaderAware
 			RepositoryInvokerFactory repositoryInvokerFactory ) {
 		String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
 		LazyRepositoryInformation lazyRepositoryInformation = new LazyRepositoryInformation( acrossDevelopmentModeIsActive, classLoader, repositories,
-		                                                                                     repositoryFactoryInformation, entityType,
+		                                                                                     repositoryFactoryInformation,
+		                                                                                     repositoryFactoryInformation.getRepositoryInformation()
+		                                                                                                                 .getDomainType(),
 		                                                                                     repositoryInvokerFactory );
 		Optional<Object> repository = Optional.of( lazyRepositoryInformation.getRepository() );
 

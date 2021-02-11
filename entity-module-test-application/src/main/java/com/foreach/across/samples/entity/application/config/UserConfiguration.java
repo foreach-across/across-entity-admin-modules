@@ -22,9 +22,13 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.samples.entity.application.business.User;
+import com.foreach.across.samples.entity.application.view.UserSimpleView;
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Sort;
+import org.springframework.util.ClassUtils;
 
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
@@ -37,13 +41,31 @@ import static com.foreach.across.modules.entity.views.EntityViewCustomizers.form
 public class UserConfiguration implements EntityConfigurer
 {
 	@Override
+	@SneakyThrows
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		/*
 		entities.create().name( "repuser" ).attribute( "EntityConfigurationViewFor", User.class ).entityType( User.class, true )
 		        .listView(lvb -> lvb.showProperties( "*" )).show();
 
 		 */
-		entities.represent( User.class, "repuser" );
+		Class<?> userSimpleViewImpl = ClassUtils.forName( UserSimpleView.class.getName() + "Impl", null );
+		entities.withType( userSimpleViewImpl )
+		        .listView( lvb -> lvb.defaultSort( Sort.by( "id" ) ).showProperties( "id", "name" ) )
+		        .createFormView( cfv -> cfv.showProperties( "id", "name" ) )
+		        .deleteFormView()
+		        .updateFormView( ufv -> ufv.showProperties( "id", "name" ) )
+
+		        .detailView()
+		;
+		entities.entityConfigurationView( User.class, "repuser" )
+		        .hidden( false )
+		        .listView(
+				        lvb -> lvb.showProperties( "*" ).defaultSort( Sort.by( "id" ) )
+				                  .entityQueryFilter( eqf -> eqf.showProperties( "*" ) ) )
+		        .createFormView()
+		        .updateFormView()
+		        .detailView()
+		        .deleteFormView();
 		entities.withName( "user" ).as( User.class )
 		        .properties(
 				        props ->

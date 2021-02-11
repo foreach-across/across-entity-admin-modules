@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Central builder for customizing configuration entries in the
@@ -111,15 +112,31 @@ public class EntitiesConfigurationBuilder
 		return typeBuilders.computeIfAbsent( entityType, c -> createConfigurationBuilder() ).as( entityType );
 	}
 
-	public <U> EntityConfigurationBuilder<?> represent( Class<U> entityType, String name ) {
-		Class<?> dynamicType = new ByteBuddy()
-				.subclass( entityType )
-				.implement( EntityConfigurationView.class )
-				//.method( ElementMatchers.named( "toString"))
-				//.intercept( FixedValue.value( "Hello World!"))
-				.make()
-				.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
-				.getLoaded();
+	/**
+	 * Configure a new builder for a specific entity type with a proxied subtype of the type of the entity.
+	 * If non-existing, this method will create a default {@link EntityConfiguration} with
+	 * settings that could be detected based on the specific exact type of the entity.
+	 *
+	 * @param entityType for which to configure the builder
+	 * @return configuration builder
+	 */
+	public <U> EntityConfigurationBuilder<?> entityConfigurationView( Class<U> entityType, String name ) {
+		return entityConfigurationView( entityType, new Supplier<Class<?>>()
+		{
+			@Override
+			public Class<U> get() {
+				return (Class<U>) new ByteBuddy()
+						.subclass( entityType )
+						.implement( EntityConfigurationView.class )
+						.make()
+						.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
+						.getLoaded();
+			}
+		}, name );
+	}
+
+	public <U> EntityConfigurationBuilder<?> entityConfigurationView( Class<U> entityType, Supplier<Class<?>> proxySupplier, String name ) {
+		Class<?> dynamicType = proxySupplier.get();
 
 		return withType( dynamicType ).name( name );
 		//return typeBuilders.computeIfAbsent( dynamicType, c -> createConfigurationBuilder().name( name ) );

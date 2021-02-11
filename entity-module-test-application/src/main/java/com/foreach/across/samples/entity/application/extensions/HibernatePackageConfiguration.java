@@ -16,19 +16,47 @@
 
 package com.foreach.across.samples.entity.application.extensions;
 
+import com.blazebit.persistence.Criteria;
+import com.blazebit.persistence.CriteriaBuilderFactory;
+import com.blazebit.persistence.integration.view.spring.EnableEntityViews;
+import com.blazebit.persistence.spi.CriteriaBuilderConfiguration;
+import com.blazebit.persistence.view.EntityViewManager;
+import com.blazebit.persistence.view.spi.EntityViewConfiguration;
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageConfigurer;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
 import com.foreach.across.samples.entity.application.business.Group;
+import org.springframework.context.annotation.Bean;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
 @ModuleConfiguration(AcrossHibernateJpaModule.NAME)
+@EnableEntityViews(basePackages = { "com.foreach.across.samples.entity.application.view" })
 public class HibernatePackageConfiguration implements HibernatePackageConfigurer
 {
+	@PersistenceUnit
+	private EntityManagerFactory entityManagerFactory;
+
+	@Bean
+	@Exposed
+	public CriteriaBuilderFactory createCriteriaBuilderFactory() {
+		CriteriaBuilderConfiguration config = Criteria.getDefault();
+		return config.createCriteriaBuilderFactory( entityManagerFactory );
+	}
+
+	@Bean
+	@Exposed
+	public EntityViewManager createEntityViewManager( CriteriaBuilderFactory cbf, EntityViewConfiguration entityViewConfiguration ) {
+		return entityViewConfiguration.createEntityViewManager( cbf );
+	}
+
 	@Override
 	public void configureHibernatePackage( HibernatePackageRegistry hibernatePackageRegistry ) {
 		hibernatePackageRegistry.addPackageToScan( Group.class );

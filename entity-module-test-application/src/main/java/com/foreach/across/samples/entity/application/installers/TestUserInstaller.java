@@ -27,6 +27,7 @@ import com.foreach.across.samples.entity.application.repositories.UserRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 import java.util.Calendar;
@@ -66,8 +67,8 @@ public class TestUserInstaller
 		      } );
 
 		// verify installed groups
-		Assert.isTrue( userRepository.findByGroup( group, PageRequest.of( 0, 30 ) ).getTotalElements() == 60, "should have 60 groups" );
-		Assert.isTrue( userRepository.findByGroupAndNameContaining( group, "j", PageRequest.of( 0, 30 ) )
+		Assert.isTrue( userRepository.findByGroup( group, PageRequest.of( 0, 30, Sort.by( "id" ) ) ).getTotalElements() == 60, "should have 60 groups" );
+		Assert.isTrue( userRepository.findByGroupAndNameContaining( group, "j", PageRequest.of( 0, 30, Sort.by( "id" ) ) )
 		                             .getTotalElements() == 45, "should have 45 groups containing name 'j'" );
 	}
 

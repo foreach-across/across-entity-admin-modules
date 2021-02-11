@@ -71,7 +71,7 @@ import static com.foreach.across.modules.entity.support.EntityConfigurationCusto
  * @since 2.0.0
  */
 @Configuration
-@EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class)
+@EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class, repositoryFactoryBeanClass = Blaze.class)
 public class CategoryEntityConfiguration implements EntityConfigurer
 {
 	private final List<Map<String, Object>> categoryRepository = new ArrayList<>();

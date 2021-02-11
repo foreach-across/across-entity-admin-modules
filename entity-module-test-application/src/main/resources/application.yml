@@ -40,7 +40,7 @@ debugWebModule:
     enabled: false
 across:
   development:
-    active: true
+    active: false
 
 entityModule:
   message-codes:
