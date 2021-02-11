@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.config.builders;
 
 public interface EntityConfigurationView
 {
-	default Class getType() {
+	default Class<?> getOriginalType() {
 		return getClass().getSuperclass();
 	}
 }

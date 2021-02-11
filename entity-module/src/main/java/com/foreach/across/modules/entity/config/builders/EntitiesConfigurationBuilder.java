@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Central builder for customizing configuration entries in the
@@ -111,18 +112,25 @@ public class EntitiesConfigurationBuilder
 		return typeBuilders.computeIfAbsent( entityType, c -> createConfigurationBuilder() ).as( entityType );
 	}
 
-	public <U> EntityConfigurationBuilder<?> represent( Class<U> entityType, String name ) {
-		Class<?> dynamicType = new ByteBuddy()
-				.subclass( entityType )
-				.implement( EntityConfigurationView.class )
-				//.method( ElementMatchers.named( "toString"))
-				//.intercept( FixedValue.value( "Hello World!"))
-				.make()
-				.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
-				.getLoaded();
+	public <U> EntityConfigurationBuilder<? extends U> entityConfigurationView( Class<U> entityType, String name ) {
+		return entityConfigurationView( new Supplier<Class<? extends U>>()
+		{
+			@Override
+			public Class<? extends U> get() {
+				return new ByteBuddy()
+						.subclass( entityType )
+						.implement( EntityConfigurationView.class )
+						.make()
+						.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
+						.getLoaded();
+			}
+		}, name );
+	}
+
+	public <U> EntityConfigurationBuilder<? extends U> entityConfigurationView( Supplier<Class<? extends U>> proxySupplier, String name ) {
+		Class<? extends U> dynamicType = proxySupplier.get();
 
 		return withType( dynamicType ).name( name );
-		//return typeBuilders.computeIfAbsent( dynamicType, c -> createConfigurationBuilder().name( name ) );
 	}
 
 	/**

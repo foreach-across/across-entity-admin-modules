@@ -38,12 +38,22 @@ public class UserConfiguration implements EntityConfigurer
 {
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		/*
-		entities.create().name( "repuser" ).attribute( "EntityConfigurationViewFor", User.class ).entityType( User.class, true )
-		        .listView(lvb -> lvb.showProperties( "*" )).show();
+		entities.entityConfigurationView( User.class, "Active users" )
+		        .hidden( false )
+		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.advancedMode( true ).defaultQuery( "active = true" ) ) )
+		        .createFormView()
+		        .updateFormView()
+		        .detailView()
+		        .deleteFormView();
 
-		 */
-		entities.represent( User.class, "repuser" );
+		entities.entityConfigurationView( User.class, "Inactive users" )
+		        .hidden( false )
+		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.advancedMode( true ).defaultQuery( "active = false" ) ) )
+		        .createFormView()
+		        .updateFormView()
+		        .detailView()
+		        .deleteFormView();
+
 		entities.withName( "user" ).as( User.class )
 		        .properties(
 				        props ->

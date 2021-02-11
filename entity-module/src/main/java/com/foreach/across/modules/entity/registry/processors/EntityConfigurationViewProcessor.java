@@ -25,13 +25,12 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 /**
  * Checks if the entity type is an enum, and if so, builds a default entity model if there is none yet.
@@ -51,9 +50,9 @@ final class EntityConfigurationViewProcessor implements DefaultEntityConfigurati
 	public void accept( MutableEntityConfiguration<?> mutableEntityConfiguration ) {
 		Class<?> entityType = mutableEntityConfiguration.getEntityType();
 
-		if ( entityType != null && Objects.equals( mutableEntityConfiguration.getName(), "repuser" ) ) {
-			EntityConfigurationView o = (EntityConfigurationView) entityType.newInstance();
-			EntityConfiguration original = entityRegistry.getEntityConfiguration( EntityUtils.generateEntityName( o.getType() ) );
+		if ( entityType != null && StringUtils.contains( entityType.getName(), "$ByteBuddy$" ) ) {
+			EntityConfigurationView originalType = (EntityConfigurationView) entityType.newInstance();
+			EntityConfiguration original = entityRegistry.getEntityConfiguration( EntityUtils.generateEntityName( originalType.getOriginalType() ) );
 			mutableEntityConfiguration.setEntityModel( original.getEntityModel() );
 			mutableEntityConfiguration.setAttribute( RepositoryFactoryInformation.class, original.getAttribute( RepositoryFactoryInformation.class ) );
 			mutableEntityConfiguration.setAttribute( Repository.class, original.getAttribute( Repository.class ) );
