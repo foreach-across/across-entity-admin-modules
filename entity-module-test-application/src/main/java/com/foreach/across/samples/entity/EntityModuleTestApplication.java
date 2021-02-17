@@ -20,10 +20,11 @@ import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
+import com.foreach.across.samples.entity.modules.EntityViewsModule;
 import com.foreach.across.testmodules.mongo.MongoTestModule;
 import com.foreach.across.testmodules.solr.SolrTestModule;
 import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 
@@ -42,6 +43,11 @@ public class EntityModuleTestApplication
 		AcrossHibernateJpaModule hibernateModule = new AcrossHibernateJpaModule();
 		hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "update" );
 		return hibernateModule;
+	}
+
+	@Bean
+	public EntityViewsModule entityViewsModule() {
+		return new EntityViewsModule();
 	}
 
 	public static void main( String[] args ) {

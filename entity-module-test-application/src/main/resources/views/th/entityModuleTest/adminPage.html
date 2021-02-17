@@ -1,0 +1,82 @@
+<!--
+  ~ Copyright 2014 the original author or authors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${@adminWeb.title}">Administration</title>
+    <across:web-resources bucket="head"/>
+    <across:web-resources bucket="javascript"/>
+    <th:block th:if="${isLoginPage}">
+        <link rel="stylesheet" th:href="@{@static:adminweb/css/adminweb-login.css}"/>
+    </th:block>
+    <across:web-resources bucket="css"/>
+</head>
+<body>
+<div>
+
+    <!--/* Main menu navigation */-->
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark axu-bg-dark">
+        <div class="navbar-header admin-navbar-title">
+            <a class="navbar-brand" th:if="${@adminWeb.title}" href="#" th:text="${@adminWeb.title}">
+                application name
+            </a>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#admin-top-navbar" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="admin-top-navbar">
+            <across:view element="${adminWebNavbarNavigation}"/>
+            <across:view element="${adminWebNavbarRightNavigation}"/>
+        </div>
+    </nav>
+
+    <!--/* Content body */-->
+    <div th:if="${childPage}" class="content for-navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="row axu-mb-3">
+                <div class="axu-d-none axu-d-md-block col-md-3 col-xl-2 sidebar">
+                    <across:view element="${adminWebSidebarNavigation}"/>
+                </div>
+                <div class="col-md-9 col-xl-10 main">
+                    <across:view element="${adminWebBreadcrumb}"/>
+                    <div th:replace="${childPage} :: content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--/* Login page does not render navigation */-->
+<th:block th:if="${isLoginPage}">
+    <div th:replace="${childPage} :: content"></div>
+</th:block>
+
+<across:web-resources bucket="javascript-page-end"/>
+
+<th:block th:fragment="bottom-scripts(scripts)" th:if="${scripts}">
+    <th:block th:insert="${scripts}"/>
+</th:block>
+
+<th:block th:insert="::bottom-scripts(~{${childPage} :: javascript-page-end})"/>
+
+</body>
+</html>
+
