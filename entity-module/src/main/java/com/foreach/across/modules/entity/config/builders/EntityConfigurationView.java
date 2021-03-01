@@ -18,10 +18,24 @@ package com.foreach.across.modules.entity.config.builders;
 
 import java.lang.annotation.*;
 
+/**
+ * An annotation which can be used to shadow an existing entityType and create a seperate view.
+ * This view will create a new entityConfiguration, but keep all existing attributes from the original entityType.
+ *
+ * @author Marc Vanbrabant
+ * @since 4.2.0
+ */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface EntityConfigurationView
 {
-	Class<?> originalType();
+	/***
+	 * Determines for which entityType a view will be created.
+	 * If not set, it will default to the super class of this entityType.
+	 *
+	 * See also {@link com.foreach.across.modules.entity.registry.processors.EntityConfigurationViewProcessor}
+	 *
+	 */
+	Class<?> entityType() default void.class;
 }

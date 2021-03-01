@@ -31,10 +31,13 @@ import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.stereotype.Component;
 
 /**
- * Checks if the entity type is an enum, and if so, builds a default entity model if there is none yet.
+ * Checks if the entity type implements {@link EntityConfigurationView}.
+ * If so, it will copy the some attributes from the original entityType and create a view on this entityType.
+ * The view will be the super class of the entityType if {@link EntityConfigurationView#entityType()} is omitted.
+ * If {@link EntityConfigurationView#entityType()} is set, that entityType will be used.
  *
- * @author Arne Vandamme
- * @since 2.0.0
+ * @author Marc Vanbrabant
+ * @since 4.2.0
  */
 @Component
 @SuppressWarnings("unchecked")
@@ -50,7 +53,9 @@ final class EntityConfigurationViewProcessor implements DefaultEntityConfigurati
 		if ( entityType != null ) {
 			EntityConfigurationView annotation = AnnotationUtils.findAnnotation( entityType, EntityConfigurationView.class );
 			if ( annotation != null ) {
-				EntityConfiguration original = entityRegistry.getEntityConfiguration( annotation.originalType() );
+				Class<?> originalType = annotation.entityType() == void.class ? entityType.getSuperclass() : annotation.entityType();
+				EntityConfiguration original = entityRegistry.getEntityConfiguration( originalType );
+
 				mutableEntityConfiguration.setEntityModel( original.getEntityModel() );
 				mutableEntityConfiguration.setAttribute( RepositoryFactoryInformation.class, original.getAttribute( RepositoryFactoryInformation.class ) );
 				mutableEntityConfiguration.setAttribute( Repository.class, original.getAttribute( Repository.class ) );

@@ -16,9 +16,9 @@
 
 package com.foreach.across.samples.entity.application.business;
 
-import com.foreach.across.modules.entity.config.builders.EntityConfigurationView;
-
-@EntityConfigurationView(originalType = User.class)
-public class InactiveUsers extends User
+public interface WithName
 {
+	String getName();
+
+	void setName( String name );
 }

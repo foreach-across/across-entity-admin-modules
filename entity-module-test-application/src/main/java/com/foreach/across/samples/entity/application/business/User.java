@@ -39,7 +39,7 @@ import java.util.Set;
 @Table(name = "test_user")
 @Getter
 @Setter
-public class User extends SettableIdBasedEntity<User>
+public class User extends SettableIdBasedEntity<User> implements WithName
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "seq_test_user_id")

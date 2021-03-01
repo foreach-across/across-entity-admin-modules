@@ -113,6 +113,13 @@ public class EntitiesConfigurationBuilder
 		return typeBuilders.computeIfAbsent( entityType, c -> createConfigurationBuilder() ).as( entityType );
 	}
 
+	/**
+	 * Configure a builder which will create a separate entityConfiguration by dynamically subclassing the original type.
+	 *
+	 * @param entityType The entityType that should be subclassed.
+	 * @param name       The name (which will be used in the path /entities/name) for this new view
+	 * @return configuration builder
+	 */
 	public <U> EntityConfigurationBuilder<? extends U> entityConfigurationView( Class<U> entityType, String name ) {
 		return entityConfigurationView( new Supplier<Class<? extends U>>()
 		{
@@ -127,13 +134,19 @@ public class EntitiesConfigurationBuilder
 						.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
 						.getLoaded();
 			}
-		}, name );
+		} ).name( name );
 	}
 
-	public <U> EntityConfigurationBuilder<? extends U> entityConfigurationView( Supplier<Class<? extends U>> proxySupplier, String name ) {
-		Class<? extends U> dynamicType = proxySupplier.get();
+	/**
+	 * Configure a builder which will create a separate entityConfiguration by manually providing a subtype of an entityType.
+	 *
+	 * @param classSupplier A class, which holds the same property descriptors as your original entity type.
+	 * @return configuration builder
+	 */
+	public <U> EntityConfigurationBuilder<? extends U> entityConfigurationView( Supplier<Class<? extends U>> classSupplier ) {
+		Class<? extends U> dynamicType = classSupplier.get();
 
-		return withType( dynamicType ).name( name );
+		return withType( dynamicType );
 	}
 
 	/**

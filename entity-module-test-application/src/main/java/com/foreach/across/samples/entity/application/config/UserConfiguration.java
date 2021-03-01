@@ -21,7 +21,7 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
-import com.foreach.across.samples.entity.application.business.InactiveUsers;
+import com.foreach.across.samples.entity.application.business.InactiveUser;
 import com.foreach.across.samples.entity.application.business.User;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -39,7 +39,8 @@ public class UserConfiguration implements EntityConfigurer
 {
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		entities.entityConfigurationView( User.class, "Active users" )
+		entities.entityConfigurationView( User.class, "activeUser" )
+		        .displayName( "Active Users" )
 		        .hidden( false )
 		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.advancedMode( true ).defaultQuery( "active = true" ) ) )
 		        .createFormView()
@@ -47,7 +48,7 @@ public class UserConfiguration implements EntityConfigurer
 		        .detailView()
 		        .deleteFormView();
 
-		entities.entityConfigurationView( () -> InactiveUsers.class, "Inactive users" )
+		entities.entityConfigurationView( () -> InactiveUser.class )
 		        .hidden( false )
 		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.advancedMode( true ).defaultQuery( "active = false" ) ) )
 		        .createFormView()
