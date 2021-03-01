@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Consumer;
 
@@ -187,5 +188,61 @@ public class TestEntityAssociationBuilder
 		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).name( "foobar" ).apply( configuration ) )
 				.isInstanceOf( IllegalArgumentException.class )
 				.hasMessageContaining( "entityType" );
+	}
+
+	@Test
+	public void supportWildcardAssociations() {
+		MutableEntityRegistry entityRegistryImpl = new EntityRegistryImpl();
+
+		MutableEntityAssociation users = mock( MutableEntityAssociation.class );
+		when( configuration.association( "users" ) ).thenReturn( users );
+		when( users.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		MutableEntityAssociation groups = mock( MutableEntityAssociation.class );
+		when( configuration.association( "groups" ) ).thenReturn( groups );
+		when( groups.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		when( configuration.getAssociations() ).thenReturn( Arrays.asList( users, groups ) );
+		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistryImpl );
+
+		// Chaining the same descriptors is allowed
+		builder.name( "*" ).all().all().name( "*" ).hide().apply( configuration );
+
+		verify( users ).setHidden( true );
+		verify( groups ).setHidden( true );
+	}
+
+	@Test
+	public void validateWildcardAssociations() {
+		validateAssociation( ( config ) -> builder.all().name( "foo" ).hide(),
+		                     "Cannot use name(), name is already set to: *" );
+		validateAssociation( ( config ) -> builder.name( "*" ).name( "foo" ).hide(),
+		                     "Cannot use name(), name is already set to: *" );
+		validateAssociation( ( config ) -> builder.name( "foo" ).all().hide(),
+		                     "Cannot use all(), name is already set to: foo" );
+	}
+
+	@Test
+	public void lastNameThatIsSetOnAssociationIsUsed() {
+		MutableEntityAssociation users = mock( MutableEntityAssociation.class );
+		when( configuration.association( "foo" ) ).thenReturn( users );
+		when( users.getSourceEntityConfiguration() ).thenReturn( configuration );
+		builder.name( "foo2" ).name( "foo" ).hide().apply( configuration );
+		verify( users ).setHidden( true );
+	}
+
+	@Test
+	public void lastNameThatIsSetOnAssociationIsUsedAndManualWildcardIsSupplied() {
+		MutableEntityAssociation users = mock( MutableEntityAssociation.class );
+		when( configuration.association( "foo" ) ).thenReturn( users );
+		when( users.getSourceEntityConfiguration() ).thenReturn( configuration );
+		when( configuration.getAssociations() ).thenReturn( Arrays.asList( users ) );
+		builder.name( "foo" ).name( "*" ).hide().apply( configuration );
+		verify( users ).setHidden( true );
+	}
+
+	void validateAssociation( Consumer<MutableEntityConfiguration<?>> consumer, String message ) {
+		reset();
+		assertThatThrownBy( () -> consumer.accept( configuration ) ).hasMessage( message );
 	}
 }
