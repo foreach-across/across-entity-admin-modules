@@ -176,7 +176,7 @@ public class TestEntityAssociationBuilder
 	@Test
 	public void parentDeleteModeWithoutNamedAssociationShouldFail() {
 		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).apply( configuration ) ).isInstanceOf(
-				IllegalArgumentException.class ).hasMessageContaining( "A name() is required for an AssociationBuilder." );
+				IllegalArgumentException.class ).hasMessageContaining( "A name(), withType() or assignableTo() is required for an AssociationBuilder." );
 	}
 
 	@Test
@@ -213,6 +213,66 @@ public class TestEntityAssociationBuilder
 	}
 
 	@Test
+	public void supportWithTypeAssociations() {
+		MutableEntityRegistry entityRegistryImpl = new EntityRegistryImpl();
+
+		MutableEntityAssociation users = mock( MutableEntityAssociation.class );
+		when( configuration.association( "users" ) ).thenReturn( users );
+		doReturn( User.class ).when( users ).getEntityType();
+		when( users.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		MutableEntityAssociation groups = mock( MutableEntityAssociation.class );
+		doReturn( Group.class ).when( groups ).getEntityType();
+		when( configuration.association( "groups" ) ).thenReturn( groups );
+		when( groups.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		when( configuration.getAssociations() ).thenReturn( Arrays.asList( users, groups ) );
+		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistryImpl );
+
+		// Chaining the same descriptors is allowed
+		builder.withType( User.class ).hide().apply( configuration );
+
+		verify( users ).setHidden( true );
+		verify( groups, times( 0 ) ).setHidden( true );
+	}
+
+	@Test
+	public void supportWithAssignableTypeAssociations() {
+		MutableEntityRegistry entityRegistryImpl = new EntityRegistryImpl();
+
+		MutableEntityAssociation users = mock( MutableEntityAssociation.class );
+		when( configuration.association( "users" ) ).thenReturn( users );
+		doReturn( User.class ).when( users ).getEntityType();
+		when( users.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		MutableEntityAssociation activeUsers = mock( MutableEntityAssociation.class );
+		when( configuration.association( "activeUsers" ) ).thenReturn( activeUsers );
+		doReturn( ActiveUser.class ).when( activeUsers ).getEntityType();
+		when( activeUsers.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		MutableEntityAssociation groups = mock( MutableEntityAssociation.class );
+		doReturn( Group.class ).when( groups ).getEntityType();
+		when( configuration.association( "groups" ) ).thenReturn( groups );
+		when( groups.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		MutableEntityAssociation adminGroups = mock( MutableEntityAssociation.class );
+		doReturn( AdminGroup.class ).when( adminGroups ).getEntityType();
+		when( configuration.association( "adminGroups" ) ).thenReturn( adminGroups );
+		when( adminGroups.getSourceEntityConfiguration() ).thenReturn( configuration );
+
+		when( configuration.getAssociations() ).thenReturn( Arrays.asList( users, activeUsers, groups, adminGroups ) );
+		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistryImpl );
+
+		// Chaining the same descriptors is allowed
+		builder.assignableTo( User.class ).hide().apply( configuration );
+
+		verify( users ).setHidden( true );
+		verify( activeUsers ).setHidden( true );
+		verify( groups, times( 0 ) ).setHidden( true );
+		verify( adminGroups, times( 0 ) ).setHidden( true );
+	}
+
+	@Test
 	public void validateWildcardAssociations() {
 		validateAssociation( ( config ) -> builder.all().name( "foo" ).hide(),
 		                     "Cannot use name(), name is already set to: *" );
@@ -236,7 +296,7 @@ public class TestEntityAssociationBuilder
 		MutableEntityAssociation users = mock( MutableEntityAssociation.class );
 		when( configuration.association( "foo" ) ).thenReturn( users );
 		when( users.getSourceEntityConfiguration() ).thenReturn( configuration );
-		when( configuration.getAssociations() ).thenReturn( Arrays.asList( users ) );
+		when( configuration.getAssociations() ).thenReturn( Collections.singletonList( users ) );
 		builder.name( "foo" ).name( "*" ).hide().apply( configuration );
 		verify( users ).setHidden( true );
 	}
@@ -244,5 +304,21 @@ public class TestEntityAssociationBuilder
 	void validateAssociation( Consumer<MutableEntityConfiguration<?>> consumer, String message ) {
 		reset();
 		assertThatThrownBy( () -> consumer.accept( configuration ) ).hasMessage( message );
+	}
+
+	private static class User
+	{
+	}
+
+	private static class ActiveUser extends User
+	{
+	}
+
+	private static class Group
+	{
+	}
+
+	private static class AdminGroup extends Group
+	{
 	}
 }

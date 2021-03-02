@@ -30,12 +30,12 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Builder for managing a specific {@link EntityAssociation} on a {@link EntityConfiguration}.
@@ -49,6 +49,8 @@ import java.util.function.Consumer;
 public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder<EntityAssociation>
 {
 	private String name;
+	private Class<?> associationClassType;
+	private Class<?> assignableClassType;
 	private boolean hiddenSpecified;
 	private Boolean hidden;
 	private EntityAssociation.ParentDeleteMode parentDeleteMode;
@@ -92,6 +94,32 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 			throw new IllegalArgumentException( "Cannot use all(), name is already set to: " + this.name );
 		}
 		this.name = EntityPropertySelector.ALL;
+		return this;
+	}
+
+	/**
+	 * Target all associations for this type.
+	 * <p>
+	 * This is equivalent to using {@code name("*")}.
+	 */
+	public EntityAssociationBuilder withType( @NonNull Class<?> associationType ) {
+		if ( this.name != null ) {
+			throw new IllegalArgumentException( "Cannot use withType(), name is already set to: " + this.name );
+		}
+		this.associationClassType = associationType;
+		return this;
+	}
+
+	/**
+	 * Target all associations for this type.
+	 * <p>
+	 * This is equivalent to using {@code name("*")}.
+	 */
+	public EntityAssociationBuilder assignableTo( @NonNull Class<?> assignableType ) {
+		if ( this.name != null ) {
+			throw new IllegalArgumentException( "Cannot use withType(), name is already set to: " + this.name );
+		}
+		this.assignableClassType = assignableType;
 		return this;
 	}
 
@@ -345,14 +373,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param configuration to register the association in
 	 */
 	void apply( MutableEntityConfiguration configuration ) {
-		Assert.notNull( name, "A name() is required for an AssociationBuilder." );
-		Collection<MutableEntityAssociation> associations;
-		if ( StringUtils.equals( EntityPropertySelector.ALL, name ) ) {
-			associations = configuration.getAssociations();
-		}
-		else {
-			associations = Collections.singletonList( configuration.association( name ) );
-		}
+		Collection<MutableEntityAssociation> associations = getMatchingAssociations( configuration );
 
 		for ( MutableEntityAssociation association : associations ) {
 			if ( association == null ) {
@@ -426,6 +447,30 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 				associationBeingBuilt = null;
 			}
 		}
+	}
+
+	private Collection<MutableEntityAssociation> getMatchingAssociations( MutableEntityConfiguration configuration ) {
+		if ( name == null && assignableClassType == null && associationClassType == null ) {
+			//TODO: more complex checks ?
+			throw new IllegalArgumentException( "A name(), withType() or assignableTo() is required for an AssociationBuilder." );
+		}
+		if ( name != null ) {
+			if ( StringUtils.equals( EntityPropertySelector.ALL, name ) ) {
+				return configuration.getAssociations();
+			}
+			else {
+				return Collections.singletonList( configuration.association( name ) );
+			}
+		}
+		else if ( associationClassType != null ) {
+			Collection<MutableEntityAssociation> associations = configuration.getAssociations();
+			return associations.stream().filter( a -> Objects.equals( a.getEntityType(), associationClassType ) ).collect( Collectors.toList() );
+		}
+		else if ( assignableClassType != null ) {
+			Collection<MutableEntityAssociation> associations = configuration.getAssociations();
+			return associations.stream().filter( a -> assignableClassType.isAssignableFrom( a.getEntityType() ) ).collect( Collectors.toList() );
+		}
+		throw new IllegalArgumentException( "Cannot fetch association" );
 	}
 
 	private EntityConfiguration retrieveTargetConfiguration() {
