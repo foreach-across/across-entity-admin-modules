@@ -17,65 +17,69 @@ import {createDefaultControl} from "./utils/controls/property-control-builders/p
 import {isNullOrUndefined} from "./utils/utilities";
 import EntityQueryPropertyControlFactory from "./utils/controls/entity-query-property-control-factory";
 import EntityQueryFilterControl from "./utils/controls/entity-query-filter-control";
-import {EntityModule} from "./modules/EntityModule";
-import {SortableTableEvent} from "./events/SortableTableEvent";
 
 /**
  * Initializes an EntityQueryFilterControl for the given node.
  * @param node a container containing an eql filter and controls to filter on.
  */
 function initializeEntityQueryForm( node ) {
-  const nodes = $( node ).find( "[data-entity-query-property]" );
-  const eqlFilter = $( node ).find( "input[name='extensions[eqFilter]']" );
-  const entityQueryFilterControl = new EntityQueryFilterControl( nodes, eqlFilter );
+    const nodes = $( node ).find( "[data-entity-query-property]" );
+    const eqlFilter = $( node ).find( "input[name='extensions[eqFilter]']" );
+    const entityQueryFilterControl = new EntityQueryFilterControl( nodes, eqlFilter );
 
-  function findShowBasicFilterElement() {
-    return $( node ).find( ".js-entity-query-filter-form-show-basic-filter" );
-  }
-
-  function toggleFilters( event ) {
-    event.preventDefault();
-    $( node ).find( ".entity-query-filter-form-basic" ).toggleClass( "d-none" );
-    $( node ).find( ".entity-query-filter-form-advanced" ).toggleClass( "d-none axu-d-flex" );
-
-    let inputShowBasicFilter = findShowBasicFilterElement();
-    if ( $( inputShowBasicFilter ).attr( "value" ) === "true" ) {
-      $( inputShowBasicFilter ).attr( "value", false );
+    function findShowBasicFilterElement() {
+        return $( node ).find( ".js-entity-query-filter-form-show-basic-filter" );
     }
-    else {
-      $( inputShowBasicFilter ).attr( "value", true );
+
+    function toggleFilters( event ) {
+        event.preventDefault();
+        $( node ).find( ".entity-query-filter-form-basic" ).toggleClass( "d-none" );
+        $( node ).find( ".entity-query-filter-form-advanced" ).toggleClass( "d-none axu-d-flex" );
+
+        let inputShowBasicFilter = findShowBasicFilterElement();
+        if ( $( inputShowBasicFilter ).attr( "value" ) === "true" ) {
+            $( inputShowBasicFilter ).attr( "value", false );
+        }
+        else {
+            $( inputShowBasicFilter ).attr( "value", true );
+        }
     }
-  }
 
-  $( node ).find( "a[data-entity-query-filter-form-link]" ).click( toggleFilters );
+    $( node ).find( "a[data-entity-query-filter-form-link]" ).click( toggleFilters );
 
-  $( node ).find( "button[type=submit]" ).on( 'click', function( e ) {
-    if ( $( findShowBasicFilterElement() ).attr( "value" ) === "true" ) {
-      entityQueryFilterControl.resetEntityQuery();
-    }
-    $( this ).find( 'span' ).removeClass( 'fas fa-search' ).addClass( 'fa fa-spin fa-spinner' );
-  } );
+    $( node ).find( "button[type=submit]" ).on( 'click', function( e ) {
+        if ( $( findShowBasicFilterElement() ).attr( "value" ) === "true" ) {
+            entityQueryFilterControl.resetEntityQuery();
+        }
+        $( this ).find( 'span' ).removeClass( 'fas fa-search' ).addClass( 'fa fa-spin fa-spinner' );
+    } );
 
-  // After submit ajax
+    // After submit ajax
+    // $( node ).find( 'span' ).removeClass( 'fa fa-spin fa-spinner' ).addClass( 'glyphicon glyphicon-search' );
 
-  // $( node ).find( 'span' ).removeClass( 'fa fa-spin fa-spinner' ).addClass( 'glyphicon glyphicon-search' );
+    // Expose the entity query filter control.
+    $( node ).data( 'entity-query-filter-control', entityQueryFilterControl );
 }
 
 /**
  * Sets the EntityQueryPropertyControlFactory globally.
  */
 if ( !isNullOrUndefined( window ) ) {
-  window.EntityQueryPropertyControlFactory = EntityQueryPropertyControlFactory;
+    window.EntityQueryPropertyControlFactory = EntityQueryPropertyControlFactory;
 }
 
+/**
+ *Registers base property control resolvers for control types.
+ *
+ */
+EntityQueryPropertyControlFactory.register( createDefaultControl, 1000 );
+
 /** Initializes each container marked by "data-entity-query-filter" as an EntityQueryFilterControl
- * Registers base property control resolvers for control types.
+ *
  * @see initializeEntityQueryForm
  */
 window.EntityModule.registerInitializer( function( node ) {
-  EntityQueryPropertyControlFactory.register( createDefaultControl, 1000 );
-
-  $( "[data-entity-query-filter-form]" ).each( function() {
-    initializeEntityQueryForm( $( this ) );
-  } );
+    $( "[data-entity-query-filter-form]", node ).each( function() {
+        initializeEntityQueryForm( $( this ) );
+    } );
 } );
