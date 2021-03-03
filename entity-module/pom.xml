@@ -84,6 +84,16 @@
 		</dependency>
 		<!-- Webjars -->
 		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>jquery.dirtyforms</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>lodash</artifactId>
 			<version>4.17.4</version>

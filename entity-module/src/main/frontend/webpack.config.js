@@ -26,6 +26,7 @@ const cssEntries = [
 const jsEntries = [
     "entity-module",
     "entity-query",
+    "entity-dirty-forms",
     "expandable"
 ];
 
