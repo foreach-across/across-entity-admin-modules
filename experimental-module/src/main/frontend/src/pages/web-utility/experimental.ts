@@ -11,6 +11,11 @@ import {
 } from "./actions/handler/simple-handlers";
 import { simpleActionResolver, SimpleActionResolver } from "./actions/action/simple-action";
 import { editableValueHandlerFactory } from "./editable-value/editable-value-handler-factory";
+import { sortableTableAjax } from "./ajax/sortable-table-ajax";
+
+EntityModule.registerInitializer(function (node) {
+  sortableTableAjax.init(node);
+});
 
 const actionFactory = new ActionFactory(handlerFactory);
 

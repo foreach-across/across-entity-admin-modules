@@ -1,10 +1,43 @@
 export function getCookie(name: string) {
-  var value = "; " + document.cookie;
-  var parts = value.split("; " + name + "=");
-  if (parts.length === 2) {
-    return parts.pop()!.split(";").shift();
+  let matches = document.cookie.match(
+    new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") + "=([^;]*)")
+  );
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export function setCookie(name: string, value: any, options = {} as any) {
+  options = {
+    path: "/",
+    // add other defaults here if necessary
+    ...options,
+  };
+
+  if (options.expires instanceof Date) {
+    options.expires = options.expires.toUTCString();
   }
-  return undefined;
+
+  let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+  for (let optionKey in options) {
+    updatedCookie += "; " + optionKey;
+    let optionValue = options[optionKey];
+    if (optionValue !== true) {
+      updatedCookie += "=" + optionValue;
+    }
+  }
+
+  document.cookie = updatedCookie;
+}
+
+export function convertResponseToText(response: any) {
+  if (response.redirected) {
+    window.location.href = response.url + "&redirectUrl=" + encodeURI(window.location.href);
+    return Promise.reject(null);
+  } else if (response.ok) {
+    return response.text();
+  } else {
+    return Promise.reject(null);
+  }
 }
 
 export const ax = {
