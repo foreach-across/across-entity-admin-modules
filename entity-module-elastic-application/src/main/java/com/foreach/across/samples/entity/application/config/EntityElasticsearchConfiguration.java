@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.testmodules.elastic.config;
+package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -52,24 +52,22 @@ public class EntityElasticsearchConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.matching( this::isElasticsearchEntity )
-		        .properties( props -> props.processRegistry( pr -> {
-			        pr.getRegisteredDescriptors()
-			          .stream()
-			          .filter( pd -> MutableEntityPropertyDescriptor.class.isAssignableFrom( pd.getClass() ) )
-			          .map( MutableEntityPropertyDescriptor.class::cast )
-			          .forEach( pd -> pd.setWritable( false ) );
-		        } ) )
+		        .properties( props -> props.processRegistry( pr -> pr.getRegisteredDescriptors()
+		                                                             .stream()
+		                                                             .filter( pd -> MutableEntityPropertyDescriptor.class.isAssignableFrom( pd.getClass() ) )
+		                                                             .map( MutableEntityPropertyDescriptor.class::cast )
+		                                                             .forEach( pd -> pd.setWritable( false ) ) ) )
 		        .postProcessor( this::configureElasticSearchEntity );
 	}
 
-	private void configureElasticSearchEntity( MutableEntityConfiguration entityConfiguration ) {
+	private void configureElasticSearchEntity( MutableEntityConfiguration<?> entityConfiguration ) {
 		// custom entityviewlinkbuilder
 		if ( isElasticsearchProxy( entityConfiguration ) ) {
-			Class referencedEntity = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY_REFERENCE, Class.class );
+			Class<?> referencedEntity = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY_REFERENCE, Class.class );
 			if ( entityRegistry.contains( referencedEntity ) ) {
 				EntityViewLinkBuilder searchLinkBuilder = entityConfiguration.getAttribute( EntityViewLinkBuilder.class );
-				MutableEntityConfiguration referencedEntityConfiguration =
-						(MutableEntityConfiguration) entityRegistry.getEntityConfiguration( referencedEntity );
+				MutableEntityConfiguration<?> referencedEntityConfiguration =
+						(MutableEntityConfiguration<?>) entityRegistry.getEntityConfiguration( referencedEntity );
 				EntityViewLinkBuilder instanceLinkBuilder = referencedEntityConfiguration.getAttribute( EntityViewLinkBuilder.class );
 				if ( Objects.nonNull( searchLinkBuilder ) && Objects.nonNull( instanceLinkBuilder ) ) {
 					ProxyEntityViewLinkBuilder newInstanceLinkBuilder = new ProxyEntityViewLinkBuilder( searchLinkBuilder, instanceLinkBuilder );
@@ -78,16 +76,15 @@ public class EntityElasticsearchConfiguration implements EntityConfigurer
 					EntityViewLinkBuilder proxyEntityViewLinkBuilder = new ProxyEntityViewLinkBuilder( searchLinkBuilder, newInstanceLinkBuilder );
 					entityConfiguration.setAttribute( EntityViewLinkBuilder.class, proxyEntityViewLinkBuilder );
 				}
-
 			}
 		}
 	}
 
-	private boolean isElasticsearchEntity( MutableEntityConfiguration ec ) {
+	private boolean isElasticsearchEntity( MutableEntityConfiguration<?> ec ) {
 		return ec.hasAttribute( Repository.class ) && ElasticsearchRepository.class.isAssignableFrom( ec.getAttribute( Repository.class ).getClass() );
 	}
 
-	private boolean isElasticsearchProxy( MutableEntityConfiguration ec ) {
+	private boolean isElasticsearchProxy( MutableEntityConfiguration<?> ec ) {
 		return ec.hasAttribute( ATTR_ELASTIC_PROXY_REFERENCE );
 	}
 
@@ -128,7 +125,7 @@ public class EntityElasticsearchConfiguration implements EntityConfigurer
 			return entityLinkBuilder.withId( id );
 		}
 
-		// overridde to prevent local componentsbuilder being used
+		// override to prevent local componentsbuilder being used
 
 		@Override
 		public UriComponentsBuilder toUriComponentsBuilder() {

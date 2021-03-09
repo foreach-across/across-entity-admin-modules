@@ -32,7 +32,7 @@ import org.springframework.context.event.EventListener;
 
 import java.util.function.Consumer;
 
-import static com.foreach.across.testmodules.elastic.config.EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY_REFERENCE;
+import static com.foreach.across.samples.entity.application.config.EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY_REFERENCE;
 
 // todo Elasticsearch menu configuration, should be put somewhere together with {@link EntityElasticsearchConfiguration}
 @Configuration
@@ -54,19 +54,19 @@ public class ElasticsearchMenuConfiguration
 
 	}
 
-	private boolean isVisibleConfiguration( EntityConfiguration entityConfiguration ) {
+	private boolean isVisibleConfiguration( EntityConfiguration<?> entityConfiguration ) {
 		AllowableActions allowableActions = entityConfiguration.getAllowableActions();
 		return !entityConfiguration.isHidden() && allowableActions.contains( AllowableAction.READ );
 	}
 
-	private boolean isElasticsearchProxy( EntityConfiguration entityConfiguration ) {
+	private boolean isElasticsearchProxy( EntityConfiguration<?> entityConfiguration ) {
 		return entityConfiguration.hasAttribute( ATTR_ELASTIC_PROXY_REFERENCE );
 	}
 
 	private Consumer<EntityConfiguration> configureItemUrls( PathBasedMenuBuilder builder ) {
 		return entityConfiguration -> {
-			Class targetType = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY_REFERENCE, Class.class );
-			EntityConfiguration targetConfiguration = entityRegistry.getEntityConfiguration( targetType );
+			Class<?> targetType = entityConfiguration.getAttribute( ATTR_ELASTIC_PROXY_REFERENCE, Class.class );
+			EntityConfiguration<?> targetConfiguration = entityRegistry.getEntityConfiguration( targetType );
 
 			EntityViewLinkBuilder.ForEntityConfiguration configurationLinkBuilder = entityViewLinks.linkTo( entityConfiguration.getEntityType() );
 			EntityViewLinkBuilder.ForEntityConfiguration targetConfigurationLinkBuilder = entityViewLinks.linkTo( targetConfiguration.getEntityType() );
@@ -85,7 +85,7 @@ public class ElasticsearchMenuConfiguration
 	}
 
 	private void configureMenuRequestMatchers( PathBasedMenuBuilder builder,
-	                                           EntityConfiguration targetConfiguration,
+	                                           EntityConfiguration<?> targetConfiguration,
 	                                           EntityViewLinkBuilder.ForEntityConfiguration configurationLinkBuilder,
 	                                           EntityViewLinkBuilder.ForEntityConfiguration targetConfigurationLinkBuilder ) {
 		String baseGroupPath = getBaseGroupPath( targetConfiguration );
@@ -105,7 +105,7 @@ public class ElasticsearchMenuConfiguration
 		}
 	}
 
-	private String getBaseGroupPath( EntityConfiguration entityConfiguration ) {
+	private String getBaseGroupPath( EntityConfiguration<?> entityConfiguration ) {
 		AcrossModuleInfo moduleInfo = entityConfiguration.getAttribute( AcrossModuleInfo.class );
 		String group = "/entities";
 		if ( moduleInfo != null ) {
@@ -114,5 +114,4 @@ public class ElasticsearchMenuConfiguration
 		group += "/" + entityConfiguration.getName();
 		return group;
 	}
-
 }

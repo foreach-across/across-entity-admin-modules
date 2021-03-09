@@ -16,51 +16,16 @@
 
 package com.foreach.across.testmodules.elastic.config;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
-import com.foreach.across.modules.entity.config.EntityConfigurer;
-import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.testmodules.elastic.domain.DomainMarker;
-import com.foreach.across.testmodules.elastic.domain.elastic.customer.ElasticCustomer;
-import com.foreach.across.testmodules.elastic.domain.jpa.customer.Customer;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
-/**
- * @author Arne Vandamme
- * @since 2.2.0
- */
 @Configuration
 @EnableElasticsearchRepositories(basePackageClasses = DomainMarker.class)
 @Import({ ElasticsearchDataAutoConfiguration.class, ElasticsearchRepositoriesAutoConfiguration.class })
-public class ElasticConfig implements EntityConfigurer
+public class ElasticConfig
 {
-	@Override
-	public void configure( EntitiesConfigurationBuilder entities ) {
-		entities.withType( ElasticCustomer.class )
-		        .attribute( EntityElasticsearchConfiguration.ATTR_ELASTIC_PROXY_REFERENCE, Customer.class )
-		        .properties( p -> p
-				                     .property( "readOnlyVersion" )
-				                     .propertyType( Long.class )
-				                     .controller( c -> c.withTarget( ElasticCustomer.class, Long.class ).valueFetcher( ElasticCustomer::getVersion ) )
-				                     .viewElementPostProcessor( ViewElementMode.CONTROL,
-				                                                (ViewElementPostProcessor<NumericFormElement>) ( viewElementBuilderContext, viewElement ) -> viewElement
-						                                                .setReadonly( true ) )
-				                     .and()
-				                     .property( "createdDate" ).viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.DATETIME ).and()
-				                     .property( "updatedDate" ).viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.DATETIME ).and()
-		                     //.property( "updatedDate" ).viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.DATETIME )
-
-		        )
-		        .createOrUpdateFormView( cfv -> cfv.showProperties( "*" ) )
-		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.showProperties( "*" )
-		                                                           .advancedMode( true ) )
-		                             .showProperties( "*" ) );
-	}
-
 }

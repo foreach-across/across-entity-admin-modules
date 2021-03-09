@@ -32,7 +32,6 @@ import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
-import com.foreach.across.testmodules.elastic.config.EntityElasticsearchConfiguration;
 import com.foreach.across.testmodules.elastic.domain.elastic.country.ElasticCountry;
 import com.foreach.across.testmodules.elastic.domain.elastic.customer.ElasticCustomer;
 import com.foreach.across.testmodules.elastic.domain.jpa.country.Country;
@@ -161,6 +160,5 @@ public class CountryConfiguration implements EntityConfigurer
 				entityViewContext.setLinkBuilder( proxyLinkBuilder );
 			}
 		}
-
 	}
 }
