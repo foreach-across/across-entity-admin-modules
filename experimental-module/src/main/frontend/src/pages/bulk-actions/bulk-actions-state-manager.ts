@@ -1,62 +1,119 @@
-import { getCookie, setCookie } from "../web-utility/utils/utils";
-
-declare interface BulkActionsStateManagerType {
-  init: Function;
-}
-
-const COOKIE_VALUE_SEPERATOR = "-";
+import Base64Utils from "../web-utility/utils/base64-utils";
 
 class BulkActionsStateManager {
-  init = (node: any) => {
+  private readonly bulkActionFormNode: any;
+
+  constructor(node: any) {
+    this.bulkActionFormNode = $(node);
+  }
+
+  init = () => {
+    const self = this;
     $(".js-exm-bulk-select-item").on("change", function () {
-      onBulkActionChanged.call(this);
+      const checkboxElement = $(this).find(":input:not([type=hidden])");
+
+      self.onBulkActionChanged(checkboxElement);
     });
 
-    this.setInitialState($(node));
+    $(".js-exm-bulk-select-all").on("change", function () {
+      self.bulkActionFormNode
+        .find(".js-exm-bulk-select-item :input:not([type=hidden])")
+        .each((index: number, checkboxElement: any) => {
+          self.onBulkActionChanged($(checkboxElement));
+        });
+    });
+
+    $("[data-bulk-action-total-selected-clear]", this.bulkActionFormNode).on("click", function () {
+      self.bulkActionFormNode
+        .find(".js-exm-bulk-select-item :input:not([type=hidden])")
+        .each((index: number, checkboxElement: any) => {
+          $(checkboxElement).prop("checked", false);
+        });
+
+      self.bulkActionFormNode
+        .find(".js-exm-bulk-select-all :input:not([type=hidden])")
+        .each((index: number, checkboxElement: any) => {
+          $(checkboxElement).prop("checked", false);
+        });
+
+      self.setState([]);
+    });
+
+    this.setInitialState();
   };
 
-  setInitialState = (bulkActionForm: JQuery<HTMLElement>) => {
-    let cookieValue = getCookie(getCookieNameFromBulkActionItem(bulkActionForm)) as string;
+  setInitialState = () => {
+    const currentState = this.getState();
 
-    if (typeof cookieValue !== "undefined") {
-      cookieValue.split(COOKIE_VALUE_SEPERATOR).forEach((selectedValue) => {
-        const checkBox = bulkActionForm.find(':input[value="' + selectedValue + '"]:not([type=hidden])');
+    if (currentState) {
+      currentState.forEach((selectedValue: any) => {
+        const checkBox = this.bulkActionFormNode.find(':input[value="' + selectedValue + '"]:not([type=hidden])');
 
         if (checkBox) {
           checkBox.prop("checked", true);
         }
       });
+
+      this.updateTotalSelected();
     }
+  };
+
+  updateTotalSelected = () => {
+    const totalSelectedItems = this.getState().length;
+    const totalItemsSelectedField = this.bulkActionFormNode.find("[data-bulk-action-total-selected-text]");
+    const text = totalItemsSelectedField.data("bulk-action-total-selected-text").replace("%", totalSelectedItems);
+
+    if (totalSelectedItems < 1) {
+      $("[data-bulk-action-total-selected-clear]", this.bulkActionFormNode).addClass("d-none");
+    } else {
+      $("[data-bulk-action-total-selected-clear]", this.bulkActionFormNode).removeClass("d-none");
+    }
+
+    totalItemsSelectedField.text(text);
+  };
+
+  onBulkActionChanged = (checkboxElement: any) => {
+    const selectedValue = checkboxElement.val() as string;
+    const isChecked = checkboxElement.prop("checked") == true;
+
+    let currentState = this.getState();
+
+    if (isChecked) {
+      currentState.push(selectedValue);
+    } else {
+      currentState = currentState.filter((state: string) => state !== selectedValue);
+    }
+
+    this.setState(currentState);
+  };
+
+  getState = () => {
+    let hiddenField = this.bulkActionFormNode.find(".js-paging-state");
+    if (!hiddenField.length) {
+      return [];
+    }
+
+    const currentState = hiddenField.val() as string;
+
+    return currentState !== "" ? JSON.parse(Base64Utils.decode(currentState)) : [];
+  };
+
+  setState = (stateToSet: string[]) => {
+    let hiddenField = this.bulkActionFormNode.find(".js-paging-state");
+    if (hiddenField.length) {
+      let valueToSet = Base64Utils.encode(JSON.stringify(stateToSet));
+      hiddenField.val(valueToSet);
+    }
+
+    this.updateTotalSelected();
   };
 }
 
-function getCookieNameFromBulkActionItem(bulkActionForm: any) {
-  const entityName = bulkActionForm.find("table").data("tbl-entity-type");
-  const bulkActionName = bulkActionForm.attr("name");
-
-  return "bulkActions-" + bulkActionName + COOKIE_VALUE_SEPERATOR + entityName;
-}
-
-function onBulkActionChanged() {
-  const form = $(this).closest("form");
-  const cookieName = getCookieNameFromBulkActionItem(form);
-  const isChecked = $(this).prop("checked") == true;
-  const selectedValue = $(this).find(":input:not([type=hidden])").val() as string;
-
-  let currentCookieValue = getCookie(cookieName) as any;
-  if (typeof currentCookieValue === "undefined") {
-    currentCookieValue = [];
-  } else {
-    currentCookieValue = currentCookieValue.split(COOKIE_VALUE_SEPERATOR);
-  }
-
-  if (isChecked) {
-    delete currentCookieValue[selectedValue];
-  } else {
-    currentCookieValue.push(selectedValue);
-  }
-
-  setCookie(cookieName, currentCookieValue.join(COOKIE_VALUE_SEPERATOR), { path: window.location.pathname });
-}
-
 export default BulkActionsStateManager;
+
+EntityModule.registerInitializer(function (node) {
+  $('form[name="bulkActionForm"]', node).each((index, element) => {
+    const bulkActionStateManagement = new BulkActionsStateManager(element);
+    bulkActionStateManagement.init();
+  });
+});

@@ -45,6 +45,11 @@
       "appIndexJs": "src/pages/bulk-actions/bulk-actions"
     },
     {
+      "name": "bulk-actions-state-manager",
+      "title": "bulk-actions-state-manager",
+      "appIndexJs": "src/pages/bulk-actions/bulk-actions-state-manager"
+    },
+    {
       "name": "modal-loader",
       "title": "modal-loader",
       "appIndexJs": "src/pages/modals/modal-loader"

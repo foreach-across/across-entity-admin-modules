@@ -10,9 +10,7 @@ class SortableTableAjax {
           event.preventDefault();
           event.stopPropagation();
 
-          console.log("Sorting !");
-
-          self.refreshTableForSort($(params).closest("form"), params);
+          self.refreshTableForSort($(element).closest("form"), params);
         });
       }
     });
@@ -28,8 +26,9 @@ class SortableTableAjax {
     const tableBody = $(".pcs-body-section");
     tableBody.addClass("partial-loading");
     tableBody.append('<div class="partial-spinner"></div>');
+    let url = this.buildPartialRefreshUrl(form);
 
-    fetch(window.location.href.split("?")[0] + "?_partial=::body&" + form.serialize(), {
+    fetch(url, {
       method: "GET",
       headers: { "X-XSRF-Token": getCookie("XSRF-TOKEN") as string },
     })
@@ -37,10 +36,21 @@ class SortableTableAjax {
       .then((data) => {
         tableBody.removeClass("partial-loading");
         tableBody.replaceWith(data);
+
         EntityModule.initializeFormElements($(".pcs-body-section"));
       });
     // .catch(handleError);
   };
+
+  private buildPartialRefreshUrl(form: any) {
+    let url = window.location.href.split("?")[0];
+    const lastChar = url.slice(-1);
+    if (lastChar == "#") {
+      url = url.slice(0, -1);
+    }
+    url += "?_partial=::body&" + form.serialize();
+    return url;
+  }
 
   registerHiddenInput = (form: any, name: string, value: any) => {
     if (value) {

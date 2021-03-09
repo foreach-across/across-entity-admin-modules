@@ -37,9 +37,10 @@ public class CompanyUiConfiguration implements EntityConfigurer {
                                 .attribute(EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER)
                 )
                 .updateFormView(fvb -> fvb.viewElementMode(WebUtilityViewElementMode.EDITABLE_VALUE_VIEW()))
-                .listView(EntityViewAjax.ajaxSettings
-                        .enableAjaxPagination())
-                .listView(lvb -> lvb.and(companyBulkActionsConfigurer("selectedItems")))
+//                .listView(EntityViewAjax.ajaxSettings.enableAjaxPagination())
+                .listView(lvb -> lvb
+                        .pageSize(10)
+                        .and(companyBulkActionsConfigurer("selectedItems")))
                 .association(
                         ab -> ab.name("user.company")
                                 .associationType(EntityAssociation.Type.EMBEDDED)
