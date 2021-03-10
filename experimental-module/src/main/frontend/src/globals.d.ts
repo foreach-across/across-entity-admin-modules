@@ -1,6 +1,8 @@
 declare interface JQuery<HTMLElement> {
   typeahead(fn);
 
+  findSelf(selector: any): JQuery<any>;
+
   typeahead(fn, val);
 }
 

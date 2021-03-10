@@ -22,6 +22,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -156,20 +157,37 @@ public class BulkActionViewProcessor<T> extends EntityViewProcessorAdapter {
         ContainerViewElementUtils.find(container, "itemsTable-table", TableViewElement.class)
                 .ifPresent(tableViewElement -> tableViewElement.set(attribute(CONTROL_ADAPTER_TYPE, "bulk-actions-container")));
 
-        ContainerViewElementUtils.find(container, "itemsTable")
-                .ifPresent(table -> ContainerViewElementUtils.findParent(container, table).ifPresent(tableParent -> {
-                    List<ViewElement> children = new ArrayList<>(tableParent.getChildren());
-                    tableParent.clearChildren();
-                    children.forEach(
-                            childElement -> {
-                                if (childElement != table) {
-                                    tableParent.addChild(childElement);
-                                } else {
-                                    tableParent.addChild(createFormAndWrap(childElement, entityViewRequest, builderContext));
+        ContainerViewElementUtils.find(container, "itemsTable", NodeViewElement.class)
+                .ifPresent(table -> {
+                    addBulkActionStateField(table, builderContext);
+
+                    ContainerViewElementUtils.findParent(container, table).ifPresent(tableParent -> {
+                        List<ViewElement> children = new ArrayList<>(tableParent.getChildren());
+                        tableParent.clearChildren();
+                        children.forEach(
+                                childElement -> {
+                                    if (childElement != table) {
+                                        tableParent.addChild(childElement);
+                                    } else {
+                                        tableParent.addChild(createFormAndWrap(childElement, entityViewRequest, builderContext));
+                                    }
                                 }
-                            }
-                    );
-                }));
+                        );
+
+
+                    });
+                });
+    }
+
+    private void addBulkActionStateField(NodeViewElement table, ViewElementBuilderContext ctx) {
+        String bulkActionStateControlName = controlNameProvider.get() + "BulkSelectionState";
+
+        table.addChild(bootstrap.builders.hidden()
+                .value(getCurrentPagingState(bulkActionStateControlName))
+                .name(bulkActionStateControlName)
+                .controlName(bulkActionStateControlName)
+                .css("js-bulk-action-paging-state")
+                .build(ctx));
     }
 
     private FormViewElement createFormAndWrap(ViewElement childElement,
@@ -182,15 +200,6 @@ public class BulkActionViewProcessor<T> extends EntityViewProcessorAdapter {
                 .add(childElement)
                 .build(builderContext)
                 .setCommandAttribute(formAttributeProvider.get());
-
-        String controlName = controlNameProvider.get() + "State";
-
-        bulkActionForm.addChild(bootstrap.builders.hidden()
-                .value(getCurrentPagingState(controlName))
-                .name(controlName)
-                .controlName(controlName)
-                .css("js-paging-state")
-                .build(builderContext));
 
         if (submitUrlResolver != null) {
             bulkActionForm.setAction(submitUrlResolver.apply(entityViewRequest));

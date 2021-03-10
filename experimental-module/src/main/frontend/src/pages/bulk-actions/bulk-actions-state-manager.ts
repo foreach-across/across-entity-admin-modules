@@ -9,13 +9,13 @@ class BulkActionsStateManager {
 
   init = () => {
     const self = this;
-    $(".js-exm-bulk-select-item").on("change", function () {
+    $(".js-exm-bulk-select-item", this.bulkActionFormNode).on("change", function () {
       const checkboxElement = $(this).find(":input:not([type=hidden])");
 
       self.onBulkActionChanged(checkboxElement);
     });
 
-    $(".js-exm-bulk-select-all").on("change", function () {
+    $(".js-exm-bulk-select-all", this.bulkActionFormNode).on("change", function () {
       self.bulkActionFormNode
         .find(".js-exm-bulk-select-item :input:not([type=hidden])")
         .each((index: number, checkboxElement: any) => {
@@ -79,7 +79,9 @@ class BulkActionsStateManager {
     let currentState = this.getState();
 
     if (isChecked) {
-      currentState.push(selectedValue);
+      if (!currentState.includes(selectedValue)) {
+        currentState.push(selectedValue);
+      }
     } else {
       currentState = currentState.filter((state: string) => state !== selectedValue);
     }
@@ -88,7 +90,7 @@ class BulkActionsStateManager {
   };
 
   getState = () => {
-    let hiddenField = this.bulkActionFormNode.find(".js-paging-state");
+    let hiddenField = this.bulkActionFormNode.find(".js-bulk-action-paging-state");
     if (!hiddenField.length) {
       return [];
     }
@@ -99,7 +101,7 @@ class BulkActionsStateManager {
   };
 
   setState = (stateToSet: string[]) => {
-    let hiddenField = this.bulkActionFormNode.find(".js-paging-state");
+    let hiddenField = this.bulkActionFormNode.find(".js-bulk-action-paging-state");
     if (hiddenField.length) {
       let valueToSet = Base64Utils.encode(JSON.stringify(stateToSet));
       hiddenField.val(valueToSet);
@@ -112,7 +114,9 @@ class BulkActionsStateManager {
 export default BulkActionsStateManager;
 
 EntityModule.registerInitializer(function (node) {
-  $('form[name="bulkActionForm"]', node).each((index, element) => {
+  let $node = typeof node === "undefined" ? $(document) : $(node);
+
+  $node.findSelf(".exm-table-refresh-target").each((index, element) => {
     const bulkActionStateManagement = new BulkActionsStateManager(element);
     bulkActionStateManagement.init();
   });

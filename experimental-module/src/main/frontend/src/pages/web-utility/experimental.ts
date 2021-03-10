@@ -17,6 +17,19 @@ EntityModule.registerInitializer(function (node) {
   sortableTableAjax.init(node);
 });
 
+$.fn.findSelf = function (selector: any) {
+  let result = this.find(selector);
+  this.each(function () {
+    let htmlElementJQuery = $(this);
+
+    if (htmlElementJQuery.is(selector)) {
+      result.push(htmlElementJQuery);
+    }
+  });
+
+  return result;
+};
+
 const actionFactory = new ActionFactory(handlerFactory);
 
 window.ExperimentalModule = (function () {

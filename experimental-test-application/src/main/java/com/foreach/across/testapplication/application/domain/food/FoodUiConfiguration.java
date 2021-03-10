@@ -39,110 +39,108 @@ import static org.springframework.util.ClassUtils.getShortName;
 
 @Configuration
 @RequiredArgsConstructor
-public class FoodUiConfiguration implements EntityConfigurer
-{
-	private final AdminWeb adminWeb;
+public class FoodUiConfiguration implements EntityConfigurer {
+    private final AdminWeb adminWeb;
 
-	@Override
-	public void configure( EntitiesConfigurationBuilder entities ) {
-		entities.withType( Food.class )
-		        .and( ModalConfigurers.createViewAsModal() )
-		        .and( ModalConfigurers.updateViewAsModal() )
-		        .and( ModalConfigurers.deleteViewAsModal() )
-		        .listView(
-				        lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
-				                                          .order( 1100 ) )
-				                  .and( bulkActionsConfigurer( join( "extensions[", getShortName( FoodBulkActionViewProcessor.class ), "].selectedItems" ) ) )
-		        )
-		        .listView( "controller",
-		                   lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
-		                                                     .configure( bavp -> bavp.setControlName( () -> "" ) )
-		                                                     .order( 1100 ) )
+    @Override
+    public void configure(EntitiesConfigurationBuilder entities) {
+        entities.withType(Food.class)
+                .and(ModalConfigurers.createViewAsModal())
+                .and(ModalConfigurers.updateViewAsModal())
+                .and(ModalConfigurers.deleteViewAsModal())
+                .listView(
+                        lvb -> lvb
+                                .pageSize(3)
+                                .viewProcessor(vp -> vp.createBean(FoodBulkActionViewProcessor.class).order(1100))
+                                .and(bulkActionsConfigurer(join("extensions[", getShortName(FoodBulkActionViewProcessor.class), "].selectedItems")))
+                )
+                .listView("controller",
+                        lvb -> lvb.viewProcessor(vp -> vp.createBean(FoodBulkActionViewProcessor.class)
+                                .configure(bavp -> bavp.setControlName(() -> ""))
+                                .order(1100))
 
-		                             .and( bulkActionsConfigurer( "selectedItems" ) )
-		                             .and(
-				                             vfb -> vfb.viewProcessor( vp -> vp.withType( BulkActionViewProcessor.class )
-				                                                               .skipIfMissing()
-				                                                               .configure( bavp -> bavp
-						                                                               .submitUrlResolver( ( req ) -> adminWeb.path( FOOD_BULK_ACTIONS ) )
-						                                                               .formAttributeProvider( () -> "bulkActions" ) ) )
-		                             )
-		        )
-		        .and( this::configureExportView );
-	}
+                                .and(bulkActionsConfigurer("selectedItems"))
+                                .and(
+                                        vfb -> vfb.viewProcessor(vp -> vp.withType(BulkActionViewProcessor.class)
+                                                .skipIfMissing()
+                                                .configure(bavp -> bavp
+                                                        .submitUrlResolver((req) -> adminWeb.path(FOOD_BULK_ACTIONS))
+                                                        .formAttributeProvider(() -> "bulkActions")))
+                                )
+                )
+                .and(this::configureExportView);
+    }
 
-	private void configureExportView( EntityConfigurationBuilder<Food> entities ) {
-		entities.listView( "exportToCsv",
-		                   ExportViewConfigurers.configureCsvExportView(
-				                   new CsvExportViewConfigurer<>()
-						                   .fileName( "content.csv" )
-						                   .separator( ";" )
-						                   .shouldIncludeUtf8Bom( true )
-						                   .shouldIncludeSeparatorIdentifier( true )
-		                   )
-		)
-		        .listView( lvb -> lvb.viewProcessor( vp -> vp.provideBean( new EntityViewProcessorAdapter()
-		        {
-			        @Override
-			        protected void postRender( EntityViewRequest entityViewRequest,
-			                                   EntityView entityView,
-			                                   ContainerViewElement container,
-			                                   ViewElementBuilderContext builderContext ) {
-				        container.find( "entityListForm-actions", ContainerViewElement.class )
-				                 .ifPresent(
-						                 c -> {
-							                 configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" );
-						                 }
-				                 );
-			        }
-		        } ) ) )
-		;
-	}
+    private void configureExportView(EntityConfigurationBuilder<Food> entities) {
+        entities.listView("exportToCsv",
+                ExportViewConfigurers.configureCsvExportView(
+                        new CsvExportViewConfigurer<>()
+                                .fileName("content.csv")
+                                .separator(";")
+                                .shouldIncludeUtf8Bom(true)
+                                .shouldIncludeSeparatorIdentifier(true)
+                )
+        )
+                .listView(lvb -> lvb.viewProcessor(vp -> vp.provideBean(new EntityViewProcessorAdapter() {
+                    @Override
+                    protected void postRender(EntityViewRequest entityViewRequest,
+                                              EntityView entityView,
+                                              ContainerViewElement container,
+                                              ViewElementBuilderContext builderContext) {
+                        container.find("entityListForm-actions", ContainerViewElement.class)
+                                .ifPresent(
+                                        c -> {
+                                            configureButton(entityViewRequest, builderContext, c, "exportToCsv", "to CSV");
+                                        }
+                                );
+                    }
+                })))
+        ;
+    }
 
-	private void configureButton( EntityViewRequest entityViewRequest,
-	                              ViewElementBuilderContext builderContext,
-	                              ContainerViewElement c,
-	                              String viewName, String btnText ) {
-		String url = entityViewRequest.getEntityViewContext()
-		                              .getLinkBuilder()
-		                              .listView()
-		                              .withViewName( viewName )
-		                              .toUriString();
-		c.set( css.size.width100 );
+    private void configureButton(EntityViewRequest entityViewRequest,
+                                 ViewElementBuilderContext builderContext,
+                                 ContainerViewElement c,
+                                 String viewName, String btnText) {
+        String url = entityViewRequest.getEntityViewContext()
+                .getLinkBuilder()
+                .listView()
+                .withViewName(viewName)
+                .toUriString();
+        c.set(css.size.width100);
 
-		c.addChild(
-				html.builders.div( css.cssFloat.right )
-				             .add( bootstrap.builders
-						                   .button()
-						                   .icon( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "download" )
-						                                 .set( css.margin.right.s2 ) )
-						                   .iconLeft()
-						                   .text( btnText )
-						                   .link( url ) )
-				             .build( builderContext )
-		);
-	}
+        c.addChild(
+                html.builders.div(css.cssFloat.right)
+                        .add(bootstrap.builders
+                                .button()
+                                .icon(IconSet.iconSet(ICON_SET_FONT_AWESOME_SOLID).icon("download")
+                                        .set(css.margin.right.s2))
+                                .iconLeft()
+                                .text(btnText)
+                                .link(url))
+                        .build(builderContext)
+        );
+    }
 
-	private Consumer<EntityViewFactoryBuilder> bulkActionsConfigurer( String controlName ) {
-		SimpleBulkActionItemConfigurer<Food> bulkActionsConfiguration =
-				new SimpleBulkActionItemConfigurer<Food>()
-						.itemSelectorControlPostProcessor( ( ctx, builder ) -> {
-							Food instance = EntityViewElementUtils.currentEntity( ctx, Food.class );
-							if ( instance.getCurrentAction() == FoodAction.STORED ) {
-								if ( containsIgnoreCase( instance.getName(), "pizza" ) ) {
-									builder.set( attribute( "supportedActions", Collections.singletonList( FoodActionType.BAKE_OVEN ) ) );
-								}
-								else {
-									builder.set( attribute( "supportedActions", Arrays.asList( FoodActionType.BAKE_OVEN, FoodActionType.BAKE_STOVE ) ) );
-								}
-							}
-							else {
-								builder.set( attribute( "supportedActions", Collections.singletonList( FoodActionType.RESET ) ) );
-							}
-						} )
-						.itemValue( ( instance, ctx ) -> instance.getId() )
-						.itemControlName( controlName )
-						.formAttributeName( EntityViewModel.VIEW_COMMAND + ".extensions[" + getShortName( FoodBulkActionViewProcessor.class ) + "]" );
-		return configureBulkActions( bulkActionsConfiguration );
-	}
+    private Consumer<EntityViewFactoryBuilder> bulkActionsConfigurer(String controlName) {
+        SimpleBulkActionItemConfigurer<Food> bulkActionsConfiguration =
+                new SimpleBulkActionItemConfigurer<Food>()
+                        .itemSelectorControlPostProcessor((ctx, builder) -> {
+                            Food instance = EntityViewElementUtils.currentEntity(ctx, Food.class);
+                            if (instance.getCurrentAction() == FoodAction.STORED) {
+                                if (containsIgnoreCase(instance.getName(), "pizza")) {
+                                    builder.set(attribute("supportedActions", Collections.singletonList(FoodActionType.BAKE_OVEN)));
+                                } else {
+                                    builder.set(attribute("supportedActions", Arrays.asList(FoodActionType.BAKE_OVEN, FoodActionType.BAKE_STOVE)));
+                                }
+                            } else {
+                                builder.set(attribute("supportedActions", Collections.singletonList(FoodActionType.RESET)));
+                            }
+                        })
+						.ajaxUrl(((linkBuilder, builderContext) -> linkBuilder.listView().withQueryParam("custom", "stijn").toUriString()))
+                        .itemValue((instance, ctx) -> instance.getId())
+                        .itemControlName(controlName)
+                        .formAttributeName(EntityViewModel.VIEW_COMMAND + ".extensions[" + getShortName(FoodBulkActionViewProcessor.class) + "]");
+        return configureBulkActions(bulkActionsConfiguration);
+    }
 }

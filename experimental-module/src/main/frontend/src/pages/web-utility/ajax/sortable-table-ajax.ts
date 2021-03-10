@@ -1,32 +1,34 @@
-import { convertResponseToText, getCookie } from "../utils/utils";
+import { ax, convertResponseToText, getCookie } from "../utils/utils";
 
 class SortableTableAjax {
   init = (node: any) => {
     const self = this;
 
-    $("[data-tbl-type=paged]", node).each((idx, element) => {
-      if ($(element).data("ajax-pagination") === true) {
-        $(element).on("emSortableTable:loadData", function (event, params) {
+    $("[data-tbl-type=paged]", node).each((idx, table) => {
+      if ($(table).data("ajax-pagination") === true) {
+        $(table).on("emSortableTable:loadData", function (event, params) {
           event.preventDefault();
           event.stopPropagation();
 
-          self.refreshTableForSort($(element).closest("form"), params);
+          self.refreshTableForSort($(table), params);
         });
       }
     });
   };
 
-  refreshTableForSort = (form: any, params: any) => {
+  refreshTableForSort = (table: any, params: any) => {
+    const form = $(table).closest("form");
+    const baseUrl = $(table).data("ajax-url");
+
     form.prop("readonly", true);
     // register the page attributes as hidden inputs
     $.each(params, (paramName: string, paramValue: any) => {
       this.registerHiddenInput(form, paramName, paramValue);
     });
 
-    const tableBody = $(".pcs-body-section");
-    tableBody.addClass("partial-loading");
-    tableBody.append('<div class="partial-spinner"></div>');
-    let url = this.buildPartialRefreshUrl(form);
+    table.addClass("partial-loading");
+    table.append('<div class="partial-spinner"></div>');
+    let url = SortableTableAjax.buildPartialRefreshUrl(baseUrl, form);
 
     fetch(url, {
       method: "GET",
@@ -34,29 +36,41 @@ class SortableTableAjax {
     })
       .then(convertResponseToText)
       .then((data) => {
-        tableBody.removeClass("partial-loading");
-        tableBody.replaceWith(data);
+        table.removeClass("partial-loading");
+        const newData = $(data);
 
-        EntityModule.initializeFormElements($(".pcs-body-section"));
+        let refreshableTable = table.closest(".exm-table-refresh-target");
+        refreshableTable.replaceWith(newData);
+
+        if (newData.length > 0) {
+          newData.each(function () {
+            if (this.nodeType !== Node.COMMENT_NODE) {
+              EntityModule.initializeFormElements($(this));
+            }
+          });
+        } else {
+          EntityModule.initializeFormElements(newData);
+        }
+      })
+      .catch((error) => {
+        ax.log.error("Unable to fetch page", [error]);
       });
-    // .catch(handleError);
   };
 
-  private buildPartialRefreshUrl(form: any) {
-    let url = window.location.href.split("?")[0];
-    const lastChar = url.slice(-1);
-    if (lastChar == "#") {
-      url = url.slice(0, -1);
-    }
-    url += "?_partial=::body&" + form.serialize();
+  private static buildPartialRefreshUrl(baseUrl: string, form: any) {
+    let url = baseUrl;
+    url += baseUrl.includes("?") ? "&" : "?";
+    url += "_partial=::itemsTable&";
+    url += form.serialize();
     return url;
   }
 
   registerHiddenInput = (form: any, name: string, value: any) => {
-    if (value) {
+    if (typeof value !== "undefined") {
       $("input[name=" + name + "][type=hidden]").remove();
 
       const control = $("input[name=" + name + "]", form);
+
       if (control.length) {
         control.val(value);
       } else {

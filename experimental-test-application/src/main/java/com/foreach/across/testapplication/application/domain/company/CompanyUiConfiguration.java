@@ -10,8 +10,8 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.bulkactions.support.SimpleBulkActionItemConfigurer;
-import com.foreach.across.modules.experimental.webutility.domain.EntityViewAjax;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
+import com.foreach.across.testapplication.application.domain.company.processors.CombinedCompanyViewProcessor;
 import com.foreach.across.testapplication.application.domain.company.processors.CompanyBulkActionViewProcessor;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,6 +39,8 @@ public class CompanyUiConfiguration implements EntityConfigurer {
                 .updateFormView(fvb -> fvb.viewElementMode(WebUtilityViewElementMode.EDITABLE_VALUE_VIEW()))
 //                .listView(EntityViewAjax.ajaxSettings.enableAjaxPagination())
                 .listView(lvb -> lvb
+                        .viewProcessor(vp -> vp.createBean(CombinedCompanyViewProcessor.class))
+                        .entityQueryFilter(eqb -> eqb.showProperties("name"))
                         .pageSize(10)
                         .and(companyBulkActionsConfigurer("selectedItems")))
                 .association(

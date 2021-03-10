@@ -14,7 +14,13 @@ import java.util.function.Consumer;
 public class BulkActionsEntityConfigurers {
     public static <T> Consumer<EntityViewFactoryBuilder> configureBulkActions(BulkActionsConfigurer<T> bulkActionItemConfigurer) {
         return view -> view
-                .and(lvb -> EntityViewAjax.ajaxSettings.enableAjaxPagination().accept((EntityListViewFactoryBuilder) lvb))
+                .and(lvb -> {
+                    EntityViewAjax entityViewAjax = EntityViewAjax.ajaxSettings.enableAjaxPagination();
+                    if (bulkActionItemConfigurer.ajaxUrlProvider() != null) {
+                        entityViewAjax.ajaxUrlProvider(bulkActionItemConfigurer.ajaxUrlProvider());
+                    }
+                    entityViewAjax.accept((EntityListViewFactoryBuilder) lvb);
+                })
                 .viewProcessor(vp -> vp.createBean(BulkActionSelectedItemsViewProcessor.class))
                 .viewProcessor(
                         vp -> vp.createBean(BulkActionViewProcessor.class)
