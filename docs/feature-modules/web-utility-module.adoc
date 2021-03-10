@@ -370,3 +370,20 @@ The response in this case has been modified to also include the actual content o
 === Configuring conditional display
 
 // dependson
+
+=== Listview ajax pagination
+
+You can change the default service side pagination of the sortable tables to ajax by using the `EntityViewAjax` configurer.
+
+.Enable ajax pagination on a list view
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+  @Override
+    public void configure(EntitiesConfigurationBuilder entities) {
+        entities.withType(Company.class)
+                .listView(EntityViewAjax.ajaxSettings.enableAjaxPagination()
+                .ajaxUrlProvider(((linkBuilder, builderContext) -> linkBuilder.listView().withQueryParam("custom", "true").toUriString()))) <1>
+)
+----
+<1> Register an optional url that will be used for pagination requests. By default the listView of the requested entity will be used.
