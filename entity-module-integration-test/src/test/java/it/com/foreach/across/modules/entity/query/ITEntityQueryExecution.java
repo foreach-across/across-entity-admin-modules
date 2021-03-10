@@ -25,6 +25,8 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.testmodules.springdata.business.Company;
+import com.foreach.across.testmodules.springdata.business.Group;
+import com.foreach.across.testmodules.springdata.business.QCompany;
 import com.foreach.across.testmodules.springdata.business.Representative;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -63,6 +67,13 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 	}
 
 	@Test
+	public void jpaFunction() {
+		List<Group> items = findGroups( "number = jpa.abs(400)", groupThree );
+		assertThat( items ).hasSize( 1 ).first().isEqualTo( groupThree );
+
+	}
+
+	@Test
 	public void findCompaniesOrdered() {
 		List<Company> ordered = findCompanies( "number > 1 order by created asc", two, three );
 		assertEquals( two, ordered.get( 0 ) );
@@ -71,11 +82,18 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 
 	@Test
 	public void findAllRepresentativesOrdered() {
-		List<Representative> ordered = findRepresentatives( "order by name desc", john, joe, peter, weirdo );
+		List<Representative> ordered = findRepresentatives( "order by name desc", john, joe, peter, weirdo, absolute );
 		assertEquals( peter, ordered.get( 0 ) );
 		assertEquals( john, ordered.get( 1 ) );
 		assertEquals( joe, ordered.get( 2 ) );
-		assertEquals( weirdo, ordered.get( 3 ) );
+		assertEquals( absolute, ordered.get( 3 ) );
+		assertEquals( weirdo, ordered.get( 4 ) );
+	}
+
+	@Test
+	public void findAllRepresentativesByFunction() {
+		List<Representative> representatives = findRepresentatives( "number = rep.abs(100)", absolute );
+		assertThat( representatives ).hasSize( 1 ).first().isEqualTo( absolute );
 	}
 
 	@Test
@@ -83,6 +101,23 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		List<Representative> ordered = findRepresentatives( "id like 'j%' order by name asc", john, joe );
 		assertEquals( joe, ordered.get( 0 ) );
 		assertEquals( john, ordered.get( 1 ) );
+	}
+
+	@Test
+	public void companiesByCollectionJoin() {
+		QCompany company = QCompany.company;
+		Iterable<Company> all = companyRepository.findAll( company.representatives.any().name.eq( "John % Surname" ) );
+		List<Company> companies = findCompanies( "representatives[].name = 'John % Surname'", one, two );
+		assertThat( companies ).containsAll( all );
+		assertEquals( one, companies.get( 0 ) );
+		assertEquals( two, companies.get( 1 ) );
+	}
+
+	@Test
+	public void companiesByCollectionJoinA() {
+		assertThatThrownBy(
+				() -> findCompanies( "representatives[] IN ('John % Surname')", one, two ) ).hasMessage(
+				"Illegal field: representatives[]. You can only use an indexer in the form of: collection[].name = 'John'." );
 	}
 
 	@Test
@@ -284,8 +319,8 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 			findRepresentatives( "searchText contains 'SURNAME'", john, joe, peter );
 
 			// AXEUM-127 - negation should exclude the results
-			findRepresentatives( "searchText not contains 'surname'", weirdo );
-			findRepresentatives( "searchText not contains 'SURNAME'", weirdo );
+			findRepresentatives( "searchText not contains 'surname'", weirdo, absolute );
+			findRepresentatives( "searchText not contains 'SURNAME'", weirdo, absolute );
 		}
 		finally {
 			descriptor.removeAttribute( EntityQueryConditionTranslator.class );
@@ -298,6 +333,23 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		EntityQueryParser queryParser = entityConfiguration.getAttribute( EntityQueryParser.class );
 
 		List<Company> found = queryExecutor.findAll( queryParser.parse( query ) );
+		assertEquals( expected.length, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( expected ) ) );
+
+		EntityQuery rawQuery = EntityQuery.parse( query );
+		EntityQuery executableQuery = queryParser.prepare( rawQuery );
+		assertEquals( executableQuery, queryParser.prepare( executableQuery ) );
+		assertEquals( found, queryExecutor.findAll( executableQuery ) );
+
+		return found;
+	}
+
+	private List<Group> findGroups( String query, Group... expected ) {
+		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( Group.class );
+		EntityQueryExecutor<Group> queryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
+		EntityQueryParser queryParser = entityConfiguration.getAttribute( EntityQueryParser.class );
+
+		List<Group> found = queryExecutor.findAll( queryParser.parse( query ) );
 		assertEquals( expected.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( expected ) ) );
 

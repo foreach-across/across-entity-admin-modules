@@ -57,7 +57,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@SuppressWarnings("unchecked")
 	public SimpleEntityPropertyDescriptor( String name, EntityPropertyDescriptor original ) {
-		Assert.notNull( name, "name is required" );
+		Assert.notNull( name, () -> "name is required" );
 		this.name = name;
 		this.original = original;
 

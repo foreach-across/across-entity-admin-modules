@@ -113,7 +113,7 @@ public class EntityIdProxyPropertyRegistrar implements Function<EntityPropertyRe
 	public EntityPropertyRegistryBuilder.PropertyDescriptorBuilder apply( EntityPropertyRegistryBuilder props ) {
 		props.processRegistry( registry -> {
 			MutableEntityPropertyDescriptor targetProperty = registry.getProperty( targetPropertyName );
-			Assert.notNull( targetProperty, "Target property for proxy not found: " + targetPropertyName );
+			Assert.notNull( targetProperty, () -> "Target property for proxy not found: " + targetPropertyName );
 
 			MutableEntityPropertyDescriptor newProperty = new EntityPropertyDescriptorBuilder( propertyName )
 					.readable( targetProperty.isReadable() )

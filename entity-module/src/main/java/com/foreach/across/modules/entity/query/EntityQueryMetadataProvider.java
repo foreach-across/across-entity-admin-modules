@@ -20,6 +20,7 @@ package com.foreach.across.modules.entity.query;
  * API that provides validation information for entity query conditions.
  *
  * @author Arne Vandamme
+ * @author Marc Vanbrabant
  * @see DefaultEntityQueryMetadataProvider
  * @since 2.0.0
  */
@@ -30,4 +31,10 @@ public interface EntityQueryMetadataProvider
 	boolean isValidOperatorForProperty( EntityQueryOps operator, String property );
 
 	boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator );
+
+	void validatePropertyForCondition( EntityQueryCondition condition );
+
+	void validateOperatorForCondition( EntityQueryCondition condition );
+
+	void validateValueForCondition( EntityQueryCondition condition );
 }
