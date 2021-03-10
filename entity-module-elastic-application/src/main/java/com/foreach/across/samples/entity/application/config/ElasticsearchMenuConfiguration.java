@@ -48,8 +48,8 @@ public class ElasticsearchMenuConfiguration
 		PathBasedMenuBuilder menu = adminMenuEvent.builder();
 		entityRegistry.getEntities()
 		              .stream()
-		              .filter( this::isVisibleConfiguration )
 		              .filter( this::isElasticsearchProxy )
+		              .filter( this::isVisibleConfiguration )
 		              .forEach( configureItemUrls( menu ) );
 
 	}
@@ -80,7 +80,6 @@ public class ElasticsearchMenuConfiguration
 				configureMenuRequestMatchers( builder, entityConfiguration, configurationLinkBuilder, targetConfigurationLinkBuilder );
 
 			}
-
 		};
 	}
 
