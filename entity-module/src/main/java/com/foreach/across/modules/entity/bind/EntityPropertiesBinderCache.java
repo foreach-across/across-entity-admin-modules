@@ -47,9 +47,9 @@ public class EntityPropertiesBinderCache
 
 		binders = entities.stream()
 		                  .collect( Collectors.toMap( Function.identity(), this::createPropertiesBinder ) );
-		Assert.isTrue( binders.size() == entities.size(),
-		               "Unable to use EntityPropertiesBinderCache for entities - equals/hashcode mismatch? " +
-				               "The number of binding contexts did not match the number of original entities." );
+		Assert.isTrue( binders.size() == entities.size(), () ->
+				"Unable to use EntityPropertiesBinderCache for entities - equals/hashcode mismatch? " +
+						"The number of binding contexts did not match the number of original entities." );
 
 		bindingContexts = binders.values().stream().map( EntityPropertiesBinder::asBindingContext ).collect( Collectors.toSet() );
 	}

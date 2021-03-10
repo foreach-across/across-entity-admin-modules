@@ -18,6 +18,8 @@ package com.foreach.across.testmodules.springdata.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -45,6 +47,11 @@ public class Group extends SettableIdBasedEntity<Group>
 	@NotBlank
 	@Column(unique = true)
 	private String name;
+
+	@Getter
+	@Setter
+	@Column(name = "group_number")
+	private Long number;
 
 	public Group() {
 	}

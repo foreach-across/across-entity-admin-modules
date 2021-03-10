@@ -54,10 +54,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import com.foreach.across.samples.entity.application.business.Group;
-import com.foreach.across.samples.entity.application.business.Note;
-import com.foreach.across.samples.entity.application.business.Partner;
-import com.foreach.across.samples.entity.application.business.User;
+import com.foreach.across.samples.entity.application.business.*;
 import com.foreach.across.samples.entity.application.repositories.PartnerRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -126,6 +123,8 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
+		configuration.withType( Server.class )
+		             .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.showProperties( "application" ) ) );
 		configuration.withType( Note.class )
 		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
 		             .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()

@@ -72,8 +72,8 @@ class EntityModuleAdminMenuRegistrar
 				EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 				Assert.notNull(
-						messageCodeResolver,
-						"A visible EntityConfiguration (" + entityConfiguration.getName() + ") requires an EntityMessageCodeResolver"
+						messageCodeResolver, () ->
+								"A visible EntityConfiguration (" + entityConfiguration.getName() + ") requires an EntityMessageCodeResolver"
 				);
 
 				EntityMessages messages = new EntityMessages( messageCodeResolver );

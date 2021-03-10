@@ -479,7 +479,7 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	 * @return factory instance
 	 */
 	public EntityViewFactory build() {
-		Assert.notNull( factoryType, "factoryType cannot be null" );
+		Assert.notNull( factoryType, () -> "factoryType cannot be null" );
 
 		EntityViewFactory viewFactory = factory != null ? factory : createNewViewFactory( factoryType );
 		apply( viewFactory );

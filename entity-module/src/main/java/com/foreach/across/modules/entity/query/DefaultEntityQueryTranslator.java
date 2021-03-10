@@ -70,8 +70,8 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 
 	@PostConstruct
 	public void validateProperties() {
-		Assert.notNull( propertyRegistry, "propertyRegistry should be available" );
-		Assert.notNull( typeConverter, "typeConverter should be available" );
+		Assert.notNull( propertyRegistry, () -> "propertyRegistry should be available" );
+		Assert.notNull( typeConverter, () -> "typeConverter should be available" );
 	}
 
 	/**
@@ -129,7 +129,12 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( condition.getProperty() );
 
 		if ( descriptor == null ) {
-			throw new EntityQueryParsingException.IllegalField( condition.getProperty() );
+			throw new EntityQueryParsingException.IllegalField( condition.getProperty() + ". Could not find a property descriptor." );
+		}
+
+		if ( StringUtils.endsWith( descriptor.getName(), EntityPropertyRegistry.INDEXER ) ) {
+			throw new EntityQueryParsingException.IllegalField(
+					condition.getProperty() + ". You can only use an indexer in the form of: collection[].name = 'John'." );
 		}
 
 		for ( EntityQueryConditionTranslator translator : defaultConditionTranslators ) {

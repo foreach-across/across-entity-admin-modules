@@ -16,6 +16,8 @@
 
 package com.foreach.across.testmodules.springdata.business;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
@@ -40,6 +42,11 @@ public class Representative implements Persistable<String>
 
 	@Length(max = 200)
 	private String name;
+
+	@Getter
+	@Setter
+	@Column(name = "rep_number")
+	private Long number;
 
 	public Representative() {
 	}

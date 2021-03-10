@@ -261,7 +261,7 @@ public class EntitiesConfigurationBuilder
 		}
 		else {
 			// should never be null as the creation call should have registered it
-			Assert.notNull( config, "existing MutableEntityConfiguration should not be null" );
+			Assert.notNull( config, () -> "existing MutableEntityConfiguration should not be null" );
 
 			// register applied builders only once
 			configurationBuilder.apply( config, false );

@@ -54,8 +54,8 @@ public abstract class AbstractQueryTest
 	private static boolean inserted = false;
 
 	protected static Company one, two, three;
-	protected static Representative john, joe, peter, weirdo;
-	protected static Group groupOne, groupTwo;
+	protected static Representative john, joe, peter, weirdo, absolute;
+	protected static Group groupOne, groupTwo, groupThree;
 	protected static Car carOne, carTwo;
 
 	@Autowired
@@ -77,14 +77,18 @@ public abstract class AbstractQueryTest
 
 			groupOne = new Group( "groupOne" );
 			groupTwo = new Group( "groupTwo" );
-			groupRepository.saveAll( Arrays.asList( groupOne, groupTwo ) );
+			groupThree = new Group( "groupThree" );
+			groupThree.setNumber( -400L );
+			groupRepository.saveAll( Arrays.asList( groupOne, groupTwo, groupThree ) );
 
 			john = new Representative( "john", "John % Surname" );
 			joe = new Representative( "joe", "Joe ' Surname" );
 			peter = new Representative( "peter", "Peter \\ Surname" );
 			weirdo = new Representative( "weirdo", "!\"#%-_&/()=;?´`|/\\'" );
+			absolute = new Representative( "absolute", "-100" );
+			absolute.setNumber( -100L );
 
-			representativeRepository.saveAll( Arrays.asList( john, joe, peter, weirdo ) );
+			representativeRepository.saveAll( Arrays.asList( john, joe, peter, weirdo, absolute ) );
 
 			one = new Company( "one", 1, asDate( "2015-01-17 13:30" ) );
 			one.setStatus( CompanyStatus.IN_BUSINESS );

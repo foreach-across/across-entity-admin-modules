@@ -20,6 +20,7 @@ import com.querydsl.core.types.Path;
 import com.querydsl.core.types.PathMetadata;
 import com.querydsl.core.types.PathMetadataFactory;
 import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.core.types.dsl.StringPath;
 
 /**
  * Manually created dummy QueryDSL Q class.
@@ -32,6 +33,8 @@ public class QRepresentative extends EntityPathBase<Representative>
 	private static final long serialVersionUID = 475764284L;
 
 	public static final QRepresentative company = new QRepresentative( "representative" );
+
+	public final StringPath name = createString( "name" );
 
 	public QRepresentative( String variable ) {
 		super( Representative.class, PathMetadataFactory.forVariable( variable ) );

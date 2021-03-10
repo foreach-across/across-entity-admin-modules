@@ -8,3 +8,9 @@ entity-module:
     - org.springframework.hateoas.ResourceAssembler
     - org.springframework.hateoas.LinkBuilderFactory
     - org.springframework.hateoas.LinkBuilder
+
+spring-data-elastic:
+  priority: 900
+  exposed:
+    - org.springframework.data.elasticsearch.core.ElasticsearchOperations
+

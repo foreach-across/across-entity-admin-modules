@@ -56,7 +56,7 @@ class ReflectionEntityInformation<T, ID extends Serializable> extends AbstractEn
 	public ReflectionEntityInformation( Class<T> domainClass, final Class<? extends Annotation> annotation ) {
 
 		super( domainClass );
-		Assert.notNull( annotation );
+		Assert.notNull( annotation, () -> "annotation cannot be null" );
 
 		ReflectionUtils.doWithFields( domainClass, new FieldCallback()
 		{
@@ -68,7 +68,7 @@ class ReflectionEntityInformation<T, ID extends Serializable> extends AbstractEn
 			}
 		} );
 
-		Assert.notNull( this.field, String.format( "No field annotated with %s found!", annotation.toString() ) );
+		Assert.notNull( this.field, () -> String.format( "No field annotated with %s found!", annotation.toString() ) );
 		ReflectionUtils.makeAccessible( field );
 	}
 
