@@ -19,18 +19,23 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Builder for managing a specific {@link EntityAssociation} on a {@link EntityConfiguration}.
@@ -44,6 +49,8 @@ import java.util.function.Consumer;
 public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder<EntityAssociation>
 {
 	private String name;
+	private Class<?> associationClassType;
+	private Class<?> assignableClassType;
 	private boolean hiddenSpecified;
 	private Boolean hidden;
 	private EntityAssociation.ParentDeleteMode parentDeleteMode;
@@ -70,7 +77,49 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @return current builder
 	 */
 	public EntityAssociationBuilder name( @NonNull String name ) {
+		if ( !Objects.equals( this.name, name ) && StringUtils.equals( EntityPropertySelector.ALL, this.name ) ) {
+			throw new IllegalArgumentException( "Cannot use name(), name is already set to: " + this.name );
+		}
 		this.name = name;
+		return this;
+	}
+
+	/**
+	 * Target all associations for the current entity.
+	 * <p>
+	 * This is equivalent to using {@code name("*")}.
+	 */
+	public EntityAssociationBuilder all() {
+		if ( this.name != null && !StringUtils.equals( EntityPropertySelector.ALL, this.name ) ) {
+			throw new IllegalArgumentException( "Cannot use all(), name is already set to: " + this.name );
+		}
+		this.name = EntityPropertySelector.ALL;
+		return this;
+	}
+
+	/**
+	 * Target all associations for this type.
+	 * <p>
+	 * This is equivalent to using {@code name("*")}.
+	 */
+	public EntityAssociationBuilder withType( @NonNull Class<?> associationType ) {
+		if ( this.name != null ) {
+			throw new IllegalArgumentException( "Cannot use withType(), name is already set to: " + this.name );
+		}
+		this.associationClassType = associationType;
+		return this;
+	}
+
+	/**
+	 * Target all associations for this type.
+	 * <p>
+	 * This is equivalent to using {@code name("*")}.
+	 */
+	public EntityAssociationBuilder assignableTo( @NonNull Class<?> assignableType ) {
+		if ( this.name != null ) {
+			throw new IllegalArgumentException( "Cannot use withType(), name is already set to: " + this.name );
+		}
+		this.assignableClassType = assignableType;
 		return this;
 	}
 
@@ -324,78 +373,104 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param configuration to register the association in
 	 */
 	void apply( MutableEntityConfiguration configuration ) {
-		Assert.notNull( name, () -> "A name() is required for an AssociationBuilder." );
-		MutableEntityAssociation association = configuration.association( name );
+		Collection<MutableEntityAssociation> associations = getMatchingAssociations( configuration );
 
-		if ( association == null ) {
-			EntityConfiguration targetConfiguration = retrieveTargetConfiguration();
+		for ( MutableEntityAssociation association : associations ) {
+			if ( association == null ) {
+				EntityConfiguration targetConfiguration = retrieveTargetConfiguration();
 
-			association = configuration.createAssociation( name );
-			association.setTargetEntityConfiguration( targetConfiguration );
+				association = configuration.createAssociation( name );
+				association.setTargetEntityConfiguration( targetConfiguration );
 
-			registerAssociationMessageCodeResolver( association );
-		}
-		else if ( targetEntityType != null ) {
-			association.setTargetEntityConfiguration( retrieveTargetConfiguration() );
-		}
-
-		associationBeingBuilt = association;
-
-		if ( associationType != null ) {
-			associationBeingBuilt.setAssociationType( associationType );
-		}
-
-		try {
-			if ( sourcePropertyRemoved ) {
-				association.setSourceProperty( null );
+				registerAssociationMessageCodeResolver( association );
 			}
-			else if ( sourceProperty != null ) {
-				EntityPropertyDescriptor sourcePropertyDescriptor =
-						association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( sourceProperty );
+			else if ( targetEntityType != null ) {
+				association.setTargetEntityConfiguration( retrieveTargetConfiguration() );
+			}
 
-				if ( sourcePropertyDescriptor == null ) {
-					throw new IllegalArgumentException(
-							"Property " + sourceProperty + " was not found as source property for association " + name );
+			associationBeingBuilt = association;
+
+			if ( associationType != null ) {
+				associationBeingBuilt.setAssociationType( associationType );
+			}
+
+			try {
+				if ( sourcePropertyRemoved ) {
+					association.setSourceProperty( null );
+				}
+				else if ( sourceProperty != null ) {
+					EntityPropertyDescriptor sourcePropertyDescriptor =
+							association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( sourceProperty );
+
+					if ( sourcePropertyDescriptor == null ) {
+						throw new IllegalArgumentException(
+								"Property " + sourceProperty + " was not found as source property for association " + name );
+					}
+
+					association.setSourceProperty( sourcePropertyDescriptor );
 				}
 
-				association.setSourceProperty( sourcePropertyDescriptor );
-			}
+				if ( targetPropertyRemoved ) {
+					association.setTargetProperty( null );
+				}
+				else if ( targetProperty != null ) {
+					EntityPropertyDescriptor targetPropertyDescriptor =
+							association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
 
-			if ( targetPropertyRemoved ) {
-				association.setTargetProperty( null );
-			}
-			else if ( targetProperty != null ) {
-				EntityPropertyDescriptor targetPropertyDescriptor =
-						association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
+					if ( targetPropertyDescriptor == null ) {
+						throw new IllegalArgumentException(
+								"Property " + targetProperty + " was not found as target property for association " + name );
+					}
 
-				if ( targetPropertyDescriptor == null ) {
-					throw new IllegalArgumentException(
-							"Property " + targetProperty + " was not found as target property for association " + name );
+					association.setTargetProperty( targetPropertyDescriptor );
 				}
 
-				association.setTargetProperty( targetPropertyDescriptor );
-			}
+				if ( hiddenSpecified ) {
+					association.setHidden( hidden );
+				}
 
-			if ( hiddenSpecified ) {
-				association.setHidden( hidden );
-			}
+				if ( parentDeleteMode != null ) {
+					association.setParentDeleteMode( parentDeleteMode );
+				}
 
-			if ( parentDeleteMode != null ) {
-				association.setParentDeleteMode( parentDeleteMode );
+				applyAttributes( association, association );
+				if ( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ) {
+					applyViews( association );
+				}
+				else {
+					LOG.trace(
+							"Skipping default views registration for '{}->{}' - the default EntityViewFactoryBuilder is not present, probably no AdminWebModule",
+							configuration.getName(), association.getName() );
+				}
 			}
+			finally {
+				associationBeingBuilt = null;
+			}
+		}
+	}
 
-			applyAttributes( association, association );
-			if ( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ) {
-				applyViews( association );
+	private Collection<MutableEntityAssociation> getMatchingAssociations( MutableEntityConfiguration configuration ) {
+		if ( name == null && assignableClassType == null && associationClassType == null ) {
+			//TODO: more complex checks ?
+			throw new IllegalArgumentException( "A name(), withType() or assignableTo() is required for an AssociationBuilder." );
+		}
+		if ( name != null ) {
+			if ( StringUtils.equals( EntityPropertySelector.ALL, name ) ) {
+				return configuration.getAssociations();
 			}
 			else {
-				LOG.trace( "Skipping default views registration for '{}->{}' - the default EntityViewFactoryBuilder is not present, probably no AdminWebModule",
-				           configuration.getName(), association.getName() );
+				return Collections.singletonList( configuration.association( name ) );
 			}
 		}
-		finally {
-			associationBeingBuilt = null;
+		else if ( associationClassType != null ) {
+			Collection<MutableEntityAssociation> associations = configuration.getAssociations();
+			return associations.stream().filter( a -> Objects.equals( a.getEntityType(), associationClassType ) ).collect( Collectors.toList() );
 		}
+		else if ( assignableClassType != null ) {
+			Collection<MutableEntityAssociation> associations = configuration.getAssociations();
+			return associations.stream().filter( a -> assignableClassType.isAssignableFrom( a.getEntityType() ) ).collect( Collectors.toList() );
+		}
+		throw new IllegalArgumentException( "Cannot fetch association" );
 	}
 
 	private EntityConfiguration retrieveTargetConfiguration() {
