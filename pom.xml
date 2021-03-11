@@ -30,8 +30,8 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<build.revision>development</build.revision>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<revision>0.0.1-SNAPSHOT</revision>
-		<!-- Overriden from spring-boot-dependencies -->
+		<revision>0.0.2-SNAPSHOT</revision>
+		<!-- Overridden from spring-boot-dependencies -->
 		<maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
 
 		<admin-web-module.version>4.2.0-SNAPSHOT</admin-web-module.version>
