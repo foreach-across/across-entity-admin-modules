@@ -46,9 +46,14 @@ public class FoodUiConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Food.class )
-		        .and( ModalConfigurers.createViewAsModal() )
-		        .and( ModalConfigurers.updateViewAsModal() )
-		        .and( ModalConfigurers.deleteViewAsModal() )
+		        .and( ModalConfigurers.modalConfigurers.createViewAsModal() )
+		        .and( ModalConfigurers.modalConfigurers.updateViewAsModal() )
+		        .and( ModalConfigurers.modalConfigurers.deleteViewAsModal() )
+		        .listView(
+				        lvb -> lvb.entityQueryFilter(
+						        eqf -> eqf.showProperties( "name", "currentAction" )
+				        )
+		        )
 		        .listView(
 				        lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
 				                                          .order( 1100 ) )
@@ -90,9 +95,7 @@ public class FoodUiConfiguration implements EntityConfigurer
 			                                   ViewElementBuilderContext builderContext ) {
 				        container.find( "entityListForm-actions", ContainerViewElement.class )
 				                 .ifPresent(
-						                 c -> {
-							                 configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" );
-						                 }
+						                 c -> configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" )
 				                 );
 			        }
 		        } ) ) )
@@ -108,7 +111,6 @@ public class FoodUiConfiguration implements EntityConfigurer
 		                              .listView()
 		                              .withViewName( viewName )
 		                              .toUriString();
-		c.set( css.size.width100 );
 
 		c.addChild(
 				html.builders.div( css.cssFloat.right )

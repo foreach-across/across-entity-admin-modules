@@ -73,7 +73,7 @@ public class FoodBulkActionViewProcessor extends ExtensionViewProcessorAdapter<F
 			        c.setControlName( prefix + c.getControlName() );
 			        c.setHtmlId( prefix + c.getHtmlId() );
 		        } );
-		;
+
 		ContainerViewElementUtils.find( container, BulkActionViewProcessor.BULK_ACTION_FORM_NAME, FormViewElement.class )
 		                         .ifPresent(
 				                         fve -> fve.addChildren( controls.values() )
@@ -85,6 +85,7 @@ public class FoodBulkActionViewProcessor extends ExtensionViewProcessorAdapter<F
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void doPost( BulkActionsHolder extension, BindingResult bindingResult, EntityView entityView, EntityViewRequest entityViewRequest ) {
 		TypeDescriptor sourceType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( String.class ) );
 		TypeDescriptor targetType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( Food.class ) );

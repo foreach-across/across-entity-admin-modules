@@ -216,11 +216,9 @@ public class EditableValueViewElementBuilderFactory implements EntityViewElement
 		@JsonProperty
 		private String targetUrl;
 
-		@NonNull
 		@JsonProperty
 		private boolean multiValueProperty;
 
-		@NonNull
 		@JsonProperty
 		private boolean includeActions;
 

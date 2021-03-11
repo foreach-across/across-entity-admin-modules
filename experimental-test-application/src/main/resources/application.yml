@@ -20,7 +20,7 @@ acrossModule:
 
 spring:
   datasource:
-    url: jdbc:h2:../local-data/db/experimental-module
+    url: jdbc:h2:./local-data/db/experimental-module
     username: sa
   servlet:
     multipart:
@@ -31,4 +31,4 @@ spring:
 file-manager-module:
   expiration:
     enabled: true
-  local-repositories-root: ../local-data/storage
+  local-repositories-root: ./local-data/storage

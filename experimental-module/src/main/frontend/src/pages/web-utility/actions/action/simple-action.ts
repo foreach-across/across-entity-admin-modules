@@ -11,8 +11,9 @@ export class SimpleActionResolver implements ActionResolver {
 
   handle(action: SimpleAction, context: any, actionHandlerFactory: ActionHandlerFactory): Promise<void> {
     let sequence = Promise.resolve();
+    context.action = action;
     action.handlers.forEach((handler) => {
-      sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action }));
+      sequence = sequence.then(() => actionHandlerFactory.handle(handler, context));
     });
     return sequence;
   }

@@ -25,9 +25,6 @@ import static org.mockito.Mockito.*;
 class EntityControlsTest
 {
 	@Mock
-	private EntityConfiguration entityConfiguration;
-
-	@Mock
 	private EntityViewElementBatch batch;
 
 	@Mock

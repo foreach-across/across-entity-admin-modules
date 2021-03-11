@@ -11,6 +11,7 @@ export interface RequestActionHandler extends ActionHandler {
   form?: string;
   partial?: string;
   responseUrl?: string;
+  additionalQueryParameters?: { [key: string]: string };
 }
 
 export interface ActionHandlerResolver {

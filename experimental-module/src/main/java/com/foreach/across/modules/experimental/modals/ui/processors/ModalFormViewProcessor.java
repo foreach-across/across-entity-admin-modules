@@ -27,12 +27,12 @@ public abstract class ModalFormViewProcessor<T extends ModalFormViewProcessor> e
 
 	public T modalSelector( @NonNull String modalSelector ) {
 		this.modalSelector = modalSelector;
-		return (T) this;
+		return self();
 	}
 
 	public T elementName( @NonNull String elementName ) {
 		this.elementName = elementName;
-		return (T) this;
+		return self();
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public abstract class ModalFormViewProcessor<T extends ModalFormViewProcessor> e
 	                           ViewElementBuilderContext builderContext ) {
 		String modalName = entityViewRequest.getWebRequest().getHeader( ModalConfigurers.MODAL_ORIGIN_HEADER );
 		if ( StringUtils.isNotBlank( modalName ) ) {
-			modalSelector( "#" + modalName );
+			modalSelector( modalName );
 			EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
 			ContainerViewElementUtils.find( container, elementName )
 			                         .ifPresent(
@@ -52,4 +52,8 @@ public abstract class ModalFormViewProcessor<T extends ModalFormViewProcessor> e
 	}
 
 	protected abstract void configureViewElement( ViewElement element, EntityViewLinkBuilder linkBuilder, ViewElementBuilderContext builderContext );
+
+	protected T self() {
+		return (T) this;
+	}
 }

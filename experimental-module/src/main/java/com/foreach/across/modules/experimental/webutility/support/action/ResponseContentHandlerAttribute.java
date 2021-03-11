@@ -13,7 +13,6 @@ public class ResponseContentHandlerAttribute<SELF extends ResponseContentHandler
 	 * When true, the target will be cleared before inserting the source
 	 */
 	@JsonProperty
-	@NonNull
 	private boolean replace = false;
 
 	protected ResponseContentHandlerAttribute() {
