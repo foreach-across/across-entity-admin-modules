@@ -67,6 +67,11 @@ Can be used to bind form validation for example.
 <6> Optional.
 Supports configuring the url of the in which the table is wrapped.
 
+=== Selection indicator and ability to clear selection
+In the header of a sortable table with bulk actions a selection indicator text and a link to clear the current selection is rendered by default.
+You can move these fields or provided your own using the right data attributes. For more information in how to do this, see `BulkActionSelectedItemsViewProcessor`.
+
+
 === Accessing the selected values
 
 Submitting the actions is currently the responsibility of the project using them.

@@ -8,6 +8,15 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+/**
+ * Main entrypoint to configure ajax related settings an a listVIew
+ *
+ * Example usage:
+ *        lvb -> lvb.listView(EntityViewAjax.ajaxSettings.enableAjaxPagination()
+ *                  .ajaxUrlProvider(((linkBuilder, builderContext) -> linkBuilder.listView().withQueryParam("custom", "true").toUriString())))
+ *
+ * The ajaxUrlProvider is not required and the default value is the listView of the requested entity.
+ */
 public class EntityViewAjax implements Consumer<EntityListViewFactoryBuilder> {
     public static EntityViewAjax ajaxSettings = new EntityViewAjax();
 
@@ -19,11 +28,26 @@ public class EntityViewAjax implements Consumer<EntityListViewFactoryBuilder> {
         }
     };
 
+    /**
+     * Enable ajax pagination on a view
+     */
     public EntityViewAjax enableAjaxPagination() {
         enableAjaxPagination = true;
         return this;
     }
 
+    /**
+     * Enable or disable ajax pagination on a view
+     */
+    public EntityViewAjax enableAjaxPagination(Boolean enableAjaxPagination) {
+        this.enableAjaxPagination = enableAjaxPagination;
+        return this;
+    }
+
+    /**
+     * Provide your own ajax url provider
+     * @param ajaxUrl BiFunction
+     */
     public EntityViewAjax ajaxUrlProvider(BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrl) {
         this.ajaxUrlProvider = ajaxUrl;
         return this;

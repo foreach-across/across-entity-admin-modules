@@ -23,9 +23,13 @@ import java.util.function.BiFunction;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 
-@Accessors(fluent = true)
+/**
+ * Setup ajax pagination on the sortableTable of the view by setting the right data attributes that will be used by the
+ * sortable-table-ajax javascript.
+ */
 @Setter
 @Getter
+@Accessors(fluent = true)
 public class SortableTableBuilderAjaxLoadingViewProcessor extends EntityViewProcessorAdapter {
     private boolean enableAjaxPagination = false;
 
