@@ -87,7 +87,7 @@
 		    <!-- https://github.com/wimdeblauwe/testcontainers-cypress -->
 		    <groupId>io.github.wimdeblauwe</groupId>
 		    <artifactId>testcontainers-cypress</artifactId>
-		    <version>1.0.0</version>
+		    <version>1.2.1</version>
 		    <scope>test</scope>
 	    </dependency>
 	    <dependency>
