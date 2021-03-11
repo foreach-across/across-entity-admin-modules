@@ -95,9 +95,7 @@ public class FoodUiConfiguration implements EntityConfigurer
 			                                   ViewElementBuilderContext builderContext ) {
 				        container.find( "entityListForm-actions", ContainerViewElement.class )
 				                 .ifPresent(
-						                 c -> {
-							                 configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" );
-						                 }
+						                 c -> configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" )
 				                 );
 			        }
 		        } ) ) )
