@@ -3,8 +3,10 @@ package com.foreach.across.modules.experimental.bulkactions.support;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -20,6 +22,9 @@ public class BulkActionStateDeserializer
 	@SneakyThrows
 	@SuppressWarnings("unchecked")
 	public static <T> Set<T> parseBulkActionState( String value, Class<T> type ) {
+		if ( StringUtils.isBlank( value ) ) {
+			return Collections.emptySet();
+		}
 		JavaType itemType = objectMapper.getTypeFactory().constructCollectionType( Set.class, type );
 		return (Set<T>) objectMapper.readValue( decoder.decode( value ), itemType );
 	}
