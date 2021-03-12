@@ -18,30 +18,35 @@ import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUt
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 
-public class CombinedCompanyViewProcessor extends EntityViewProcessorAdapter {
+public class CombinedCompanyViewProcessor extends EntityViewProcessorAdapter
+{
 
-    @Override
-    protected void registerWebResources(EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry) {
-        webResourceRegistry.apply(
-                WebResourceRule.add(
-                        WebResource.javascript("@static:experimental/web/company-combined-view.js"))
-                        .withKey("modal-loader-js")
-                        .after(WebUtilityModuleWebResources.NAME)
-                        .toBucket(JAVASCRIPT_PAGE_END)
-        );
-    }
+	@Override
+	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.apply(
+				WebResourceRule.add(
+						WebResource.javascript( "@static:experimental/web/company-combined-view.js" ) )
+				               .withKey( "modal-loader-js" )
+				               .after( WebUtilityModuleWebResources.NAME )
+				               .toBucket( JAVASCRIPT_PAGE_END )
+		);
+	}
 
-    @Override
-    protected void postRender(EntityViewRequest entityViewRequest, EntityView entityView, ContainerViewElement container, ViewElementBuilderContext builderContext) {
-        container.addChild(HtmlViewElements.html.builders.div(css("js-lv2")).name("lv2").build(builderContext));
+	@Override
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		container.addChild( HtmlViewElements.html.builders.div( css( "js-lv2" ) ).name( "lv2" ).build( builderContext ) );
 
-        ContainerViewElementUtils.find(container, "itemsTable-table", TableViewElement.class).ifPresent(companyTable -> {
-            companyTable.setAttribute("data-tbl", "company-table");
-        });
+		ContainerViewElementUtils.find( container, "itemsTable-table", TableViewElement.class ).ifPresent( companyTable -> {
+			companyTable.setAttribute( "data-tbl", "company-table" );
+		} );
 
-        ContainerViewElementUtils.find(container, "itemsTable-pager", NodeViewElement.class).ifPresent(pager -> {
-            ContainerViewElementUtils.findAll(container, ve -> ve instanceof AbstractNodeViewElement && ((AbstractNodeViewElement) ve).hasAttribute("data-tbl"))
-                    .forEach(link -> ((AbstractNodeViewElement) link).setAttribute("data-tbl", "company-table"));
-        });
-    }
+		ContainerViewElementUtils.find( container, "itemsTable-pager", NodeViewElement.class ).ifPresent( pager -> {
+			ContainerViewElementUtils.findAll( container,
+			                                   ve -> ve instanceof AbstractNodeViewElement && ( (AbstractNodeViewElement) ve ).hasAttribute( "data-tbl" ) )
+			                         .forEach( link -> ( (AbstractNodeViewElement) link ).setAttribute( "data-tbl", "company-table" ) );
+		} );
+	}
 }
