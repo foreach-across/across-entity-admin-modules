@@ -17,31 +17,31 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 @Component
 @Exposed
-public class DateRangeControlBuilder {
+public class DateRangeControlBuilder
+{
 
-    private final DateRangeFunctionRegistry dateRangeFunctionRegistry;
-    private final DateRangeEntityTranslator dateRangeEntityTranslator;
+	private final DateRangeFunctionRegistry dateRangeFunctionRegistry;
+	private final DateRangeEntityTranslator dateRangeEntityTranslator;
 
-    /**
-     * Builds a {@link DateRangeControl} with default date ranges.
-     */
-    public Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> build() {
-        return build(null);
-    }
+	/**
+	 * Builds a {@link DateRangeControl} with default date ranges.
+	 */
+	public Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> build() {
+		return build( null );
+	}
 
-    /**
-     * Builds a {@link DateRangeControl} and registers the date ranges on the {@link DateRangeFunctionRegistry}
-     */
-    public Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> build(DateRange.DateRangeItem... dateRanges) {
-        final List<DateRange.DateRangeItem> ranges = dateRanges == null ? new ArrayList<>() : Arrays.asList(dateRanges);
-        if (ranges.isEmpty()) {
-            ranges.addAll(DateRangeControl.DEFAULT_DATE_RANGES);
-        }
-        for (DateRange.DateRangeItem item : ranges) {
-            dateRangeFunctionRegistry.register(item.getName(), item.getDateRange());
-        }
-        return DateRangeControl.build(dateRangeEntityTranslator, ranges);
-    }
-
+	/**
+	 * Builds a {@link DateRangeControl} and registers the date ranges on the {@link DateRangeFunctionRegistry}
+	 */
+	public Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> build( DateRange.DateRangeItem... dateRanges ) {
+		final List<DateRange.DateRangeItem> ranges = dateRanges == null ? new ArrayList<>() : Arrays.asList( dateRanges );
+		if ( ranges.isEmpty() ) {
+			ranges.addAll( DateRangeControl.DEFAULT_DATE_RANGES );
+		}
+		for ( DateRange.DateRangeItem item : ranges ) {
+			dateRangeFunctionRegistry.register( item.getName(), item.getDateRange() );
+		}
+		return DateRangeControl.build( dateRangeEntityTranslator, ranges );
+	}
 
 }

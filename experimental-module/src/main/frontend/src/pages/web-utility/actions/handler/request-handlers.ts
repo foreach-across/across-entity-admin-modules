@@ -39,11 +39,11 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
 
       let contentToSet: string = "";
       /*
-              todo:
-                  support providing your own html within this action handler?
-                  doesn't make much sense when considering response content, would make more sense if it's custom action handler (that perhaps checks the response attributes)
-                  if it's really fixed html content, why not configure the modal with the fixed content instead of replacing it?
-              */
+                    todo:
+                        support providing your own html within this action handler?
+                        doesn't make much sense when considering response content, would make more sense if it's custom action handler (that perhaps checks the response attributes)
+                        if it's really fixed html content, why not configure the modal with the fixed content instead of replacing it?
+                    */
       if (action.sourceElement) {
         contentToSet = action.sourceElement;
       } else {

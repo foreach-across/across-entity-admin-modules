@@ -25,21 +25,22 @@ import java.util.stream.Stream;
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Accessors(chain = true, fluent = true)
-public class MultiPropertyConfigurer implements Consumer<EntityPropertyRegistryBuilder> {
-    private final String[] propertyNames;
-    private final List<Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder>> consumers = new ArrayList<>();
+public class MultiPropertyConfigurer implements Consumer<EntityPropertyRegistryBuilder>
+{
+	private final String[] propertyNames;
+	private final List<Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder>> consumers = new ArrayList<>();
 
-    public MultiPropertyConfigurer enable(Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> consumer) {
-        this.consumers.add(consumer);
-        return this;
-    }
+	public MultiPropertyConfigurer enable( Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> consumer ) {
+		this.consumers.add( consumer );
+		return this;
+	}
 
-    @Override
-    public void accept(EntityPropertyRegistryBuilder props) {
-        Stream.of(propertyNames)
-                .forEach(propertyName -> {
-                    EntityPropertyRegistryBuilder.PropertyDescriptorBuilder descriptorBuilder = props.property(propertyName);
-                    consumers.forEach(c -> c.accept(descriptorBuilder));
-                });
-    }
+	@Override
+	public void accept( EntityPropertyRegistryBuilder props ) {
+		Stream.of( propertyNames )
+		      .forEach( propertyName -> {
+			      EntityPropertyRegistryBuilder.PropertyDescriptorBuilder descriptorBuilder = props.property( propertyName );
+			      consumers.forEach( c -> c.accept( descriptorBuilder ) );
+		      } );
+	}
 }

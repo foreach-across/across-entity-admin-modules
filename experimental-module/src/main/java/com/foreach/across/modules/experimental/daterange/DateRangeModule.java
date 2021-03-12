@@ -8,16 +8,17 @@ import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import java.util.Set;
 
 @AcrossDepends(required = "EntityModule")
-public class DateRangeModule extends AcrossModule {
-    public static final String NAME = "DateRangeModule";
+public class DateRangeModule extends AcrossModule
+{
+	public static final String NAME = "DateRangeModule";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    protected void registerDefaultApplicationContextConfigurers(Set<ApplicationContextConfigurer> contextConfigurers) {
-        contextConfigurers.add(ComponentScanConfigurer.forAcrossModule(DateRangeModule.class));
-    }
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( ComponentScanConfigurer.forAcrossModule( DateRangeModule.class ) );
+	}
 }

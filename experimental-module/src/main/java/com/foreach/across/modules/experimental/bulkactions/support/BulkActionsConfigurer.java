@@ -9,16 +9,17 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public interface BulkActionsConfigurer<T> {
-    ViewElementPostProcessor<CheckboxFormElement> itemSelectorControlPostProcessor();
+public interface BulkActionsConfigurer<T>
+{
+	ViewElementPostProcessor<CheckboxFormElement> itemSelectorControlPostProcessor();
 
-    BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider();
+	BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider();
 
-    BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider();
+	BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider();
 
-    String itemControlName();
+	String itemControlName();
 
-    Function<EntityViewRequest, String> submitUrlProvider();
+	Function<EntityViewRequest, String> submitUrlProvider();
 
-    String formAttributeName();
+	String formAttributeName();
 }
