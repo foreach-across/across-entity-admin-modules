@@ -2,7 +2,6 @@ package com.foreach.across.modules.experimental.entitycontrols.domain;
 
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
@@ -24,9 +23,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class EntityControlsTest
 {
-	@Mock
-	private EntityConfiguration entityConfiguration;
-
 	@Mock
 	private EntityViewElementBatch batch;
 

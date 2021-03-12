@@ -44,7 +44,15 @@
 				<artifactId>admin-web-module</artifactId>
 				<version>${admin-web-module.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.15.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
+
 	</dependencyManagement>
 
 	<modules>

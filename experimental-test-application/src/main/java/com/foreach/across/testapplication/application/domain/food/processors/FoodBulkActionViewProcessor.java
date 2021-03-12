@@ -1,6 +1,5 @@
 package com.foreach.across.testapplication.application.domain.food.processors;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
@@ -10,9 +9,9 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.ExtensionViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.experimental.bulkactions.support.BulkActionStateDeserializer;
 import com.foreach.across.modules.experimental.bulkactions.ui.viewprocessors.BulkActionViewProcessor;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
-import com.foreach.across.modules.experimental.bulkactions.support.BulkActionStateDeserializer;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -73,7 +72,7 @@ public class FoodBulkActionViewProcessor extends ExtensionViewProcessorAdapter<F
                     c.setControlName(prefix + c.getControlName());
                     c.setHtmlId(prefix + c.getHtmlId());
                 });
-        ;
+
         ContainerViewElementUtils.find(container, BulkActionViewProcessor.BULK_ACTION_FORM_NAME, FormViewElement.class)
                 .ifPresent(
                         fve -> fve.addChildren(controls.values())
@@ -85,7 +84,8 @@ public class FoodBulkActionViewProcessor extends ExtensionViewProcessorAdapter<F
     }
 
     @Override
-    protected void doPost(BulkActionsHolder extension, BindingResult bindingResult, EntityView entityView, EntityViewRequest entityViewRequest) {
+    @SuppressWarnings("unchecked")
+    protected void doPost( BulkActionsHolder extension, BindingResult bindingResult, EntityView entityView, EntityViewRequest entityViewRequest ) {
         TypeDescriptor sourceType = TypeDescriptor.collection(Set.class, TypeDescriptor.valueOf(String.class));
         TypeDescriptor targetType = TypeDescriptor.collection(Set.class, TypeDescriptor.valueOf(Food.class));
 

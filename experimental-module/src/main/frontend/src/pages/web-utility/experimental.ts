@@ -1,7 +1,11 @@
 import { handlerFactory } from "./actions/handler/action-handler-factory";
 import { ActionFactory } from "./actions/action/action-factory";
 import { RequestActionResolver, requestActionResolver } from "./actions/action/request-action";
-import { RequestActionHandlerResolver, ResponseContentActionHandlerResolver } from "./actions/handler/request-handlers";
+import {
+  RequestActionHandlerResolver,
+  ResponseContentActionHandlerResolver,
+  ResponseUrlIdResolver,
+} from "./actions/handler/request-handlers";
 import {
   ClearActionHandlerResolver,
   CloseModalHandlerResolver,
@@ -58,6 +62,7 @@ window.ExperimentalModule = (function () {
     InitializeFormElementsHandlerResolver.TYPE,
     new InitializeFormElementsHandlerResolver()
   );
+  experimentalModule.actionHandlerFactory.register(ResponseUrlIdResolver.TYPE, new ResponseUrlIdResolver());
 
   return experimentalModule;
 })();
