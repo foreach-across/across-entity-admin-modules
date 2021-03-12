@@ -22,6 +22,8 @@ hs_err_pid*
 ### Custom ignores
 target
 .idea
+!.idea/codeStyles
+!.idea/runConfigurations
 *.iml
 db
 .DS_Store
