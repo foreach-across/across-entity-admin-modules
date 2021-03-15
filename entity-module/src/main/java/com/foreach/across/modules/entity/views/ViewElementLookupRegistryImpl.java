@@ -114,6 +114,12 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 		return cacheableStatus.containsKey( mode ) ? Boolean.TRUE.equals( cacheableStatus.get( mode ) ) : defaultCacheable;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return viewElementTypes.isEmpty() && fixedViewElementBuilders.isEmpty() && postProcessors.isEmpty()
+				&& cacheableStatus.isEmpty() && viewElementBuilderCache.isEmpty();
+	}
+
 	/**
 	 * Merge the current values into an already existing registry.
 	 * This will clear the entire cache of the target registry.
