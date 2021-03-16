@@ -24,24 +24,27 @@ import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
-import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConfigurerAdapter;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.mvc.InterceptorRegistry;
+import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import com.foreach.across.modules.web.resource.WebResourceRegistryInterceptor;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextInterceptor;
+import com.foreach.across.samples.entity.modules.EntityViewsModule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 @Slf4j
 @Configuration
@@ -50,15 +53,20 @@ public class EntityModuleInterceptorsConfiguration extends PrefixingHandlerMappi
 	private WebAppPathResolver webAppPathResolver;
 	private AcrossContextInfo acrossContextInfo;
 
+	@Qualifier("adminWebHandlerMapping")
+	@Autowired
+	private PrefixingRequestMappingHandlerMapping adminWebHandlerMapping;
+
 	@Override
 	public boolean supports( String mapperName ) {
-		return !StringUtils.equalsAny( mapperName, AdminWebModule.NAME, DebugWebModule.NAME );
+		return StringUtils.equalsAny( mapperName, EntityViewsModule.NAME );
 	}
 
 	@Override
 	public void addInterceptors( InterceptorRegistry interceptorRegistry ) {
 //		interceptorRegistry.addInterceptor( new WebAppPathResolverExposingInterceptor( adminWeb() ) );
 		interceptorRegistry.addInterceptor( entityWebResourceRegistryInterceptor() );
+		interceptorRegistry.addInterceptor( currentHandlerMethodInformation() );
 		interceptorRegistry.addInterceptor( entityWebViewElementBuilderContextInterceptor() );
 //		interceptorRegistry.addInterceptor( entityWebTemplateInterceptor() );
 	}
@@ -66,6 +74,12 @@ public class EntityModuleInterceptorsConfiguration extends PrefixingHandlerMappi
 	@Bean
 	public ViewElementBuilderContextInterceptor entityWebViewElementBuilderContextInterceptor() {
 		return new ViewElementBuilderContextInterceptor();
+	}
+
+	@Bean
+	public HandlerInterceptor currentHandlerMethodInformation() {
+		adminWebHandlerMapping.addInterceptor( EntityViewControllerHandlerResolver.HANDLER_INTERCEPTOR );
+		return EntityViewControllerHandlerResolver.HANDLER_INTERCEPTOR;
 	}
 
 	@Bean

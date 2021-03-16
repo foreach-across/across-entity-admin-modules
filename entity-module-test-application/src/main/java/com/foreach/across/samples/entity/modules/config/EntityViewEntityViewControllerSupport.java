@@ -17,6 +17,8 @@
 package com.foreach.across.samples.entity.modules.config;
 
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
@@ -26,28 +28,36 @@ import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.samples.entity.modules.utils.RequestUtils;
 import com.foreach.across.samples.entity.modules.web.EntityViewMessageCodesResolverProxy;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Optional;
 
 public interface EntityViewEntityViewControllerSupport extends EntityViewControllerSupport
 {
 	@Override
-	default void configureViewContext( ConfigurableEntityViewContext beanCtx, HttpServletRequest httpServletRequest,
+	default void configureViewContext( EntityRegistry entityRegistry,
+	                                   ConversionService conversionService,
+	                                   ConfigurableEntityViewContext entityViewContext,
+	                                   HttpServletRequest httpServletRequest,
 	                                   EntityViewContextLoader loader ) {
-		EntityViewContextParams params = resolveEntityViewContextParams( httpServletRequest );
+		EntityViewContextParams params = resolveEntityViewContextParams( entityRegistry, conversionService, httpServletRequest );
 		if ( StringUtils.isNotBlank( params.getAssociationName() ) ) {
 			EntityViewContext parentContext = configureConfigurationContext( new DefaultEntityViewContext(), params.getConfigurationName(),
 			                                                                 params.getInstance(), loader
 			);
-			configureAssociationContext( beanCtx, parentContext, params.getAssociationName(), params.getAssociationInstance(), loader
+			configureAssociationContext( entityViewContext, parentContext, params.getAssociationName(), params.getAssociationInstance(), loader
 			);
 		}
 		else {
-			configureConfigurationContext( beanCtx, params.getConfigurationName(), params.getInstance(), loader
+			configureConfigurationContext( entityViewContext, params.getConfigurationName(), params.getInstance(), loader
 			);
 		}
 	}
@@ -122,7 +132,44 @@ public interface EntityViewEntityViewControllerSupport extends EntityViewControl
 
 	}
 
-	EntityViewContextParams resolveEntityViewContextParams( HttpServletRequest httpServletRequest );
+	default EntityViewContextParams resolveEntityViewContextParams( EntityRegistry entityRegistry,
+	                                                                ConversionService conversionService,
+	                                                                HttpServletRequest httpServletRequest ) {
+		HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
+		EntityViewController annotation = AnnotationUtils.getAnnotation( handlerMethod.getMethod().getDeclaringClass(), EntityViewController.class );
+		if ( annotation == null ) {
+			throw new RuntimeException( "Annotate your controller with @EntityViewController and specify target or targetType" );
+		}
+		String entityIdMappedBy = annotation.entityIdMappedBy();
 
-	String resolveViewName( HttpServletRequest httpServletRequest, EntityViewContext entityViewContext );
+		EntityConfiguration<?> entityConfiguration;
+		if ( StringUtils.isNotBlank( annotation.target() ) ) {
+			entityConfiguration = entityRegistry.getEntityConfiguration( annotation.target() );
+		}
+		else if ( annotation.targetType() != void.class ) {
+			entityConfiguration = entityRegistry.getEntityConfiguration( annotation.targetType() );
+		}
+		else {
+			throw new RuntimeException( "Cannot determine type of PathVariable" );
+		}
+		Optional<?> entityId = RequestUtils.getPathVariable( entityIdMappedBy );
+		if ( !entityId.isPresent() ) {
+			entityId = Optional.ofNullable( RequestUtils.getCurrentRequest().getParameter( entityIdMappedBy ) );
+		}
+		Object resolvedEntity = entityId.map( o -> conversionService.convert( o, entityConfiguration.getEntityType() ) ).orElse( null );
+		return EntityViewContextParams.builder()
+		                              .configurationName( annotation.target() )
+		                              .instance( resolvedEntity )
+		                              .build();
+
+	}
+
+	default String resolveViewName( HttpServletRequest httpServletRequest, EntityViewContext entityViewContext ) {
+		HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
+		ViewFactory viewFactory = AnnotationUtils.getAnnotation( handlerMethod.getMethod(), ViewFactory.class );
+		if ( viewFactory == null || StringUtils.isBlank( viewFactory.view() ) ) {
+			throw new RuntimeException( "Annotate your method with @ViewFactory or implement resolveViewName()" );
+		}
+		return viewFactory.view();
+	}
 }

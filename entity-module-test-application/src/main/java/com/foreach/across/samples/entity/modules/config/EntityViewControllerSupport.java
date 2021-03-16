@@ -16,17 +16,22 @@
 
 package com.foreach.across.samples.entity.modules.config;
 
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.WebDataBinder;
 
 import javax.servlet.http.HttpServletRequest;
 
 public interface EntityViewControllerSupport
 {
-	void configureViewContext( ConfigurableEntityViewContext entityViewContext, HttpServletRequest httpServletRequest,
+	void configureViewContext( EntityRegistry entityRegistry,
+	                           ConversionService conversionService,
+	                           ConfigurableEntityViewContext entityViewContext,
+	                           HttpServletRequest httpServletRequest,
 	                           EntityViewContextLoader entityViewContextLoader );
 
 	void configureEntityViewRequest( EntityViewRequest entityViewRequest,

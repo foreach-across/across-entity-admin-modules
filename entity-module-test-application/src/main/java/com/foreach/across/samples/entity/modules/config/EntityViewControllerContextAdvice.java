@@ -20,6 +20,7 @@ import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
@@ -36,7 +37,6 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.samples.entity.modules.web.EntityViewMessageCodesResolverProxy;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -67,7 +67,7 @@ public class EntityViewControllerContextAdvice
 	private EntityViewContextLoader entityViewContextLoader;
 	private EntityViewLinks entityViewLinks;
 	private ConversionService mvcConversionService;
-	private EntityViewControllerHandlerResolver entityViewControllerHandlerResolver;
+	private EntityRegistry entityRegistry;
 
 	/**
 	 * Responsible for building the initial {@link com.foreach.across.modules.entity.views.context.EntityViewContext}
@@ -85,13 +85,12 @@ public class EntityViewControllerContextAdvice
 			ModelMap model,
 			RedirectAttributes redirectAttributes
 	) {
-		Class<?> declaringClass = entityViewControllerHandlerResolver.currentHandlerClass();
-		if ( entityViewControllerHandlerResolver.isEntityViewControllerSupportHandler() ) {
-			HandlerMethod handlerMethod = entityViewControllerHandlerResolver.currentHandlerMethod();
+		if ( EntityViewControllerHandlerResolver.isEntityViewControllerSupportHandler() ) {
+			HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
 			EntityViewControllerSupport handler = (EntityViewControllerSupport) handlerMethod.getBean();
 
 			HttpServletRequest httpServletRequest = webRequest.getNativeRequest( HttpServletRequest.class );
-			handler.configureViewContext( entityViewContext, httpServletRequest, entityViewContextLoader );
+			handler.configureViewContext( entityRegistry, mvcConversionService, entityViewContext, httpServletRequest, entityViewContextLoader );
 
 			entityViewRequest.setEntityViewContext( entityViewContext );
 			entityViewRequest.setModel( model );
@@ -107,6 +106,7 @@ public class EntityViewControllerContextAdvice
 			handler.configureEntityViewRequest( entityViewRequest, entityViewContext, httpServletRequest );
 		}
 		else {
+			Class<?> declaringClass = EntityViewControllerHandlerResolver.currentHandlerClass();
 			EntityViewController annotation = declaringClass.getAnnotation( EntityViewController.class );
 			String entityName = resolveTargetEntityType( annotation );
 			String entityId = null;//"create";
@@ -158,8 +158,8 @@ public class EntityViewControllerContextAdvice
 		if ( StringUtils.isNotBlank( annotation.target() ) ) {
 			return annotation.target();
 		}
-		if ( ArrayUtils.isNotEmpty( annotation.targetType() ) ) {
-			return annotation.targetType()[0].getName();
+		if ( void.class != annotation.targetType() ) {
+			return annotation.targetType().getName();
 		}
 		return null;
 	}
@@ -168,8 +168,8 @@ public class EntityViewControllerContextAdvice
 	public void registerWebResources( WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.addPackage( EntityModuleWebResources.NAME );
 
-		if ( entityViewControllerHandlerResolver.isEntityViewControllerSupportHandler() ) {
-			HandlerMethod handlerMethod = entityViewControllerHandlerResolver.currentHandlerMethod();
+		if ( EntityViewControllerHandlerResolver.isEntityViewControllerSupportHandler() ) {
+			HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
 			EntityViewControllerSupport handler = (EntityViewControllerSupport) handlerMethod.getBean();
 
 			handler.registerWebResources( webResourceRegistry );
@@ -178,8 +178,8 @@ public class EntityViewControllerContextAdvice
 
 	@InitBinder(EntityViewModel.VIEW_COMMAND)
 	public void initViewCommandBinder( WebDataBinder dataBinder ) {
-		if ( entityViewControllerHandlerResolver.isEntityViewControllerSupportHandler() ) {
-			HandlerMethod handlerMethod = entityViewControllerHandlerResolver.currentHandlerMethod();
+		if ( EntityViewControllerHandlerResolver.isEntityViewControllerSupportHandler() ) {
+			HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
 			EntityViewControllerSupport handler = (EntityViewControllerSupport) handlerMethod.getBean();
 
 			handler.configureEntityViewCommandBinder( dataBinder, entityViewRequest );
@@ -286,8 +286,8 @@ public class EntityViewControllerContextAdvice
 	}
 
 	@Autowired
-	void setEntityViewControllerHandlerResolver( EntityViewControllerHandlerResolver entityViewControllerHandlerResolver ) {
-		this.entityViewControllerHandlerResolver = entityViewControllerHandlerResolver;
+	public void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 
 	@Autowired

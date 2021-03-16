@@ -16,25 +16,16 @@
 
 package com.foreach.across.samples.entity.modules.config;
 
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
-import com.foreach.across.modules.entity.EntityModule;
-import org.springframework.stereotype.Component;
-
 import java.lang.annotation.*;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ConditionalOnAcrossModule(EntityModule.NAME)
-@Component
-public @interface EntityViewController
+public @interface ViewFactory
 {
-	String target() default "";
-
-	/**
-	 * Alias for {@link #target()}
+	/***
+	 * Any of the VIEW_NAME values in {@link com.foreach.across.modules.entity.views.EntityView} or
+	 * the name of any custom view
 	 */
-	Class<?> targetType() default void.class;
-
-	String entityIdMappedBy() default "";
+	String view();
 }

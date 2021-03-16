@@ -17,11 +17,14 @@
 package com.foreach.across.samples.entity.modules.config;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConfiguration;
 import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.annotation.AnnotationClassFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,6 +32,13 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class EntityModuleMvcConfiguration extends PrefixingHandlerMappingConfiguration
 {
+	@Qualifier("adminWebHandlerMapping")
+	@Autowired
+	PrefixingRequestMappingHandlerMapping x;
+
+	private final ClassFilter entityViewControllerClassFilter = clazz -> new AnnotationClassFilter( EntityViewController.class, true ).matches(
+			clazz ) && !new AnnotationClassFilter( AdminWebController.class, true ).matches( clazz );
+
 	@Override
 	protected String getPrefixPath() {
 		return "";
@@ -36,7 +46,7 @@ public class EntityModuleMvcConfiguration extends PrefixingHandlerMappingConfigu
 
 	@Override
 	protected ClassFilter getHandlerMatcher() {
-		return new AnnotationClassFilter( EntityViewController.class, true );
+		return entityViewControllerClassFilter;
 	}
 
 	@Bean(name = "entityHandlerMapping")
