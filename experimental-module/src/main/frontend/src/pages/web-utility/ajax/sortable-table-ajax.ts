@@ -1,4 +1,6 @@
-import { ax, convertResponseToText, getCookie } from "../utils/utils";
+import { ax } from "../utils/utils";
+import { executeRequest, translateResponse } from "../utils/request-utils";
+import { JsonResponse, TextResponse } from "../utils/response-types";
 
 class SortableTableAjax {
   init = (node: any) => {
@@ -17,7 +19,7 @@ class SortableTableAjax {
   };
 
   refreshTableForSort = (table: any, params: any) => {
-    const form = $(table).closest("form");
+    const form = $(table).closest("form") as any;
     const baseUrl = $(table).data("ajax-url");
 
     form.prop("readonly", true);
@@ -28,42 +30,37 @@ class SortableTableAjax {
 
     table.addClass("partial-loading");
     table.append('<div class="partial-spinner"></div>');
-    let url = SortableTableAjax.buildPartialRefreshUrl(baseUrl, form);
 
-    fetch(url, {
+    executeRequest({
+      partial: "::itemsTable",
+      form: form,
       method: "GET",
-      headers: { "X-XSRF-Token": getCookie("XSRF-TOKEN") as string },
+      url: baseUrl,
     })
-      .then(convertResponseToText)
-      .then((data) => {
+      .then(translateResponse)
+      .then((text: TextResponse | JsonResponse) => {
         table.removeClass("partial-loading");
-        const newData = $(data);
 
-        let refreshableTable = table.closest(".exm-table-refresh-target");
-        refreshableTable.replaceWith(newData);
+        if ("textContent" in text) {
+          const newData = $(text.textContent);
+          let refreshableTable = table.closest(".exm-table-refresh-target");
+          refreshableTable.replaceWith(newData);
 
-        if (newData.length > 0) {
-          newData.each(function () {
-            if (this.nodeType !== Node.COMMENT_NODE) {
-              EntityModule.initializeFormElements($(this));
-            }
-          });
-        } else {
-          EntityModule.initializeFormElements(newData);
+          if (newData.length > 0) {
+            newData.each(function () {
+              if (this.nodeType !== Node.COMMENT_NODE) {
+                EntityModule.initializeFormElements($(this));
+              }
+            });
+          } else {
+            EntityModule.initializeFormElements(newData);
+          }
         }
       })
       .catch((error) => {
         ax.log.error("Unable to fetch page", [error]);
       });
   };
-
-  private static buildPartialRefreshUrl(baseUrl: string, form: any) {
-    let url = baseUrl;
-    url += baseUrl.includes("?") ? "&" : "?";
-    url += "_partial=::itemsTable&";
-    url += form.serialize();
-    return url;
-  }
 
   registerHiddenInput = (form: any, name: string, value: any) => {
     if (typeof value !== "undefined") {
