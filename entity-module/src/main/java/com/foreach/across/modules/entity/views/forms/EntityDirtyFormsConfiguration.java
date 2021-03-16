@@ -16,42 +16,139 @@
 
 package com.foreach.across.modules.entity.views.forms;
 
-import com.foreach.across.modules.entity.config.EntityConfigurer;
-import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
-import com.foreach.across.modules.entity.views.processors.SaveEntityViewProcessor;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.Arrays;
-
-@Configuration
-@Order
-public class EntityDirtyFormsConfiguration implements EntityConfigurer
+/**
+ * Configuration class that supports customizing the <a href="https://github.com/snikch/jquery.dirtyforms">jquery dirtyforms</a> plugin.
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class EntityDirtyFormsConfiguration
 {
-	@Override
-	public void configure( EntitiesConfigurationBuilder entities ) {
-		/*
-		 todo configuration for activation:
-		  - configure for all entities?
-		  - disable for some entities?
-		  - enable for some entities?
-		 */
-		entities.all()
-		        .postProcessor(
-				        mec -> {
-					        Arrays.stream( mec.getViewNames() )
-					              .map( mec::getViewFactory )
-					              .filter( DispatchingEntityViewFactory.class::isInstance )
-					              .map( DispatchingEntityViewFactory.class::cast )
-					              .filter( devf -> devf.getProcessorRegistry().contains( SaveEntityViewProcessor.class.getName() ) )
-					              .forEach( this::configureWebResources );
-				        }
-		        );
+	private String message;
+	private String dirtyClass;
+	private String listeningClass;
+	private String ignoreClass;
+	private String ignoreSelector;
+	private String fieldSelector;
+	private Object dialog;
+	private boolean debug;
+
+	public EntityDirtyFormsConfiguration message( String message ) {
+		this.message = message;
+		return this;
 	}
 
-	private void configureWebResources( DispatchingEntityViewFactory dispatchingEntityViewFactory ) {
-		dispatchingEntityViewFactory.getProcessorRegistry()
-		                            .addProcessor( new EntityDirtyFormsResourcesViewProcessor() );
+	public EntityDirtyFormsConfiguration dirtyClass( String dirtyClass ) {
+		this.dirtyClass = dirtyClass;
+		return this;
 	}
+
+	public EntityDirtyFormsConfiguration listeningClass( String listeningClass ) {
+		this.listeningClass = listeningClass;
+		return this;
+	}
+
+	public EntityDirtyFormsConfiguration ignoreClass( String ignoreClass ) {
+		this.ignoreClass = ignoreClass;
+		return this;
+	}
+
+	public EntityDirtyFormsConfiguration ignoreSelector( String ignoreSelector ) {
+		this.ignoreSelector = ignoreSelector;
+		return this;
+	}
+
+	public EntityDirtyFormsConfiguration fieldSelector( String fieldSelector ) {
+		this.fieldSelector = fieldSelector;
+		return this;
+	}
+
+	public EntityDirtyFormsConfiguration debug( boolean debug ) {
+		this.debug = debug;
+		return this;
+	}
+
+	public EntityDirtyFormsConfiguration dialog( boolean useDialog ) {
+		if ( !useDialog ) {
+			this.dialog = false;
+		}
+		return this;
+	}
+
+	// todo should configure a bootstrap modal on the page
+	public EntityDirtyFormsConfiguration dialog( DialogSettings dialogSettings ) {
+		this.dialog = dialogSettings;
+		return this;
+	}
+
+	public class DialogSettings
+	{
+		private String title;
+		private String proceedButtonClass;
+		private String proceedButtonText;
+		private String stayButtonClass;
+		private String stayButtonText;
+		private String dialogID;
+		private String titleID;
+		private String messageClass;
+		private String preMessageText;
+		private String postMessageText;
+		private String replaceText;
+
+		public DialogSettings title( String title ) {
+			this.title = title;
+			return this;
+		}
+
+		public DialogSettings proceedButtonClass( String proceedButtonClass ) {
+			this.proceedButtonClass = proceedButtonClass;
+			return this;
+		}
+
+		public DialogSettings proceedButtonText( String proceedButtonText ) {
+			this.proceedButtonText = proceedButtonText;
+			return this;
+		}
+
+		public DialogSettings stayButtonClass( String stayButtonClass ) {
+			this.stayButtonClass = stayButtonClass;
+			return this;
+		}
+
+		public DialogSettings stayButtonText( String stayButtonText ) {
+			this.stayButtonText = stayButtonText;
+			return this;
+		}
+
+		public DialogSettings dialogID( String dialogID ) {
+			this.dialogID = dialogID;
+			return this;
+		}
+
+		public DialogSettings titleID( String titleID ) {
+			this.titleID = titleID;
+			return this;
+		}
+
+		public DialogSettings messageClass( String messageClass ) {
+			this.messageClass = messageClass;
+			return this;
+		}
+
+		public DialogSettings preMessageText( String preMessageText ) {
+			this.preMessageText = preMessageText;
+			return this;
+		}
+
+		public DialogSettings postMessageText( String postMessageText ) {
+			this.postMessageText = postMessageText;
+			return this;
+		}
+
+		public DialogSettings replaceText( String replaceText ) {
+			this.replaceText = replaceText;
+			return this;
+		}
+	}
+
 }

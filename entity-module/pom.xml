@@ -84,11 +84,11 @@
 		</dependency>
 		<!-- Webjars -->
 		<dependency>
-			<groupId>org.webjars.bower</groupId>
+			<groupId>org.webjars.npm</groupId>
 			<artifactId>jquery.dirtyforms</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>org.webjars.bower</groupId>
+					<groupId>org.webjars.npm</groupId>
 					<artifactId>jquery</artifactId>
 				</exclusion>
 			</exclusions>

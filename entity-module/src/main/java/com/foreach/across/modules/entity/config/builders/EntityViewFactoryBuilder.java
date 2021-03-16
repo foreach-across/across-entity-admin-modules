@@ -23,6 +23,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.forms.EntityDirtyFormActivationViewProcessor;
+import com.foreach.across.modules.entity.views.forms.EntityDirtyFormsConfiguration;
 import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
@@ -83,6 +85,7 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	private String template;
 	private AllowableAction requiredAllowableAction;
 	private EntityPropertyRegistry propertyRegistry;
+	private EntityDirtyFormsConfiguration dirtyFormsConfiguration;
 
 	@Autowired
 	public EntityViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
@@ -397,6 +400,44 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	}
 
 	/**
+	 * Enables dirty form checking for the current {@link EntityViewFactory}, using the default configuration.
+	 * This supports checking for dirtiness on the {@link SingleEntityFormViewProcessor#FORM}, requiring confirmation before navigating to a different view.
+	 *
+	 * @return self
+	 */
+	public EntityViewFactoryBuilder enableDirtyForms() {
+		return enableDirtyForms( true );
+	}
+
+	/**
+	 * Enables or disables dirty form checking for the current {@link EntityViewFactory}, using the default configuration.
+	 * This supports checking for dirtiness on the {@link SingleEntityFormViewProcessor#FORM}, requiring confirmation before navigating to a different view.
+	 *
+	 * @return self
+	 */
+	public EntityViewFactoryBuilder enableDirtyForms( boolean enabled ) {
+		if ( enabled ) {
+			return enableDirtyForms( ( configuration ) -> {
+			} );
+		}
+		this.dirtyFormsConfiguration = null;
+		return this;
+	}
+
+	/**
+	 * Enables dirty form checking for the current {@link EntityViewFactory}, customizing the default configuration.
+	 * This supports checking for dirtiness on the {@link SingleEntityFormViewProcessor#FORM}, requiring confirmation before navigating to a different view.
+	 *
+	 * @return self
+	 */
+	public EntityViewFactoryBuilder enableDirtyForms( Consumer<EntityDirtyFormsConfiguration> configuration ) {
+		EntityDirtyFormsConfiguration dirtyFormsConfiguration = new EntityDirtyFormsConfiguration();
+		configuration.accept( dirtyFormsConfiguration );
+		this.dirtyFormsConfiguration = dirtyFormsConfiguration;
+		return this;
+	}
+
+	/**
 	 * Removes a processor with the given name.
 	 *
 	 * @param processorName unique name of the processor
@@ -536,6 +577,7 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 		configureAuthorizationProcessor( processorRegistry );
 		configurePropertyRegistryProcessor( processorRegistry );
 		configureRenderingProcessors( processorRegistry, propertiesToShow, viewElementMode );
+		configureDirtyActivationFormProcessor( processorRegistry );
 
 		configurers.stream()
 		           .filter( EntityViewProcessorConfigurer::isDeferred )
@@ -619,6 +661,18 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 				                 return authorizationViewProcessor;
 			                 } )
 			                 .setRequiredAllowableAction( requiredAllowableAction );
+		}
+	}
+
+	private void configureDirtyActivationFormProcessor( EntityViewProcessorRegistry processorRegistry ) {
+		if ( dirtyFormsConfiguration != null ) {
+			processorRegistry.getProcessor( EntityDirtyFormActivationViewProcessor.class.getName(), EntityDirtyFormActivationViewProcessor.class )
+			                 .orElseGet( () -> {
+				                 EntityDirtyFormActivationViewProcessor dirtyFormActivationViewProcessor = new EntityDirtyFormActivationViewProcessor();
+				                 processorRegistry.addProcessor( dirtyFormActivationViewProcessor );
+				                 return dirtyFormActivationViewProcessor;
+			                 } )
+			                 .setDirtyFormsConfiguration( dirtyFormsConfiguration );
 		}
 	}
 

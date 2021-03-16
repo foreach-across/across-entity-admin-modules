@@ -143,6 +143,23 @@ public class EntitiesConfigurationBuilder
 	}
 
 	/**
+	 * Configures that, when an entity form is modified on a page, confirmation is required
+	 * when attempting to leave said page. Upon activation on the {@link EntitiesConfigurationBuilder}
+	 * the setting will be applied to <i>all</i> views that have a {@link com.foreach.across.modules.entity.views.processors.SaveEntityViewProcessor}
+	 * and a form with name {@link com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor#FORM};
+	 *
+	 * @return an {@link #all()} {@link EntityConfigurationBuilder}
+	 */
+	public EntityConfigurationBuilder<Object> enableDirtyForms( boolean enable ) {
+//		if ( enable ) {
+//			all().postProcessor(
+//
+//			);
+//		}
+		return all();
+	}
+
+	/**
 	 * Apply the builder configuration to the EntityRegistry. This will first dispatch to the registered builders
 	 * for applying the configuration, and only afterwards iterated over the same builders for executing the
 	 * post-processors.
