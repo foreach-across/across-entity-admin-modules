@@ -7,6 +7,7 @@ import { ActionHandlerError } from "../error-types";
 interface Context {
   action: Action;
   response: JsonResponse | TextResponse;
+  resolvedQueryParameters: { [key: string]: string };
 }
 
 interface ResponseContentActionHandler extends ActionHandler {
@@ -36,20 +37,26 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
         );
       }
 
-      const responseElement = document.createElement("div") as any;
-      responseElement.innerHTML = context.response.textContent;
-      let contentToSet = responseElement.innerHTML;
-
-      if (action.source) {
-        const tempSource = responseElement.querySelector(action.source);
-
-        const wrap = document.createElement("div") as any;
-        wrap.appendChild(tempSource.cloneNode(true));
-        contentToSet = wrap.innerHTML;
-      }
-
+      let contentToSet: string = "";
+      /*
+                    todo:
+                        support providing your own html within this action handler?
+                        doesn't make much sense when considering response content, would make more sense if it's custom action handler (that perhaps checks the response attributes)
+                        if it's really fixed html content, why not configure the modal with the fixed content instead of replacing it?
+                    */
       if (action.sourceElement) {
         contentToSet = action.sourceElement;
+      } else {
+        const $responseElement = $("<div></div>");
+        $responseElement.append(context.response.textContent);
+
+        if (action.source) {
+          let tempContent = $responseElement.find(action.source);
+          $responseElement.empty();
+          $responseElement.append(tempContent);
+        }
+
+        contentToSet = $responseElement.html();
       }
 
       if ($(action.target).closest("form").length > 0) {
@@ -67,15 +74,64 @@ export class ResponseContentActionHandlerResolver implements ActionHandlerResolv
   }
 }
 
+export class ResponseUrlIdResolver implements ActionHandlerResolver {
+  static readonly TYPE: string = "exm:response-url-id-resolver";
+
+  handle(action: ActionHandler, context: any): Promise<any> {
+    if (!context.response || !context.response.url) {
+      return Promise.reject(
+        new ActionHandlerError(
+          `Handler ${ResponseUrlIdResolver.TYPE} requires a response object with an url in the available context.`,
+          action,
+          context
+        )
+      );
+    }
+    if (!action.target) {
+      return Promise.reject(
+        new ActionHandlerError(
+          `Handler ${ResponseUrlIdResolver.TYPE} requires a target that identifies the parameter name`,
+          action,
+          context
+        )
+      );
+    }
+    const resolvedQueryParameters = context.resolvedQueryParameters || {};
+    resolvedQueryParameters[action.target] = this.resolveIdFromUrl(context.response.url);
+
+    context.resolvedQueryParameters = resolvedQueryParameters;
+    console.log("ResponseUrlIdResolver", context);
+    return Promise.resolve();
+  }
+
+  /**
+   * Resolves the id for an instance based on a given url. The id part of the request is expected to be after an {@code /entities/{type}/} part.
+   * An id should not contain non-encoded slashes.
+   * @param url to retrieve the id for an instance from.
+   */
+  resolveIdFromUrl(url: string): string {
+    const currentPath = new URL(url).pathname;
+    let searchString = "entities/";
+    let result = currentPath.substring(currentPath.indexOf(searchString) + searchString.length);
+    result = result.substring(result.indexOf("/") + 1);
+    let remainingSlash = result.indexOf("/");
+    if (remainingSlash > 0) {
+      result = result.substring(0, remainingSlash);
+    }
+    return result;
+  }
+}
+
 export class RequestActionHandlerResolver implements ActionHandlerResolver {
   static readonly TYPE: string = "exm:request";
 
   handle(action: RequestActionHandler, context: Context): Promise<any> {
-    if (context.response) {
-      action.responseUrl = context.response.url;
-    }
-
-    return executeRequest(action)
+    const additionalQueryParameters = {
+      ...action.additionalQueryParameters,
+      ...context.resolvedQueryParameters,
+    };
+    console.log("RequestActionHandlerResolver", context, additionalQueryParameters);
+    return executeRequest({ ...action, ...{ additionalQueryParameters } })
       .then(translateResponse)
       .then((response) => {
         const asTextResponse: TextResponse = response as TextResponse;

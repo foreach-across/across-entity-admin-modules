@@ -23,16 +23,17 @@ import java.util.function.Consumer;
  */
 @Setter
 @Accessors(chain = true, fluent = true)
-public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElement>, ViewElementPostProcessor<HtmlViewElement>, Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder> {
-    private final Map<String, Map<String, Object>> dependencies = new LinkedHashMap<>();
+public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElement>, ViewElementPostProcessor<HtmlViewElement>, Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder>
+{
+	private final Map<String, Map<String, Object>> dependencies = new LinkedHashMap<>();
 	private final Map<String, Object> options = new LinkedHashMap<String, Object>()
 	{{
 		put( "hide", true );
 	}};
 
-    DependsOnAttribute(Consumer<DependsOnAttribute> consumer) {
-        consumer.accept(this);
-    }
+	DependsOnAttribute( Consumer<DependsOnAttribute> consumer ) {
+		consumer.accept( this );
+	}
 
 	/**
 	 * Set the source field using the name of the viewElement
@@ -55,9 +56,9 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 		return new Dependency( ruleSet( propertyToDependencyId( propertyName ) ), options );
 	}
 
-    private Map<String, Object> ruleSet(String id) {
-        return dependencies.computeIfAbsent(id, key -> new LinkedHashMap<>() );
-    }
+	private Map<String, Object> ruleSet( String id ) {
+		return dependencies.computeIfAbsent( id, key -> new LinkedHashMap<>() );
+	}
 
 	//todo used to select the actual control by specifying input, but that is not sufficient (e.g. for a select)
 	private String propertyToDependencyId( String propertyName ) {
@@ -66,65 +67,66 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 
 	private String viewElementNameToDependencyId( String viewElementName ) {
 		return "[name=\"" + viewElementName + "\"]";
-    }
+	}
 
-    @Override
-    public void applyTo(HtmlViewElement node) {
-        Map<String, Map<String, Object>> attributeValue = new LinkedHashMap<>( dependencies );
-	    attributeValue.put( "options", options );
-        node.setAttribute("style", "display: none;");
-        node.setAttribute("data-dependson", attributeValue);
-    }
+	@Override
+	public void applyTo( HtmlViewElement node ) {
+		Map<String, Map<String, Object>> attributeValue = new LinkedHashMap<>( dependencies );
+		attributeValue.put( "options", options );
+		node.setAttribute( "style", "display: none;" );
+		node.setAttribute( "data-dependson", attributeValue );
+	}
 
-    @Override
-    public void postProcess(ViewElementBuilderContext builderContext, HtmlViewElement node) {
-        node.set(this);
-    }
+	@Override
+	public void postProcess( ViewElementBuilderContext builderContext, HtmlViewElement node ) {
+		node.set( this );
+	}
 
-    @Override
-    public void accept(EntityPropertyRegistryBuilder.PropertyDescriptorBuilder property) {
-        property.viewElementPostProcessor(ViewElementMode.FORM_WRITE, this);
-    }
+	@Override
+	public void accept( EntityPropertyRegistryBuilder.PropertyDescriptorBuilder property ) {
+		property.viewElementPostProcessor( ViewElementMode.FORM_WRITE, this );
+	}
 
-    @SuppressWarnings("unused")
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public class Dependency {
-        private final Map<String, Object> rules;
-	    private final Map<String, Object> settings;
+	@SuppressWarnings("unused")
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	public class Dependency
+	{
+		private final Map<String, Object> rules;
+		private final Map<String, Object> settings;
 
-	    public Dependency values( Object... values ) {
-		    rules.put( "values", values );
-		    return this;
-	    }
+		public Dependency values( Object... values ) {
+			rules.put( "values", values );
+			return this;
+		}
 
-        public Dependency isChecked() {
-            return isChecked(true);
-        }
+		public Dependency isChecked() {
+			return isChecked( true );
+		}
 
-        public Dependency isNotChecked() {
-            return isChecked(false);
-        }
+		public Dependency isNotChecked() {
+			return isChecked( false );
+		}
 
-        public Dependency isChecked(boolean checked) {
-            rules.put("checked", checked);
-            return this;
-        }
+		public Dependency isChecked( boolean checked ) {
+			rules.put( "checked", checked );
+			return this;
+		}
 
-	    public Dependency toggleClass( @NonNull String classToToggle ) {
-		    settings.put( "toggleClass", classToToggle );
-		    return this;
-	    }
+		public Dependency toggleClass( @NonNull String classToToggle ) {
+			settings.put( "toggleClass", classToToggle );
+			return this;
+		}
 
-	    /**
-	     * @param valueTarget is the jQuery selector for the target
-	     */
-	    public Dependency valueTarget( @NonNull String valueTarget ) {
-		    settings.put( "valueTarget", valueTarget );
-		    return this;
-	    }
+		/**
+		 * @param valueTarget is the jQuery selector for the target
+		 */
+		public Dependency valueTarget( @NonNull String valueTarget ) {
+			settings.put( "valueTarget", valueTarget );
+			return this;
+		}
 
-        public DependsOnAttribute and() {
-            return DependsOnAttribute.this;
-        }
-    }
+		public DependsOnAttribute and() {
+			return DependsOnAttribute.this;
+		}
+	}
 }

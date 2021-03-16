@@ -30,37 +30,41 @@ import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAG
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class SortableTableBuilderAjaxLoadingViewProcessor extends EntityViewProcessorAdapter {
-    private boolean enableAjaxPagination = false;
+public class SortableTableBuilderAjaxLoadingViewProcessor extends EntityViewProcessorAdapter
+{
+	private boolean enableAjaxPagination = false;
 
-    @Setter
-    @NonNull
-    private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider;
+	@Setter
+	@NonNull
+	private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider;
 
-    @Override
-    protected void registerWebResources(EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry) {
-        webResourceRegistry.apply(
-                WebResourceRule.add(
-                        WebResource.javascript("@static:/experimental/web/experimental-module.js"))
-                        .withKey("experimental-web-utilities")
-                        .after(EntityModuleWebResources.NAME)
-                        .toBucket(JAVASCRIPT_PAGE_END)
-        );
-    }
+	@Override
+	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.apply(
+				WebResourceRule.add(
+						WebResource.javascript( "@static:/experimental/web/experimental-module.js" ) )
+				               .withKey( "experimental-web-utilities" )
+				               .after( EntityModuleWebResources.NAME )
+				               .toBucket( JAVASCRIPT_PAGE_END )
+		);
+	}
 
-    @Override
-    protected void postRender(EntityViewRequest entityViewRequest, EntityView entityView, ContainerViewElement container, ViewElementBuilderContext builderContext) {
-        ContainerViewElementUtils.find(container, "itemsTable", NodeViewElement.class)
-                .ifPresent(itemsTable -> {
-                    itemsTable.set(css.of("exm-table-refresh-target"));
+	@Override
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		ContainerViewElementUtils.find( container, "itemsTable", NodeViewElement.class )
+		                         .ifPresent( itemsTable -> {
+			                         itemsTable.set( css.of( "exm-table-refresh-target" ) );
 
-                    ContainerViewElementUtils.find(container, "itemsTable-table", TableViewElement.class)
-                            .ifPresent(table -> {
-                                EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
+			                         ContainerViewElementUtils.find( container, "itemsTable-table", TableViewElement.class )
+			                                                  .ifPresent( table -> {
+				                                                  EntityViewLinkBuilder linkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder();
 
-                                table.setAttribute("data-ajax-pagination", enableAjaxPagination);
-                                table.setAttribute("data-ajax-url", ajaxUrlProvider.apply(linkBuilder, builderContext));
-                            });
-                });
-    }
+				                                                  table.setAttribute( "data-ajax-pagination", enableAjaxPagination );
+				                                                  table.setAttribute( "data-ajax-url", ajaxUrlProvider.apply( linkBuilder, builderContext ) );
+			                                                  } );
+		                         } );
+	}
 }

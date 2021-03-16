@@ -30,7 +30,7 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @Component
 @Exposed
 @RequiredArgsConstructor
-@ConditionalOnAcrossModule(allOf = {EntityModule.NAME, AdminWebModule.NAME})
+@ConditionalOnAcrossModule(allOf = { EntityModule.NAME, AdminWebModule.NAME })
 public class SortableTableBuilderHelper
 {
 	private final EntityViewLinks entityViewLinks;

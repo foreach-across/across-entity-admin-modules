@@ -12,55 +12,56 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class SimpleBulkActionItemConfigurer<T> implements BulkActionsConfigurer<T> {
-    private BiConsumer<ViewElementBuilderContext, ViewElement> itemSelectorControlPostProcessor = null;
-    private BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider = null;
-    private String controlName = null;
-    private Function<EntityViewRequest, String> submitUrl = null;
-    private String formAttributeName;
-    private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider = null;
+public class SimpleBulkActionItemConfigurer<T> implements BulkActionsConfigurer<T>
+{
+	private BiConsumer<ViewElementBuilderContext, ViewElement> itemSelectorControlPostProcessor = null;
+	private BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider = null;
+	private String controlName = null;
+	private Function<EntityViewRequest, String> submitUrl = null;
+	private String formAttributeName;
+	private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider = null;
 
-    public SimpleBulkActionItemConfigurer<T> itemSelectorControlPostProcessor(BiConsumer<ViewElementBuilderContext, ViewElement> itemSelectorPostProcessor) {
-        this.itemSelectorControlPostProcessor = itemSelectorPostProcessor;
-        return this;
-    }
+	public SimpleBulkActionItemConfigurer<T> itemSelectorControlPostProcessor( BiConsumer<ViewElementBuilderContext, ViewElement> itemSelectorPostProcessor ) {
+		this.itemSelectorControlPostProcessor = itemSelectorPostProcessor;
+		return this;
+	}
 
-    public SimpleBulkActionItemConfigurer<T> itemValue(BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider) {
-        this.itemValueProvider = itemValueProvider;
-        return this;
-    }
+	public SimpleBulkActionItemConfigurer<T> itemValue( BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider ) {
+		this.itemValueProvider = itemValueProvider;
+		return this;
+	}
 
-    public SimpleBulkActionItemConfigurer<T> itemControlName(String controlName) {
-        this.controlName = controlName;
-        return this;
-    }
+	public SimpleBulkActionItemConfigurer<T> itemControlName( String controlName ) {
+		this.controlName = controlName;
+		return this;
+	}
 
-    public SimpleBulkActionItemConfigurer<T> formAttributeName(String formAttributeName) {
-        this.formAttributeName = formAttributeName;
-        return this;
-    }
+	public SimpleBulkActionItemConfigurer<T> formAttributeName( String formAttributeName ) {
+		this.formAttributeName = formAttributeName;
+		return this;
+	}
 
-    public SimpleBulkActionItemConfigurer<T> submitUrl(BiFunction<EntityViewRequest, EntityViewContext, String> submitUrlProvider) {
-        Function<EntityViewRequest, String> urlProvider = entityViewRequest -> submitUrlProvider.apply(entityViewRequest,
-                entityViewRequest.getEntityViewContext());
-        this.submitUrl = urlProvider;
-        return this;
-    }
+	public SimpleBulkActionItemConfigurer<T> submitUrl( BiFunction<EntityViewRequest, EntityViewContext, String> submitUrlProvider ) {
+		Function<EntityViewRequest, String> urlProvider = entityViewRequest -> submitUrlProvider.apply( entityViewRequest,
+		                                                                                                entityViewRequest.getEntityViewContext() );
+		this.submitUrl = urlProvider;
+		return this;
+	}
 
-    public SimpleBulkActionItemConfigurer<T> ajaxUrl(BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrl) {
-        this.ajaxUrlProvider = ajaxUrl;
-        return this;
-    }
+	public SimpleBulkActionItemConfigurer<T> ajaxUrl( BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrl ) {
+		this.ajaxUrlProvider = ajaxUrl;
+		return this;
+	}
 
-    @Override
-    public ViewElementPostProcessor<CheckboxFormElement> itemSelectorControlPostProcessor() {
-        return itemSelectorControlPostProcessor::accept;
-    }
+	@Override
+	public ViewElementPostProcessor<CheckboxFormElement> itemSelectorControlPostProcessor() {
+		return itemSelectorControlPostProcessor::accept;
+	}
 
-    @Override
-    public BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider() {
-        return itemValueProvider;
-    }
+	@Override
+	public BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider() {
+		return itemValueProvider;
+	}
 
 	@Override
 	public BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider() {
@@ -68,17 +69,17 @@ public class SimpleBulkActionItemConfigurer<T> implements BulkActionsConfigurer<
 	}
 
 	@Override
-    public String itemControlName() {
-        return controlName;
-    }
+	public String itemControlName() {
+		return controlName;
+	}
 
-    @Override
-    public Function<EntityViewRequest, String> submitUrlProvider() {
-        return submitUrl;
-    }
+	@Override
+	public Function<EntityViewRequest, String> submitUrlProvider() {
+		return submitUrl;
+	}
 
-    @Override
-    public String formAttributeName() {
-        return formAttributeName;
-    }
+	@Override
+	public String formAttributeName() {
+		return formAttributeName;
+	}
 }

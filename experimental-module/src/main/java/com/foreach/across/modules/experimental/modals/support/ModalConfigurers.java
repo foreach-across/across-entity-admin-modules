@@ -1,23 +1,25 @@
 package com.foreach.across.modules.experimental.modals.support;
 
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.modules.entity.config.builders.EntityViewProcessorConfigurer;
-import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
-import com.foreach.across.modules.experimental.modals.ui.processors.*;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.google.common.collect.ImmutableMap;
-import org.springframework.http.HttpMethod;
+import com.foreach.across.modules.experimental.modals.support.configurers.CreateModalConfigurer;
+import com.foreach.across.modules.experimental.modals.support.configurers.DeleteModalConfigurer;
+import com.foreach.across.modules.experimental.modals.support.configurers.UpdateModalConfigurer;
+import com.foreach.across.modules.experimental.modals.ui.processors.ModalActionCustomizationContext;
+import com.foreach.across.modules.experimental.modals.ui.processors.ModalFormViewProcessor;
+import com.foreach.across.modules.experimental.webutility.support.action.ActionAttribute;
+import com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
-import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
 import static com.foreach.across.modules.experimental.webutility.support.action.ResponseContentHandlerAttribute.responseContentHandler;
 import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ModalConfigurers
 {
 	/**
@@ -28,126 +30,118 @@ public class ModalConfigurers
 	 */
 	public static final String MODAL_ORIGIN_HEADER = "X-MODAL-ORIGIN";
 
-	/**
-	 * Creates a bootstrap modal with id {@code createModal} that is linked to the create button on the listView.
-	 */
-	public static <U extends EntityConfigurationBuilder<?>> Consumer<U> createViewAsModal() {
-		String modalId = "createModal";
-		String modalSelector = "#" + modalId;
-		return configuration ->
-				configuration.listView( lvb -> lvb.viewProcessor(
-						vp -> vp.createBean( ModalCreateButtonListViewProcessor.class )
-						        .configure(
-								        mcblvp -> mcblvp.modalId( modalId )
-								                        .url( ( linkBuilder, ctx ) -> linkBuilder.createView().toUriString() )
-								                        .partial( "content" )
-						        )
-				) ).createFormView( fvb -> fvb.viewProcessor(
-						vp -> vp.createBean( ModalSubmitAndRefreshTableViewProcessor.class )
-						        .configure(
-								        mfvp -> mfvp.modalSelector( modalSelector )
-								                    .elementName( "btn-save" )
-								                    .url( ( linkBuilder, ctx ) -> linkBuilder.createView().toUriString() )
-						        )
-				                    ).viewProcessor( customizeFormViewCancelButton( modalSelector ) )
-				);
+	public final static ModalConfigurers modalConfigurers = new ModalConfigurers();
+	public TAssociationModalConfigurers association = new TAssociationModalConfigurers();
+
+	public <U extends EntityConfigurationBuilder<?>> Consumer<U> createViewAsModal() {
+		return createViewAsModal( ( vp ) -> {
+		} );
 	}
 
-	/**
-	 * Creates a bootstrap modal with id {@code updateModal} that is linked to the update action for each row on the listView.
-	 */
-	public static <U extends EntityConfigurationBuilder<?>> Consumer<U> updateViewAsModal() {
-		String modalId = "updateModal";
-		String modalSelector = "#" + modalId;
-		return configuration ->
-				configuration.listView( lvb -> lvb.viewProcessor(
-						vp -> vp.createBean( ModalItemActionViewProcessor.class )
-						        .withName( "updateModalItemActionViewProcessor" )
-						        .configure(
-								        mclvp -> mclvp.modalId( modalId )
-								                      .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
-								                                                               .updateView()
-								                                                               .toUriString() )
-								                      .partial( "content" )
-								                      .actionRole( "edit" )
-						        )
-				) ).updateFormView(
-						fvb -> fvb.viewProcessor(
-								vp -> vp.createBean( ModalSubmitAndRefreshTableViewProcessor.class )
-								        .configure(
-										        mfvp -> mfvp.modalSelector( modalSelector )
-										                    .elementName( "btn-save" )
-										                    .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
-										                                                             .updateView()
-										                                                             .toUriString() )
-								        )
-						).viewProcessor(
-								vp -> vp.provideBean( new ModalFormViewProcessor()
-								{
-									@Override
-									protected void configureViewElement( ViewElement element,
-									                                     EntityViewLinkBuilder linkBuilder,
-									                                     ViewElementBuilderContext builderContext ) {
-										String url = linkBuilder.forInstance( currentEntity( builderContext ) ).deleteView().toUriString();
-										element.set( requestAction()
-												             .url( url )
-												             .method( HttpMethod.GET )
-												             .partial( "content" )
-												             .requestConfig( ImmutableMap.of( "headers", ImmutableMap.of( MODAL_ORIGIN_HEADER, modalId ) ) )
-												             .success(
-														             clearHandler( modalSelector + " .modal-title" ),
-														             clearHandler( modalSelector + " .modal-footer" ),
-														             clearHandler( modalSelector + " .modal-body" ),
-														             responseContentHandler()
-																             .source( "." + PageContentStructure.CSS_BODY_SECTION )
-																             .target( modalSelector + " .modal-body" ),
-														             responseContentHandler()
-																             .source( ".page-header" )
-																             .target( modalSelector + " .modal-title" ),
-														             moveHandler()
-																             .source( modalSelector + " .modal-body .em-form-actions" )
-																             .target( modalSelector + " .modal-footer" ),
-														             initializeFormElements( modalSelector )
-												             ) );
-									}
-								}.elementName( "btn-delete" )
-								 .modalSelector( modalSelector ) )
-						).viewProcessor( customizeFormViewCancelButton( modalSelector ) )
-				);
+	public <U extends EntityConfigurationBuilder<?>, T extends CreateModalConfigurer<T>> Consumer<U> createViewAsModal( Consumer<T> consumer ) {
+		T configurer = CreateModalConfigurer.instance();
+		consumer.accept( configurer );
+		return ( u ) -> configurer.consume( u );
 	}
 
-	/**
-	 * Creates a bootstrap modal with id {@code updateModal} that is linked to the delete action for each row on the listView.
-	 */
-	public static <U extends EntityConfigurationBuilder<?>> Consumer<U> deleteViewAsModal() {
-		String modalId = "deleteModal";
-		String modalSelector = "#" + modalId;
-		return configuration ->
-				configuration.listView( lvb -> lvb.viewProcessor(
-						vp -> vp.createBean( ModalItemActionViewProcessor.class )
-						        .withName( "deleteModalItemActionViewProcessor" )
-						        .configure(
-								        mclvp -> mclvp.modalId( modalId )
-								                      .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
-								                                                               .deleteView()
-								                                                               .toUriString() )
-								                      .partial( "content" )
-								                      .actionRole( "delete" )
-						        )
-				) ).deleteFormView( fvb -> fvb.viewProcessor(
-						vp -> vp.createBean( ModalSubmitAndRefreshTableViewProcessor.class )
-						        .configure(
-								        mfvp -> mfvp.modalSelector( modalSelector )
-								                    .elementName( "btn-delete" )
-								                    .url( ( linkBuilder, ctx ) -> linkBuilder.forInstance( currentEntity( ctx ) )
-								                                                             .deleteView()
-								                                                             .toUriString() )
-						        ) ).viewProcessor( customizeFormViewCancelButton( modalSelector ) )
-				);
+	public <U extends EntityConfigurationBuilder<?>> Consumer<U> updateViewAsModal() {
+		return updateViewAsModal( ( vp ) -> {
+		} );
 	}
 
-	private static Consumer<EntityViewProcessorConfigurer<? extends EntityViewProcessor>> customizeFormViewCancelButton( String modalSelector ) {
-		return vp -> vp.createBean( ModalCancelViewProcessor.class )
-		               .configure( mfvp -> mfvp.elementName( "btn-cancel" ).modalSelector( modalSelector ) );
+	public <U extends EntityConfigurationBuilder<?>, T extends UpdateModalConfigurer<T>> Consumer<U> updateViewAsModal( Consumer<T> consumer ) {
+		T configurer = UpdateModalConfigurer.instance();
+		consumer.accept( configurer );
+		return ( u ) -> configurer.consume( u );
+	}
+
+	public <U extends EntityConfigurationBuilder<?>> Consumer<U> deleteViewAsModal() {
+		return deleteViewAsModal( ( vp ) -> {
+		} );
+	}
+
+	public <U extends EntityConfigurationBuilder<?>, T extends DeleteModalConfigurer<T>> Consumer<U> deleteViewAsModal( Consumer<T> consumer ) {
+		T configurer = DeleteModalConfigurer.instance();
+		consumer.accept( configurer );
+		return ( u ) -> configurer.consume( u );
+	}
+
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public class TAssociationModalConfigurers
+	{
+		public <U extends EntityAssociationBuilder> Consumer<U> createViewAsModal() {
+			return createViewAsModal( ( vp ) -> {
+			} );
+		}
+
+		public <U extends EntityAssociationBuilder, T extends CreateModalConfigurer<T>> Consumer<U> createViewAsModal( Consumer<T> consumer ) {
+			T configurer = CreateModalConfigurer.<T>instance()
+					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
+					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
+			consumer.accept( configurer );
+			return ( u ) -> configurer.consume( u );
+		}
+
+		public <U extends EntityAssociationBuilder> Consumer<U> updateViewAsModal() {
+			return updateViewAsModal( ( vp ) -> {
+			} );
+		}
+
+		public <U extends EntityAssociationBuilder, T extends UpdateModalConfigurer<T>> Consumer<U> updateViewAsModal( Consumer<T> consumer ) {
+			T configurer = UpdateModalConfigurer.<T>instance()
+					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
+					.delete( vp -> vp.action( reconfigureModalActionHandlers() ) )
+					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
+			consumer.accept( configurer );
+			return ( u ) -> configurer.consume( u );
+		}
+
+		public <U extends EntityAssociationBuilder> Consumer<U> deleteViewAsModal() {
+			return deleteViewAsModal( ( vp ) -> {
+			} );
+		}
+
+		public <U extends EntityAssociationBuilder, T extends DeleteModalConfigurer<T>> Consumer<U> deleteViewAsModal( Consumer<T> consumer ) {
+			T configurer = DeleteModalConfigurer.<T>instance()
+					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
+					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
+			consumer.accept( configurer );
+			return ( u ) -> configurer.consume( u );
+		}
+
+		private Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> reconfigureModalActionHandlers() {
+			return ( ctx ) ->
+					ctx.action()
+					   .success(
+							   clearHandler( ctx.modalTarget( ".modal-title" ) ),
+							   clearHandler( ctx.modalTarget( ".modal-footer" ) ),
+							   clearHandler( ctx.modalTarget( ".modal-body" ) ),
+							   responseContentHandler()
+									   .source( "." + PageContentStructure.CSS_BODY_SECTION )
+									   .target( ctx.modalTarget( ".modal-body" ) ),
+							   moveHandler()
+									   .source( ctx.modalTarget( ".tab-pane-header h4" ) )
+									   .target( ctx.modalTarget( ".modal-title" ) ),
+							   removeHandler( ctx.modalTarget( ".modal-body .tab-pane-header" ) ),
+							   moveHandler()
+									   .source( ctx.modalTarget( ".modal-body .em-form-actions" ) )
+									   .target( ctx.modalTarget( ".modal-footer" ) ),
+							   initializeFormElements( ctx.modalSelector() )
+					   );
+		}
+
+		private Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> reconfigureModalSubmissionAction() {
+			return ( ctx ) ->
+					ctx.action()
+					   .success(
+							   clearHandler( ctx.modalTarget( ".modal-body" ) ),
+							   responseContentHandler()
+									   .target( ctx.modalTarget( ".modal-body" ) ),
+							   removeHandler( ctx.modalTarget( ".modal-body .em-form-actions" ) ),
+							   removeHandler( ctx.modalTarget( ".modal-body .tab-pane-header" ) ),
+							   initializeFormElements( ctx.modalTarget( ".modal-body" ) )
+					   );
+		}
+
 	}
 }

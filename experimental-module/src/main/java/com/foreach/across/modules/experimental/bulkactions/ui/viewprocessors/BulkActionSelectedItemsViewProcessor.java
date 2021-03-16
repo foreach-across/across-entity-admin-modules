@@ -27,25 +27,30 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class BulkActionSelectedItemsViewProcessor<T> extends EntityViewProcessorAdapter {
-    @Override
-    protected void postRender(EntityViewRequest entityViewRequest, EntityView entityView, ContainerViewElement container, ViewElementBuilderContext builderContext) {
-        ContainerViewElementUtils.find(container, "itemsTable-panel-heading", NodeViewElement.class).ifPresent(panelHeading -> {
-            NodeViewElement headingSelectionInformation = html.builders
-                    .div(css("small"))
-                    .name("bulk-action-total-items-selected")
-                    .add(
-                            html.builders
-                                    .span(data("bulk-action-total-selected-text", builderContext.getMessage("bulkActionTotalSelected", "You have % items selected.")))
-                    )
-                    .add(
-                            bootstrap.builders
-                                    .link(data("bulk-action-total-selected-clear", ""))
-                                    .text(builderContext.getMessage("bulkActionClearSelection", "Clear selection"))
-                    )
-                    .build(builderContext);
-            panelHeading.addChild(headingSelectionInformation
-            );
-        });
-    }
+public class BulkActionSelectedItemsViewProcessor<T> extends EntityViewProcessorAdapter
+{
+	@Override
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		ContainerViewElementUtils.find( container, "itemsTable-panel-heading", NodeViewElement.class ).ifPresent( panelHeading -> {
+			NodeViewElement headingSelectionInformation = html.builders
+					.div( css( "small" ) )
+					.name( "bulk-action-total-items-selected" )
+					.add(
+							html.builders
+									.span( data( "bulk-action-total-selected-text",
+									             builderContext.getMessage( "bulkActionTotalSelected", "You have % items selected." ) ) )
+					)
+					.add(
+							bootstrap.builders
+									.link( data( "bulk-action-total-selected-clear", "" ) )
+									.text( builderContext.getMessage( "bulkActionClearSelection", "Clear selection" ) )
+					)
+					.build( builderContext );
+			panelHeading.addChild( headingSelectionInformation
+			);
+		} );
+	}
 }

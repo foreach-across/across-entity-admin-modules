@@ -17,24 +17,25 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Entity
 @EqualsAndHashCode(of = "id", callSuper = false)
-public class Customer extends SettableIdBasedEntity<Customer> {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(generator = "seq_drink")
-    @GenericGenerator(
-            name = "seq_drink",
-            strategy = AcrossSequenceGenerator.STRATEGY,
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_drink"),
-                    @org.hibernate.annotations.Parameter(name = "allocationSize", value = "1")
-            }
-    )
-    private Long id;
+public class Customer extends SettableIdBasedEntity<Customer>
+{
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(generator = "seq_drink")
+	@GenericGenerator(
+			name = "seq_drink",
+			strategy = AcrossSequenceGenerator.STRATEGY,
+			parameters = {
+					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_drink"),
+					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "1")
+			}
+	)
+	private Long id;
 
-    @NotBlank
-    private String name;
+	@NotBlank
+	private String name;
 
-    @NotNull
-    @ManyToOne
-    private Drink drink;
+	@NotNull
+	@ManyToOne
+	private Drink drink;
 }

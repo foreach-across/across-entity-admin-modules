@@ -12,7 +12,6 @@ import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.experimental.bulkactions.support.SimpleBulkActionItemConfigurer;
 import com.foreach.across.modules.experimental.webutility.domain.EntityViewAjax;
 import com.foreach.across.modules.experimental.webutility.viewelements.WebUtilityViewElementMode;
-import com.foreach.across.testapplication.application.domain.company.processors.CombinedCompanyViewProcessor;
 import com.foreach.across.testapplication.application.domain.company.processors.CompanyBulkActionViewProcessor;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,53 +22,56 @@ import static com.foreach.across.modules.experimental.webutility.support.WebUtil
 import static org.springframework.util.ClassUtils.getShortName;
 
 @Configuration
-public class CompanyUiConfiguration implements EntityConfigurer {
-    private final AcrossModuleInfo moduleInfo;
+public class CompanyUiConfiguration implements EntityConfigurer
+{
+	private final AcrossModuleInfo moduleInfo;
 
-    public CompanyUiConfiguration(@Module(EntityModule.NAME) AcrossModuleInfo moduleInfo) {
-        this.moduleInfo = moduleInfo;
-    }
+	public CompanyUiConfiguration( @Module(EntityModule.NAME) AcrossModuleInfo moduleInfo ) {
+		this.moduleInfo = moduleInfo;
+	}
 
-    @Override
-    public void configure(EntitiesConfigurationBuilder entities) {
-        entities.withType(Company.class)
-                .properties(
-                        props -> props.property("workRegulations")
-                                .attribute(EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER)
-                )
-                .updateFormView(fvb -> fvb.viewElementMode(WebUtilityViewElementMode.EDITABLE_VALUE_VIEW()))
-                .listView(EntityViewAjax.ajaxSettings.enableAjaxPagination()
-                        .ajaxUrlProvider(((linkBuilder, builderContext) -> linkBuilder.listView().withQueryParam("custom", "true").toUriString())))
+	@Override
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		entities.withType( Company.class )
+		        .properties(
+				        props -> props.property( "workRegulations" )
+				                      .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
+		        )
+		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() ) )
+		        .listView( EntityViewAjax.ajaxSettings.enableAjaxPagination()
+		                                              .ajaxUrlProvider( ( ( linkBuilder, builderContext ) -> linkBuilder.listView().withQueryParam( "custom",
+		                                                                                                                                            "true" )
+		                                                                                                                .toUriString() ) ) )
 //                .listView(lvb -> lvb
 //                        .viewProcessor(vp -> vp.createBean(CombinedCompanyViewProcessor.class))
 //                        .entityQueryFilter(eqb -> eqb.showProperties("name"))
 //                        .pageSize(10)
 //                        .and(companyBulkActionsConfigurer("selectedItems")))
                 .association(
-                        ab -> ab.name("user.company")
-                                .associationType(EntityAssociation.Type.EMBEDDED)
-                                .updateFormView(
-                                        fvb -> fvb.viewElementMode(WebUtilityViewElementMode.EDITABLE_VALUE_VIEW())
-                                )
+		                ab -> ab.name( "user.company" )
+		                        .associationType( EntityAssociation.Type.EMBEDDED )
+		                        .updateFormView(
+				                        fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() )
+		                        )
                 );
 
-        entities.withType(Company.class)
-                .association(
-                        ab -> ab.name("user.company")
-                                .attribute(LIST_VIEW_EDITABLE_VALUES, true)
-                                .listView(lvb -> lvb.showProperties("name", "dateOfBirth", "company.name", "mentor")
-                                        .properties(props -> props.property("company.name").displayName("Company name")))
-                );
-    }
+		entities.withType( Company.class )
+		        .association(
+				        ab -> ab.name( "user.company" )
+				                .attribute( LIST_VIEW_EDITABLE_VALUES, true )
+				                .listView( lvb -> lvb.showProperties( "name", "dateOfBirth", "company.name", "mentor" )
+				                                     .properties( props -> props.property( "company.name" ).displayName( "Company name" ) ) )
+		        );
+	}
 
-    private Consumer<EntityViewFactoryBuilder> companyBulkActionsConfigurer(String controlName) {
-        SimpleBulkActionItemConfigurer<Company> bulkActionsConfiguration =
-                new SimpleBulkActionItemConfigurer<Company>()
-                        .itemSelectorControlPostProcessor((ctx, builder) -> {
-                        })
-                        .itemValue((instance, ctx) -> instance.getId())
-                        .itemControlName(controlName)
-                        .formAttributeName(EntityViewModel.VIEW_COMMAND + ".extensions[" + getShortName(CompanyBulkActionViewProcessor.class) + "]");
-        return configureBulkActions(bulkActionsConfiguration);
-    }
+	private Consumer<EntityViewFactoryBuilder> companyBulkActionsConfigurer( String controlName ) {
+		SimpleBulkActionItemConfigurer<Company> bulkActionsConfiguration =
+				new SimpleBulkActionItemConfigurer<Company>()
+						.itemSelectorControlPostProcessor( ( ctx, builder ) -> {
+						} )
+						.itemValue( ( instance, ctx ) -> instance.getId() )
+						.itemControlName( controlName )
+						.formAttributeName( EntityViewModel.VIEW_COMMAND + ".extensions[" + getShortName( CompanyBulkActionViewProcessor.class ) + "]" );
+		return configureBulkActions( bulkActionsConfiguration );
+	}
 }

@@ -19,31 +19,35 @@ export class RequestActionResolver implements ActionResolver {
   static readonly TYPE: string = "exm:request";
 
   handle(action: RequestAction, context: any, actionHandlerFactory: ActionHandlerFactory): Promise<void> {
+    context.action = action;
     return executeRequest(action)
       .then((response) => translateResponse(response))
       .then((response: Response) => {
         let sequence = Promise.resolve();
+        context.response = response;
+
         if (response.redirected) {
           action.redirect.forEach((handler) => {
-            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, response }));
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, context));
           });
         } else if (response.ok) {
           action.success.forEach((handler) => {
-            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, response }));
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, context));
           });
         } else {
           action.failure.forEach((handler) => {
-            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, response }));
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, context));
           });
         }
         return sequence;
       })
       .catch((error) => {
         let sequence = Promise.resolve();
+        context.error = error;
 
         if (action.error.length > 0) {
           action.error.forEach((handler) => {
-            sequence = sequence.then(() => actionHandlerFactory.handle(handler, { action, error }));
+            sequence = sequence.then(() => actionHandlerFactory.handle(handler, context));
           });
           return sequence;
         }

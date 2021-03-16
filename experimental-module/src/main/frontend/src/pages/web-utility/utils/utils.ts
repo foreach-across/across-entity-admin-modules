@@ -7,8 +7,7 @@ export function getCookie(name: string) {
 
 export function setCookie(name: string, value: any, options = {} as any) {
   options = {
-    path: "/",
-    // add other defaults here if necessary
+    path: "/", // add other defaults here if necessary
     ...options,
   };
 

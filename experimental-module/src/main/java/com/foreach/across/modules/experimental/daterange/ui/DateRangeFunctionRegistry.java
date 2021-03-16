@@ -20,35 +20,37 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Component
 @Exposed
-public class DateRangeFunctionRegistry {
+public class DateRangeFunctionRegistry
+{
 
-    private final Map<String, Function<Object[], DateRange>> items = new HashMap<>();
+	private final Map<String, Function<Object[], DateRange>> items = new HashMap<>();
 
-    public DateRangeFunctionRegistry register(String name, Function<Object[], DateRange> dateRangeFunction) {
-        Function<Object[], DateRange> existingFunction = items.get(name);
-        if (existingFunction == null) {
-            items.put(name, dateRangeFunction);
-        } else {
-            if (existingFunction != dateRangeFunction) {
-                throw new RuntimeException("Trying to overwrite an existing function with a different dateRangeFunction. Reuse the existing DateRangeItem instance of use another name for your function.");
-            }
-        }
-        return this;
-    }
+	public DateRangeFunctionRegistry register( String name, Function<Object[], DateRange> dateRangeFunction ) {
+		Function<Object[], DateRange> existingFunction = items.get( name );
+		if ( existingFunction == null ) {
+			items.put( name, dateRangeFunction );
+		}
+		else {
+			if ( existingFunction != dateRangeFunction ) {
+				throw new RuntimeException(
+						"Trying to overwrite an existing function with a different dateRangeFunction. Reuse the existing DateRangeItem instance of use another name for your function." );
+			}
+		}
+		return this;
+	}
 
-    public Function<Object[], DateRange> forName(String functionName) {
-        return items.get(functionName);
-    }
+	public Function<Object[], DateRange> forName( String functionName ) {
+		return items.get( functionName );
+	}
 
-    public Object createDateRange(String functionName, LocalDateTime[] boundaries, Class<?> objectType) {
-        DateRange dateRange = items.get(functionName).apply(boundaries);
-        if (objectType == Date.class && (dateRange.getDateFrom().isLocalDateTime() || dateRange.getDateTo().isLocalDateTime())) {
-            // JPA requires the type of the property to match for querying
-            dateRange = new DateRange(dateRange.getDateFrom().toDate(), dateRange.getDateTo().toDate());
-        }
-        dateRange.setType(functionName);
-        return dateRange;
-    }
-
+	public Object createDateRange( String functionName, LocalDateTime[] boundaries, Class<?> objectType ) {
+		DateRange dateRange = items.get( functionName ).apply( boundaries );
+		if ( objectType == Date.class && ( dateRange.getDateFrom().isLocalDateTime() || dateRange.getDateTo().isLocalDateTime() ) ) {
+			// JPA requires the type of the property to match for querying
+			dateRange = new DateRange( dateRange.getDateFrom().toDate(), dateRange.getDateTo().toDate() );
+		}
+		dateRange.setType( functionName );
+		return dateRange;
+	}
 
 }
