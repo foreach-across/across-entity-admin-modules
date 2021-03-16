@@ -128,7 +128,7 @@ public class EntitiesConfigurationBuilder
 				return new ByteBuddy()
 						.subclass( entityType )
 						.annotateType( AnnotationDescription.Builder.ofType( EntityConfigurationView.class )
-						                                            .define( "originalType", entityType )
+						                                            .define( "entityType", entityType )
 						                                            .build() )
 						.make()
 						.load( getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER )
