@@ -21,6 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,6 +33,10 @@ public class RequestUtils
 
 	public static HttpServletRequest getCurrentRequest() {
 		return ( (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes() ).getRequest();
+	}
+
+	public static HttpServletResponse getCurrentResponse() {
+		return ( (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes() ).getResponse();
 	}
 
 	public static Optional<Object> getPathVariable( String name ) {

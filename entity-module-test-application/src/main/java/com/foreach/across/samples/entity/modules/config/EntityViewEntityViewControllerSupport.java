@@ -30,18 +30,31 @@ import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.samples.entity.modules.utils.RequestUtils;
 import com.foreach.across.samples.entity.modules.web.EntityViewMessageCodesResolverProxy;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.MethodIntrospector;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.annotation.ModelMethodProcessor;
+import org.springframework.web.method.support.*;
+import org.springframework.web.servlet.mvc.method.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Optional;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public interface EntityViewEntityViewControllerSupport extends EntityViewControllerSupport
 {
+	ReflectionUtils.MethodFilter ENTITY_INSTANCE_RESOLVER_METHODS = method ->
+			AnnotatedElementUtils.hasAnnotation( method, EntityInstanceResolver.class );
+
 	@Override
 	default void configureViewContext( EntityRegistry entityRegistry,
 	                                   ConversionService conversionService,
@@ -132,15 +145,15 @@ public interface EntityViewEntityViewControllerSupport extends EntityViewControl
 
 	}
 
+	@SneakyThrows
 	default EntityViewContextParams resolveEntityViewContextParams( EntityRegistry entityRegistry,
 	                                                                ConversionService conversionService,
 	                                                                HttpServletRequest httpServletRequest ) {
 		HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
 		EntityViewController annotation = AnnotationUtils.getAnnotation( handlerMethod.getMethod().getDeclaringClass(), EntityViewController.class );
 		if ( annotation == null ) {
-			throw new RuntimeException( "Annotate your controller with @EntityViewController and specify target or targetType" );
+			throw new RuntimeException( "Annotate your controller with @EntityViewController and specify 'target' or 'targetType'" );
 		}
-		String entityIdMappedBy = annotation.entityIdMappedBy();
 
 		EntityConfiguration<?> entityConfiguration;
 		if ( StringUtils.isNotBlank( annotation.target() ) ) {
@@ -150,18 +163,76 @@ public interface EntityViewEntityViewControllerSupport extends EntityViewControl
 			entityConfiguration = entityRegistry.getEntityConfiguration( annotation.targetType() );
 		}
 		else {
-			throw new RuntimeException( "Cannot determine type of PathVariable" );
+			throw new RuntimeException( "Cannot determine type of @EntityViewController" );
 		}
+
+		String entityIdMappedBy = annotation.entityIdMappedBy();
 		Optional<?> entityId = RequestUtils.getPathVariable( entityIdMappedBy );
 		if ( !entityId.isPresent() ) {
 			entityId = Optional.ofNullable( RequestUtils.getCurrentRequest().getParameter( entityIdMappedBy ) );
 		}
-		Object resolvedEntity = entityId.map( o -> conversionService.convert( o, entityConfiguration.getEntityType() ) ).orElse( null );
-		return EntityViewContextParams.builder()
-		                              .configurationName( annotation.target() )
-		                              .instance( resolvedEntity )
-		                              .build();
+		if ( !entityId.isPresent() ) {
+			Set<Method> methods = MethodIntrospector.selectMethods( handlerMethod.getBeanType(), ENTITY_INSTANCE_RESOLVER_METHODS );
+			for ( Method method : methods ) {
+				if ( method != null ) {
+					ServletInvocableHandlerMethod servletInvocableHandlerMethod = new ServletInvocableHandlerMethod( handlerMethod.getBean(), method );
+					HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
+					HandlerMethodReturnValueHandlerComposite returnValueHandlerComposite = new HandlerMethodReturnValueHandlerComposite();
+					returnValueHandlerComposite.addHandler( new HandlerMethodReturnValueHandler()
+					{
+						@Override
+						public boolean supportsReturnType( MethodParameter returnType ) {
+							return true;
+						}
 
+						@Override
+						public void handleReturnValue( Object returnValue,
+						                               MethodParameter returnType,
+						                               ModelAndViewContainer mavContainer, NativeWebRequest webRequest ) throws Exception {
+							mavContainer.setView( conversionService.convert( returnValue, entityConfiguration.getEntityType() ) );
+						}
+					} );
+
+					List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
+
+					// Annotation-based argument resolution
+					resolvers.add( new SessionAttributeMethodArgumentResolver() );
+					resolvers.add( new RequestAttributeMethodArgumentResolver() );
+
+					// Type-based argument resolution
+					resolvers.add( new ServletRequestMethodArgumentResolver() );
+					resolvers.add( new ServletResponseMethodArgumentResolver() );
+					resolvers.add( new RedirectAttributesMethodArgumentResolver() );
+					resolvers.add( new ModelMethodProcessor() );
+
+					// Catch-all
+					resolvers.add( new PrincipalMethodArgumentResolver() );
+
+					composite.addResolvers( resolvers );
+					servletInvocableHandlerMethod.setHandlerMethodReturnValueHandlers( returnValueHandlerComposite );
+					servletInvocableHandlerMethod.setHandlerMethodArgumentResolvers( composite );
+
+					ServletWebRequest webRequest = new ServletWebRequest( RequestUtils.getCurrentRequest(), RequestUtils.getCurrentResponse() );
+					ModelAndViewContainer mavContainer = new ModelAndViewContainer();
+					servletInvocableHandlerMethod.invokeAndHandle( webRequest, mavContainer );
+
+					if ( mavContainer.getView() != null ) {
+						return EntityViewContextParams.builder()
+						                              .configurationName( annotation.target() )
+						                              .instance( mavContainer.getView() )
+						                              .build();
+					}
+				}
+			}
+			throw new RuntimeException( "Could not find an @EntityInstanceResolver that returned a non-null value" );
+		}
+		else {
+			Object resolvedEntity = entityId.map( o -> conversionService.convert( o, entityConfiguration.getEntityType() ) ).orElse( null );
+			return EntityViewContextParams.builder()
+			                              .configurationName( annotation.target() )
+			                              .instance( resolvedEntity )
+			                              .build();
+		}
 	}
 
 	default String resolveViewName( HttpServletRequest httpServletRequest, EntityViewContext entityViewContext ) {
