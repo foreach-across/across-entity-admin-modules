@@ -23,10 +23,12 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityViewModel;
-import com.foreach.across.samples.entity.modules.config.EntityInstanceResolver;
+import com.foreach.across.modules.web.context.WebAppPathResolver;
+import com.foreach.across.samples.entity.modules.config.EntityAssociationInstanceResolver;
 import com.foreach.across.samples.entity.modules.config.EntityViewController;
 import com.foreach.across.samples.entity.modules.config.EntityViewEntityViewControllerSupport;
 import com.foreach.across.samples.entity.modules.config.ViewFactory;
+import com.foreach.across.samples.entity.modules.utils.RequestUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -38,25 +40,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @AdminWebController
-@EntityViewController(target = "user")
+@EntityViewController(target = "user", entityIdMappedBy = "userId")
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class CustomGenericViewController implements EntityViewEntityViewControllerSupport
 {
+	private final WebAppPathResolver webAppPathResolver;
+
 	@EventListener
 	public void registerAdminMenu( AdminMenuEvent adminMenu ) {
 		//TODO: not having a menu will NPE, might fix this in AdminMenu.breadcrumbLeaf()
 		adminMenu.builder()
 		         .group( "/customControllers", "Custom Controllers" ).and()
 		         .item( "/customControllers/users", "Custom Generic User", "/users" );
-	}
-
-	@EntityInstanceResolver
-	public String hardcoded( HttpServletRequest httpServletRequest, HttpServletResponse response ) {
-		return httpServletRequest.getParameter( "userId" );
 	}
 
 	@GetMapping("")
@@ -92,6 +90,63 @@ public class CustomGenericViewController implements EntityViewEntityViewControll
 	) {
 		entityViewRequest.setBindingResult( bindingResult );
 		EntityView entityView = entityViewRequest.getViewFactory().createView( entityViewRequest );
+
+		//TODO: should go in a more generic place
+		if ( entityView.isRedirect() ) {
+			return webAppPathResolver.redirect( entityView.getRedirectUrl() );
+		}
+		else if ( entityView.isCustomView() ) {
+			return entityView.getCustomView();
+		}
+
 		return StringUtils.defaultString( entityView.getTemplate(), PageContentStructure.TEMPLATE );
+	}
+
+	@RequestMapping(value = "/{userId}/friends", method = { RequestMethod.GET, RequestMethod.POST })
+	@ViewFactory(view = EntityView.LIST_VIEW_NAME, association = "friend.users")
+	public Object listFriends(
+			EntityViewRequest entityViewRequest,
+			@NonNull @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command,
+			BindingResult bindingResult
+	) {
+		entityViewRequest.setBindingResult( bindingResult );
+		EntityView entityView = entityViewRequest.getViewFactory().createView( entityViewRequest );
+
+		//TODO: should go in a more generic place
+		if ( entityView.isRedirect() ) {
+			return webAppPathResolver.redirect( entityView.getRedirectUrl() );
+		}
+		else if ( entityView.isCustomView() ) {
+			return entityView.getCustomView();
+		}
+
+		return StringUtils.defaultString( entityView.getTemplate(), PageContentStructure.TEMPLATE );
+	}
+
+	@RequestMapping(value = "/{userId}/friends/{friendId}", method = { RequestMethod.GET, RequestMethod.POST })
+	@ViewFactory(view = EntityView.UPDATE_VIEW_NAME, association = "friend.users")
+	public Object updateFriend(
+			EntityViewRequest entityViewRequest,
+			@NonNull @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command,
+			BindingResult bindingResult
+	) {
+		entityViewRequest.setBindingResult( bindingResult );
+		EntityView entityView = entityViewRequest.getViewFactory().createView( entityViewRequest );
+
+		//TODO: should go in a more generic place
+		if ( entityView.isRedirect() ) {
+			return webAppPathResolver.redirect( entityView.getRedirectUrl() );
+		}
+		else if ( entityView.isCustomView() ) {
+			return entityView.getCustomView();
+		}
+
+		return StringUtils.defaultString( entityView.getTemplate(), PageContentStructure.TEMPLATE );
+	}
+
+	@EntityAssociationInstanceResolver
+	public Object resolveFriendId( HttpServletRequest httpServletRequest ) {
+		return RequestUtils.getPathVariable( "friendId" ).get();
+
 	}
 }

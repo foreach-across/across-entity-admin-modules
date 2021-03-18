@@ -21,13 +21,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ViewFactory
+public @interface EntityAssociationInstanceResolver
 {
-	/***
-	 * Any of the VIEW_NAME values in {@link com.foreach.across.modules.entity.views.EntityView} or
-	 * the name of any custom view
-	 */
-	String view();
-
-	String association() default "";
 }

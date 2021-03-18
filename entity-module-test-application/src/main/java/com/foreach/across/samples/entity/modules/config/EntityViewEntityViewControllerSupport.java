@@ -49,11 +49,40 @@ import org.springframework.web.servlet.mvc.method.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public interface EntityViewEntityViewControllerSupport extends EntityViewControllerSupport
 {
 	ReflectionUtils.MethodFilter ENTITY_INSTANCE_RESOLVER_METHODS = method ->
 			AnnotatedElementUtils.hasAnnotation( method, EntityInstanceResolver.class );
+
+	ReflectionUtils.MethodFilter ASSOCIATION_INSTANCE_RESOLVER_METHODS = method ->
+			AnnotatedElementUtils.hasAnnotation( method, EntityAssociationInstanceResolver.class );
+
+	List<HandlerMethodArgumentResolver> DEFAULT_ARGUMENT_RESOLVERS = Arrays.asList( new SessionAttributeMethodArgumentResolver(),
+	                                                                                new RequestAttributeMethodArgumentResolver(),
+	                                                                                new ServletRequestMethodArgumentResolver(),
+	                                                                                new ServletResponseMethodArgumentResolver(),
+	                                                                                new RedirectAttributesMethodArgumentResolver(),
+	                                                                                new ModelMethodProcessor(),
+	                                                                                new PrincipalMethodArgumentResolver()
+	);
+
+	BiFunction<ConversionService, Class<?>, HandlerMethodReturnValueHandler> DEFAULT_RETURN_VALUE_HANDLER =
+			( conversionService, clazz ) -> new HandlerMethodReturnValueHandler()
+			{
+				@Override
+				public boolean supportsReturnType( MethodParameter returnType ) {
+					return true;
+				}
+
+				@Override
+				public void handleReturnValue( Object returnValue,
+				                               MethodParameter returnType,
+				                               ModelAndViewContainer mavContainer, NativeWebRequest webRequest ) {
+					mavContainer.setView( conversionService.convert( returnValue, clazz ) );
+				}
+			};
 
 	@Override
 	default void configureViewContext( EntityRegistry entityRegistry,
@@ -111,7 +140,7 @@ public interface EntityViewEntityViewControllerSupport extends EntityViewControl
 	default void configureEntityViewRequest( EntityViewRequest entityViewRequest,
 	                                         ConfigurableEntityViewContext entityViewContext,
 	                                         HttpServletRequest httpServletRequest ) {
-		String viewName = resolveViewName( httpServletRequest, entityViewContext );
+		String viewName = resolveViewName();
 		entityViewRequest.setViewName( viewName );
 		// retrieve and set the view factory
 		EntityViewFactory viewFactory = entityViewContext.isForAssociation()
@@ -149,6 +178,7 @@ public interface EntityViewEntityViewControllerSupport extends EntityViewControl
 	default EntityViewContextParams resolveEntityViewContextParams( EntityRegistry entityRegistry,
 	                                                                ConversionService conversionService,
 	                                                                HttpServletRequest httpServletRequest ) {
+		String associationName = resolveAssociationName();
 		HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
 		EntityViewController annotation = AnnotationUtils.getAnnotation( handlerMethod.getMethod().getDeclaringClass(), EntityViewController.class );
 		if ( annotation == null ) {
@@ -166,81 +196,81 @@ public interface EntityViewEntityViewControllerSupport extends EntityViewControl
 			throw new RuntimeException( "Cannot determine type of @EntityViewController" );
 		}
 
+		EntityViewContextParams.EntityViewContextParamsBuilder builder = EntityViewContextParams.builder();
+		builder.configurationName( annotation.target() );
+
 		String entityIdMappedBy = annotation.entityIdMappedBy();
 		Optional<?> entityId = RequestUtils.getPathVariable( entityIdMappedBy );
 		if ( !entityId.isPresent() ) {
 			entityId = Optional.ofNullable( RequestUtils.getCurrentRequest().getParameter( entityIdMappedBy ) );
 		}
 		if ( !entityId.isPresent() ) {
-			Set<Method> methods = MethodIntrospector.selectMethods( handlerMethod.getBeanType(), ENTITY_INSTANCE_RESOLVER_METHODS );
-			for ( Method method : methods ) {
-				if ( method != null ) {
-					ServletInvocableHandlerMethod servletInvocableHandlerMethod = new ServletInvocableHandlerMethod( handlerMethod.getBean(), method );
-					HandlerMethodArgumentResolverComposite composite = new HandlerMethodArgumentResolverComposite();
-					HandlerMethodReturnValueHandlerComposite returnValueHandlerComposite = new HandlerMethodReturnValueHandlerComposite();
-					returnValueHandlerComposite.addHandler( new HandlerMethodReturnValueHandler()
-					{
-						@Override
-						public boolean supportsReturnType( MethodParameter returnType ) {
-							return true;
-						}
-
-						@Override
-						public void handleReturnValue( Object returnValue,
-						                               MethodParameter returnType,
-						                               ModelAndViewContainer mavContainer, NativeWebRequest webRequest ) throws Exception {
-							mavContainer.setView( conversionService.convert( returnValue, entityConfiguration.getEntityType() ) );
-						}
-					} );
-
-					List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
-
-					// Annotation-based argument resolution
-					resolvers.add( new SessionAttributeMethodArgumentResolver() );
-					resolvers.add( new RequestAttributeMethodArgumentResolver() );
-
-					// Type-based argument resolution
-					resolvers.add( new ServletRequestMethodArgumentResolver() );
-					resolvers.add( new ServletResponseMethodArgumentResolver() );
-					resolvers.add( new RedirectAttributesMethodArgumentResolver() );
-					resolvers.add( new ModelMethodProcessor() );
-
-					// Catch-all
-					resolvers.add( new PrincipalMethodArgumentResolver() );
-
-					composite.addResolvers( resolvers );
-					servletInvocableHandlerMethod.setHandlerMethodReturnValueHandlers( returnValueHandlerComposite );
-					servletInvocableHandlerMethod.setHandlerMethodArgumentResolvers( composite );
-
-					ServletWebRequest webRequest = new ServletWebRequest( RequestUtils.getCurrentRequest(), RequestUtils.getCurrentResponse() );
-					ModelAndViewContainer mavContainer = new ModelAndViewContainer();
-					servletInvocableHandlerMethod.invokeAndHandle( webRequest, mavContainer );
-
-					if ( mavContainer.getView() != null ) {
-						return EntityViewContextParams.builder()
-						                              .configurationName( annotation.target() )
-						                              .instance( mavContainer.getView() )
-						                              .build();
-					}
-				}
-			}
-			throw new RuntimeException( "Could not find an @EntityInstanceResolver that returned a non-null value" );
+			applyInstanceResolvers( ENTITY_INSTANCE_RESOLVER_METHODS, conversionService, handlerMethod, entityConfiguration, builder );
 		}
 		else {
 			Object resolvedEntity = entityId.map( o -> conversionService.convert( o, entityConfiguration.getEntityType() ) ).orElse( null );
-			return EntityViewContextParams.builder()
-			                              .configurationName( annotation.target() )
-			                              .instance( resolvedEntity )
-			                              .build();
+			builder.instance( resolvedEntity );
+		}
+		if ( StringUtils.isNotBlank( associationName ) ) {
+			builder.associationName( associationName );
+			applyInstanceResolvers( ASSOCIATION_INSTANCE_RESOLVER_METHODS, conversionService, handlerMethod, entityConfiguration, builder );
+		}
+		return builder.build();
+	}
+
+	default void applyInstanceResolvers( ReflectionUtils.MethodFilter methodFilter, ConversionService conversionService,
+	                                     HandlerMethod handlerMethod,
+	                                     EntityConfiguration<?> entityConfiguration,
+	                                     EntityViewContextParams.EntityViewContextParamsBuilder builder ) throws Exception {
+		Set<Method> methods = MethodIntrospector.selectMethods( handlerMethod.getBeanType(), methodFilter );
+		for ( Method method : methods ) {
+			if ( method != null ) {
+				ServletInvocableHandlerMethod servletInvocableHandlerMethod = new ServletInvocableHandlerMethod( handlerMethod.getBean(), method );
+
+				HandlerMethodArgumentResolverComposite argumentHandlerComposite = new HandlerMethodArgumentResolverComposite();
+				HandlerMethodReturnValueHandlerComposite returnValueHandlerComposite = new HandlerMethodReturnValueHandlerComposite();
+
+				argumentHandlerComposite.addResolvers( retrieveArgumentResolvers() );
+				returnValueHandlerComposite.addHandlers( retrieveReturnValueHandlers( conversionService, entityConfiguration.getEntityType() ) );
+
+				servletInvocableHandlerMethod.setHandlerMethodReturnValueHandlers( returnValueHandlerComposite );
+				servletInvocableHandlerMethod.setHandlerMethodArgumentResolvers( argumentHandlerComposite );
+
+				ServletWebRequest webRequest = new ServletWebRequest( RequestUtils.getCurrentRequest(), RequestUtils.getCurrentResponse() );
+				ModelAndViewContainer mavContainer = new ModelAndViewContainer();
+				servletInvocableHandlerMethod.invokeAndHandle( webRequest, mavContainer );
+
+				if ( mavContainer.getView() != null ) {
+					builder.instance( mavContainer.getView() );
+					break;
+				}
+			}
 		}
 	}
 
-	default String resolveViewName( HttpServletRequest httpServletRequest, EntityViewContext entityViewContext ) {
+	default List<HandlerMethodArgumentResolver> retrieveArgumentResolvers() {
+		return DEFAULT_ARGUMENT_RESOLVERS;
+	}
+
+	default List<HandlerMethodReturnValueHandler> retrieveReturnValueHandlers( ConversionService conversionService, Class<?> clazz ) {
+		return Collections.singletonList( DEFAULT_RETURN_VALUE_HANDLER.apply( conversionService, clazz ) );
+	}
+
+	default String resolveViewName() {
 		HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
 		ViewFactory viewFactory = AnnotationUtils.getAnnotation( handlerMethod.getMethod(), ViewFactory.class );
 		if ( viewFactory == null || StringUtils.isBlank( viewFactory.view() ) ) {
 			throw new RuntimeException( "Annotate your method with @ViewFactory or implement resolveViewName()" );
 		}
 		return viewFactory.view();
+	}
+
+	default String resolveAssociationName() {
+		HandlerMethod handlerMethod = EntityViewControllerHandlerResolver.currentHandlerMethod();
+		ViewFactory viewFactory = AnnotationUtils.getAnnotation( handlerMethod.getMethod(), ViewFactory.class );
+		if ( viewFactory == null || StringUtils.isBlank( viewFactory.association() ) ) {
+			throw new RuntimeException( "Annotate your method with @ViewFactory or implement resolveViewName()" );
+		}
+		return viewFactory.association();
 	}
 }
