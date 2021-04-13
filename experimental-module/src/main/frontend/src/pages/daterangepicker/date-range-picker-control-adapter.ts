@@ -67,10 +67,7 @@ export class DateRangePickerControlAdapter implements BootstrapUiControlAdapter 
       return [
         {
           label: `dateRange('${startDateValue?.label}','${endDateValue?.label}')`,
-          value: {
-            startDate: startDateValue,
-            endDate: endDateValue,
-          },
+          value: `dateRange('${startDateValue?.label}', '${endDateValue?.label}')`,
           context: {
             type: this.rangeTypeSelector.getTarget(),
             startDate: dateFrom.getTarget(),
