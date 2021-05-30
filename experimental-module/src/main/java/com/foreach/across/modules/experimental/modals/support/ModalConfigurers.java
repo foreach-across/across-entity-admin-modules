@@ -41,7 +41,7 @@ public class ModalConfigurers
 	public <U extends EntityConfigurationBuilder<?>, T extends CreateModalConfigurer<T>> Consumer<U> createViewAsModal( Consumer<T> consumer ) {
 		T configurer = CreateModalConfigurer.instance();
 		consumer.accept( configurer );
-		return (u) -> configurer.consume(u);
+		return ( u ) -> configurer.consume( u );
 	}
 
 	public <U extends EntityConfigurationBuilder<?>> Consumer<U> updateViewAsModal() {
@@ -52,7 +52,7 @@ public class ModalConfigurers
 	public <U extends EntityConfigurationBuilder<?>, T extends UpdateModalConfigurer<T>> Consumer<U> updateViewAsModal( Consumer<T> consumer ) {
 		T configurer = UpdateModalConfigurer.instance();
 		consumer.accept( configurer );
-		return (u) -> configurer.consume(u);
+		return ( u ) -> configurer.consume( u );
 	}
 
 	public <U extends EntityConfigurationBuilder<?>> Consumer<U> deleteViewAsModal() {
@@ -63,7 +63,7 @@ public class ModalConfigurers
 	public <U extends EntityConfigurationBuilder<?>, T extends DeleteModalConfigurer<T>> Consumer<U> deleteViewAsModal( Consumer<T> consumer ) {
 		T configurer = DeleteModalConfigurer.instance();
 		consumer.accept( configurer );
-		return (u) -> configurer.consume(u);
+		return ( u ) -> configurer.consume( u );
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -79,7 +79,7 @@ public class ModalConfigurers
 					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
 					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
 			consumer.accept( configurer );
-			return (u) -> configurer.consume(u);
+			return ( u ) -> configurer.consume( u );
 		}
 
 		public <U extends EntityAssociationBuilder> Consumer<U> updateViewAsModal() {
@@ -93,7 +93,7 @@ public class ModalConfigurers
 					.delete( vp -> vp.action( reconfigureModalActionHandlers() ) )
 					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
 			consumer.accept( configurer );
-			return (u) -> configurer.consume(u);
+			return ( u ) -> configurer.consume( u );
 		}
 
 		public <U extends EntityAssociationBuilder> Consumer<U> deleteViewAsModal() {
@@ -106,7 +106,7 @@ public class ModalConfigurers
 					.modal( vp -> vp.action( reconfigureModalActionHandlers() ) )
 					.submit( vp -> vp.action( reconfigureModalSubmissionAction() ) );
 			consumer.accept( configurer );
-			return (u) -> configurer.consume(u);
+			return ( u ) -> configurer.consume( u );
 		}
 
 		private Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> reconfigureModalActionHandlers() {

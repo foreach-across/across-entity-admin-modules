@@ -28,23 +28,25 @@ import java.util.Date;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RequiredArgsConstructor
-public class DateRangeEqlFunctions implements EntityQueryFunctionHandler {
+public class DateRangeEqlFunctions implements EntityQueryFunctionHandler
+{
 
-    private final DateRangeFunctionRegistry dateRangeFunctionRegistry;
+	private final DateRangeFunctionRegistry dateRangeFunctionRegistry;
 
-    @Override
-    public boolean accepts(String functionName, TypeDescriptor desiredType) {
-        return dateRangeFunctionRegistry.forName(functionName) != null && (
-                Date.class.equals(desiredType.getObjectType())
-                        || LocalDate.class.equals(desiredType.getObjectType())
-                        || LocalTime.class.equals(desiredType.getObjectType())
-                        || LocalDateTime.class.equals(desiredType.getObjectType()));
-    }
+	@Override
+	public boolean accepts( String functionName, TypeDescriptor desiredType ) {
+		return dateRangeFunctionRegistry.forName( functionName ) != null && (
+				Date.class.equals( desiredType.getObjectType() )
+						|| LocalDate.class.equals( desiredType.getObjectType() )
+						|| LocalTime.class.equals( desiredType.getObjectType() )
+						|| LocalDateTime.class.equals( desiredType.getObjectType() ) );
+	}
 
-    @Override
-    public Object apply(String functionName, EQType[] arguments, TypeDescriptor desiredType, EQTypeConverter argumentConverter) {
-        //TODO: support other date types, see EntityQueryDateFunctions
-        LocalDateTime[] boundaries = Arrays.stream(argumentConverter.convertAll(TypeDescriptor.valueOf(LocalDateTime.class), false, arguments)).toArray(LocalDateTime[]::new);
-        return dateRangeFunctionRegistry.createDateRange(functionName, boundaries, desiredType.getObjectType());
-    }
+	@Override
+	public Object apply( String functionName, EQType[] arguments, TypeDescriptor desiredType, EQTypeConverter argumentConverter ) {
+		//TODO: support other date types, see EntityQueryDateFunctions
+		LocalDateTime[] boundaries = Arrays.stream( argumentConverter.convertAll( TypeDescriptor.valueOf( LocalDateTime.class ), false, arguments ) ).toArray(
+				LocalDateTime[]::new );
+		return dateRangeFunctionRegistry.createDateRange( functionName, boundaries, desiredType.getObjectType() );
+	}
 }

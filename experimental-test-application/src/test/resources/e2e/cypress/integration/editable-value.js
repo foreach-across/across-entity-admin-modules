@@ -1,19 +1,19 @@
 context( "Editable value tests (User / Company entities)", () => {
 
     function navigateToUser( name, toDetailPage ) {
-        cy.contains(name)
-            .closest('tr')
-            .find('[data-em-button-role="edit"]')
-            .click();
-        if (toDetailPage) {
+        cy.contains( name )
+                .closest( 'tr' )
+                .find( '[data-em-button-role="edit"]' )
+                .click();
+        if ( toDetailPage ) {
             cy.url()
-                .then(url => {
-                    cy.visit(url.substr(0, url.length - "/update".length))
-                });
+                    .then( url => {
+                        cy.visit( url.substr( 0, url.length - "/update".length ) )
+                    } );
         }
         //TODO: better way of handling this ?
         // wait long for date pickers to initialize ?
-        cy.wait(1500);
+        cy.wait( 1500 );
     }
 
     function property( property ) {

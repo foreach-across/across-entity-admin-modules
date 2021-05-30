@@ -55,9 +55,10 @@ public class FoodUiConfiguration implements EntityConfigurer
 				        )
 		        )
 		        .listView(
-				        lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
-				                                          .order( 1100 ) )
-				                  .and( bulkActionsConfigurer( join( "extensions[", getShortName( FoodBulkActionViewProcessor.class ), "].selectedItems" ) ) )
+				        lvb -> lvb
+						        .pageSize( 3 )
+						        .viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class ).order( 1100 ) )
+						        .and( bulkActionsConfigurer( join( "extensions[", getShortName( FoodBulkActionViewProcessor.class ), "].selectedItems" ) ) )
 		        )
 		        .listView( "controller",
 		                   lvb -> lvb.viewProcessor( vp -> vp.createBean( FoodBulkActionViewProcessor.class )
@@ -95,11 +96,13 @@ public class FoodUiConfiguration implements EntityConfigurer
 			                                   ViewElementBuilderContext builderContext ) {
 				        container.find( "entityListForm-actions", ContainerViewElement.class )
 				                 .ifPresent(
-						                 c -> configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" )
+						                 c ->
+								                 configureButton( entityViewRequest, builderContext, c, "exportToCsv", "to CSV" )
 				                 );
 			        }
 		        } ) ) )
 		;
+
 	}
 
 	private void configureButton( EntityViewRequest entityViewRequest,
@@ -142,6 +145,7 @@ public class FoodUiConfiguration implements EntityConfigurer
 								builder.set( attribute( "supportedActions", Collections.singletonList( FoodActionType.RESET ) ) );
 							}
 						} )
+						.ajaxUrl( ( ( linkBuilder, builderContext ) -> linkBuilder.listView().withQueryParam( "custom", "stijn" ).toUriString() ) )
 						.itemValue( ( instance, ctx ) -> instance.getId() )
 						.itemControlName( controlName )
 						.formAttributeName( EntityViewModel.VIEW_COMMAND + ".extensions[" + getShortName( FoodBulkActionViewProcessor.class ) + "]" );

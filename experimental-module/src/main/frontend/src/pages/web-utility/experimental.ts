@@ -15,6 +15,24 @@ import {
 } from "./actions/handler/simple-handlers";
 import { simpleActionResolver, SimpleActionResolver } from "./actions/action/simple-action";
 import { editableValueHandlerFactory } from "./editable-value/editable-value-handler-factory";
+import { sortableTableAjax } from "./ajax/sortable-table-ajax";
+
+EntityModule.registerInitializer(function (node) {
+  sortableTableAjax.init(node);
+});
+
+$.fn.findSelf = function (selector: any) {
+  let result = this.find(selector);
+  this.each(function () {
+    let htmlElementJQuery = $(this);
+
+    if (htmlElementJQuery.is(selector)) {
+      result.push(htmlElementJQuery);
+    }
+  });
+
+  return result;
+};
 
 const actionFactory = new ActionFactory(handlerFactory);
 

@@ -3,6 +3,7 @@ package com.foreach.across.modules.experimental.bulkactions.support;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -18,6 +19,7 @@ public class SimpleBulkActionItemConfigurer<T> implements BulkActionsConfigurer<
 	private String controlName = null;
 	private Function<EntityViewRequest, String> submitUrl = null;
 	private String formAttributeName;
+	private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider = null;
 
 	public SimpleBulkActionItemConfigurer<T> itemSelectorControlPostProcessor( BiConsumer<ViewElementBuilderContext, ViewElement> itemSelectorPostProcessor ) {
 		this.itemSelectorControlPostProcessor = itemSelectorPostProcessor;
@@ -46,6 +48,11 @@ public class SimpleBulkActionItemConfigurer<T> implements BulkActionsConfigurer<
 		return this;
 	}
 
+	public SimpleBulkActionItemConfigurer<T> ajaxUrl( BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrl ) {
+		this.ajaxUrlProvider = ajaxUrl;
+		return this;
+	}
+
 	@Override
 	public ViewElementPostProcessor<CheckboxFormElement> itemSelectorControlPostProcessor() {
 		return itemSelectorControlPostProcessor::accept;
@@ -54,6 +61,11 @@ public class SimpleBulkActionItemConfigurer<T> implements BulkActionsConfigurer<
 	@Override
 	public BiFunction<T, ViewElementBuilderContext, Object> itemValueProvider() {
 		return itemValueProvider;
+	}
+
+	@Override
+	public BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> ajaxUrlProvider() {
+		return ajaxUrlProvider;
 	}
 
 	@Override

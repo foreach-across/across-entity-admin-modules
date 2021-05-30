@@ -1,10 +1,6 @@
 package com.foreach.across.testapplication.application.domain.food;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.testapplication.application.domain.food.Food;
-import com.foreach.across.testapplication.application.domain.food.FoodAction;
-import com.foreach.across.testapplication.application.domain.food.FoodActionType;
-import com.foreach.across.testapplication.application.domain.food.FoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

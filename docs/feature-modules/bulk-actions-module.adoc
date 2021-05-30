@@ -25,6 +25,8 @@ Within that column, a checkbox is provided as a selector for the entity represen
 The column header also contains a checkbox, which supports (de-)selecting all rows on the current page.
 The table is then wrapped within a new form.
 
+NOTE: When enabling bulk-fetching on a listView, the pagination will be switched to ajax so the selections made are persisted across the table pagination.
+
 The actual registration and execution of an action, as well as submitting the action with the selected values is not yet supported and the responsibility of the project.
 
 In its simplest form, the actions are configured using the `BulkActionsEntityConfigurers` utility class.
@@ -65,6 +67,11 @@ Can be used to bind form validation for example.
 <6> Optional.
 Supports configuring the url of the in which the table is wrapped.
 
+=== Selection indicator and ability to clear selection
+In the header of a sortable table with bulk actions a selection indicator text and a link to clear the current selection is rendered by default.
+You can move these fields or provided your own using the right data attributes. For more information in how to do this, see `BulkActionSelectedItemsViewProcessor`.
+
+
 === Accessing the selected values
 
 Submitting the actions is currently the responsibility of the project using them.
@@ -88,3 +95,44 @@ The selected items are the values selected by the underlying https://docs.across
 
 NOTE: If you programmatically change the value of one of a checkbox in the table body through its individual checkbox-control-adapter, you will have to execute `triggerChange()` as well.
 If you do not fire a change event, the `bulk-actions-container` adapter will not fire a change event either.
+
+=== Pagination
+The above method only supplies the values of the current page. To resolve all the selected items for the table across pagination you can use a provided hidden field. To accommodate this all listViews that have bulk actions enabled will have the table pagination changed to ajax.
+By default the ajax url will be set to the listView of the requested entity.
+You can however customize the url by providing you own `ajaxUrlProvider` on the `BulkActionsConfigurer`.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+    private Consumer<EntityViewFactoryBuilder> bulkActionsConfigurer(String controlName) {
+        SimpleBulkActionItemConfigurer<Food> bulkActionsConfiguration =
+                new SimpleBulkActionItemConfigurer<Food>()
+						.ajaxUrl(((linkBuilder, builderContext) -> linkBuilder.listView().withQueryParam("custom", "stijn").toUriString()))
+
+        return configureBulkActions(bulkActionsConfiguration);
+    }
+----
+
+This hidden field with the name of your supplied controlName suffixed with `BulkSelectionState` will be created. This hidden field holds a base64 encoded json representation of all the selected values and can be decoded using the provided `BulkActionStateDeserializer`.
+
+For bulk actions with the control name `selectedItems`, the following code can be used to fetch the selected items in the backend.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@RequiredArgsConstructor
+public class FoodBulkActionViewProcessor extends ExtensionViewProcessorAdapter<FoodBulkActionViewProcessor.BulkActionsHolder> {
+    @Override
+    protected void doPost(BulkActionsHolder extension, BindingResult bindingResult, EntityView entityView, EntityViewRequest entityViewRequest) {
+
+        Set<Long> convertedValue = BulkActionStateDeserializer.parseBulkActionState(extension.getSelectedItemsBulkSelectionState(), Long.class);
+}
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+static class BulkActionsHolder {
+    private String selectedItemsBulkSelectionState;
+}
+----

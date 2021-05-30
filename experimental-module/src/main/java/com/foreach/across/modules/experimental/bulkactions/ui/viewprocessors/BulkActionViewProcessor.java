@@ -14,6 +14,7 @@ import com.foreach.across.modules.entity.views.processors.SortableTableRendering
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
@@ -21,15 +22,19 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -84,6 +89,9 @@ public class BulkActionViewProcessor<T> extends EntityViewProcessorAdapter
 				WebResourceRule.add( WebResource.javascript( "@static:/experimental/web/bulk-actions.js" ) ).toBucket( WebResource.JAVASCRIPT_PAGE_END )
 				               .before( BootstrapUiFormElementsWebResources.NAME )
 				               .after( BootstrapUiWebResources.NAME ),
+				WebResourceRule.add( WebResource.javascript( "@static:/experimental/web/bulk-actions-state-manager.js" ) )
+				               .toBucket( WebResource.JAVASCRIPT_PAGE_END )
+				               .after( EntityModuleWebResources.NAME ),
 				WebResourceRule.add( WebResource.css( "@static:/experimental/web/bulk-actions.css" ) ).toBucket( WebResource.CSS ),
 				WebResourceRule.addPackage( BootstrapUiFormElementsWebResources.NAME )
 		);
@@ -151,21 +159,37 @@ public class BulkActionViewProcessor<T> extends EntityViewProcessorAdapter
 		ContainerViewElementUtils.find( container, "itemsTable-table", TableViewElement.class )
 		                         .ifPresent( tableViewElement -> tableViewElement.set( attribute( CONTROL_ADAPTER_TYPE, "bulk-actions-container" ) ) );
 
-		ContainerViewElementUtils.find( container, "itemsTable" )
-		                         .ifPresent( table -> ContainerViewElementUtils.findParent( container, table ).ifPresent( tableParent -> {
-			                         List<ViewElement> children = new ArrayList<>( tableParent.getChildren() );
-			                         tableParent.clearChildren();
-			                         children.forEach(
-					                         childElement -> {
-						                         if ( childElement != table ) {
-							                         tableParent.addChild( childElement );
+		ContainerViewElementUtils.find( container, "itemsTable", NodeViewElement.class )
+		                         .ifPresent( table -> {
+			                         addBulkActionStateField( table, builderContext );
+
+			                         ContainerViewElementUtils.findParent( container, table ).ifPresent( tableParent -> {
+				                         List<ViewElement> children = new ArrayList<>( tableParent.getChildren() );
+				                         tableParent.clearChildren();
+				                         children.forEach(
+						                         childElement -> {
+							                         if ( childElement != table ) {
+								                         tableParent.addChild( childElement );
+							                         }
+							                         else {
+								                         tableParent.addChild( createFormAndWrap( childElement, entityViewRequest, builderContext ) );
+							                         }
 						                         }
-						                         else {
-							                         tableParent.addChild( createFormAndWrap( childElement, entityViewRequest, builderContext ) );
-						                         }
-					                         }
-			                         );
-		                         } ) );
+				                         );
+
+			                         } );
+		                         } );
+	}
+
+	private void addBulkActionStateField( NodeViewElement table, ViewElementBuilderContext ctx ) {
+		String bulkActionStateControlName = controlNameProvider.get() + "BulkSelectionState";
+
+		table.addChild( bootstrap.builders.hidden()
+		                                  .value( getCurrentPagingState( bulkActionStateControlName ) )
+		                                  .name( bulkActionStateControlName )
+		                                  .controlName( bulkActionStateControlName )
+		                                  .css( "js-bulk-action-paging-state" )
+		                                  .build( ctx ) );
 	}
 
 	private FormViewElement createFormAndWrap( ViewElement childElement,
@@ -178,9 +202,19 @@ public class BulkActionViewProcessor<T> extends EntityViewProcessorAdapter
 		                                                   .add( childElement )
 		                                                   .build( builderContext )
 		                                                   .setCommandAttribute( formAttributeProvider.get() );
+
 		if ( submitUrlResolver != null ) {
 			bulkActionForm.setAction( submitUrlResolver.apply( entityViewRequest ) );
 		}
 		return bulkActionForm;
+	}
+
+	private static String getCurrentPagingState( String controlName ) {
+		return Optional.ofNullable( RequestContextHolder.getRequestAttributes() )
+		               .filter( requestAttributes -> ServletRequestAttributes.class.isAssignableFrom( requestAttributes.getClass() ) )
+		               .map( requestAttributes -> ( (ServletRequestAttributes) requestAttributes ) )
+		               .map( ServletRequestAttributes::getRequest )
+		               .map( httpServletRequest -> httpServletRequest.getParameter( controlName ) )
+		               .orElse( "" );
 	}
 }

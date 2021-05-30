@@ -9,6 +9,7 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.ExtensionViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.experimental.bulkactions.support.BulkActionStateDeserializer;
 import com.foreach.across.modules.experimental.bulkactions.ui.viewprocessors.BulkActionViewProcessor;
 import com.foreach.across.modules.experimental.entitycontrols.domain.EntityControlFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -25,7 +26,6 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -89,8 +89,11 @@ public class FoodBulkActionViewProcessor extends ExtensionViewProcessorAdapter<F
 	protected void doPost( BulkActionsHolder extension, BindingResult bindingResult, EntityView entityView, EntityViewRequest entityViewRequest ) {
 		TypeDescriptor sourceType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( String.class ) );
 		TypeDescriptor targetType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( Food.class ) );
+
+		Set<Long> convertedValue = BulkActionStateDeserializer.parseBulkActionState( extension.getSelectedItemsBulkSelectionState(), Long.class );
+
 		if ( conversionService.canConvert( sourceType, targetType ) ) {
-			Set<Food> asEntities = (Set<Food>) conversionService.convert( extension.getSelectedItems(), sourceType, targetType );
+			Set<Food> asEntities = (Set<Food>) conversionService.convert( convertedValue, sourceType, targetType );
 			bulkActionsHandler.executeBulkAction( asEntities, extension.getAction() );
 		}
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
@@ -104,6 +107,7 @@ public class FoodBulkActionViewProcessor extends ExtensionViewProcessorAdapter<F
 	static class BulkActionsHolder
 	{
 		private FoodActionType action;
-		private Set<String> selectedItems = new HashSet<>();
+
+		private String selectedItemsBulkSelectionState;
 	}
 }
