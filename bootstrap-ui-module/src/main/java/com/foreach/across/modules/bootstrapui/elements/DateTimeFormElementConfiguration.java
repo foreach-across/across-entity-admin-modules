@@ -464,7 +464,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	/**
 	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
 	 */
-	public void setDateAttribute( String attributeName, Boolean keepConfigurationAsArray, Date... dates ) {
+	public void setDateAttribute( String attributeName, boolean keepConfigurationAsArray, Date... dates ) {
 		LocalDateTime[] localDateTimes = Arrays.stream( dates )
 		                                       .map( this::dateToLocalDateTime )
 		                                       .toArray( LocalDateTime[]::new );
@@ -495,7 +495,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	/**
 	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
 	 */
-	public void setDateAttribute( String attributeName, Boolean keepConfigurationAsArray, LocalDate... dates ) {
+	public void setDateAttribute( String attributeName, boolean keepConfigurationAsArray, LocalDate... dates ) {
 		LocalDateTime[] localDateTimes = Arrays.stream( dates )
 		                                       .map( DateTimeFormElementConfiguration::localDateToLocalDateTime )
 		                                       .toArray( LocalDateTime[]::new );
@@ -536,7 +536,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	/**
 	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
 	 */
-	public void setDateAttribute( String attributeName, Boolean keepConfigurationAsArray, LocalDateTime... dates ) {
+	public void setDateAttribute( String attributeName, boolean keepConfigurationAsArray, LocalDateTime... dates ) {
 		if ( dates == null || ( dates.length == 1 && dates[0] == null ) ) {
 			remove( attributeName );
 		}
