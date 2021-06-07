@@ -183,7 +183,6 @@ public class TestDateTimeFormElementConfiguration
 	@Test
 	public void enabledDates() throws ParseException {
 		Date start = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
-		Date end = DateUtils.parseDate( "2015-08-18 10:31", "yyyy-MM-dd HH:mm" );
 
 		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration();
 		configuration.setEnabledDates( new Date[]{start});
