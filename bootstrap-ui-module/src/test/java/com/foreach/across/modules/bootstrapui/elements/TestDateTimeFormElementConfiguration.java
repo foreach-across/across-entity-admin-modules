@@ -181,6 +181,51 @@ public class TestDateTimeFormElementConfiguration
 	}
 
 	@Test
+	public void enabledDates() throws ParseException {
+		Date start = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
+		Date end = DateUtils.parseDate( "2015-08-18 10:31", "yyyy-MM-dd HH:mm" );
+
+		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration();
+		configuration.setEnabledDates( new Date[]{start});
+
+		assertEquals( Format.DATETIME, configuration.getFormat() );
+		assertEquals( FMT_PATTERN_DATETIME, configuration.get( "format" ) );
+		assertEquals( "en-GB", configuration.get( "locale" ) );
+		assertEquals( FMT_EXPORT_MOMENT_DATETIME, configuration.get( "exportFormat" ) );
+		assertArrayEquals(
+				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE },
+				(String[]) configuration.get( "extraFormats" )
+		);
+
+		Object[] enabledDates = (Object[]) configuration.get( "enabledDates" );
+		assertEquals( 1, enabledDates.length );
+		assertEquals( "2015-08-07 10:31", enabledDates[0] );
+	}
+
+	@Test
+	public void disabledDates() throws ParseException {
+		Date disabledDate = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
+		Date disabledDate2 = DateUtils.parseDate( "2015-08-08 10:31", "yyyy-MM-dd HH:mm" );
+
+		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration();
+		configuration.setDisabledDates( new Date[]{disabledDate, disabledDate2});
+
+		assertEquals( Format.DATETIME, configuration.getFormat() );
+		assertEquals( FMT_PATTERN_DATETIME, configuration.get( "format" ) );
+		assertEquals( "en-GB", configuration.get( "locale" ) );
+		assertEquals( FMT_EXPORT_MOMENT_DATETIME, configuration.get( "exportFormat" ) );
+		assertArrayEquals(
+				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE },
+				(String[]) configuration.get( "extraFormats" )
+		);
+
+		Object[] disabledDates = (Object[]) configuration.get( "disabledDates" );
+		assertEquals( 2, disabledDates.length );
+		assertEquals( "2015-08-07 10:31", disabledDates[0] );
+		assertEquals( "2015-08-08 10:31", disabledDates[1] );
+	}
+
+	@Test
 	public void dateToLocalDateConversion() throws Exception {
 		Date date = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
 		LocalDateTime localDateTime = LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault() );
