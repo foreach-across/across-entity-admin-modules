@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Arne Vandamme

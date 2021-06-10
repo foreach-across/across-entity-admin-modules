@@ -18,8 +18,8 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Arne Vandamme
@@ -30,7 +30,7 @@ public class TestOptionsAsRadioBuilder extends AbstractBootstrapViewElementTest
 
 	protected ViewElementBuilderContext builderContext;
 
-	@Before
+	@BeforeEach
 	public void reset() {
 		builderContext = new DefaultViewElementBuilderContext();
 

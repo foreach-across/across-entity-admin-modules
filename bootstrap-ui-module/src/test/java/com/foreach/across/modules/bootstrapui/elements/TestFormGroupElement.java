@@ -24,8 +24,8 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.test.modules.webtest.controllers.RenderViewElementController;
 import lombok.Getter;
 import lombok.Setter;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -51,7 +51,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 	private FormGroupElement group, groupWithInputGroup;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		group = new FormGroupElement();
 

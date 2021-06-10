@@ -19,7 +19,7 @@ package com.foreach.across.modules.bootstrapui.elements.tooltip;
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Arne Vandamme

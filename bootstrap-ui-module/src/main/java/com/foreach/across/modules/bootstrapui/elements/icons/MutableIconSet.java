@@ -18,8 +18,8 @@ package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import lombok.NonNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.function.Function;
 
 /**
@@ -36,17 +36,18 @@ public interface MutableIconSet extends IconSet
 {
 	/**
 	 * Adds an icon to the {@link MutableIconSet}.
-	 *  @param name         of the icon to add to the current {@link MutableIconSet}.
+	 *
+	 * @param name         of the icon to add to the current {@link MutableIconSet}.
 	 * @param iconResolver that will be used to resolve a {@link AbstractNodeViewElement} icon
 	 */
-	void add( @NotNull String name, Function<String, HtmlViewElement> iconResolver );
+	void add( @NonNull String name, Function<String, HtmlViewElement> iconResolver );
 
 	/**
 	 * Removes an icon from the {@link MutableIconSet}.
 	 *
 	 * @param name of the icon to be removed
 	 */
-	void remove( @NotNull String name );
+	void remove( @NonNull String name );
 
 	/**
 	 * Remove all icons from the {@link MutableIconSet}.

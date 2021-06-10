@@ -18,8 +18,9 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 /**
@@ -32,10 +33,12 @@ public class TestOptionsFormElementBuilder extends AbstractViewElementBuilderTes
 		return new OptionsFormElementBuilder();
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void noNestingOfOptionsFormElementBuilders() {
-		when( builderContext.hasAttribute( OptionsFormElementBuilder.class ) ).thenReturn( true );
+		assertThrows( IllegalStateException.class, () -> {
+			when( builderContext.hasAttribute( OptionsFormElementBuilder.class ) ).thenReturn( true );
 
-		build();
+			build();
+		} );
 	}
 }

@@ -28,6 +28,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -84,6 +86,7 @@ class AutoSuggest extends ExampleController
 				                         AutoSuggestFormElementConfiguration.withDataSet(
 						                         dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" )
 						                                           .setAttribute( "templates", Collections.singletonMap( "footer", "End of dataset" ) )
+						                                           .maximumResults( 15 )
 				                         ).withDataSet( "willies",
 				                                        dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest-more?query={{query}}" )
 				                         )
@@ -147,6 +150,15 @@ class AutoSuggest extends ExampleController
 				          .other( "123other" )
 				          .build()
 		);
+		suggestions = new ArrayList<>( suggestions );
+		for ( int i = 4; i < 100; i++ ) {
+			suggestions.add(
+					Suggestion.builder()
+					          .id( i )
+					          .label( "AAA" + RandomStringUtils.randomAlphanumeric( 10 ) )
+					          .other( RandomStringUtils.randomAlphanumeric( 20 ) )
+					          .build() );
+		}
 		return suggestions.stream()
 		                  .filter( suggestion -> StringUtils.containsIgnoreCase( suggestion.getLabel(), query ) )
 		                  .collect( Collectors.toList() );

@@ -17,12 +17,12 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -33,7 +33,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 	private NumericFormElement numeric;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		numeric = new NumericFormElement();
 	}

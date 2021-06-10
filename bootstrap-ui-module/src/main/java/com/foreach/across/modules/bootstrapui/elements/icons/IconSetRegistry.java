@@ -16,9 +16,9 @@
 
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
+
 import lombok.NonNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class IconSetRegistry
 	 * @param name of the {@link MutableIconSet} to add
 	 * @return the newly added {@link MutableIconSet}
 	 */
-	public static MutableIconSet getIconSet( @NotNull String name ) {
+	public static MutableIconSet getIconSet( @NonNull String name ) {
 		MutableIconSet foundMutableIconSet = iconSets.get( name );
 
 		if ( foundMutableIconSet == null ) {
@@ -64,10 +64,10 @@ public class IconSetRegistry
 	/**
 	 * Add an {@link MutableIconSet} to the collection of {@link IconSetRegistry}
 	 *
-	 * @param name          the {@link MutableIconSet} will be registered under
+	 * @param name           the {@link MutableIconSet} will be registered under
 	 * @param MutableIconSet to register
 	 */
-	public static void addIconSet( @NotNull String name, @NotNull MutableIconSet MutableIconSet ) {
+	public static void addIconSet( @NonNull String name, @NonNull MutableIconSet MutableIconSet ) {
 		iconSets.put( name, MutableIconSet );
 	}
 

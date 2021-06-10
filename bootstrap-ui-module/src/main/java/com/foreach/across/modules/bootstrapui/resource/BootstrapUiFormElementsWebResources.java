@@ -53,7 +53,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 	public static final String HANDLEBARS = "handlebars";
 
 	private static final String MOMENT_VERSION = "2.24.0";
-	private static final String TEMPUS_DOMINUS_VERSION = "5.1.2";
+	private static final String TEMPUS_DOMINUS_VERSION = "5.32.1";
 	private static final String AUTO_NUMERIC_VERSION = "4.5.4";
 	private static final String AUTOSIZE_VERSION = "4.0.2";
 	private static final String BOOTSTRAP_SELECT_VERSION = "1.13.11";
@@ -74,11 +74,13 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 
 				// Tempus Dominus - datetimepicker
 				add( WebResource.javascript(
-						"@webjars:/tempusdominus-bootstrap-4/" + TEMPUS_DOMINUS_VERSION + "/js/tempusdominus-bootstrap-4" + minified( ".js" ) ) )
+						"@webjars:org.webjars.npm/tempusdominus-bootstrap/" + TEMPUS_DOMINUS_VERSION + "/build/js/tempusdominus-bootstrap" +
+								minified( ".js" ) ) )
 						.withKey( TEMPUS_DOMINUS_DATETIME )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 				add( WebResource
-						     .css( "@webjars:/tempusdominus-bootstrap-4/" + TEMPUS_DOMINUS_VERSION + "/css/tempusdominus-bootstrap-4" + minified( ".css" ) ) )
+						     .css( "@webjars:org.webjars.npm/tempusdominus-bootstrap/" + TEMPUS_DOMINUS_VERSION + "/build/css/tempusdominus-bootstrap" +
+								           minified( ".css" ) ) )
 						.withKey( TEMPUS_DOMINUS_DATETIME )
 						.toBucket( CSS ),
 

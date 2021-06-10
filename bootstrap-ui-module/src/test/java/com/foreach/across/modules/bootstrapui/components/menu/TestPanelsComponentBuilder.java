@@ -30,8 +30,8 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.*;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
@@ -52,7 +52,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 	private DefaultViewElementBuilderContext builderContext;
 	private PanelsNavComponentBuilder builder;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		menu = new PathBasedMenuBuilder();
 		builderContext = new DefaultViewElementBuilderContext();

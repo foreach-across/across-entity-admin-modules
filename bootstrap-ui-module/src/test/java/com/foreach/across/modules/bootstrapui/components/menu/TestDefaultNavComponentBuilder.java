@@ -27,8 +27,8 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.*;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
@@ -46,7 +46,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	private DefaultViewElementBuilderContext builderContext;
 	private DefaultNavComponentBuilder builder;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		menu = new PathBasedMenuBuilder();
 		builderContext = new DefaultViewElementBuilderContext();

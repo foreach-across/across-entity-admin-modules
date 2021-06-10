@@ -2,7 +2,7 @@ package com.foreach.across.modules.bootstrapui.elements.complex;
 
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
 import com.foreach.across.modules.web.ui.ViewElement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestListPageView extends AbstractBootstrapViewElementTest
 {

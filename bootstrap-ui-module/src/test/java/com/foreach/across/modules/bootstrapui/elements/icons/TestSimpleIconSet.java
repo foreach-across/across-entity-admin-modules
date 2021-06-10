@@ -18,8 +18,9 @@ package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
@@ -33,7 +34,7 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 {
 	private String customFontAwesomeIconSetName = "custom-fontawesome-solid";
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		SimpleIconSet customFontAwesomeIconSetSimpleIconSet = new SimpleIconSet();
 		customFontAwesomeIconSetSimpleIconSet.setDefaultIconResolver( ( iconName ) -> html.i( css( "fas fa-" + iconName ) ) );
@@ -46,12 +47,14 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 		renderAndExpect( icon, "<i class=\"fas fa-edit\"></i>" );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void noDefaultIconResolverProvided() {
-		SimpleIconSet noDefaultIconSet = new SimpleIconSet();
-		IconSetRegistry.addIconSet( "no-default", noDefaultIconSet );
+		Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			SimpleIconSet noDefaultIconSet = new SimpleIconSet();
+			IconSetRegistry.addIconSet( "no-default", noDefaultIconSet );
 
-		iconSet( "unknown" );
+			iconSet( "unknown" );
+		} );
 	}
 
 	@Test

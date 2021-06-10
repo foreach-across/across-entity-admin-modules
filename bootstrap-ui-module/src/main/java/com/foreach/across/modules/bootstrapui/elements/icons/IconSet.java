@@ -18,8 +18,8 @@ package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import lombok.NonNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**
@@ -42,7 +42,7 @@ public interface IconSet
 	 * @param name of the icon in the {@link SimpleIconSet}
 	 * @return The icon as a {@link AbstractNodeViewElement}
 	 */
-	HtmlViewElement icon( @NotNull String name );
+	HtmlViewElement icon( @NonNull String name );
 
 	/**
 	 * Gets a map of all registered icons on the {@link IconSet}.
@@ -57,7 +57,7 @@ public interface IconSet
 	 * @param name of the iconSet
 	 * @return an {@link IconSet}
 	 */
-	static IconSet iconSet( @NotNull String name ) {
+	static IconSet iconSet( @NonNull String name ) {
 		return IconSetRegistry.getIconSet( name );
 	}
 }

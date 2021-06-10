@@ -20,12 +20,12 @@ import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElemen
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Arne Vandamme
@@ -34,12 +34,12 @@ import static org.junit.Assert.assertNull;
 @SuppressWarnings("unchecked")
 public class TestControlNamePrefixingPostProcessor
 {
-	@Before
-	public void before(){
-		ViewElementBuilderContextHolder.setViewElementBuilderContext( new DefaultViewElementBuilderContext());
+	@BeforeEach
+	public void before() {
+		ViewElementBuilderContextHolder.setViewElementBuilderContext( new DefaultViewElementBuilderContext() );
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		ViewElementBuilderContextHolder.clearViewElementBuilderContext();
 	}

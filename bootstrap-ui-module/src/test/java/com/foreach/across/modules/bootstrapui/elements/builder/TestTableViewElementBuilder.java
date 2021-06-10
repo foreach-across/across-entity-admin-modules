@@ -20,14 +20,14 @@ import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
