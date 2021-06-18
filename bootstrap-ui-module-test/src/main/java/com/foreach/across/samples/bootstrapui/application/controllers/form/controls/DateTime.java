@@ -68,7 +68,10 @@ class DateTime extends ExampleController
 				panel( "Localized ja_JP (LocalDateTime)", datepickerLocalizedjaJP_LocalDateTime().setControlName( "dp15" ) ),
 				panel( "Date datepicker", bootstrap.builders.datetime().controlName( "date-dp1" ).date().value( LocalDate.now() ).build() ),
 				panel( "Time datepicker", bootstrap.builders.datetime().controlName( "time-dp1" ).time().value( LocalTime.now() ).build() ),
-				panel( "Date datepicker only today", bootstrap.builders.datetime().controlName( "date-today" ).date().configuration( enabledDatesOnlyTodayConfiguration() ).value( LocalDate.now() ).build() ),
+				panel( "Date datepicker enabledDates", bootstrap.builders.datetime().controlName( "date-enabled-today" ).date().configuration(
+						enabledDatesOnlyTodayConfiguration() ).value( LocalDate.now() ).build() ),
+				panel( "Date datepicker only today", bootstrap.builders.datetime().controlName( "date-disabled-today" ).date().configuration(
+						disabledDatesOnlyTodayConfiguration() ).value( LocalDate.now() ).build() ),
 				panel( "Date datepicker without controlName", bootstrap.builders.datetime().date().value( LocalDate.now() ).build() )
 				);
 	}
@@ -175,6 +178,12 @@ class DateTime extends ExampleController
 	private DateTimeFormElementConfiguration enabledDatesOnlyTodayConfiguration() {
 		DateTimeFormElementConfiguration config = new DateTimeFormElementConfiguration();
 		config.setEnabledDates( LocalDate.now() );
+		return config;
+	}
+
+	private DateTimeFormElementConfiguration disabledDatesOnlyTodayConfiguration() {
+		DateTimeFormElementConfiguration config = new DateTimeFormElementConfiguration();
+		config.setDisabledDates( LocalDate.now() );
 		return config;
 	}
 }
