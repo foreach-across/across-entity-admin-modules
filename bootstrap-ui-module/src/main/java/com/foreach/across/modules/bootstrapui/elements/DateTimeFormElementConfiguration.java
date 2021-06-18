@@ -347,7 +347,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Matched with day granularity.
 	 */
 	public void setDisabledDates( Date... dates ) {
-		setDateAttribute( "disabledDates", dates );
+		setDateAttribute( "disabledDates", true, dates );
 	}
 
 	/**
@@ -355,7 +355,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Matched with day granularity.
 	 */
 	public void setDisabledDates( LocalDate... dates ) {
-		setDateAttribute( "disabledDates", dates );
+		setDateAttribute( "disabledDates", true, dates );
 	}
 
 	/**
@@ -363,7 +363,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Matched with day granularity.
 	 */
 	public void setDisabledDates( LocalDateTime... dates ) {
-		setDateAttribute( "disabledDates", dates );
+		setDateAttribute( "disabledDates", true, dates );
 	}
 
 	/**
@@ -371,7 +371,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Matched with day granularity.
 	 */
 	public void setEnabledDates( Date... dates ) {
-		setDateAttribute( "enabledDates", dates );
+		setDateAttribute( "enabledDates", true, dates );
 	}
 
 	/**
@@ -379,7 +379,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Matched with day granularity.
 	 */
 	public void setEnabledDates( LocalDate... dates ) {
-		setDateAttribute( "enabledDates", dates );
+		setDateAttribute( "enabledDates", true, dates );
 	}
 
 	/**
@@ -387,7 +387,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Matched with day granularity.
 	 */
 	public void setEnabledDates( LocalDateTime... dates ) {
-		setDateAttribute( "enabledDates", dates );
+		setDateAttribute( "enabledDates", true, dates );
 	}
 
 	/**
@@ -458,10 +458,17 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
 	 */
 	public void setDateAttribute( String attributeName, Date... dates ) {
+		setDateAttribute( attributeName, false, dates );
+	}
+
+	/**
+	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
+	 */
+	public void setDateAttribute( String attributeName, boolean keepConfigurationAsArray, Date... dates ) {
 		LocalDateTime[] localDateTimes = Arrays.stream( dates )
 		                                       .map( this::dateToLocalDateTime )
 		                                       .toArray( LocalDateTime[]::new );
-		setDateAttribute( attributeName, localDateTimes );
+		setDateAttribute( attributeName, keepConfigurationAsArray, localDateTimes );
 	}
 
 	/**
@@ -482,10 +489,17 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
 	 */
 	public void setDateAttribute( String attributeName, LocalDate... dates ) {
+		setDateAttribute( attributeName, false, dates );
+	}
+
+	/**
+	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
+	 */
+	public void setDateAttribute( String attributeName, boolean keepConfigurationAsArray, LocalDate... dates ) {
 		LocalDateTime[] localDateTimes = Arrays.stream( dates )
 		                                       .map( DateTimeFormElementConfiguration::localDateToLocalDateTime )
 		                                       .toArray( LocalDateTime[]::new );
-		setDateAttribute( attributeName, localDateTimes );
+		setDateAttribute( attributeName, keepConfigurationAsArray, localDateTimes );
 	}
 
 	/**
@@ -516,11 +530,18 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
 	 */
 	public void setDateAttribute( String attributeName, LocalDateTime... dates ) {
+		setDateAttribute( attributeName, false, dates );
+	}
+
+	/**
+	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
+	 */
+	public void setDateAttribute( String attributeName, boolean keepConfigurationAsArray, LocalDateTime... dates ) {
 		if ( dates == null || ( dates.length == 1 && dates[0] == null ) ) {
 			remove( attributeName );
 		}
 		else {
-			if ( dates.length == 1 ) {
+			if ( dates.length == 1 && !keepConfigurationAsArray ) {
 				put( attributeName, JAVA_DATE_TIME_FORMATTER.format( dates[0] ) );
 			}
 			else {
