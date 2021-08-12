@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -30,6 +32,7 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 	{{
 		put( "hide", true );
 	}};
+	private boolean customImplementation;
 
 	DependsOnAttribute( Consumer<DependsOnAttribute> consumer ) {
 		consumer.accept( this );
@@ -56,6 +59,11 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 		return new Dependency( ruleSet( propertyToDependencyId( propertyName ) ), options );
 	}
 
+	public DependsOnAttribute customFrontendImplementation( Boolean customImplementation ) {
+		this.customImplementation = customImplementation;
+		return this;
+	}
+
 	private Map<String, Object> ruleSet( String id ) {
 		return dependencies.computeIfAbsent( id, key -> new LinkedHashMap<>() );
 	}
@@ -74,7 +82,13 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 		Map<String, Map<String, Object>> attributeValue = new LinkedHashMap<>( dependencies );
 		attributeValue.put( "options", options );
 		node.setAttribute( "style", "display: none;" );
-		node.setAttribute( "data-dependson", attributeValue );
+
+		if ( !customImplementation ) {
+			node.setAttribute( "data-dependson", attributeValue );
+		}
+		else {
+			node.setAttribute( "data-dependson-custom", attributeValue );
+		}
 	}
 
 	@Override
@@ -132,6 +146,15 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 
 		public DependsOnAttribute and() {
 			return DependsOnAttribute.this;
+		}
+
+		public Dependency or( Consumer<DependsOnAttribute> orCondition ) {
+			DependsOnAttribute dependsOnAttribute = new DependsOnAttribute( orCondition );
+			Map<String, Map<String, Object>> otherDependencies = (Map<String, Map<String, Object>>) rules.getOrDefault( "orConfiguration",
+			                                                                                                            new LinkedHashMap<>() );
+			otherDependencies.putAll( dependsOnAttribute.dependencies );
+			rules.put( "orConfiguration", otherDependencies );
+			return this;
 		}
 	}
 }
