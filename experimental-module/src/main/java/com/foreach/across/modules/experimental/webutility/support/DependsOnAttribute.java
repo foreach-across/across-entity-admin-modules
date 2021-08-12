@@ -99,6 +99,11 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 			return this;
 		}
 
+		public Dependency contains( Object... values ) {
+			rules.put( "contains", values );
+			return this;
+		}
+
 		public Dependency isChecked() {
 			return isChecked( true );
 		}
