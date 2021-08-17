@@ -62,6 +62,10 @@ public class DependsOnAttributeTest
 
 		NodeViewElement html = HtmlViewElements.html.html();
 		dependsOnAttribute.applyTo( html );
+		LinkedHashMap<String, Object> dataDependsOn = (LinkedHashMap<String, Object>) html.getAttribute( "data-dependson" );
 
+		assertThat( dataDependsOn.size() ).isEqualTo( 4 );
+		LinkedHashMap<String, Object> orDependencies = (LinkedHashMap<String, Object>) dataDependsOn.get( "orDependencies" );
+		assertThat( orDependencies.size() ).isEqualTo( 2 );
 	}
 }
