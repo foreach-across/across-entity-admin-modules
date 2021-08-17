@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -26,10 +28,12 @@ import java.util.function.Consumer;
 public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElement>, ViewElementPostProcessor<HtmlViewElement>, Consumer<EntityPropertyRegistryBuilder.PropertyDescriptorBuilder>
 {
 	private final Map<String, Map<String, Object>> dependencies = new LinkedHashMap<>();
+	private final Map<String, Map<String, Object>> orDependencies = new LinkedHashMap<>();
 	private final Map<String, Object> options = new LinkedHashMap<String, Object>()
 	{{
 		put( "hide", true );
 	}};
+	private boolean customImplementation;
 
 	DependsOnAttribute( Consumer<DependsOnAttribute> consumer ) {
 		consumer.accept( this );
@@ -39,21 +43,26 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 	 * Set the source field using the name of the viewElement
 	 */
 	public Dependency viewElementName( @NonNull String viewElementName ) {
-		return new Dependency( ruleSet( viewElementNameToDependencyId( viewElementName ) ), options );
+		return new Dependency( ruleSet( viewElementNameToDependencyId( viewElementName ) ), options, orDependencies );
 	}
 
 	/**
 	 * Set the source field using a jQuery selector
 	 */
 	public Dependency selector( @NonNull String selector ) {
-		return new Dependency( ruleSet( selector ), options );
+		return new Dependency( ruleSet( selector ), options, orDependencies );
 	}
 
 	/**
 	 * Set the source field using the property selector
 	 */
 	public Dependency property( @NonNull String propertyName ) {
-		return new Dependency( ruleSet( propertyToDependencyId( propertyName ) ), options );
+		return new Dependency( ruleSet( propertyToDependencyId( propertyName ) ), options, orDependencies );
+	}
+
+	public DependsOnAttribute customFrontendImplementation( Boolean customImplementation ) {
+		this.customImplementation = customImplementation;
+		return this;
 	}
 
 	private Map<String, Object> ruleSet( String id ) {
@@ -71,10 +80,17 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 
 	@Override
 	public void applyTo( HtmlViewElement node ) {
-		Map<String, Map<String, Object>> attributeValue = new LinkedHashMap<>( dependencies );
+		Map<String, Object> attributeValue = new LinkedHashMap<>( dependencies );
 		attributeValue.put( "options", options );
+		attributeValue.put( "orDependencies", orDependencies );
 		node.setAttribute( "style", "display: none;" );
-		node.setAttribute( "data-dependson", attributeValue );
+
+		if ( !customImplementation ) {
+			node.setAttribute( "data-dependson", attributeValue );
+		}
+		else {
+			node.setAttribute( "data-dependson-custom", attributeValue );
+		}
 	}
 
 	@Override
@@ -93,6 +109,7 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 	{
 		private final Map<String, Object> rules;
 		private final Map<String, Object> settings;
+		private final Map<String, Map<String, Object>> orDependencies;
 
 		public Dependency values( Object... values ) {
 			rules.put( "values", values );
@@ -132,6 +149,12 @@ public class DependsOnAttribute implements ViewElement.WitherSetter<HtmlViewElem
 
 		public DependsOnAttribute and() {
 			return DependsOnAttribute.this;
+		}
+
+		public Dependency or( Consumer<DependsOnAttribute> orCondition ) {
+			DependsOnAttribute dependsOnAttribute = new DependsOnAttribute( orCondition );
+			orDependencies.putAll( dependsOnAttribute.dependencies );
+			return this;
 		}
 	}
 }
