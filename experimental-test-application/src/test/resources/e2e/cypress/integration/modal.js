@@ -28,7 +28,7 @@ context( 'Modal tests', () => {
 
         cy.contains( "Create a new food" ).click();
 
-        let food = utils.randomString( 20 );
+        let food = "000" + utils.randomString( 20 );
         cy.log( "Saving food with name: " + food );
 
         //cy.contains( ".modal-content", "Name").type(food);
