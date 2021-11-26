@@ -80,7 +80,8 @@ public class FoodUiConfiguration implements EntityConfigurer
 	private void configureExportView( EntityConfigurationBuilder<Food> entities ) {
 		entities.listView( "exportToCsv",
 		                   ExportViewConfigurers.configureCsvExportView(
-				                   new CsvExportViewConfigurer<>()
+				                   new CsvExportViewConfigurer<CsvExportViewConfigurer>()
+						                   .applyPaginationParameters( false )
 						                   .fileName( "content.csv" )
 						                   .separator( ";" )
 						                   .shouldIncludeUtf8Bom( true )

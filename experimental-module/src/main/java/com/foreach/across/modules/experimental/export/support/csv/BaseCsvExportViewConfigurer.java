@@ -1,6 +1,7 @@
 package com.foreach.across.modules.experimental.export.support.csv;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.experimental.export.support.ExportMapper;
@@ -123,6 +124,12 @@ public abstract class BaseCsvExportViewConfigurer<T, R> extends SimpleExportView
 	@Override
 	public BaseCsvExportViewConfigurer<T, R> applyPaginationParameters( boolean applyPaginationParameters ) {
 		super.applyPaginationParameters( applyPaginationParameters );
+		return this;
+	}
+
+	@Override
+	public BaseCsvExportViewConfigurer<T, R> propertiesToExport( EntityPropertySelector propertiesToExport ) {
+		super.propertiesToExport( propertiesToExport );
 		return this;
 	}
 

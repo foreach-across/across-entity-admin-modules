@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-module-parent</artifactId>
-		<version>5.0.1.RELEASE</version>
+		<version>5.1.0.RELEASE</version>
 		<relativePath/>
 	</parent>
 
