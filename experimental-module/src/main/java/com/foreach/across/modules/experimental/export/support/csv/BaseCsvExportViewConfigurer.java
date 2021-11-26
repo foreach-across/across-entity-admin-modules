@@ -1,6 +1,7 @@
 package com.foreach.across.modules.experimental.export.support.csv;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.experimental.export.support.ExportMapper;
@@ -17,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -65,7 +67,7 @@ public abstract class BaseCsvExportViewConfigurer<T, R> extends SimpleExportView
 			List<String> content = StreamSupport.stream( data.spliterator(), false )
 			                                    .map( instance -> propertiesToExport.stream()
 			                                                                        .map( pd -> pd.getPropertyValue( instance ) )
-			                                                                        .map( Object::toString )
+			                                                                        .map( o -> Objects.isNull( o ) ? "" : o.toString() )
 			                                                                        .collect( Collectors.joining( getSeparator() ) )
 			                                    ).collect( Collectors.toList() );
 			for ( String s : content ) {
@@ -123,6 +125,12 @@ public abstract class BaseCsvExportViewConfigurer<T, R> extends SimpleExportView
 	@Override
 	public BaseCsvExportViewConfigurer<T, R> applyPaginationParameters( boolean applyPaginationParameters ) {
 		super.applyPaginationParameters( applyPaginationParameters );
+		return this;
+	}
+
+	@Override
+	public BaseCsvExportViewConfigurer<T, R> propertiesToExport( EntityPropertySelector propertiesToExport ) {
+		super.propertiesToExport( propertiesToExport );
 		return this;
 	}
 
