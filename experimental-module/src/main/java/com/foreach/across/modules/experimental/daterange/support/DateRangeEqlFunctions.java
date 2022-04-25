@@ -1,5 +1,6 @@
 package com.foreach.across.modules.experimental.daterange.support;
 
+import com.foreach.across.modules.entity.query.EQString;
 import com.foreach.across.modules.entity.query.EQType;
 import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EntityQueryFunctionHandler;
@@ -14,8 +15,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Handle all {@link com.foreach.across.modules.entity.query.EQFunction} related to {@link DateRangeFunctionRegistry}
@@ -45,8 +45,32 @@ public class DateRangeEqlFunctions implements EntityQueryFunctionHandler
 	@Override
 	public Object apply( String functionName, EQType[] arguments, TypeDescriptor desiredType, EQTypeConverter argumentConverter ) {
 		//TODO: support other date types, see EntityQueryDateFunctions
-		LocalDateTime[] boundaries = Arrays.stream( argumentConverter.convertAll( TypeDescriptor.valueOf( LocalDateTime.class ), false, arguments ) ).toArray(
-				LocalDateTime[]::new );
+		List<EQType> validated = validateEQTypes( arguments );
+
+		Object[] converted = argumentConverter.convertAll( TypeDescriptor.valueOf( LocalDateTime.class ), false, validated );
+		LocalDateTime[] boundaries = Arrays.stream( converted )
+		                                   .toArray( LocalDateTime[]::new );
 		return dateRangeFunctionRegistry.createDateRange( functionName, boundaries, desiredType.getObjectType() );
+	}
+
+	/***
+	 * Validates EQTypes and filters out String 'null' values
+	 * @param arguments
+	 * @return
+	 */
+	private List<EQType> validateEQTypes( EQType[] arguments ) {
+		List<EQType> validated = new ArrayList<>();
+		for ( EQType argument : arguments ) {
+			if ( argument instanceof EQString ) {
+				EQString parsed = (EQString) argument;
+				if ( !"null".equalsIgnoreCase( parsed.getValue() ) ) {
+					validated.add( parsed );
+				}
+			}
+			else {
+				validated.add( argument );
+			}
+		}
+		return validated;
 	}
 }

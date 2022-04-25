@@ -117,6 +117,9 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement>
 			format = DateTimeFormElementConfiguration.Format.TIME;
 		}
 
+		DateRange.DateOrLocalDateTime dateFrom = datepickerOptionValue != null ? datepickerOptionValue.getDateFrom() : null;
+		DateRange.DateOrLocalDateTime dateTo = datepickerOptionValue != null ? datepickerOptionValue.getDateTo() : null;
+
 		return html.div( css.of( "custom-date-range-picker" ) )
 		           .setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "date-range-picker" )
 		           .set( data( EntityQueryFilterControlUtils.FilterControlAttributes.TYPE, "EQValue" ) )
@@ -133,10 +136,10 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement>
 		                                        .build()
 		           )
 		           .addChild( html.div( css.of(
-				           "js-custom-date-picker-dates",
-				           "custom-date-range-picker-dates",
-				           !customDateRangeIsSelected ? "d-none" : ""
-		                      ) )
+				                          "js-custom-date-picker-dates",
+				                          "custom-date-range-picker-dates",
+				                          !customDateRangeIsSelected ? "d-none" : ""
+		                          ) )
 		                          .addChild(
 				                          html.div().addChild(
 						                          bootstrap.builders.datetime()
@@ -146,8 +149,8 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement>
 						                                            .data( "daterange", "from" )
 						                                            .format( format )
 						                                            .attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "datetime" )
-						                                            .value( customDateRangeIsSelected ? datepickerOptionValue.getDateFrom().toLocalDateTime()
-								                                                    : null ).build()
+						                                            .value( customDateRangeIsSelected && dateFrom != null ? dateFrom.toLocalDateTime() : null )
+						                                            .build()
 				                          )
 		                          )
 		                          .addChild(
@@ -159,8 +162,8 @@ public class DateRangeControl implements ViewElementBuilder<HtmlViewElement>
 						                                            .format( format )
 						                                            .configuration( dateTimeFormElementConfiguration )
 						                                            .attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "datetime" )
-						                                            .value( customDateRangeIsSelected ? datepickerOptionValue.getDateTo().toLocalDateTime()
-								                                                    : null ).build()
+						                                            .value( customDateRangeIsSelected && dateTo != null ? dateTo.toLocalDateTime() : null )
+						                                            .build()
 				                          )
 		                          )
 		           );
