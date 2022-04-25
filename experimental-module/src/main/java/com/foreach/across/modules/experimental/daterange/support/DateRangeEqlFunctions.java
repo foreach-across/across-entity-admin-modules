@@ -45,7 +45,7 @@ public class DateRangeEqlFunctions implements EntityQueryFunctionHandler
 	@Override
 	public Object apply( String functionName, EQType[] arguments, TypeDescriptor desiredType, EQTypeConverter argumentConverter ) {
 		//TODO: support other date types, see EntityQueryDateFunctions
-		List<EQType> validated = validateEQTypes( arguments );
+		EQType[] validated = validateEQTypes( arguments ).toArray( new EQType[0] );
 
 		Object[] converted = argumentConverter.convertAll( TypeDescriptor.valueOf( LocalDateTime.class ), false, validated );
 		LocalDateTime[] boundaries = Arrays.stream( converted )
