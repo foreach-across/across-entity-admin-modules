@@ -1,5 +1,10 @@
 package com.across.samples.bootstrap.application.config;
 
+import java.util.function.Consumer;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Sort;
+
 import com.across.samples.bootstrap.application.domain.blog.BlogDomain;
 import com.across.samples.bootstrap.application.domain.blog.author.Author;
 import com.across.samples.bootstrap.application.domain.blog.post.BlogPost;
@@ -17,10 +22,6 @@ import com.foreach.across.modules.entity.views.processors.support.ViewElementBui
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Sort;
-
-import java.util.function.Consumer;
 
 /**
  * Contains the main domain configuration.
@@ -40,7 +41,7 @@ class DomainConfiguration {
         public void configure(EntitiesConfigurationBuilder entities) {
             Consumer<EntityListViewFactoryBuilder> blogPostListView =
                     lvb -> lvb.showProperties("author", "title", "publicationSettings.publicationDate")
-                            .defaultSort(new Sort(Sort.Direction.DESC, "publicationSettings.publicationDate"))
+                            .defaultSort(Sort.by(Sort.Direction.DESC, "publicationSettings.publicationDate"))
                             .viewProcessor(new BlogPostListViewProcessor());
 
             entities.withType(BlogPost.class)
