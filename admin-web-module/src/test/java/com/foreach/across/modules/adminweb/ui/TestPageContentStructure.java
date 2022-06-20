@@ -17,10 +17,10 @@
 package com.foreach.across.modules.adminweb.ui;
 
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Arne Vandamme
@@ -30,7 +30,7 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 {
 	private PageContentStructure page;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		page = new PageContentStructure();
 	}

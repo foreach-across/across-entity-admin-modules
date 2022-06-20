@@ -21,7 +21,7 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestWebContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;

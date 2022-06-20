@@ -20,6 +20,7 @@ import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.resource.WebResource;
@@ -161,6 +162,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 						                         .includePathAsDataAttribute( isIncludeNavPathAsDataAttribute() )
 						                         .filter( navPosition( SIDEBAR, true ) )
 						                         .build()
+						                         .set( AcrossBootstrapStyles.css.flex.nowrap )
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_BREADCRUMB,
