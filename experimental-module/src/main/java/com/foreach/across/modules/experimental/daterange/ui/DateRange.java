@@ -15,7 +15,7 @@ import java.util.function.Function;
  * When setting the {@param type} to {@link DateRange#DATE_RANGE} the {@param dateFrom} & {@param dateTo} parameters must
  * be provided. In all other cases it is expected the {@param dateFrom} & {@param dateTo} are calculated.
  * <p>
- * Static functiions are provided to use this class.
+ * Static functions are provided to use this class.
  *
  * @author Stijn Vanhoof
  */
@@ -40,11 +40,14 @@ public class DateRange
 	                                                                                                 LocalDateTime.now() ) );
 
 	public static DateRange dateRange( Object[] args ) {
-		return new DateRange( args[0], args[1] );
+		return args.length == 2 ? new DateRange( args[0], args[1] ) : new DateRange();
 	}
 
-	private final DateOrLocalDateTime dateFrom;
-	private final DateOrLocalDateTime dateTo;
+	private DateOrLocalDateTime dateFrom;
+	private DateOrLocalDateTime dateTo;
+
+	public DateRange() {
+	}
 
 	public DateRange( Object from, Object to ) {
 		dateFrom = DateOrLocalDateTime.wrap( from );
@@ -91,17 +94,27 @@ public class DateRange
 		}
 
 		public LocalDateTime toLocalDateTime() {
+			if ( dateOrLocalDateTime == null ) {
+				return null;
+			}
+
 			if ( isLocalDateTime() ) {
 				return (LocalDateTime) dateOrLocalDateTime;
 			}
+
 			Date date = (Date) this.dateOrLocalDateTime;
 			return LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault() );
 		}
 
 		public Date toDate() {
+			if ( dateOrLocalDateTime == null ) {
+				return null;
+			}
+
 			if ( !isLocalDateTime() ) {
 				return (Date) dateOrLocalDateTime;
 			}
+
 			LocalDateTime localDateTime = toLocalDateTime();
 			return Date.from( ( localDateTime ).toInstant( ZoneId.systemDefault().getRules().getOffset( localDateTime ) ) );
 		}
