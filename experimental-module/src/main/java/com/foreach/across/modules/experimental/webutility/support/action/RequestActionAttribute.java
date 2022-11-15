@@ -59,6 +59,13 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
 	private Map<String, Object> requestConfig;
 
 	/**
+	 * A collection of {@link ActionHandlerAttribute}s that should be executed before the request gets executed
+	 * The provided handlers are executed in order.
+	 */
+	@JsonProperty
+	private LinkedList<ActionHandlerAttribute> before = new LinkedList<>();
+
+	/**
 	 * A collection of {@link ActionHandlerAttribute}s that should be executed when the response was succesful (statuscode 200-299).
 	 * The provided handlers are executed in order.
 	 */
@@ -124,6 +131,14 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
 
 	public SELF success( ActionHandlerAttribute... success ) {
 		return success( Arrays.asList( success ) );
+	}
+
+	public SELF before( Collection<ActionHandlerAttribute> before ) {
+		this.before = new LinkedList<>( before );
+		return self();
+	}
+	public SELF before( ActionHandlerAttribute... before ) {
+		return before( Arrays.asList( before ) );
 	}
 
 	public SELF redirect( Collection<ActionHandlerAttribute> redirect ) {
