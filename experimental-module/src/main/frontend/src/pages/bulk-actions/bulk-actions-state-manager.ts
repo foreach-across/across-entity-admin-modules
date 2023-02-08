@@ -1,4 +1,5 @@
 import Base64Utils from "../web-utility/utils/base64-utils";
+import { ax } from "../web-utility/utils/utils";
 
 class BulkActionsStateManager {
   private readonly bulkActionFormNode: any;
@@ -61,6 +62,12 @@ class BulkActionsStateManager {
   updateTotalSelected = () => {
     const totalSelectedItems = this.getState().length;
     const totalItemsSelectedField = this.bulkActionFormNode.find("[data-bulk-action-total-selected-text]");
+
+    if (!totalItemsSelectedField.data("bulk-action-total-selected-text")) {
+      ax.log.error("Cannot find total items selected field for bulk actions.");
+      return;
+    }
+
     const text = totalItemsSelectedField.data("bulk-action-total-selected-text").replace("%", totalSelectedItems);
 
     if (totalSelectedItems < 1) {
