@@ -4,3 +4,10 @@ target
 .idea/excludeFromValidation
 
 .flattened-pom.xml
+# Maven:
+.effective-pom.xml
+.dependency-tree.txt
+.foreach-deps.txt
+
+# Emacs:
+*~
