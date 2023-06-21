@@ -28,12 +28,16 @@ import com.foreach.across.testmodules.springdata.business.Company;
 import com.foreach.across.testmodules.springdata.business.Group;
 import com.foreach.across.testmodules.springdata.business.QCompany;
 import com.foreach.across.testmodules.springdata.business.Representative;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,10 +52,17 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Slf4j
 public class ITEntityQueryExecution extends AbstractQueryTest
 {
 	@Autowired
 	private EntityRegistry entityRegistry;
+
+	@Autowired
+	private DataSource dataSource;
+
+	@Value("${acrossTest.datasource}")
+	private String acrossTestDataSourceType;
 
 	@Test
 	public void findAll() {
@@ -86,8 +97,27 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		assertEquals( peter, ordered.get( 0 ) );
 		assertEquals( john, ordered.get( 1 ) );
 		assertEquals( joe, ordered.get( 2 ) );
-		assertEquals( absolute, ordered.get( 3 ) );
-		assertEquals( weirdo, ordered.get( 4 ) );
+		if ( isUsingUnicodeCollationAlgorithm() ) {
+			assertEquals( weirdo, ordered.get( 3 ) );
+			assertEquals( absolute, ordered.get( 4 ) );
+		}
+		else {
+			assertEquals( absolute, ordered.get( 3 ) );
+			assertEquals( weirdo, ordered.get( 4 ) );
+		}
+	}
+
+	private boolean isUsingUnicodeCollationAlgorithm() {
+		LOG.info( "acrossTest DataSource type: {}", acrossTestDataSourceType );
+		// In some setups this is 'mysql' (IntelliJ), in others it's a test containers JDBC URL like 'jdbc:tc:mysql:...' (Bamboo)
+		if ( acrossTestDataSourceType.contains( "mysql" ) ) {
+			JdbcTemplate template = new JdbcTemplate( dataSource );
+			String collation = template.queryForObject( "select @@collation_connection;", ( rs, rowNum ) -> rs.getString( 1 ) );
+			LOG.info( "MySQL connection collation: {}", acrossTestDataSourceType );
+			assert collation != null;
+			return collation.contains( "0900" ); // Default in MySQL 8.0 is utf8mb4_0900_ai_ci
+		}
+		return false;
 	}
 
 	@Test
