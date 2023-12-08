@@ -22,6 +22,7 @@
         <groupId>com.foreach.across</groupId>
         <artifactId>across-standard-module-parent</artifactId>
         <version>5.0.0.RELEASE</version>
+        <relativePath/>
     </parent>
 
     <groupId>com.foreach.across.modules</groupId>
@@ -94,11 +95,6 @@
             <dependency>
                 <groupId>com.foreach.across.modules</groupId>
                 <artifactId>properties-module</artifactId>
-                <version>2.0.0.RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>com.foreach.across.modules</groupId>
-                <artifactId>file-manager-module</artifactId>
                 <version>2.0.0.RELEASE</version>
             </dependency>
             <dependency>

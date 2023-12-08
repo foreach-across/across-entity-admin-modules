@@ -74,10 +74,12 @@
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>properties-module</artifactId>
 		</dependency>
+<!--
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>file-manager-module</artifactId>
 		</dependency>
+-->
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>bootstrap-ui-module</artifactId>

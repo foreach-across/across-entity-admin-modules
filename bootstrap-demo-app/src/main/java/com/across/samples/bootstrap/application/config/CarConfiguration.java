@@ -8,7 +8,6 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
-import com.foreach.across.modules.filemanager.business.reference.FileReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -204,8 +203,8 @@ public class CarConfiguration implements EntityConfigurer
 		@NotNull
 		private ManufacturerConfiguration.Manufacturer manufacturer;
 		private Long price;
-		@NotNull
-		private FileReference userManual;
+//		@NotNull
+//		private FileReference userManual;
 		@NotNull
 		private Boolean transmission;
 		@NotNull
@@ -222,7 +221,7 @@ public class CarConfiguration implements EntityConfigurer
 			b.model = model == null ? null : model.copy();
 			b.manufacturer = manufacturer == null ? null : manufacturer.copy();
 			b.price = price;
-			b.userManual = userManual == null ? null : userManual.toDto();
+			//b.userManual = userManual == null ? null : userManual.toDto();
 			b.releaseDate = releaseDate;
 			b.remarks = remarks;
 			b.soldOutsideEU = soldOutsideEU;
