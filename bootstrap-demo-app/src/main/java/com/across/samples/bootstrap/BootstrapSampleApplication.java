@@ -5,7 +5,6 @@ import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminwebthemes.AdminWebThemesModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.dynamicforms.DynamicFormsModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.properties.PropertiesModule;
@@ -18,7 +17,6 @@ import com.foreach.across.modules.properties.PropertiesModule;
 				BootstrapUiModule.NAME,
 				EntityModule.NAME,
 				PropertiesModule.NAME,
-				DynamicFormsModule.NAME
 		}
 )
 public class BootstrapSampleApplication
