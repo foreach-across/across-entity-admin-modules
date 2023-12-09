@@ -99,9 +99,6 @@ after_script:
     - cd ${FRONTEND_DIR}
     - yarn install
     - yarn build:prod
-  artifacts:
-    paths:
-      - bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/
 
 frontend:bootstrap-ui-module:
   extends:
