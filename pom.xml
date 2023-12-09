@@ -86,6 +86,8 @@
 		<module>entity-module-test-application</module>
 		<module>entity-module-elastic-application</module>
 		<module>properties-module</module>
+		<module>application-info-module</module>
+		<module>application-info-module-test-web</module>
 	</modules>
 
 	<dependencyManagement>
@@ -111,6 +113,11 @@
 				<groupId>com.foreach.across</groupId>
 				<artifactId>across-autoconfigure</artifactId>
 				<version>2.2.2-gitlab-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>debug-web-module</artifactId>
+				<version>${across-base-modules.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>

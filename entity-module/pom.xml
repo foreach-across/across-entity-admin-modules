@@ -25,7 +25,6 @@
 	</parent>
 
 	<artifactId>entity-module</artifactId>
-	<name>EntityModule</name>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

@@ -15,9 +15,11 @@
         <module name="entity-module" />
         <module name="entity-module-test-application" />
         <module name="properties-module" />
+        <module name="application-info-module-test-web" />
         <module name="entity-module-elastic-application" />
         <module name="bootstrap-ui-module" />
         <module name="bootstrap-ui-module-test" />
+        <module name="application-info-module" />
         <module name="entity-module-test" />
         <module name="admin-web-module-test-web" />
       </profile>

@@ -1,4 +1,4 @@
-# BootstrapUiModule / AdminWebModule / EntityModule / PropertiesModule
+# BootstrapUiModule / AdminWebModule / EntityModule / PropertiesModule / ApplicationInfoModule
 
 Please refer to the [module page][] for all information regarding documentation, issue tracking and support.
 
@@ -58,6 +58,11 @@ Licensed under version 2.0 of the [Apache License][].
 [e2e readme]: ./entity-module-test-application/src/test/e2e/README.md
 
 [module wiki]: https://across.dev/modules/propertiesmodule
+[contributor guidelines]: https://across.dev/contributing
+[Maven]: https://maven.apache.org
+[Apache License]: https://www.apache.org/licenses/LICENSE-2.0
+
+[module wiki]: https://across.dev/modules/ApplicationInfoModule
 [contributor guidelines]: https://across.dev/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
