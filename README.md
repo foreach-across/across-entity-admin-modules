@@ -1,4 +1,4 @@
-# BootstrapUiModule
+# BootstrapUiModule / AdminWebModule
 
 Please refer to the [module page][] for all information regarding documentation, issue tracking and support.
 
@@ -38,6 +38,11 @@ Contributions in the form of pull requests are greatly appreciated.  Please refe
 Licensed under version 2.0 of the [Apache License][].
 
 [module page]: https://across.dev/modules/bootstrapuimodule
+[contributor guidelines]: https://across.dev/contributing
+[Maven]: https://maven.apache.org
+[Apache License]: https://www.apache.org/licenses/LICENSE-2.0
+
+[module page]: https://across.dev/modules/admin-web
 [contributor guidelines]: https://across.dev/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0

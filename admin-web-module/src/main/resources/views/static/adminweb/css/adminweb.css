@@ -1,0 +1,195 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@charset "UTF-8";
+
+body {
+    padding-top: 5rem;
+}
+
+/* Navbar styling - icon */
+.navbar-header .navbar-brand {
+    background: url("../images/across-logo.svg") no-repeat left center;
+    background-size: 32px 32px;
+    padding-left: 45px;
+}
+
+/* Top nav user context menu */
+.nav-item.admin-nav-user-context.with-thumbnail > a {
+    padding-left: 40px;
+    margin-left: 0.5rem;
+}
+
+.admin-nav-user-context .admin-nav-user-context-thumbnail {
+    border-radius: 5px;
+    position: absolute;
+    display: block;
+    top: calc(50% - 17px);
+    left: 0.5rem;
+    max-height: 34px;
+}
+
+/* Table within card */
+.card-body .table:first-child tr th {
+    border-top: 0;
+}
+
+.card-body .table:last-child {
+    margin-bottom: 0;
+}
+
+/*!* todo: to bootstrap ui css! *!*/
+/*table td .btn {*/
+/*    padding: 0px 3px;*/
+/*}*/
+
+/*.btn .fa-times {*/
+/*    color: orangered;*/
+/*}*/
+
+/*label.control-label > sup.required {*/
+/*    margin-left: 3px;*/
+/*}*/
+
+/*.pager-form {*/
+/*    color: black;*/
+/*}*/
+
+/*.pager-form label {*/
+/*    font-weight: normal;*/
+/*}*/
+
+/*.pager-form .btn {*/
+/*    padding: 0 10px;*/
+/*}*/
+
+/*.pager-form .form-control {*/
+/*    width: 34px;*/
+/*    padding: 2px;*/
+/*    text-align: center;*/
+/*    vertical-align: middle;*/
+/*}*/
+
+/*.pager-form .form-control.has-error {*/
+/*    border-color: red;*/
+/*}*/
+
+/*.pager-form > span, .pager-form label > span {*/
+/*    margin-left: 6px;*/
+/*    margin-right: 6px;*/
+/*    vertical-align: middle;*/
+/*    color: gray;*/
+/*}*/
+
+/*.pager-form .no-btn {*/
+/*    display: inline-block;*/
+/*    width: 24px;*/
+/*}*/
+
+/*.pager-form .total-pages-link {*/
+/*    font-weight: bold;*/
+/*    font-size: 14px;*/
+/*    vertical-align: middle;*/
+/*    color: black;*/
+/*    margin-right: 8px;*/
+/*}*/
+
+/*.form-horizontal .control-label.text-left {*/
+/*    text-align: left;*/
+/*}*/
+
+/*th.result-number {*/
+/*    width: 40px;*/
+/*    text-align: center;*/
+/*}*/
+
+/*td.result-number {*/
+/*    text-align: center;*/
+/*}*/
+
+/*th[data-tbl-field='day'] {*/
+/*    text-align: right;*/
+/*}*/
+
+/*td[data-tbl-field='day'] {*/
+/*    width: 110px;*/
+/*    text-align: right;*/
+/*}*/
+
+/*.toast {*/
+/*    top: 70px;*/
+/*}*/
+
+
+/* These styles should be overridden by a theme */
+
+/* Developer tools nav item */
+.nav-panels .admin-nav-developer-tools .card-header i {
+    float: right;
+    margin-top: 0.25rem;
+}
+
+.nav-panels .admin-nav-developer-tools.card {
+    border-color: var(--warning);
+}
+
+.nav-panels .admin-nav-developer-tools .card-header {
+    background-color: var(--warning);
+}
+
+/* Page header */
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+/* Dismissible alerts are displayed as toasts */
+.alert-dismissible:not(.no-toast) {
+    display: none;
+}
+
+/* Toasts */
+.toast {
+    top: 4rem;
+}
+
+.toast-message button.close {
+    display: none;
+}
+
+.toast-error {
+    background-color: var(--danger);
+}
+
+.toast-success {
+    background-color: var(--success);
+}
+
+.toast-info {
+    background-color: var(--info);
+}
+
+.toast-warning {
+    background-color: var(--warning);
+}
+
+/* Show invalid feedback inside form groups */
+.form-group.is-invalid .invalid-feedback {
+    display: block;
+}
+
+.form-signin .help-block:empty {
+    display: none;
+}

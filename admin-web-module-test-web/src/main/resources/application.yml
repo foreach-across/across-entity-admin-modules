@@ -1,0 +1,23 @@
+across:
+  development:
+    active: true
+
+adminWebModule:
+  root-path: /admin
+  login:
+    rememberMe:
+      key: remember-me
+      cookie: admin-web-module
+  title: Hello application...
+  locale:
+    options:
+      - 'en_GB'
+      - 'nl_BE'
+    default-locale: 'nl_BE'
+
+acrossModule:
+  AdminWebModule:
+    resources: ../admin-web-module/src/main/resources
+
+server:
+  port: 8082

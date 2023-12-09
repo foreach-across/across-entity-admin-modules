@@ -8,6 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="bootstrap-ui-module-test" />
+        <module name="admin-web-module" />
+        <module name="admin-web-module-test-web" />
         <module name="bootstrap-ui-module" />
       </profile>
     </annotationProcessing>

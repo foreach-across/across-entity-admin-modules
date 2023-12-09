@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
-  ~ Copyright 2019 the original author or authors
+  ~ Copyright 2014 the original author or authors
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -30,9 +31,6 @@
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
-	<description>
-		Provides a ViewElement model implementation for Twitter Bootstrap.
-	</description>
 	<url>https://across.dev/modules/bootstrap-ui</url>
 	<licenses>
 		<license>
@@ -61,6 +59,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<revision>4.5-SNAPSHOT</revision>
+        <across-base-modules.version>4.2.2-SNAPSHOT</across-base-modules.version>
 		<!-- webjar specific properties -->
 		<webjars.jquery>3.4.1</webjars.jquery>
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
@@ -78,6 +77,8 @@
 	<modules>
 		<module>bootstrap-ui-module</module>
 		<module>bootstrap-ui-module-test</module>
+		<module>admin-web-module</module>
+		<module>admin-web-module-test-web</module>
 	</modules>
 
 	<dependencyManagement>
@@ -98,6 +99,11 @@
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>ax-bootstrap-4-utilities</artifactId>
 				<version>${webjars.ax-bootstrap-4-utilities}</version>
+            </dependency>
+            <dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>spring-security-module</artifactId>
+				<version>${across-base-modules.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -121,7 +127,7 @@
 	</dependencies>
 
 	<scm>
-		<url>https://bitbucket.org/beforeach/bootstrap-ui-module</url>
+		<url>https://bitbucket.org/beforeach/across-entity-admin-modules</url>
 	</scm>
 
 </project>
