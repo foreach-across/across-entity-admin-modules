@@ -1,0 +1,5 @@
+src/js/entity-module.js
+src/js/entity-query.js
+src/js/expandable.js
+**/*.js
+**/*.ts

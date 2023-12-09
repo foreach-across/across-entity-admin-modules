@@ -4,18 +4,20 @@
     <option name="KEEP_LINE_BREAKS" value="false" />
     <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="1" />
     <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+    <option name="SPACE_WITHIN_PARENTHESES" value="true" />
+    <option name="SPACE_WITHIN_METHOD_CALL_PARENTHESES" value="true" />
+    <option name="SPACE_WITHIN_METHOD_PARENTHESES" value="true" />
+    <option name="SPACE_WITHIN_IF_PARENTHESES" value="true" />
+    <option name="SPACE_WITHIN_WHILE_PARENTHESES" value="true" />
     <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
+    <option name="CLASS_BRACE_STYLE" value="2" />
+    <option name="METHOD_BRACE_STYLE" value="2" />
     <option name="ELSE_ON_NEW_LINE" value="true" />
     <option name="WHILE_ON_NEW_LINE" value="true" />
     <option name="CATCH_ON_NEW_LINE" value="true" />
     <option name="FINALLY_ON_NEW_LINE" value="true" />
     <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
     <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
-    <option name="SPACE_WITHIN_PARENTHESES" value="true" />
-    <option name="SPACE_WITHIN_METHOD_CALL_PARENTHESES" value="true" />
-    <option name="SPACE_WITHIN_METHOD_PARENTHESES" value="true" />
-    <option name="SPACE_WITHIN_IF_PARENTHESES" value="true" />
-    <option name="SPACE_WITHIN_WHILE_PARENTHESES" value="true" />
     <option name="SPACE_WITHIN_FOR_PARENTHESES" value="true" />
     <option name="SPACE_WITHIN_CATCH_PARENTHESES" value="true" />
     <option name="SPACE_WITHIN_SWITCH_PARENTHESES" value="true" />
@@ -31,14 +33,23 @@
     <option name="DOWHILE_BRACE_FORCE" value="3" />
     <option name="WHILE_BRACE_FORCE" value="3" />
     <option name="FOR_BRACE_FORCE" value="3" />
-    <option name="CLASS_BRACE_STYLE" value="2" />
-    <option name="METHOD_BRACE_STYLE" value="2" />
     <HTMLCodeStyleSettings>
       <option name="HTML_ATTRIBUTE_WRAP" value="0" />
     </HTMLCodeStyleSettings>
-    <XML>
-      <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
-    </XML>
+    <JSCodeStyleSettings version="0">
+      <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
+    </JSCodeStyleSettings>
+    <MarkdownNavigatorCodeStyleSettings>
+      <option name="RIGHT_MARGIN" value="72" />
+    </MarkdownNavigatorCodeStyleSettings>
+    <Properties>
+      <option name="KEEP_BLANK_LINES" value="true" />
+    </Properties>
+    <TypeScriptCodeStyleSettings version="1">
+      <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="INDENT_CHAINED_CALLS" value="false" />
+    </TypeScriptCodeStyleSettings>
     <codeStyleSettings language="CFML">
       <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
@@ -169,6 +180,9 @@
     <codeStyleSettings language="JSON">
       <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+      <indentOptions>
+        <option name="INDENT_SIZE" value="4" />
+      </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="JSP">
       <indentOptions>
@@ -214,6 +228,7 @@
       <option name="WHILE_ON_NEW_LINE" value="true" />
       <option name="CATCH_ON_NEW_LINE" value="true" />
       <option name="FINALLY_ON_NEW_LINE" value="true" />
+      <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
       <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
       <option name="SPACE_WITHIN_METHOD_CALL_PARENTHESES" value="true" />

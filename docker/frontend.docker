@@ -1,0 +1,8 @@
+FROM beforeach/node:10
+
+# Install project assets
+COPY entity-module/src/main/frontend/package.json /build/package.json
+COPY entity-module/src/main/frontend/yarn.lock /build/yarn.lock
+
+RUN yarn --frozen-lockfile --modules-folder /node_modules
+

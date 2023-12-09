@@ -1,0 +1,307 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.foreach.across.modules.entity.views.processors;
+
+import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.registry.EntityModel;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted.ENTITY_CREATED;
+import static com.foreach.across.modules.entity.views.processors.support.EntityFormStateCompleted.ENTITY_UPDATED;
+
+/**
+ * Responsible for saving a single entity after a form submit. Will initialize the command object to bind to the current entity (either
+ * a new one or a dto of the bound entity). Will redirect when saved and will only save if the {@link BindingResult} has no errors.
+ *
+ * @author Arne Vandamme
+ * @since 2.0.0
+ */
+@Component
+@Exposed
+@Scope("prototype")
+@Accessors(chain = true)
+public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
+{
+	private EntityViewPageHelper entityViewPageHelper;
+	private ConversionService conversionService;
+	private ApplicationEventPublisher eventPublisher;
+
+	/**
+	 * Set to {@code true} if only the properties should be saved but not the actual entity.
+	 * This will still create a DTO but will end up not calling the save method on the entity itself.
+	 * <p/>
+	 * Only useful if the properties have a custom implementation for
+	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController#save(EntityPropertyBindingContext, EntityPropertyValue)}
+	 */
+	@Setter
+	@Getter
+	private boolean propertiesOnly;
+
+	/**
+	 * Should the form state be published as an event for modification (defaults to {@code true}).
+	 */
+	@Setter
+	@Getter
+	private boolean publishFormState;
+
+	/**
+	 * Set a consumer to apply to the form state after it has been built and published as an event.
+	 */
+	@Setter
+	@Getter
+	private Consumer<EntityFormStateCompleted<?>> formStateConsumer;
+
+	// todo: listen to specific action only
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
+		// Set the dto of the entity on the command object
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		EntityFactory entityFactory = resolveEntityFactory( entityViewContext );
+
+		Object currentEntity = entityViewContext.getEntity( Object.class );
+
+		if ( currentEntity != null ) {
+			command.setEntity( entityFactory.createDto( currentEntity ) );
+		}
+		else {
+			Object newDto = createNewDto( entityViewContext, entityFactory );
+			command.setEntity( newDto );
+		}
+
+		// set the dto as the entity
+		entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, command.getEntity() );
+
+		EntityPropertiesBinder propertiesBinder = createPropertiesBinder(
+				currentEntity, command.getEntity(), entityViewContext.getPropertyRegistry()
+		);
+
+		if ( HttpMethod.POST.equals( entityViewRequest.getHttpMethod() ) ) {
+			propertiesBinder.setBindingEnabled( true );
+		}
+
+		command.setProperties( propertiesBinder );
+	}
+
+	private EntityPropertiesBinder createPropertiesBinder( Object entity, Object dto, EntityPropertyRegistry propertyRegistry ) {
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
+		binder.setBinderPrefix( "properties" );
+		binder.setEntity( entity );
+		binder.setTarget( dto );
+		binder.setConversionService( conversionService );
+		return binder;
+	}
+
+	private Object createNewDto( EntityViewContext entityViewContext, EntityFactory entityFactory ) {
+		if ( entityViewContext.isForAssociation() ) {
+			EntityAssociation entityAssociation = entityViewContext.getEntityAssociation();
+			EntityFactory associatedEntityFactory = entityAssociation.getAttribute( EntityFactory.class );
+
+			if ( associatedEntityFactory != null ) {
+				return associatedEntityFactory.createNew( entityViewContext.getParentContext().getEntity() );
+			}
+			else {
+				Object newDto = entityFactory.createNew();
+
+				EntityPropertiesBinder propertiesBinder = createPropertiesBinder( null, newDto,
+				                                                                  entityAssociation.getTargetEntityConfiguration().getPropertyRegistry() );
+				EntityPropertyDescriptor sourceProperty = entityAssociation.getSourceProperty();
+				Object parent = entityViewContext.getParentContext().getEntity();
+				Object valueToSet = sourceProperty != null ? sourceProperty.getPropertyValue( parent ) : parent;
+				EntityPropertyBinder entityPropertyBinder = propertiesBinder.get( entityAssociation.getTargetProperty() );
+
+				if ( entityPropertyBinder instanceof ListEntityPropertyBinder ) {
+					entityPropertyBinder.setValue( Collections.singletonList( valueToSet ) );
+				}
+				else {
+					entityPropertyBinder.setValue( valueToSet );
+				}
+
+				propertiesBinder.createController().applyValues();
+
+				return newDto;
+			}
+		}
+
+		return entityFactory.createNew();
+	}
+
+	private EntityFactory resolveEntityFactory( EntityViewContext entityViewContext ) {
+		if ( entityViewContext.isForAssociation() ) {
+			EntityFactory associatedEntityFactory = entityViewContext.getEntityAssociation().getAttribute( EntityFactory.class );
+
+			if ( associatedEntityFactory != null ) {
+				return associatedEntityFactory;
+			}
+		}
+
+		return entityViewContext.getEntityModel();
+	}
+
+	@Override
+	protected void prepareViewElementBuilderContext( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderContext builderContext ) {
+		builderContext.setAttribute( EntityViewModel.ENTITY, entityViewRequest.getCommand().getEntity() );
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void doPost( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command, BindingResult bindingResult ) {
+		if ( !bindingResult.hasErrors() ) {
+			try {
+				EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+
+				EntityModel<Object, ?> entityModel = entityViewContext.getEntityModel();
+
+				Object entityToSave = command.getEntity();
+				Object savedEntity = entityToSave;
+				boolean isNew = entityModel.isNew( entityToSave );
+
+				if ( !propertiesOnly ) {
+					AtomicReference savedEntityHolder = new AtomicReference();
+
+					command.getProperties()
+					       .createController()
+					       .addEntitySaveCallback( () -> savedEntityHolder.set( entityModel.save( entityToSave ) ) )
+					       .save();
+
+					savedEntity = savedEntityHolder.get();
+				}
+				else {
+					command.getProperties().createController().save();
+				}
+
+				// clear the binder to force properties to be reloaded, in case redirect does not happen
+				command.getProperties().clear();
+
+				publishAndApplyEntityFormState( entityViewRequest, entityView, savedEntity, isNew );
+			}
+			catch ( RuntimeException e ) {
+				entityViewPageHelper.throwOrAddExceptionFeedback( entityViewRequest, "feedback.entitySaveFailed", e );
+			}
+		}
+	}
+
+	private void publishAndApplyEntityFormState( EntityViewRequest entityViewRequest, EntityView entityView, Object savedEntity, boolean isNew ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		EntityFormStateCompleted<?> entityState = new EntityFormStateCompleted<>( isNew ? ENTITY_CREATED : ENTITY_UPDATED, savedEntity, entityViewRequest,
+		                                                                          entityView );
+
+		String messageCode = isNew ? "feedback.entityCreated" : "feedback.entityUpdated";
+		entityState.addFeedbackMessage(
+				EntityFormStateCompleted
+						.feedback( Style.SUCCESS )
+						.messageCode( messageCode )
+						.message( entityViewContext.getEntityMessages().withNameSingular( messageCode, entityViewContext.getEntityLabel() ) )
+						.build()
+		);
+
+		if ( entityViewRequest.hasPartialFragment() ) {
+			entityState.setRedirectUrl(
+					entityViewContext.getLinkBuilder().forInstance( savedEntity )
+					                 .updateView()
+					                 .withPartial( entityViewRequest.getPartialFragment() )
+					                 .toUriString()
+			);
+		}
+		else {
+			entityState.setRedirectUrl( entityViewContext.getLinkBuilder().forInstance( savedEntity ).updateView().toUriString() );
+		}
+
+		// view specific handling
+		if ( formStateConsumer != null ) {
+			formStateConsumer.accept( entityState );
+		}
+
+		// event based public modifications
+		if ( publishFormState ) {
+			eventPublisher.publishEvent( entityState );
+		}
+
+		// apply the form state values
+		boolean isRedirect = entityView.isRedirect();
+
+		entityState.getFeedbackMessages()
+		           .stream()
+		           .filter( fm -> !isRedirect || !fm.isOnlyForRedirect() )
+		           .forEach( fm -> {
+			           if ( isRedirect ) {
+				           entityViewPageHelper.addGlobalFeedbackMessageAfterRedirect( entityViewRequest, fm.getStyle(), fm.getMessageOrCode() );
+			           }
+			           else {
+				           // todo: centralize this
+				           PageContentStructure page = entityViewRequest.getPageContentStructure();
+				           page.addToFeedback( bootstrap.builders.alert()
+				                                                 .style( fm.getStyle() )
+				                                                 .dismissible()
+				                                                 .text( fm.getMessageOrCode() )
+				                                                 .build() );
+			           }
+		           } );
+	}
+
+	@Autowired
+	void setEntityViewPageHelper( EntityViewPageHelper entityViewPageHelper ) {
+		this.entityViewPageHelper = entityViewPageHelper;
+	}
+
+	@Autowired
+	void setConversionService( @Qualifier(AcrossWebModule.CONVERSION_SERVICE_BEAN) ConversionService conversionService ) {
+		this.conversionService = conversionService;
+	}
+
+	@Autowired
+	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
+		this.eventPublisher = eventPublisher;
+	}
+}

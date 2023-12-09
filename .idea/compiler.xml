@@ -7,10 +7,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="entity-module-elastic-application" />
+        <module name="entity-module-no-bootstrapui" />
+        <module name="bootstrap-ui-module" />
+        <module name="entity-module-integration-test" />
+        <module name="entity-module-no-adminweb" />
         <module name="bootstrap-ui-module-test" />
         <module name="admin-web-module" />
+        <module name="entity-shared-test" />
+        <module name="entity-module-test" />
         <module name="admin-web-module-test-web" />
-        <module name="bootstrap-ui-module" />
+        <module name="entity-module" />
+        <module name="entity-module-test-application" />
       </profile>
     </annotationProcessing>
   </component>

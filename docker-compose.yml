@@ -1,0 +1,62 @@
+version: "3.1"
+
+services:
+  # compiling frontend resources
+  frontend:
+    build:
+      context: .
+      dockerfile: ./docker/frontend.docker
+    image: entity-module-assets:latest
+    command: yarn run build
+    container_name: entity-module-assets-builder
+    volumes:
+    - ./entity-module/src/main/frontend:/build
+    - ./entity-module/src/main/resources/views/static/entity:/resources/views/static/entity
+    - /build/node_modules/
+
+  # Update frontend resources lockfile
+  update-lockfile:
+    image: beforeach/node:10
+    command: yarn install --modules-folder /node_modules
+    container_name: entity-module-update-lockfile
+    volumes:
+      - './entity-module/src/main/frontend:/build'
+      - /build/node_modules/
+
+  # executing e2e tests
+  web:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: ./docker/e2e-web.docker
+    ports:
+    - "8080:8080"
+    expose:
+    - "8080"
+    volumes:
+    - ./entity-module-test-application/target:/web
+    networks:
+      default:
+        aliases:
+        - entity-module-test.dev.foreach.be
+  e2e:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: ./docker/e2e-tests.docker
+    depends_on:
+    - web
+    command: bash -c "./wait-for-it.sh -t 180 web:8080 -- echo executing e2e tests; ./node_modules/.bin/cypress run --project ./cypress --config video=false,watchForFileChanges=false --reporter junit --reporter-options mochaFile=cypress/out/test-results.[hash].xml; chmod -R 777 ./cypress"
+    links:
+    - web
+    volumes:
+    - ./entity-module-test-application/src/test/e2e/tests:/cypress
+  cleanup:
+    image: busybox:latest
+    command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"
+    volumes:
+      - ./entity-module-test-application/src/test/e2e/tests:/cypress

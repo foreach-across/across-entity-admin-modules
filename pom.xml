@@ -31,7 +31,7 @@
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
-	<url>https://across.dev/modules/bootstrap-ui</url>
+	<url>https://across.dev/modules/admin-entity-modules</url>
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
@@ -59,7 +59,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<revision>4.5-SNAPSHOT</revision>
-        <across-base-modules.version>4.2.2-SNAPSHOT</across-base-modules.version>
+		<across-base-modules.version>4.2.2-SNAPSHOT</across-base-modules.version>
 		<!-- webjar specific properties -->
 		<webjars.jquery>3.4.1</webjars.jquery>
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
@@ -79,6 +79,12 @@
 		<module>bootstrap-ui-module-test</module>
 		<module>admin-web-module</module>
 		<module>admin-web-module-test-web</module>
+		<module>entity-module</module>
+		<module>entity-module-integration-test</module>
+		<module>entity-module-no-adminweb</module>
+		<module>entity-module-no-bootstrapui</module>
+		<module>entity-module-test-application</module>
+		<module>entity-module-elastic-application</module>
 	</modules>
 
 	<dependencyManagement>
@@ -99,11 +105,36 @@
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>ax-bootstrap-4-utilities</artifactId>
 				<version>${webjars.ax-bootstrap-4-utilities}</version>
-            </dependency>
-            <dependency>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across</groupId>
+				<artifactId>across-autoconfigure</artifactId>
+				<version>2.2.2-gitlab-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>across-hibernate-module</artifactId>
+				<version>${across-base-modules.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-module</artifactId>
 				<version>${across-base-modules.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.across.modules</groupId>
+				<artifactId>debug-web-module</artifactId>
+				<version>${across-base-modules.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.el</groupId>
+				<artifactId>javax.el-api</artifactId>
+				<version>3.0.1-b06</version>
+			</dependency>
+			<dependency>
+				<groupId>org.atteo</groupId>
+				<artifactId>evo-inflector</artifactId>
+				<version>1.2.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

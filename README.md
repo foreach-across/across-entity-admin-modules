@@ -1,8 +1,9 @@
-# BootstrapUiModule / AdminWebModule
+# BootstrapUiModule / AdminWebModule / EntityModule
 
 Please refer to the [module page][] for all information regarding documentation, issue tracking and support.
 
 ## Building from source
+
 The source can be built using [Maven][] with JDK 8.
 
 ### Configuring the frontend setup
@@ -16,6 +17,9 @@ Entry files | Configured by providing the  | `package.json`
 Output paths | The output path for scss and js can be configured by specifying the `scssOutputPath` and respectively `jsOutputPath` as config variables | `package.json` 
 Files to keep | Configured by listing these files in the `keepFiles` property | `settings.js` 
 Libraries that are loaded externally | Configured by specifying a dependency to global variable mapping for the dependency in the `externals` object.  | `settings.js` 
+
+See the `entity-module/src/main/frontend` folder.
+`webpack.config.js` contains the main configuration. 
 
 ### Building
 
@@ -46,3 +50,9 @@ Licensed under version 2.0 of the [Apache License][].
 [contributor guidelines]: https://across.dev/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
+
+[module page]: https://across.dev/modules/entitymodule
+[contributor guidelines]: https://across.dev/contributing
+[Maven]: https://maven.apache.org
+[Apache License]: https://www.apache.org/licenses/LICENSE-2.0
+[e2e readme]: ./entity-module-test-application/src/test/e2e/README.md

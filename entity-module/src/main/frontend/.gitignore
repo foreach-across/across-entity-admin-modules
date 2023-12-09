@@ -1,0 +1,11 @@
+node
+node_modules/
+.idea/
+*.iml
+css/**/*.css
+styleguide-tmp/
+frontend-resources
+frontend-resources.zip
+.gradle
+.DS_Store
+junit.xml
