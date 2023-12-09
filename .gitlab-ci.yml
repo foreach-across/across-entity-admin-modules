@@ -92,16 +92,34 @@ after_script:
 #    - curl --connect-timeout 10 https://repository.foreach.be/nexus/repository/public/archetype-catalog.xml
 #    - echo "Success Nexus Foreach"
 
-frontend:bootstrap-ui-module:
+.frontend:
   stage: test
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:10.15
   script:
-    - cd bootstrap-ui-module/src/main/frontend
+    - cd ${FRONTEND_DIR}
     - yarn install
     - yarn build:prod
   artifacts:
     paths:
       - bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/
+
+frontend:bootstrap-ui-module:
+  extends:
+    - .frontend
+  variables:
+    FRONTEND_DIR: bootstrap-ui-module/src/main/frontend
+  artifacts:
+    paths:
+      - bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/
+
+frontend:entity-module:
+  extends:
+    - .frontend
+  variables:
+    FRONTEND_DIR: entity-module/src/main/frontend
+  artifacts:
+    paths:
+      - entity-module/src/main/resources/views/static/entity/
 
 
 # For merge requests do not `deploy` but only run `verify`.
