@@ -85,6 +85,7 @@
 		<module>entity-module-no-bootstrapui</module>
 		<module>entity-module-test-application</module>
 		<module>entity-module-elastic-application</module>
+		<module>properties-module</module>
 	</modules>
 
 	<dependencyManagement>
