@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-standard-module-parent</artifactId>
-		<version>5.2.3-gitlab-SNAPSHOT</version>
+		<version>5.3-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 
@@ -58,8 +58,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<revision>4.5-SNAPSHOT</revision>
-		<across-base-modules.version>4.2.2-SNAPSHOT</across-base-modules.version>
+		<revision>4.3-SNAPSHOT</revision>
+		<across-auto-configure.version>2.3-SNAPSHOT</across-auto-configure.version>
+		<across-base-modules.version>4.3-SNAPSHOT</across-base-modules.version>
 		<!-- webjar specific properties -->
 		<webjars.jquery>3.4.1</webjars.jquery>
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
@@ -112,7 +113,7 @@
 			<dependency>
 				<groupId>com.foreach.across</groupId>
 				<artifactId>across-autoconfigure</artifactId>
-				<version>2.2.2-gitlab-SNAPSHOT</version>
+				<version>${across-auto-configure.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>

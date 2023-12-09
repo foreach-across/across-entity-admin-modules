@@ -202,7 +202,7 @@
 						<phase>prepare-package</phase>
 						<configuration>
 							<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
-							<destDir>${project.version}/javadoc</destDir>
+							<destDir>${revision}/javadoc</destDir>
 						</configuration>
 					</execution>
 				</executions>

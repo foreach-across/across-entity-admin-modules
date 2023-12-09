@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>entity-module</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
@@ -51,13 +51,13 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>bootstrap-ui-module</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>admin-web-module</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
