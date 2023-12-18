@@ -59,6 +59,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>ax-bootstrap-4-utilities</artifactId>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>

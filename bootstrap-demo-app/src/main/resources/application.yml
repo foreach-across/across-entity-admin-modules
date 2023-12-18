@@ -1,0 +1,10 @@
+acrossHibernate:
+  create-unit-of-work-factory: true
+
+adminWebModule:
+  title: Admin Web Themes
+  login:
+    rememberMe:
+      key: test
+      cookie: rm-awm-bs4
+

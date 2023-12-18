@@ -4,19 +4,22 @@ target
 .idea/libraries
 .idea/template/template_variable_settings.xml
 *.iml
-.flattened-pom.xml
 
 bootstrap-ui-module/src/main/frontend/node_modules/
 bootstrap-ui-module/src/main/frontend/tests/e2e/node_modules/
 bootstrap-ui-module/src/main/frontend/tests/e2e/tests/cypress/out
 
 #ignore all static frontend content
+node_modules
 bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/css/*
 bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/*
-node_modules
+bootstrap-demo-app/src/main/resources/views/static/bootstrapSample/theme
+ax-bootstrap-4-utilities/src/main/resources/META-INF
+ax-bootstrap-theme/src/main/resources/views/static/adminweb-themes
 
 db
 local-data
+
 
 # macOS:
 .DS_Store
@@ -25,6 +28,7 @@ local-data
 .effective-pom.xml
 .dependency-tree.txt
 .foreach-deps.txt
+.flattened-pom.xml
 
 # Emacs:
 *~

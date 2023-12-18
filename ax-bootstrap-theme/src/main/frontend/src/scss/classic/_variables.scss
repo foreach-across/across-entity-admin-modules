@@ -1,0 +1,42 @@
+// Import all bootstrap variables and possible overrides
+@import "bootstrap/variables";
+
+/* Theme specific variables */
+
+// Colors
+$gray-50: #f4f4f4 !default;
+$gray-350: #ddd !default;
+$gray-550: #999 !default;
+
+$light-orange: #fffaf3 !default;
+$light-orange-hover: #ffefd9 !default;
+
+$light-green: #f5fdf5 !default;
+$light-green-hover: #e1f8e1 !default;
+
+$light-blue: #f2f9fd !default;
+$light-blue-hover: #ddf0f9 !default;
+
+$light-red: #fff1f2 !default;
+$light-red-hover: #ffd8da !default;
+
+$white: #ffffff !default;
+$orange1: #ff960d !default;
+$orange2: #fd9000 !default;
+
+$btn-outline-secondary-color: $blue !default;
+$btn-outline-secondary-bg-color: #F9F9F9 !default;
+$btn-outline-secondary-border-color: $gray-350 !default;
+$btn-outline-secondary-bg-color-hover: darken($btn-outline-secondary-bg-color, 10%) !default;
+$btn-outline-secondary-border-color-hover: darken($btn-outline-secondary-border-color, 12%) !default;
+
+// Ordering
+$order-end: 1000000 !default;
+
+// Alerts
+$across-alert-bg: white !default;
+
+// Developer tools
+$developer-tools-heading-color: $white;
+$developer-tools-heading-background-color: $orange1;
+$developer-tools-heading-border-color: $orange2;

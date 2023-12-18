@@ -1,0 +1,8 @@
+/**
+ * Contains the admin web specific theme css, to be applied after module extension CSS.
+ */
+@import "sidebar/variables";
+
+@import "sidebar/layout";
+@import "sidebar/sidebar";
+@import "sidebar/top-nav";

@@ -72,7 +72,6 @@
 		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
 		<webjars.handlebars>4.0.14</webjars.handlebars>
 		<webjars.font-awesome>5.10.1</webjars.font-awesome>
-		<webjars.ax-bootstrap-4-utilities>0.0.1.RELEASE</webjars.ax-bootstrap-4-utilities>
 	</properties>
 
 	<modules>
@@ -80,6 +79,8 @@
 		<module>bootstrap-ui-module-test</module>
 		<module>admin-web-module</module>
 		<module>admin-web-module-test-web</module>
+		<module>ax-bootstrap-theme</module>
+		<module>ax-bootstrap-4-utilities</module>
 		<module>entity-module</module>
 		<module>entity-module-integration-test</module>
 		<module>entity-module-no-adminweb</module>
@@ -87,6 +88,7 @@
 		<module>entity-module-test-application</module>
 		<module>entity-module-elastic-application</module>
 		<module>properties-module</module>
+		<module>bootstrap-demo-app</module>
 		<module>application-info-module</module>
 		<module>application-info-module-test-web</module>
 	</modules>
@@ -104,11 +106,6 @@
 				<artifactId>xmlunit</artifactId>
 				<version>1.6</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.foreach.across.modules</groupId>
-				<artifactId>ax-bootstrap-4-utilities</artifactId>
-				<version>${webjars.ax-bootstrap-4-utilities}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across</groupId>

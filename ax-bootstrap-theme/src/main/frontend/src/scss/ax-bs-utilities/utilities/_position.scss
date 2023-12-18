@@ -1,0 +1,6 @@
+// stylelint-disable declaration-no-important
+
+// Common values
+@each $position in $positions {
+  .axu-position-#{$position} { position: $position; }
+}

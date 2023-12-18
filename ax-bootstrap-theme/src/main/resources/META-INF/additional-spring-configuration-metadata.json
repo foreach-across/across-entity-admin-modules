@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "admin-web-module.theme",
+      "type": "java.lang.String",
+      "description": "Id of the theme (styling & layout) that should be applied.",
+      "defaultValue": "sidebar"
+    }
+  ]
+}

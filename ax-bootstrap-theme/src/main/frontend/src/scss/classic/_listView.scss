@@ -1,0 +1,184 @@
+@mixin ax-table-row-state-variant($stateName, $color, $background, $background-hover) {
+  // Exact selectors below required to override `.table-striped` and prevent
+  // inheritance to nested tables.
+  .table-#{$stateName} {
+    &,
+    > th,
+    > td {
+      color: $color;
+      background-color: $background;
+    }
+
+    &,
+    tr {
+      border-left: 3px solid $color;
+    }
+  }
+
+  // Hover states for `.table-hover`
+  // Note: this is not available for cells or rows within `thead` or `tfoot`.
+  .table-hover {
+    .table-#{$stateName}:hover {
+      background-color: $background-hover;
+
+      > td,
+      > th {
+        background-color: $background-hover;
+      }
+    }
+  }
+}
+
+@include ax-table-row-state-variant("info", $info, $light-blue, $light-blue-hover);
+@include ax-table-row-state-variant("warning", $warning, $light-orange, $light-orange-hover);
+@include ax-table-row-state-variant("danger", $danger, $light-red, $light-red-hover);
+@include ax-table-row-state-variant("success", $success, $light-green, $light-green-hover);
+
+.em-sortableTable-panel .table-responsive {
+  // prevent vertical scrollbar in summary view
+  overflow-y: hidden;
+}
+
+// Sortable table
+table.table {
+
+  td.result-number, th.result-number {
+    text-align: center;
+    width: 40px;
+  }
+
+  td.row-actions, th.row-actions {
+    text-align: right;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    white-space: nowrap;
+  }
+
+  tr > td {
+    border-top: 1px solid $gray-100;
+  }
+
+
+  .btn {
+    padding: 0 0.25rem;
+  }
+
+  // apply fixed-width to all icon buttons
+  .row-actions .fas {
+    width: 1.25em;
+    text-align: center;
+  }
+
+  tr.odd {
+    background-color: rgba(0, 0, 0, .03);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, .05);
+    }
+  }
+
+  th.sortable {
+    cursor: pointer
+  }
+
+  th.sortable:after {
+    color: $gray-400;
+    content: ' ↕';
+    font-size: 1em
+  }
+
+  th.sortable:hover {
+    opacity: 0.95;
+    background-color: $white;
+    text-decoration: none;
+  }
+
+  th.sortable:hover:after {
+    color: $gray-900;
+    text-decoration: none;
+  }
+
+  th.sortable.desc:after {
+    content: ' ↑';
+    color: $gray-900
+  }
+
+  th.sortable.asc:after {
+    content: ' ↓';
+    color: $gray-900
+  }
+
+  thead th {
+    white-space: nowrap;
+  }
+}
+
+// Pager
+.pager-form {
+  label {
+    font-weight: normal;
+  }
+
+  .btn {
+    padding: 0 0.5rem;
+  }
+
+  .form-control {
+    width: 34px;
+    padding: 0;
+    //margin-right: .5rem;
+
+    &.has-error {
+      border-color: $danger;
+    }
+  }
+
+  label > span:first-child {
+    margin-left: 0;
+  }
+
+  > span, label > span {
+    vertical-align: middle;
+    color: $gray-600;
+  }
+
+  .total-pages-link {
+    font-weight: bold;
+    color: $black;
+    //  margin-right: 0.5rem;
+  }
+}
+
+/*
+.pager-form .no-btn {
+    display: inline-block;
+    width: 24px;
+}
+
+.pager-form .total-pages-link {
+    font-weight: bold;
+    font-size: 14px;
+    vertical-align: middle;
+    color: black;
+    margin-right: 8px;
+}
+
+ */
+
+// Filters
+.entity-query-filter-form {
+  .entity-query-filter-form-basic .form-group label {
+    white-space: nowrap;
+  }
+
+  .entity-query-filter-form-advanced .form-group {
+    margin-bottom: 0;
+  }
+}
+
+// Form actions {
+.list-header .list-header-actions {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}

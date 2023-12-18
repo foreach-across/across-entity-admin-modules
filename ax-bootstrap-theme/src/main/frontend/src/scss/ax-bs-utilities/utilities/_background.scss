@@ -1,0 +1,17 @@
+@each $color, $value in $theme-colors {
+  @include ax-bg-variant(".axu-bg-#{$color}", $value);
+}
+
+@if $enable-gradients {
+  @each $color, $value in $theme-colors {
+    @include ax-bg-gradient-variant(".axu-bg-gradient-#{$color}", $value);
+  }
+}
+
+.axu-bg-white {
+  background-color: $white;
+}
+
+.axu-bg-transparent {
+  background-color: transparent;
+}
