@@ -135,16 +135,20 @@ build:test-apps:
     - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:${DOCKER_VERSION}-dind
       alias: docker
       command: [ "--tls=false" ]
+  before_script:
+    - curl -SL https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+    - chmod +x /usr/local/bin/docker-compose
   script:
     - env
     - cat /etc/os-release || false
     - cd ${MODULE_NAME}/src/main/frontend
     - yarn install
     - cd -
-    - curl -SL https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
     - docker-compose -f docker-compose-${MODULE_NAME}.yml --no-ansi up -d --build web
-    - docker-compose -f docker-compose-${MODULE_NAME}.yml --no-ansi up --build test
+    - docker-compose -f docker-compose-${MODULE_NAME}.yml --no-ansi up --build e2e
+    - find ${MODULE_NAME}/src/main/frontend -name "*.xml"
+  after_script:
+    - docker-compose down
   artifacts:
     when: always
     reports:
