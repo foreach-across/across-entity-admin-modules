@@ -148,6 +148,8 @@ build:test-apps:
 #    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up -d --build web
 #    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up --build e2e
     - cd $MODULE_NAME
+    - echo "DOCKER_REPOSITORY=${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}" > .env
+    - cat .env
     - docker-compose --ansi=never up e2e
     # - find src/test/e2e -name "*.xml" || echo "Nothing found"
   after_script:

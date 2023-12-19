@@ -1,6 +1,5 @@
-# Using the hardcoded gitlab URL here, so it's easy to build locally as well (you will need docker login ... though):
-FROM gitlab.isaac.nl:443/antwerpen/dependency_proxy/containers/eclipse-temurin:8
-FROM eclipse-temurin:8
+ARG DOCKER_REPOSITORY
+FROM $DOCKER_REPOSITORY/eclipse-temurin:8
 
 ENV TZ=Europe/Brussels
 ENV LC_ALL en_US.UTF-8

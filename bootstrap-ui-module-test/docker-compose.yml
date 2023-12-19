@@ -12,6 +12,8 @@ services:
     build:
       context: .
       dockerfile: ../docker/e2e-web.docker
+      args:
+        DOCKER_REPOSITORY: ${DOCKER_REPOSITORY}
     ports:
       - "8080:8080"
     expose:
@@ -29,6 +31,8 @@ services:
     build:
       context: .
       dockerfile: ../docker/e2e-tests.docker
+      args:
+        DOCKER_REPOSITORY: ${DOCKER_REPOSITORY}
     depends_on:
       - web
     command: bash -c "/docker/wait-for-it.sh -t 180 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
