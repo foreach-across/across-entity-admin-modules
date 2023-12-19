@@ -31,9 +31,9 @@ services:
       dockerfile: ../docker/e2e-tests.docker
     depends_on:
       - web
-    command: bash -c "/docker/wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
+    command: bash -c "/docker/wait-for-it.sh -t 180 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
     links:
       - web
     volumes:
       - ./src/test/e2e/tests:/cypress
-      - ./docker:/docker
+      - ../docker:/docker

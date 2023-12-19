@@ -141,7 +141,7 @@ build:test-apps:
 #    - chmod +x /usr/local/bin/docker-compose
   # TODO docker login so we can use GitLab dependency proxy
   script:
-    - env
+    - env | grep JOB | sort
     - cat /etc/os-release || false
 #    - cd ${MODULE_NAME}/src/main/frontend
 #    - yarn install
@@ -150,7 +150,7 @@ build:test-apps:
 #    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up --build e2e
     - cd $MODULE_NAME
     - docker-compose --ansi=never up e2e
-    - find ${MODULE_NAME}/src/main/frontend -name "*.xml"
+    - find src/test/e2e -name "*.xml" || echo "Nothing found"
   after_script:
     - docker-compose down
   artifacts:
