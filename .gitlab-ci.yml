@@ -131,22 +131,23 @@ build:test-apps:
 
 .end2end:
   stage: test
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODEJS_DOCKER_IMAGE_VERSION}
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:${DOCKER_VERSION}
   services:
     - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:${DOCKER_VERSION}-dind
       alias: docker
       command: [ "--tls=false" ]
-  before_script:
-    - curl -SL https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
+#  before_script:
+#    - curl -SL https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+#    - chmod +x /usr/local/bin/docker-compose
+  # TODO docker login so we can use GitLab dependency proxy
   script:
     - env
     - cat /etc/os-release || false
-    - cd ${MODULE_NAME}/src/main/frontend
-    - yarn install
-    - cd -
-    - docker-compose -f docker-compose-${MODULE_NAME}.yml --no-ansi up -d --build web
-    - docker-compose -f docker-compose-${MODULE_NAME}.yml --no-ansi up --build e2e
+#    - cd ${MODULE_NAME}/src/main/frontend
+#    - yarn install
+#    - cd -
+    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up -d --build web
+    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up --build e2e
     - find ${MODULE_NAME}/src/main/frontend -name "*.xml"
   after_script:
     - docker-compose down
@@ -213,12 +214,12 @@ end2end:entity-module:
 #  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.9-eclipse-temurin-21
 
 # bootstrap-ui-module: end-to-end tests:
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
+#  docker-compose --ansi=never -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
 #  cp ${HOME}/.npmrc ${bamboo.working.directory}
 #  docker-compose run --rm frontend sh -c 'yarn run build:prod'
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U --batch-mode -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
-#  docker-compose --no-ansi up -d --build web
-#  docker-compose --no-ansi up --build test
+#  docker-compose --ansi=never -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U --batch-mode -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
+#  docker-compose --ansi=never up -d --build web
+#  docker-compose --ansi=never up --build test
 # Roughly summarized, the end2end tests:
 # - run bootstrap-ui-module-test.jar in a Java container (In theory, we could run this in a job service,
 #   using the artifact published by the maven build, but we'd have to build and publish a docker image for that)
@@ -227,10 +228,10 @@ end2end:entity-module:
 # entity-ui-module: end-to-end tests
 #  cp ${HOME}/.npmrc ${bamboo.working.directory}
 #  docker-compose run --rm frontend sh -c 'yarn run build:prod'
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
-#  docker-compose --no-ansi up -d --build web
-#  docker-compose --no-ansi up --build e2e
+#  docker-compose --ansi=never -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
+#  docker-compose --ansi=never -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
+#  docker-compose --ansi=never up -d --build web
+#  docker-compose --ansi=never up --build e2e
 # This is more or less similar to bootstrap-ui-module (the docker-compose files have the same structure, but with quite a few differences)
 
 # Easiest solution is probably to run the end-to-end tests in a job:
