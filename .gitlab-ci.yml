@@ -159,6 +159,8 @@ build:test-apps:
     reports:
       junit:
         - $MODULE_NAME/src/test/e2e/tests/cypress/out/*.xml
+    paths:
+      - $MODULE_NAME/src/test/e2e/tests/cypress/out/videos/
 
 end2end:bootstrap-ui-module:
   extends:

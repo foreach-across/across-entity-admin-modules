@@ -9,7 +9,6 @@ ENV CI=1
 
 #RUN chmod +x /docker/wait-for-it.sh
 
-RUN ls /
-
-# TODO This is downloading and installing cypress from npm on each build
+# TODO This is downloading and installing cypress from npm on each build,
+# which can be fixed by using cypress/included, but that requires a much newer version.
 RUN npm i cypress@4.12.1
