@@ -59,6 +59,7 @@ image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.9-eclipse-temurin-8
 cache:
   paths:
     - $MAVEN_REPO_DIR
+    - "**/frontend/node_modules"
 
 after_script:
   - rm -rf $MAVEN_REPO_DIR/com/foreach # Don't cache this
@@ -153,7 +154,11 @@ build:test-apps:
     when: always
     reports:
       junit:
-        - '**/frontend/tests/e2e/tests/cypress/out/*.xml'
+        # From Bamboo:
+        # bootstrap-ui-module/src/main/frontend/tests/e2e/tests/cypress/out/*.xml
+        # entity-module-test-application/src/test/e2e/tests/cypress/out/*.xml
+        # entity-module-test-application/src/test/e2e/tests/cypress/out/*.xml
+        - '**/e2e/tests/cypress/out/*.xml'
 
 end2end:bootstrap-ui-module:
   extends:
@@ -170,7 +175,6 @@ end2end:entity-module:
     - build:test-apps
   variables:
     MODULE_NAME: entity-module
-
 
 #.verify:
 #  stage: test
