@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO delete
-
 ./wait-for-it.sh -t 360 web:8080 -- run
 
 function run_cypress_file(){
