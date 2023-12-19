@@ -33,6 +33,7 @@ variables:
 
   # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
   MAVEN_OPTS: >-
+    -Xmx256m
     -Dhttps.protocols=TLSv1.2
     -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
     -Dorg.slf4j.simpleLogger.showDateTime=true
@@ -94,7 +95,8 @@ after_script:
 
 .frontend:
   stage: test
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:10.15
+  # image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16 # Does not work for ax-bootstrap-theme
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:12
   script:
     - cd ${FRONTEND_DIR}
     - yarn install
@@ -117,6 +119,16 @@ frontend:entity-module:
   artifacts:
     paths:
       - entity-module/src/main/resources/views/static/entity/
+
+frontend:ax-bootstrap-theme:
+  extends:
+    - .frontend
+  # image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:12.9.1-alpine
+  variables:
+    FRONTEND_DIR: ax-bootstrap-theme/src/main/frontend
+  artifacts:
+    paths:
+      - ax-bootstrap-theme/src/main/resources/views/static/adminweb-themes/
 
 
 # For merge requests do not `deploy` but only run `verify`.
