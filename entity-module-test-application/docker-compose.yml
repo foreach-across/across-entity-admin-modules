@@ -1,3 +1,5 @@
+# Keep this in sync between bootstrap-ui-module-test and entity-module-test-application
+
 # To run the end-to-end tests:
 # 1. Build the frontend
 # 2. Build the application using maven
@@ -7,7 +9,6 @@
 version: "3.1"
 services:
   web:
-    #ipc: host # TODO is this needed?
     tty: false
     build:
       context: .
@@ -19,14 +20,12 @@ services:
     expose:
       - "8080"
     volumes:
-      # - ./target:/web
       - ./target/entity-module-test-application-exec.jar:/web/app.jar
     networks:
       default:
         aliases:
           - entity-module-test.dev.foreach.be
   e2e:
-    #ipc: host # TODO is this needed?
     tty: false
     build:
       context: .
