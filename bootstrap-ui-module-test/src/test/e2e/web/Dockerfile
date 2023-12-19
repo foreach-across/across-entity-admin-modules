@@ -1,3 +1,4 @@
+# TODO delete
 # Using the hardcoded gitlab URL here, so it's easy to build locally as well TODO: this needs docker login ...
 # FROM gitlab.isaac.nl:443/antwerpen/dependency_proxy/containers/eclipse-temurin:8
 FROM eclipse-temurin:8

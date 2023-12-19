@@ -146,8 +146,10 @@ build:test-apps:
 #    - cd ${MODULE_NAME}/src/main/frontend
 #    - yarn install
 #    - cd -
-    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up -d --build web
-    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up --build e2e
+#    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up -d --build web
+#    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up --build e2e
+    - cd $MODULE_NAME
+    - docker-compose --ansi=never up e2e
     - find ${MODULE_NAME}/src/main/frontend -name "*.xml"
   after_script:
     - docker-compose down
@@ -167,7 +169,7 @@ end2end:bootstrap-ui-module:
   needs:
     - build:test-apps
   variables:
-    MODULE_NAME: bootstrap-ui-module
+    MODULE_NAME: bootstrap-ui-module-test
 
 end2end:entity-module:
   extends:
@@ -175,7 +177,7 @@ end2end:entity-module:
   needs:
     - build:test-apps
   variables:
-    MODULE_NAME: entity-module
+    MODULE_NAME: entity-module-test-application
 
 #.verify:
 #  stage: test

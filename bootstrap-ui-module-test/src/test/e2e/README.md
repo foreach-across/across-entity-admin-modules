@@ -1,12 +1,12 @@
 # Installing cypress
 
-* navigate to `bootstrap-ui-module:src/main/frontend/e2e`
+* navigate to `bootstrap-ui-module-test/src/test/e2e`
 * install the cypress dependency by using `yarn install`
 * Optional: install npx globally by using `npm install -g npx`
 
 # Starting Cypress
 
-Navigate to `bootstrap-ui-module/src/main/frontend/e2e/tests`
+Navigate to `bootstrap-ui-module/src/test/e2e/tests`
 
 ## Open the Cypress Test Runner
 
@@ -16,7 +16,7 @@ Navigate to `bootstrap-ui-module/src/main/frontend/e2e/tests`
 ## Running tests
 
 Press `Run all specs` in the Cypress GUI  or by using npx `npx cypress run`.
-By adding the `--headed` option, an electron browser will be used instead of running headlessly.
+By adding the `--headed` option, an electron browser will be used instead of running headless.
 
 To run specific files, provide the spec option with a quoted path or comma separated file paths: `npx cypress run --spec './cypress/integration/**/*'`
 
