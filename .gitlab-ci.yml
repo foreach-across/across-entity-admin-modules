@@ -105,7 +105,6 @@ frontend:entity-module:
 frontend:ax-bootstrap-theme:
   extends:
     - .frontend
-  # image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:12.9.1-alpine
   variables:
     MODULE_NAME: ax-bootstrap-theme
   artifacts:
@@ -118,7 +117,7 @@ build:test-apps:
   needs:
     - frontend:bootstrap-ui-module
     - frontend:entity-module
-    - frontend:ax-bootstrap-theme
+    # - frontend:ax-bootstrap-theme
   script:
     # - 'mvn $MAVEN_CLI_OPTS dependency:purge-local-repository -DmanualInclude=com.foreach -DreResolve=false'
     - find $CI_PROJECT_DIR/.m2/repository/com/foreach/ -type d -name "*-SNAPSHOT" | xargs rm -rf || echo "No snapshots to delete"
@@ -136,32 +135,28 @@ build:test-apps:
     - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:${DOCKER_VERSION}-dind
       alias: docker
       command: [ "--tls=false" ]
-#  before_script:
+  before_script:
 #    - curl -SL https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
 #    - chmod +x /usr/local/bin/docker-compose
-  # TODO docker login so we can use GitLab dependency proxy
+     - docker login -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
   script:
     - env | grep JOB | sort
     - cat /etc/os-release || false
-#    - cd ${MODULE_NAME}/src/main/frontend
+#    - cd ${MODULE_NAME}/src/test/e2e
 #    - yarn install
 #    - cd -
 #    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up -d --build web
 #    - docker-compose -f docker-compose-${MODULE_NAME}.yml --ansi=never up --build e2e
     - cd $MODULE_NAME
     - docker-compose --ansi=never up e2e
-    - find src/test/e2e -name "*.xml" || echo "Nothing found"
+    # - find src/test/e2e -name "*.xml" || echo "Nothing found"
   after_script:
     - docker-compose down
   artifacts:
     when: always
     reports:
       junit:
-        # From Bamboo:
-        # bootstrap-ui-module/src/main/frontend/tests/e2e/tests/cypress/out/*.xml
-        # entity-module-test-application/src/test/e2e/tests/cypress/out/*.xml
-        # entity-module-test-application/src/test/e2e/tests/cypress/out/*.xml
-        - '**/e2e/tests/cypress/out/*.xml'
+        - $MODULE_NAME/src/test/e2e/tests/cypress/out/*.xml
 
 end2end:bootstrap-ui-module:
   extends:
