@@ -1,33 +1,12 @@
-# From: https://java.testcontainers.org/supported_docker_environment/continuous_integration/gitlab_ci/
-# DinD service is required for Testcontainers
-#services:
-#  - name: docker:dind
-#    # explicitly disable tls to avoid docker startup interruption
-#    command: ["--tls=false"]
-#
-#variables:
-#  # Instruct Testcontainers to use the daemon of DinD, use port 2375 for non-tls connections.
-#  DOCKER_HOST: "tcp://docker:2375"
-#  # Instruct Docker not to start over TLS.
-#  DOCKER_TLS_CERTDIR: ""
-#  # Improve performance with overlayfs.
-#  DOCKER_DRIVER: overlay2
-
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Maven.gitlab-ci.yml
-
-# Build JAVA applications using Apache Maven (http://maven.apache.org)
-# For docker image tags see https://hub.docker.com/_/maven/
-#
-# For general lifecycle information see https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
-
-# This template will build and test your projects
-# * Caches downloaded dependencies and plugins between invocation.
-# * Verify but don't deploy merge requests.
-# * Deploy built artifacts from master branch only.
 variables:
+  DOCKER_COMPOSE_VERSION: "2.23.3"
+  DOCKER_VERSION: "24.0"
+  # Instruct docker clients to use the daemon of DinD, use port 2375 for non-tls connections.
+  DOCKER_HOST: "tcp://docker:2375"
+  # Instruct Docker not to start over TLS.
+  DOCKER_TLS_CERTDIR: ""
+  # Improve performance with overlayfs.
+  DOCKER_DRIVER: overlay2
 
   MAVEN_REPO_DIR: $CI_PROJECT_DIR/.m2/repository
 
@@ -65,6 +44,7 @@ variables:
     GRANT UNLIMITED TABLESPACE TO axt;
     GRANT SELECT ON SYS.DBA_RECYCLEBIN TO AXT;
 
+  NODEJS_DOCKER_IMAGE_VERSION: 12
 
 # This template uses the latest Maven 3 release, e.g., 3.8.6, and OpenJDK 8 (LTS)
 # for verifying and deploying images
@@ -79,6 +59,7 @@ image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.9-eclipse-temurin-8
 cache:
   paths:
     - $MAVEN_REPO_DIR
+    - "**/frontend/node_modules"
 
 after_script:
   - rm -rf $MAVEN_REPO_DIR/com/foreach # Don't cache this
@@ -95,10 +76,11 @@ after_script:
 
 .frontend:
   stage: test
-  # image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16 # Does not work for ax-bootstrap-theme
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:12
+  # TODO: node:16 does not work for ax-bootstrap-theme, but does for bootstrap-ui-module and entity-module:
+  # image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODEJS_DOCKER_IMAGE_VERSION}
   script:
-    - cd ${FRONTEND_DIR}
+    - cd ${MODULE_NAME}/src/main/frontend
     - yarn install
     - yarn build:prod
 
@@ -106,7 +88,7 @@ frontend:bootstrap-ui-module:
   extends:
     - .frontend
   variables:
-    FRONTEND_DIR: bootstrap-ui-module/src/main/frontend
+    MODULE_NAME: bootstrap-ui-module
   artifacts:
     paths:
       - bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/
@@ -115,7 +97,7 @@ frontend:entity-module:
   extends:
     - .frontend
   variables:
-    FRONTEND_DIR: entity-module/src/main/frontend
+    MODULE_NAME: entity-module
   artifacts:
     paths:
       - entity-module/src/main/resources/views/static/entity/
@@ -123,16 +105,70 @@ frontend:entity-module:
 frontend:ax-bootstrap-theme:
   extends:
     - .frontend
-  # image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:12.9.1-alpine
   variables:
-    FRONTEND_DIR: ax-bootstrap-theme/src/main/frontend
+    MODULE_NAME: ax-bootstrap-theme
   artifacts:
     paths:
       - ax-bootstrap-theme/src/main/resources/views/static/adminweb-themes/
 
 
-# For merge requests do not `deploy` but only run `verify`.
-# See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+build:test-apps:
+  stage: test
+  needs:
+    - frontend:bootstrap-ui-module
+    - frontend:entity-module
+    # - frontend:ax-bootstrap-theme
+  script:
+    # - 'mvn $MAVEN_CLI_OPTS dependency:purge-local-repository -DmanualInclude=com.foreach -DreResolve=false'
+    - find $CI_PROJECT_DIR/.m2/repository/com/foreach/ -type d -name "*-SNAPSHOT" | xargs rm -rf || echo "No snapshots to delete"
+    - 'mvn $MAVEN_CLI_OPTS package -DskipTests'
+  artifacts:
+    when: always
+    paths:
+      - '*/target/*-exec.jar'
+
+
+.end2end:
+  stage: test
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:${DOCKER_VERSION}
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:${DOCKER_VERSION}-dind
+      alias: docker
+      command: [ "--tls=false" ]
+  before_script:
+     - docker login -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
+  script:
+    - cd $MODULE_NAME
+    - echo "DOCKER_REPOSITORY=${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}" > .env
+    - cat .env
+    - docker-compose --ansi=never up e2e
+  after_script:
+    - docker-compose down
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - $MODULE_NAME/src/test/e2e/tests/cypress/out/*.xml
+    paths:
+      - $MODULE_NAME/src/test/e2e/tests/cypress/out/videos/
+
+end2end:bootstrap-ui-module:
+  extends:
+    - .end2end
+  needs:
+    - build:test-apps
+  variables:
+    MODULE_NAME: bootstrap-ui-module-test
+
+end2end:entity-module:
+  extends:
+    - .end2end
+  needs:
+    - build:test-apps
+  variables:
+    MODULE_NAME: entity-module-test-application
+
+
 .verify:
   stage: test
   script:
@@ -169,33 +205,6 @@ verify:jdk8:
 #    - .verify
 #  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.9-eclipse-temurin-21
 
-# bootstrap-ui-module: end-to-end tests:
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
-#  cp ${HOME}/.npmrc ${bamboo.working.directory}
-#  docker-compose run --rm frontend sh -c 'yarn run build:prod'
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U --batch-mode -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
-#  docker-compose --no-ansi up -d --build web
-#  docker-compose --no-ansi up --build test
-# Roughly summarized, the end2end tests:
-# - run bootstrap-ui-module-test.jar in a Java container (In theory, we could run this in a job service,
-#   using the artifact published by the maven build, but we'd have to build and publish a docker image for that)
-# - run Cypress in a cypress/browsers container, with the actual end-to-end tests
-
-# entity-ui-module: end-to-end tests
-#  cp ${HOME}/.npmrc ${bamboo.working.directory}
-#  docker-compose run --rm frontend sh -c 'yarn run build:prod'
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn --batch-mode dependency:purge-local-repository -DmanualInclude=com.foreach.across -DreResolve=false -Dverbose=true
-#  docker-compose --no-ansi -f across-bamboo-specs/docker-compose-ax-5.yml  run maven-jdk-8 mvn clean package -U -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dincoming.build.key=${bamboo.buildKey} -Dincoming.build.number=${bamboo.buildNumber} -Dincoming.build.date=${bamboo.buildTimeStamp}
-#  docker-compose --no-ansi up -d --build web
-#  docker-compose --no-ansi up --build e2e
-# This is more or less similar to bootstrap-ui-module (the docker-compose files have the same structure, but with quite a few differences)
-
-# Easiest solution is probably to run the end-to-end tests in a job:
-# - with a DinD service container
-# - and 'image: docker' for the "job" container: this has docker-compose:
-#   1. Run the application-under-test in a container
-#   2. And the tests in another
-# - Or: run the tests as the "job" container, and run (1) as a service container, using docker-compose
 
 .itest:
   stage: test

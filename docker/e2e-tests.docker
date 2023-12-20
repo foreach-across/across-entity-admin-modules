@@ -1,6 +1,14 @@
-FROM cypress/browsers:chrome65-ff57
-COPY docker/wait-for-it.sh ./wait-for-it.sh
-COPY docker/run-cypress.sh ./run-cypress.sh
+ARG DOCKER_REPOSITORY
+# TODO upgrade
+FROM $DOCKER_REPOSITORY/cypress/browsers:chrome65-ff57
+
+# COPY docker/wait-for-it.sh ./wait-for-it.sh
+# COPY docker/run-cypress.sh ./run-cypress.sh
+
 ENV CI=1
-RUN chmod +x ./wait-for-it.sh
+
+#RUN chmod +x /docker/wait-for-it.sh
+
+# TODO This is downloading and installing cypress from npm on each build,
+# which can be fixed by using cypress/included, but that requires a much newer version.
 RUN npm i cypress@4.12.1

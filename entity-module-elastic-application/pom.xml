@@ -112,6 +112,7 @@
 				</executions>
 				<configuration>
 					<executable>true</executable>
+					<classifier>exec</classifier>
 				</configuration>
 			</plugin>
 		</plugins>

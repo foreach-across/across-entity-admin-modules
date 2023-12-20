@@ -13,19 +13,19 @@
         <module name="admin-web-module" />
         <module name="entity-shared-test" />
         <module name="entity-module" />
+        <module name="application-info-module-test-web" />
         <module name="entity-module-test-application" />
         <module name="properties-module" />
-        <module name="application-info-module-test-web" />
         <module name="entity-module-elastic-application" />
         <module name="bootstrap-ui-module" />
         <module name="ax-bootstrap-4-utilities" />
-        <module name="bootstrap-ui-module-test" />
         <module name="application-info-module" />
+        <module name="bootstrap-ui-module-test" />
         <module name="entity-module-test" />
         <module name="admin-web-module-test-web" />
         <module name="ax-bootstrap-theme" />
       </profile>
-      <profile name="Annotation profile for across-entity-admin-modules" enabled="true">
+      <profile name="Annotation profile for bootstrap-demo-app" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />

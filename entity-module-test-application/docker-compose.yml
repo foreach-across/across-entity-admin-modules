@@ -1,0 +1,42 @@
+# Keep this in sync between bootstrap-ui-module-test and entity-module-test-application
+
+# To run the end-to-end tests:
+# 1. Build the frontend
+# 2. Build the application using maven
+# 3. From the directory with this docker-compose file, run: docker-compose up e2e
+# 4. To shut down the application-under-test and delete the docker network: docker-compose down
+
+version: "3.1"
+services:
+  web:
+    tty: false
+    build:
+      context: .
+      dockerfile: ../docker/e2e-web.docker
+      args:
+        DOCKER_REPOSITORY: ${DOCKER_REPOSITORY}
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    volumes:
+      - ./target/entity-module-test-application-exec.jar:/web/app.jar
+    networks:
+      default:
+        aliases:
+          - entity-module-test.dev.foreach.be
+  e2e:
+    tty: false
+    build:
+      context: .
+      dockerfile: ../docker/e2e-tests.docker
+      args:
+        DOCKER_REPOSITORY: ${DOCKER_REPOSITORY}
+    depends_on:
+      - web
+    command: bash -c "/docker/wait-for-it.sh -t 180 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
+    links:
+      - web
+    volumes:
+      - ./src/test/e2e/tests:/cypress
+      - ../docker:/docker
