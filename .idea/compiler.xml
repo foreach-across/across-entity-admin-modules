@@ -25,7 +25,7 @@
         <module name="admin-web-module-test-web" />
         <module name="ax-bootstrap-theme" />
       </profile>
-      <profile name="Annotation profile for bootstrap-demo-app" enabled="true">
+      <profile name="Annotation profile for across-entity-admin-modules" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
