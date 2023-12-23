@@ -121,7 +121,6 @@ org.eclipse.jetty.http2:http2-hpack:jar:9.4.44.v20210927:compile
 org.eclipse.jetty.http2:http2-http-client-transport:jar:9.4.44.v20210927:compile
 org.eclipse.jetty:jetty-alpn-client:jar:9.4.44.v20210927:compile
 org.eclipse.jetty:jetty-alpn-java-client:jar:9.4.44.v20210927:compile
-org.eclipse.jetty:jetty-alpn-openjdk8-client:jar:9.4.44.v20210927:compile
 org.eclipse.jetty:jetty-client:jar:9.4.44.v20210927:compile
 org.eclipse.jetty:jetty-http:jar:9.4.44.v20210927:compile
 org.eclipse.jetty:jetty-io:jar:9.4.44.v20210927:compile

@@ -110,7 +110,6 @@ com.foreach.across.modules:entity-module-test-application:jar:4.3-SNAPSHOT
 |  |  +- org.eclipse.jetty.http2:http2-common:jar:9.4.44.v20210927:compile
 |  |  +- org.eclipse.jetty.http2:http2-hpack:jar:9.4.44.v20210927:compile
 |  |  \- org.eclipse.jetty.http2:http2-http-client-transport:jar:9.4.44.v20210927:compile
-|  |     \- org.eclipse.jetty:jetty-alpn-openjdk8-client:jar:9.4.44.v20210927:compile
 |  \- org.slf4j:slf4j-api:jar:1.7.32:compile
 +- com.h2database:h2:jar:1.4.200:compile
 +- com.foreach.across.modules:admin-web-module:jar:4.3-SNAPSHOT:compile
