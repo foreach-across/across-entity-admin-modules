@@ -64,7 +64,8 @@ build:test-apps:
     when: always
     paths:
       - '*/target/*-exec.jar'
-
+  rules:
+    - if: $CI_COMMIT_TAG == null
 
 .end2end:
   stage: test
@@ -91,6 +92,8 @@ build:test-apps:
         - $MODULE_NAME/src/test/e2e/tests/cypress/out/*.xml
     paths:
       - $MODULE_NAME/src/test/e2e/tests/cypress/out/videos/
+  rules:
+    - if: $CI_COMMIT_TAG == null
 
 end2end:bootstrap-ui-module:
   extends:
