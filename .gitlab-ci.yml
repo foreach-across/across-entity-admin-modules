@@ -47,6 +47,7 @@ frontend:ax-bootstrap-theme:
   artifacts:
     paths:
       - ax-bootstrap-theme/src/main/resources/views/static/adminweb-themes/
+      - ax-bootstrap-4-utilities/src/main/resources/META-INF/resources/webjars/ax-bootstrap-4-utilities/0.0.1/css/
 
 
 build:test-apps:
