@@ -25,6 +25,8 @@
 	</parent>
 
 	<artifactId>entity-module</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Entity Module</description>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

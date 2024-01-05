@@ -26,6 +26,8 @@
 	</parent>
 
 	<artifactId>application-info-module</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Application Info Module</description>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

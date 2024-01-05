@@ -25,6 +25,8 @@
 	</parent>
 
 	<artifactId>bootstrap-ui-module</artifactId>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Bootstrap UI Module</description>
 
 	<properties>
 		<maven.javadoc.skip>false</maven.javadoc.skip>

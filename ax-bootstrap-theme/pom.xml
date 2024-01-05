@@ -25,6 +25,8 @@
     </parent>
 
     <artifactId>ax-bootstrap-theme</artifactId>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Across Bootstrap Theme</description>
 
     <properties>
         <maven.javadoc.skip>false</maven.javadoc.skip>
