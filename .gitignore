@@ -25,6 +25,8 @@ local-data
 .dependency-tree.txt
 .foreach-deps.txt
 .flattened-pom.xml
+pom.xml.versionsBackup
+versions.properties
 
 # Emacs:
 *~
