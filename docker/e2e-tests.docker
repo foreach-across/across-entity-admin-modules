@@ -1,5 +1,5 @@
 ARG DOCKER_REPOSITORY
 # TODO upgrade
-FROM $DOCKER_REPOSITORY/cypress/included:4.12.1
+FROM $DOCKER_REPOSITORY/cypress/included:5.6.0
 
 ENV CI=1
