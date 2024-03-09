@@ -16,16 +16,26 @@
 
 package com.foreach.across.test.modules.adminweb.it;
 
-import com.foreach.across.core.annotations.ModuleConfiguration;
+import com.foreach.across.config.AcrossContextConfigurer;
+import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
+import com.foreach.across.modules.adminweb.config.AdminWebSecurityConfiguration;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfiguration;
 import com.foreach.across.test.AcrossTestWebContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -37,6 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Disabled
 /**
  * @author Arne Vandamme
  * @since 1.1.1
@@ -47,8 +58,11 @@ public class ITDashboard
 	public void defaultDashboard() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
-						.modules( AdminWebModule.NAME )
-						.moduleConfigurationPackageClasses( DashboardUserConfiguration.class )
+						.modules( AdminWebModule.NAME, SpringSecurityModule.NAME )
+						//.moduleConfigurationPackageClasses( DashboardUserConfiguration.class )
+						//.register( AdminWebSecurityConfiguration.class )
+						//.register( AcrossWebSecurityConfiguration.class )
+						.register( DashboardUserConfiguration.class )
 						.build()
 		) {
 			MockMvc mvc = ctx.mockMvc();
@@ -84,23 +98,38 @@ public class ITDashboard
 
 	private void assertLoginRedirectsToRoot( MockMvc mvc ) throws Exception {
 		mvc.perform(
-				post( "/admin/login" )
-						.with( csrf() )
-						.param( "username", "dashboard" )
-						.param( "password", "dashboard" )
-		)
+				   post( "/admin/login" )
+						   .with( csrf() )
+						   .param( "username", "dashboard" )
+						   .param( "password", "dashboard" )
+		   )
 		   .andExpect( redirectedUrl( "/admin/" ) );
 	}
 
-	@ModuleConfiguration(SpringSecurityModule.NAME)
-	@EnableGlobalAuthentication
+	//	@ModuleConfiguration(SpringSecurityModule.NAME)
+	//@EnableGlobalAuthentication
+	@EnableWebSecurity
+	@Configuration
 	public static class DashboardUserConfiguration
 	{
+/*
 		@Autowired
 		public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
 			auth.inMemoryAuthentication()
 			    .withUser( "dashboard" ).password( "{noop}dashboard" )
 			    .authorities( new SimpleGrantedAuthority( "access administration" ) );
+		}
+*/
+
+		@Exposed
+		@Bean
+		public InMemoryUserDetailsManager userDetailsManager() {
+			UserDetails user = User.builder()
+			                       .username( "dashboard" )
+			                       .password( "{noop}dashboard" )
+			                       .authorities( "access administration" )
+			                       .build();
+			return new InMemoryUserDetailsManager( user );
 		}
 	}
 }

@@ -35,7 +35,7 @@ public class RememberMeProperties
 	/**
 	 * Should remember me be enabled (will only be the case if a key is also configured).
 	 */
-	private boolean enabled = true;
+	private boolean enabled; // = true; // 4.5.0 needs to opt-in
 
 	/**
 	 * Key used for creating the remember me cookie.
