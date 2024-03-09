@@ -1,8 +1,8 @@
-com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.4-SNAPSHOT
-+- com.foreach.across.modules:entity-module:jar:4.4-SNAPSHOT:compile
-|  +- com.foreach.across:across-web:jar:5.4-SNAPSHOT:compile
-|  |  +- org.springframework.boot:spring-boot-starter-web:jar:2.6.15:compile
-|  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:2.6.15:compile
+com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.5-SNAPSHOT
++- com.foreach.across.modules:entity-module:jar:4.5-SNAPSHOT:compile
+|  +- com.foreach.across:across-web:jar:5.5-SNAPSHOT:compile
+|  |  +- org.springframework.boot:spring-boot-starter-web:jar:2.7.18:compile
+|  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:2.7.18:compile
 |  |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.13.5:compile
 |  |  |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.13.5:compile
 |  |  |  \- org.springframework:spring-web:jar:5.3.31:compile
@@ -14,18 +14,18 @@ com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.4-SNAPSHOT
 |  |  +- org.springframework:spring-webmvc:jar:5.3.31:compile
 |  |  |  \- org.springframework:spring-expression:jar:5.3.31:compile
 |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.13.5:compile
-|  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:2.6.15:compile
-|  |  \- org.yaml:snakeyaml:jar:1.29:compile
-|  +- com.foreach.across.modules:spring-security-module:jar:4.4-SNAPSHOT:compile
-|  |  +- org.springframework.security:spring-security-core:jar:5.6.12:compile
-|  |  |  \- org.springframework.security:spring-security-crypto:jar:5.6.12:compile
-|  |  +- org.springframework.security:spring-security-web:jar:5.6.12:compile
-|  |  \- org.springframework.security:spring-security-config:jar:5.6.12:compile
+|  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:2.7.18:compile
+|  |  \- org.yaml:snakeyaml:jar:1.30:compile
+|  +- com.foreach.across.modules:spring-security-module:jar:4.5-SNAPSHOT:compile
+|  |  +- org.springframework.security:spring-security-core:jar:5.7.11:compile
+|  |  |  \- org.springframework.security:spring-security-crypto:jar:5.7.11:compile
+|  |  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
+|  |  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
 |  +- org.hibernate.validator:hibernate-validator:jar:6.2.5.Final:compile
 |  |  +- jakarta.validation:jakarta.validation-api:jar:2.0.2:compile
 |  |  +- org.jboss.logging:jboss-logging:jar:3.4.3.Final:compile
 |  |  \- com.fasterxml:classmate:jar:1.5.1:compile
-|  +- org.springframework.data:spring-data-commons:jar:2.6.10:compile
+|  +- org.springframework.data:spring-data-commons:jar:2.7.18:compile
 |  |  +- org.springframework:spring-core:jar:5.3.31:compile
 |  |  |  \- org.springframework:spring-jcl:jar:5.3.31:compile
 |  |  +- org.springframework:spring-beans:jar:5.3.31:compile
@@ -36,18 +36,19 @@ com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.4-SNAPSHOT
 |  +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
 |  +- org.atteo:evo-inflector:jar:1.2.2:compile
 |  \- org.webjars:lodash:jar:4.17.4:compile
-+- com.foreach.across.modules:entity-module-integration-test:jar:4.4-SNAPSHOT:compile
-|  +- org.mockito:mockito-core:jar:4.0.0:compile
-|  |  +- net.bytebuddy:byte-buddy:jar:1.11.22:compile
-|  |  +- net.bytebuddy:byte-buddy-agent:jar:1.11.22:compile
++- com.foreach.across.modules:entity-module-integration-test:jar:4.5-SNAPSHOT:compile
+|  +- org.mockito:mockito-core:jar:4.5.1:compile
+|  |  +- net.bytebuddy:byte-buddy:jar:1.12.23:compile
+|  |  +- net.bytebuddy:byte-buddy-agent:jar:1.12.23:compile
 |  |  \- org.objenesis:objenesis:jar:3.2:runtime
-|  \- org.springframework.boot:spring-boot-starter-data-mongodb:jar:2.6.15:compile
-|     +- org.mongodb:mongodb-driver-sync:jar:4.4.2:compile
-|     |  +- org.mongodb:bson:jar:4.4.2:compile
-|     |  \- org.mongodb:mongodb-driver-core:jar:4.4.2:compile
-|     \- org.springframework.data:spring-data-mongodb:jar:3.3.10:compile
-+- com.foreach.across.modules:across-hibernate-module:jar:4.4-SNAPSHOT:compile
-|  +- org.springframework.data:spring-data-jpa:jar:2.6.10:compile
+|  \- org.springframework.boot:spring-boot-starter-data-mongodb:jar:2.7.18:compile
+|     +- org.mongodb:mongodb-driver-sync:jar:4.6.1:compile
+|     |  +- org.mongodb:bson:jar:4.6.1:compile
+|     |  \- org.mongodb:mongodb-driver-core:jar:4.6.1:compile
+|     |     \- org.mongodb:bson-record-codec:jar:4.6.1:runtime
+|     \- org.springframework.data:spring-data-mongodb:jar:3.4.18:compile
++- com.foreach.across.modules:across-hibernate-module:jar:4.5-SNAPSHOT:compile
+|  +- org.springframework.data:spring-data-jpa:jar:2.7.18:compile
 |  |  +- org.springframework:spring-context:jar:5.3.31:compile
 |  |  \- org.springframework:spring-tx:jar:5.3.31:compile
 |  +- org.springframework:spring-orm:jar:5.3.31:compile
@@ -60,35 +61,35 @@ com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.4-SNAPSHOT
 |  |  +- javax.activation:javax.activation-api:jar:1.2.0:compile
 |  |  +- org.hibernate.common:hibernate-commons-annotations:jar:5.1.2.Final:compile
 |  |  +- javax.xml.bind:jaxb-api:jar:2.3.1:compile
-|  |  \- org.glassfish.jaxb:jaxb-runtime:jar:2.3.8:compile
+|  |  \- org.glassfish.jaxb:jaxb-runtime:jar:2.3.9:compile
 |  |     +- jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.3:compile
-|  |     +- org.glassfish.jaxb:txw2:jar:2.3.8:compile
+|  |     +- org.glassfish.jaxb:txw2:jar:2.3.9:compile
 |  |     +- com.sun.istack:istack-commons-runtime:jar:3.0.12:compile
 |  |     \- com.sun.activation:jakarta.activation:jar:1.2.2:runtime
 |  +- org.hibernate:hibernate-entitymanager:jar:5.6.15.Final:compile
 |  +- com.querydsl:querydsl-jpa:jar:5.0.0:compile
 |  |  \- com.querydsl:querydsl-core:jar:5.0.0:compile
 |  |     \- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
-|  \- com.foreach.across:across-autoconfigure:jar:2.4-SNAPSHOT:compile
-+- com.h2database:h2:jar:1.4.200:compile
-+- org.springframework.boot:spring-boot-starter-tomcat:jar:2.6.15:compile
+|  \- com.foreach.across:across-autoconfigure:jar:2.5-SNAPSHOT:compile
++- com.h2database:h2:jar:2.1.214:compile
++- org.springframework.boot:spring-boot-starter-tomcat:jar:2.7.18:compile
 |  +- jakarta.annotation:jakarta.annotation-api:jar:1.3.5:compile
 |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:9.0.84:compile
 |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:9.0.84:compile
 |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:9.0.84:compile
-+- org.springframework.boot:spring-boot-starter-jdbc:jar:2.6.15:compile
-|  +- org.springframework.boot:spring-boot-starter:jar:2.6.15:compile
-|  |  +- org.springframework.boot:spring-boot:jar:2.6.15:compile
-|  |  \- org.springframework.boot:spring-boot-starter-logging:jar:2.6.15:compile
++- org.springframework.boot:spring-boot-starter-jdbc:jar:2.7.18:compile
+|  +- org.springframework.boot:spring-boot-starter:jar:2.7.18:compile
+|  |  +- org.springframework.boot:spring-boot:jar:2.7.18:compile
+|  |  \- org.springframework.boot:spring-boot-starter-logging:jar:2.7.18:compile
 |  |     +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.17.2:compile
 |  |     |  \- org.apache.logging.log4j:log4j-api:jar:2.17.2:compile
 |  |     \- org.slf4j:jul-to-slf4j:jar:1.7.36:compile
 |  +- com.zaxxer:HikariCP:jar:4.0.3:compile
 |  \- org.springframework:spring-jdbc:jar:5.3.31:compile
-+- com.foreach.across:across-test:jar:5.4-SNAPSHOT:compile
++- com.foreach.across:across-test:jar:5.5-SNAPSHOT:compile
 |  +- org.junit.jupiter:junit-jupiter:jar:5.8.2:compile
 |  |  \- org.junit.jupiter:junit-jupiter-params:jar:5.8.2:compile
-|  +- com.foreach.across:across-core:jar:5.4-SNAPSHOT:compile
+|  +- com.foreach.across:across-core:jar:5.5-SNAPSHOT:compile
 |  |  +- com.foreach.libs:common-concurrent:jar:1.1:compile
 |  |  +- ch.qos.logback:logback-classic:jar:1.2.12:compile
 |  |  |  \- ch.qos.logback:logback-core:jar:1.2.12:compile
@@ -99,10 +100,10 @@ com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.4-SNAPSHOT
 |  |        +- org.apache.commons:commons-text:jar:1.9:compile
 |  |        \- org.apache.commons:commons-collections4:jar:4.4:compile
 |  +- org.springframework:spring-test:jar:5.3.31:compile
-|  +- org.springframework.boot:spring-boot-test:jar:2.6.15:compile
+|  +- org.springframework.boot:spring-boot-test:jar:2.7.18:compile
 |  +- org.hsqldb:hsqldb:jar:2.5.2:compile
-|  +- org.xmlunit:xmlunit-matchers:jar:2.8.4:compile
-|  |  +- org.xmlunit:xmlunit-core:jar:2.8.4:compile
+|  +- org.xmlunit:xmlunit-matchers:jar:2.9.1:compile
+|  |  +- org.xmlunit:xmlunit-core:jar:2.9.1:compile
 |  |  \- org.hamcrest:hamcrest-core:jar:2.2:compile
 |  |     \- org.hamcrest:hamcrest:jar:2.2:compile
 |  +- org.testcontainers:testcontainers:jar:1.19.3:compile
@@ -112,7 +113,7 @@ com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.4-SNAPSHOT
 |  |  +- com.github.docker-java:docker-java-api:jar:3.3.4:compile
 |  |  \- com.github.docker-java:docker-java-transport-zerodep:jar:3.3.4:compile
 |  |     +- com.github.docker-java:docker-java-transport:jar:3.3.4:compile
-|  |     \- net.java.dev.jna:jna:jar:5.13.0:compile
+|  |     \- net.java.dev.jna:jna:jar:5.12.1:compile
 |  +- org.testcontainers:mysql:jar:1.19.3:compile
 |  |  \- org.testcontainers:jdbc:jar:1.19.3:compile
 |  |     \- org.testcontainers:database-commons:jar:1.19.3:compile
@@ -127,6 +128,6 @@ com.foreach.across.modules:entity-module-no-bootstrapui:jar:4.4-SNAPSHOT
 |  \- org.apiguardian:apiguardian-api:jar:1.1.2:compile
 +- org.junit.vintage:junit-vintage-engine:jar:5.8.2:test
 |  \- junit:junit:jar:4.13.2:compile
-+- org.mockito:mockito-junit-jupiter:jar:4.0.0:test
-+- org.projectlombok:lombok:jar:1.18.26:provided
-\- org.assertj:assertj-core:jar:3.21.0:test
++- org.mockito:mockito-junit-jupiter:jar:4.5.1:test
++- org.projectlombok:lombok:jar:1.18.30:provided
+\- org.assertj:assertj-core:jar:3.22.0:test

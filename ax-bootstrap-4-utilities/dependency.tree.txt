@@ -1,4 +1,4 @@
-com.foreach.across.modules:ax-bootstrap-4-utilities:jar:4.4-SNAPSHOT
+com.foreach.across.modules:ax-bootstrap-4-utilities:jar:4.5-SNAPSHOT
 +- org.junit.jupiter:junit-jupiter-engine:jar:5.8.2:test
 |  +- org.junit.platform:junit-platform-engine:jar:1.8.2:test
 |  |  +- org.opentest4j:opentest4j:jar:1.2.0:test
@@ -9,10 +9,10 @@ com.foreach.across.modules:ax-bootstrap-4-utilities:jar:4.4-SNAPSHOT
 |  \- junit:junit:jar:4.13.2:test
 |     \- org.hamcrest:hamcrest-core:jar:2.2:test
 |        \- org.hamcrest:hamcrest:jar:2.2:test
-+- org.mockito:mockito-junit-jupiter:jar:4.0.0:test
-|  \- org.mockito:mockito-core:jar:4.0.0:test
-|     +- net.bytebuddy:byte-buddy:jar:1.11.22:test
-|     +- net.bytebuddy:byte-buddy-agent:jar:1.11.22:test
++- org.mockito:mockito-junit-jupiter:jar:4.5.1:test
+|  \- org.mockito:mockito-core:jar:4.5.1:test
+|     +- net.bytebuddy:byte-buddy:jar:1.12.23:test
+|     +- net.bytebuddy:byte-buddy-agent:jar:1.12.23:test
 |     \- org.objenesis:objenesis:jar:3.2:test
-+- org.projectlombok:lombok:jar:1.18.26:provided
-\- org.assertj:assertj-core:jar:3.21.0:test
++- org.projectlombok:lombok:jar:1.18.30:provided
+\- org.assertj:assertj-core:jar:3.22.0:test
