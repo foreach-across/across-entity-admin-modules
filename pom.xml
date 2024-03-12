@@ -31,7 +31,7 @@
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
-	<url>https://across.dev/modules/admin-entity-modules</url>
+	<url>https://foreach-across.github.io/modules/#across-entity-admin-modules</url>
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
@@ -192,7 +192,7 @@
 	</dependencies>
 
 	<scm>
-		<url>https://github.com/foreachos/across-entity-admin-modules</url>
+		<url>https://github.com/foreach-across/across-entity-admin-modules</url>
 	</scm>
 
 </project>
