@@ -93,28 +93,28 @@ This project contains the following:
 ### License
 Licensed under version 2.0 of the [Apache License][].
 
-[module page]: https://across.dev/modules/bootstrapuimodule
-[contributor guidelines]: https://across.dev/contributing
+[module page]: https://foreach-across.github.io/modules/bootstrap-ui-module
+[contributor guidelines]: https://foreach-across.github.io/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
 
-[module page]: https://across.dev/modules/admin-web
-[contributor guidelines]: https://across.dev/contributing
+[module page]: https://foreach-across.github.io/modules/admin-web-module
+[contributor guidelines]: https://foreach-across.github.io/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
 
-[module page]: https://across.dev/modules/entitymodule
-[contributor guidelines]: https://across.dev/contributing
+[module page]: https://foreach-across.github.io/modules/entity-module
+[contributor guidelines]: https://foreach-across.github.io/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
 [e2e readme]: ./entity-module-test-application/src/test/e2e/README.md
 
-[module wiki]: https://across.dev/modules/propertiesmodule
-[contributor guidelines]: https://across.dev/contributing
+[module wiki]: https://foreach-across.github.io/modules/properties-module
+[contributor guidelines]: https://foreach-across.github.io/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
 
-[module wiki]: https://across.dev/modules/ApplicationInfoModule
-[contributor guidelines]: https://across.dev/contributing
+[module wiki]: https://foreach-across.github.io/modules/application-info-module
+[contributor guidelines]: https://foreach-across.github.io/contributing
 [Maven]: https://maven.apache.org
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0

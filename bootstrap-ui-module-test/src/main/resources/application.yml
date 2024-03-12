@@ -28,6 +28,11 @@ spring:
     restart:
       additional-paths: src/main/resources
       additional-exclude: "messages/**,views/**"
+  main:
+    allow-circular-references: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
 
 server:
   error:
