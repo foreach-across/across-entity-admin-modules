@@ -50,7 +50,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Arne Vandamme
  */
-@ContextConfiguration(classes = TestEmbeddedEntities.Config.class)
+@ContextConfiguration(classes = {
+		FakeWebSecurityConfiguration.class,
+		TestEmbeddedEntities.Config.class,
+})
 public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 {
 	@Autowired

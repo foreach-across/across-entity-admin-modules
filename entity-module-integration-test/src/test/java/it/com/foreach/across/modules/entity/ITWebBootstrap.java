@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.verify;
 /**
  * @author Arne Vandamme
  */
+@EnableWebSecurity
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration

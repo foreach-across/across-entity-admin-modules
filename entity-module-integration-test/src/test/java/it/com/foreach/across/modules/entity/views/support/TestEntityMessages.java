@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Arne Vandamme
  */
+@EnableWebSecurity
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration

@@ -22,6 +22,7 @@ import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Arne Vandamme
  */
+@EnableWebSecurity
 @ExtendWith(SpringExtension.class)
 @AcrossWebAppConfiguration
 @TestPropertySource(properties = {

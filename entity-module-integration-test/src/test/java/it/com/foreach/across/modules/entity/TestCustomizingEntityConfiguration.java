@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Arne Vandamme
  */
+@EnableWebSecurity
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration(classes = TestCustomizingEntityConfiguration.Config.class)

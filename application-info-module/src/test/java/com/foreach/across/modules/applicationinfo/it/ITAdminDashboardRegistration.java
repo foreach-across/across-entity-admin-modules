@@ -8,6 +8,8 @@ import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.test.AcrossTestWebContext;
 import com.foreach.across.test.support.AcrossTestWebContextBuilder;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +25,7 @@ public class ITAdminDashboardRegistration
 		assertAdminWebSettings(
 				"My App", "rm-admin-myapp",
 				web( false )
+						.register( FakeWebSecurityConfiguration.class )
 						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
 						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
 						.modules( ApplicationInfoModule.NAME, AdminWebModule.NAME )
@@ -34,6 +37,7 @@ public class ITAdminDashboardRegistration
 		assertAdminWebSettings(
 				"My App", "my-remember-me-cookie",
 				web( false )
+						.register( FakeWebSecurityConfiguration.class )
 						.property( AdminWebModuleSettings.REMEMBER_ME_COOKIE, "my-remember-me-cookie" )
 						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
 						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
@@ -43,6 +47,7 @@ public class ITAdminDashboardRegistration
 		assertAdminWebSettings(
 				"Admin Title", "rm-admin-myapp",
 				web( false )
+						.register( FakeWebSecurityConfiguration.class )
 						.property( AdminWebModuleSettings.TITLE, "Admin Title" )
 						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
 						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
@@ -58,6 +63,7 @@ public class ITAdminDashboardRegistration
 		assertAdminWebSettings(
 				"My App", "my-other-remember-me-cookie",
 				web( false )
+						.register( FakeWebSecurityConfiguration.class )
 						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
 						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
 						.modules( ApplicationInfoModule.NAME )
@@ -70,6 +76,7 @@ public class ITAdminDashboardRegistration
 		assertAdminWebSettings(
 				"Other Admin Title", "rm-admin-myapp",
 				web( false )
+						.register( FakeWebSecurityConfiguration.class )
 						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
 						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
 						.modules( ApplicationInfoModule.NAME )

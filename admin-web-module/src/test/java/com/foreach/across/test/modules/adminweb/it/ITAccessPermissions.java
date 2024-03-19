@@ -38,6 +38,7 @@ public class ITAccessPermissions
 	public void defaultAccessPermissions() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
+						.register( FakeWebSecurityConfiguration.class )
 						.modules( AdminWebModule.NAME )
 						.build()
 		) {
@@ -52,6 +53,7 @@ public class ITAccessPermissions
 	public void customAccessPermissions() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
+						.register( FakeWebSecurityConfiguration.class )
 						.property( AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS, "custom permission" )
 						.modules( AdminWebModule.NAME )
 						.build()
@@ -67,6 +69,7 @@ public class ITAccessPermissions
 	public void combinedAccessPermissions() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
+						.register( FakeWebSecurityConfiguration.class )
 						.property( AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS,
 						           "access administration,custom permission" )
 						.modules( AdminWebModule.NAME )

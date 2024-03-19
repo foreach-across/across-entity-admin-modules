@@ -16,21 +16,13 @@
 
 package com.foreach.across.test.modules.adminweb.it;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
-import com.foreach.across.modules.adminweb.config.AdminWebSecurityConfiguration;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfiguration;
 import com.foreach.across.test.AcrossTestWebContext;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -47,7 +39,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 /**
  * @author Arne Vandamme
  * @since 1.1.1
@@ -58,10 +49,7 @@ public class ITDashboard
 	public void defaultDashboard() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
-						.modules( AdminWebModule.NAME, SpringSecurityModule.NAME )
-						//.moduleConfigurationPackageClasses( DashboardUserConfiguration.class )
-						//.register( AdminWebSecurityConfiguration.class )
-						//.register( AcrossWebSecurityConfiguration.class )
+						.modules( AdminWebModule.NAME )
 						.register( DashboardUserConfiguration.class )
 						.build()
 		) {
@@ -77,9 +65,9 @@ public class ITDashboard
 	public void customDashboard() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
+						.register( DashboardUserConfiguration.class )
 						.property( AdminWebModuleSettings.DASHBOARD_PATH, "/custom/dashboard" )
 						.modules( AdminWebModule.NAME )
-						.moduleConfigurationPackageClasses( DashboardUserConfiguration.class )
 						.build()
 		) {
 			MockMvc mvc = ctx.mockMvc();
@@ -106,21 +94,10 @@ public class ITDashboard
 		   .andExpect( redirectedUrl( "/admin/" ) );
 	}
 
-	//	@ModuleConfiguration(SpringSecurityModule.NAME)
-	//@EnableGlobalAuthentication
 	@EnableWebSecurity
 	@Configuration
 	public static class DashboardUserConfiguration
 	{
-/*
-		@Autowired
-		public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-			auth.inMemoryAuthentication()
-			    .withUser( "dashboard" ).password( "{noop}dashboard" )
-			    .authorities( new SimpleGrantedAuthority( "access administration" ) );
-		}
-*/
-
 		@Exposed
 		@Bean
 		public InMemoryUserDetailsManager userDetailsManager() {

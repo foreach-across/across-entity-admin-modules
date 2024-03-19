@@ -29,6 +29,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -45,6 +46,7 @@ import java.util.function.Supplier;
  * @since 2.0.0
  */
 @Slf4j
+@EnableWebSecurity
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @AcrossWebAppConfiguration

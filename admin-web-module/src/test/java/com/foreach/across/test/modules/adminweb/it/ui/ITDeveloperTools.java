@@ -23,6 +23,7 @@ import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.test.AcrossTestWebContext;
+import com.foreach.across.test.modules.adminweb.it.FakeWebSecurityConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -43,6 +44,7 @@ public class ITDeveloperTools
 	@Test
 	public void noDeveloperToolsInNonDevMode() throws Exception {
 		try (AcrossTestWebContext ctx = web( false )
+				.register( FakeWebSecurityConfiguration.class )
 				.modules( AdminWebModule.NAME )
 				.modules( new EmptyAcrossModule( "Test", DeveloperToolsController.class ) )
 				.build()) {
@@ -60,6 +62,7 @@ public class ITDeveloperTools
 	@Test
 	public void noAuthenticationRedirectsToLogin() throws Exception {
 		try (AcrossTestWebContext ctx = web( false )
+				.register( FakeWebSecurityConfiguration.class )
 				.modules( AdminWebModule.NAME )
 				.modules( new EmptyAcrossModule( "Test", DeveloperToolsController.class ) )
 				.build()) {
@@ -75,6 +78,7 @@ public class ITDeveloperTools
 	@Test
 	public void noAuthenticationDoesNotRedirectToLoginForOtherRootPath() throws Exception {
 		try (AcrossTestWebContext ctx = web( false )
+				.register( FakeWebSecurityConfiguration.class )
 				.modules( AdminWebModule.NAME )
 				.modules( new EmptyAcrossModule( "Test", DeveloperToolsController.class, AboutController.class ) )
 				.build()) {
@@ -90,6 +94,7 @@ public class ITDeveloperTools
 	@Test
 	public void developerToolsInDevMode() throws Exception {
 		try (AcrossTestWebContext ctx = web( false )
+				.register( FakeWebSecurityConfiguration.class )
 				.developmentMode( true )
 				.modules( AdminWebModule.NAME )
 				.modules( new EmptyAcrossModule( "Test", DeveloperToolsController.class ) )

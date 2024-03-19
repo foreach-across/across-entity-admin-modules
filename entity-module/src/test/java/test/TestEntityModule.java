@@ -26,6 +26,8 @@ import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTyp
 import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.test.AcrossTestContext;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,6 +74,7 @@ public class TestEntityModule
 	@Test
 	public void bootstrapWithAdminWebAndBootstrapUiModule() {
 		try (AcrossTestContext context = web( false )
+				.register( FakeWebSecurityConfiguration.class )
 				.modules( EntityModule.NAME, AdminWebModule.NAME )
 				.build()) {
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isNotEmpty();
@@ -80,4 +83,11 @@ public class TestEntityModule
 			assertThat( EntityModuleIcons.entityModuleIcons.formView.delete() ).isNotNull();
 		}
 	}
+
+	@EnableWebSecurity(debug = true)
+	@Configuration
+	static public class FakeWebSecurityConfiguration
+	{
+	}
+
 }

@@ -32,6 +32,7 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Arne Vandamme
  * @since 4.0.0
  */
+@EnableWebSecurity
 @AcrossWebAppConfiguration(classes = TestManualEntityRegistration.Config.class)
 @ExtendWith(SpringExtension.class)
 class TestManualEntityRegistration

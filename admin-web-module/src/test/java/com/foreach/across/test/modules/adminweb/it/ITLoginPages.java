@@ -36,7 +36,10 @@ public class ITLoginPages
 {
 	@Test
 	public void defaultLoginPage() throws Exception {
-		try (AcrossTestWebContext ctx = web().modules( AdminWebModule.NAME ).build()) {
+		try (AcrossTestWebContext ctx = web()
+				.register( FakeWebSecurityConfiguration.class )
+				.modules( AdminWebModule.NAME )
+				.build()) {
 			MockMvc mvc = ctx.mockMvc();
 
 			mvc.perform( get( "/admin/login" ) )
@@ -49,6 +52,7 @@ public class ITLoginPages
 	public void customLoginPage() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
+						.register( FakeWebSecurityConfiguration.class )
 						.property( AdminWebModuleSettings.LOGIN_TEMPLATE, "th/custom-login" )
 						.modules( AdminWebModule.NAME )
 						.build()

@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
  * If specific application properties have been provided, only <em>application.yml</em> will apply.
  * If not database has been configured, default configuration will use a memory database (if available on the classpath).
  */
+@EnableWebSecurity
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @SpringBootTest(classes = { BootstrapSampleApplication.class, MockMvcConfiguration.class })

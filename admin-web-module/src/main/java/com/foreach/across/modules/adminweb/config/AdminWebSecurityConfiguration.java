@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -42,9 +41,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 
-@EnableWebSecurity
+//@EnableWebSecurity
 @Configuration
-public class AdminWebSecurityConfiguration //implements AcrossWebSecurityConfigurer
+public class AdminWebSecurityConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( AdminWebSecurityConfiguration.class );
 

@@ -32,12 +32,12 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
  * Registered with a global 0 order so it would be before all default security configuration of regular modules.
  */
 @Configuration
-@Order(0)
 @RequiredArgsConstructor
 public class AllowWebjarsSecurityConfiguration // implements AcrossWebSecurityConfigurer
 {
 	private final AcrossContextBeanRegistry beanRegistry;
 
+	@Order(0)
 	@Exposed
 	@Bean
 	public DefaultSecurityFilterChain adminWebWebJarsSecurityFilterChain( HttpSecurity http ) throws Exception {

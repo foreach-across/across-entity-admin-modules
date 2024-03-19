@@ -35,7 +35,9 @@ public class ITDebugDashboardRegistration
 	public void debugDashboardSetByApplicationInfoIfNoneConfigured() {
 		assertDashboardPath(
 				ApplicationInfoController.PATH,
-				web( false ).modules( ApplicationInfoModule.NAME, DebugWebModule.NAME )
+				web( false )
+						.register( FakeWebSecurityConfiguration.class )
+						.modules( ApplicationInfoModule.NAME, DebugWebModule.NAME )
 		);
 	}
 
@@ -44,6 +46,7 @@ public class ITDebugDashboardRegistration
 		assertDashboardPath(
 				"/custom",
 				web( false )
+						.register( FakeWebSecurityConfiguration.class )
 						.property( DebugWebModuleSettings.DASHBOARD_PATH, "/custom" )
 						.modules( ApplicationInfoModule.NAME, DebugWebModule.NAME )
 		);
@@ -57,6 +60,7 @@ public class ITDebugDashboardRegistration
 		assertDashboardPath(
 				"/other/custom",
 				web( false )
+						.register( FakeWebSecurityConfiguration.class )
 						.modules( ApplicationInfoModule.NAME )
 						.modules( debugWebModule )
 		);
