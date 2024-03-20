@@ -16,29 +16,46 @@
 
 package admin.config;
 
-import com.foreach.across.core.annotations.ModuleConfiguration;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.util.Collections;
 
 /**
  * @author Arne Vandamme
  */
-@ModuleConfiguration(SpringSecurityModule.NAME)
+//@ModuleConfiguration(SpringSecurityModule.NAME)
+@Configuration
 @EnableGlobalAuthentication
+@Slf4j
 public class SecurityConfiguration
 {
-	@Autowired
-	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-		auth.inMemoryAuthentication()
-		    .withUser( "admin" ).password( "{noop}admin" )
-		    .authorities( "access administration" ).and()
-		    .withUser( "admin2" ).password( "{noop}admin" )
-		    .authorities( "access administration" ).and()
-		    .withUser( "user" ).password( "{noop}user" )
-		    .authorities( Collections.emptyList() );
+
+	// https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter#in-memory-authentication
+	@Bean
+	public InMemoryUserDetailsManager userDetailsService() {
+		LOG.info( "Building InMemoryUserDetailsManager" );
+		return new InMemoryUserDetailsManager(
+				User.builder()
+				    .username( "admin" )
+				    .password( "{noop}admin" )
+				    .authorities( "access administration" )
+				    .build(),
+				User.builder()
+				    .username( "admin2" )
+				    .password( "{noop}admin" )
+				    .authorities( "access administration" )
+				    .build(),
+				User.builder()
+				    .username( "user" )
+				    .password( "{noop}user" )
+				    .authorities( Collections.emptyList() )
+				    .build()
+		);
 	}
+
 }

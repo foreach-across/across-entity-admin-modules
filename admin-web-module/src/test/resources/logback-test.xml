@@ -16,4 +16,9 @@
   -->
 <configuration>
 	<include resource="logback-across-test.xml"/>
+
+	<!--
+	<logger name="org.springframework.security" level="TRACE"/>
+	-->
+
 </configuration>

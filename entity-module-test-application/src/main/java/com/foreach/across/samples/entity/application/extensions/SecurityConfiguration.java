@@ -16,24 +16,32 @@
 
 package com.foreach.across.samples.entity.application.extensions;
 
-import com.foreach.across.core.annotations.ModuleConfiguration;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@ModuleConfiguration(SpringSecurityModule.NAME)
+//@ModuleConfiguration(SpringSecurityModule.NAME)
+@Configuration
 @EnableGlobalAuthentication
 public class SecurityConfiguration
 {
-	@Autowired
-	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-		auth.inMemoryAuthentication()
-		    .withUser( "admin" ).password( "{noop}admin" )
-		    .authorities( "access administration" );
+
+	// https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter#in-memory-authentication
+	@Bean
+	public InMemoryUserDetailsManager userDetailsService() {
+		UserDetails user = User.builder()
+		                       .username( "admin" )
+		                       .password( "{noop}admin" )
+		                       .roles( "access administration" )
+		                       .build();
+		return new InMemoryUserDetailsManager( user );
 	}
+
 }

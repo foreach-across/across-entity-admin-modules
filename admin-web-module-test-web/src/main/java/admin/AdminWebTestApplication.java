@@ -16,14 +16,19 @@
 
 package admin;
 
+import admin.config.SecurityConfiguration;
 import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
  * @author Arne Vandamme
  */
+@EnableWebSecurity
 @AcrossApplication(modules = AdminWebModule.NAME)
+@Import( SecurityConfiguration.class )
 public class AdminWebTestApplication
 {
 	public static void main( String[] args ) {
