@@ -36,6 +36,7 @@ public class ITDebugDashboardRegistration
 		assertDashboardPath(
 				ApplicationInfoController.PATH,
 				web( false )
+						.property( "debugWebModule.security.password", "{noop}info-password" )
 						.register( FakeWebSecurityConfiguration.class )
 						.modules( ApplicationInfoModule.NAME, DebugWebModule.NAME )
 		);
@@ -46,6 +47,7 @@ public class ITDebugDashboardRegistration
 		assertDashboardPath(
 				"/custom",
 				web( false )
+						.property( "debugWebModule.security.password", "{noop}info-password" )
 						.register( FakeWebSecurityConfiguration.class )
 						.property( DebugWebModuleSettings.DASHBOARD_PATH, "/custom" )
 						.modules( ApplicationInfoModule.NAME, DebugWebModule.NAME )
@@ -60,6 +62,7 @@ public class ITDebugDashboardRegistration
 		assertDashboardPath(
 				"/other/custom",
 				web( false )
+						.property( "debugWebModule.security.password", "{noop}info-password" )
 						.register( FakeWebSecurityConfiguration.class )
 						.modules( ApplicationInfoModule.NAME )
 						.modules( debugWebModule )
