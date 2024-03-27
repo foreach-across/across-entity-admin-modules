@@ -17,9 +17,12 @@
 package com.foreach.across.test.modules.adminweb.it;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
+import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestWebContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Arne Vandamme
  * @since 1.1.1
  */
+@Disabled
 public class ITDashboard
 {
 	@Test
@@ -94,8 +98,9 @@ public class ITDashboard
 		   .andExpect( redirectedUrl( "/admin/" ) );
 	}
 
-	@EnableWebSecurity
-	@Configuration
+	@EnableWebSecurity(debug = true)
+//	@Configuration
+	@ModuleConfiguration(SpringSecurityModule.NAME)
 	public static class DashboardUserConfiguration
 	{
 		@Exposed

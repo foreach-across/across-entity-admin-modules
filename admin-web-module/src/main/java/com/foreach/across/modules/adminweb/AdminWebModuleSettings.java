@@ -16,8 +16,10 @@
 
 package com.foreach.across.modules.adminweb;
 
+import com.foreach.across.core.annotations.Exposed;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Exposed
 @ConfigurationProperties("admin-web-module")
 @SuppressWarnings("unused")
 public class AdminWebModuleSettings
