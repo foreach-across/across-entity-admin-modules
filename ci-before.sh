@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+set -e
+
+find . -name pom.xml -print0 | xargs -0 sed -i -E \
+-e "s:<revision>dev-SNAPSHOT</revision>:<revision>${REVISION}</revision>:g" \
+-e "s:<version>dev-SNAPSHOT</version>:<version>${ACROSS_FRAMEWORK_VERSION}</version>:g" \
+-e "s:<across-framework.version>dev-SNAPSHOT</across-framework.version>:<across-framework.version>${ACROSS_FRAMEWORK_VERSION}</across-framework.version>:g" \
+-e "s:<across-autoconfigure.version>dev-SNAPSHOT</across-autoconfigure.version>:<across-autoconfigure.version>${ACROSS_AUTOCONFIGURE_VERSION}</across-autoconfigure.version>:g" \
+-e "s:<across-base-modules.version>dev-SNAPSHOT</across-base-modules.version>:<across-base-modules.version>${ACROSS_BASE_MODULES_VERSION}</across-base-modules.version>:g" \
