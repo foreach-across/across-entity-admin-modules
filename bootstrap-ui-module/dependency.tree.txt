@@ -1,5 +1,5 @@
-com.foreach.across.modules:bootstrap-ui-module:jar:4.4.2
-+- com.foreach.across:across-web:jar:5.4.2:compile
+com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT
++- com.foreach.across:across-web:jar:dev-SNAPSHOT:compile
 |  +- org.springframework.boot:spring-boot-starter-web:jar:2.6.15:compile
 |  |  +- org.springframework.boot:spring-boot-starter:jar:2.6.15:compile
 |  |  |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.6.15:compile
@@ -21,7 +21,7 @@ com.foreach.across.modules:bootstrap-ui-module:jar:4.4.2
 |  |  |  \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  |  \- org.slf4j:slf4j-api:jar:1.7.36:compile
 |  +- org.thymeleaf.extras:thymeleaf-extras-java8time:jar:3.0.4.RELEASE:compile
-|  +- com.foreach.across:across-core:jar:5.4.2:compile
+|  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 |  |  +- com.foreach.libs:common-concurrent:jar:1.1:compile
 |  |  +- org.springframework:spring-context:jar:5.3.32:compile
 |  |  +- org.springframework:spring-jdbc:jar:5.3.32:compile
@@ -49,7 +49,7 @@ com.foreach.across.modules:bootstrap-ui-module:jar:4.4.2
 |  |  \- org.springframework.boot:spring-boot:jar:2.6.15:compile
 |  \- org.yaml:snakeyaml:jar:1.29:compile
 +- javax.servlet:javax.servlet-api:jar:4.0.1:provided
-+- com.foreach.across:across-test:jar:5.4.2:test
++- com.foreach.across:across-test:jar:dev-SNAPSHOT:test
 |  +- org.junit.jupiter:junit-jupiter:jar:5.8.2:test
 |  |  \- org.junit.jupiter:junit-jupiter-params:jar:5.8.2:test
 |  +- com.zaxxer:HikariCP:jar:4.0.3:test
@@ -82,7 +82,7 @@ com.foreach.across.modules:bootstrap-ui-module:jar:4.4.2
 |  \- org.testcontainers:oracle-xe:jar:1.19.3:test
 +- xmlunit:xmlunit:jar:1.6:test
 +- org.jsoup:jsoup:jar:1.13.1:test
-+- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:4.4.2:compile
++- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile
 +- org.webjars:jquery:jar:3.4.1:compile
 +- org.webjars:bootstrap:jar:4.3.1:compile
 |  \- org.webjars:popper.js:jar:1.14.3:compile
