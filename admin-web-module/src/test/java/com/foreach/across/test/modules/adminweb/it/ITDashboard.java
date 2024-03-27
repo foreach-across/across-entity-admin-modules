@@ -16,16 +16,13 @@
 
 package com.foreach.across.test.modules.adminweb.it;
 
-import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestWebContext;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -46,15 +43,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Arne Vandamme
  * @since 1.1.1
  */
-@Disabled
 public class ITDashboard
 {
 	@Test
 	public void defaultDashboard() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
+                        .register(SecurityConfiguration.class)
 						.modules( AdminWebModule.NAME )
-						.register( DashboardUserConfiguration.class )
+						.moduleConfigurationPackageClasses( DashboardUserConfiguration.class )
 						.build()
 		) {
 			MockMvc mvc = ctx.mockMvc();
@@ -69,9 +66,10 @@ public class ITDashboard
 	public void customDashboard() throws Exception {
 		try (
 				AcrossTestWebContext ctx = web()
-						.register( DashboardUserConfiguration.class )
+                        .register(SecurityConfiguration.class)
 						.property( AdminWebModuleSettings.DASHBOARD_PATH, "/custom/dashboard" )
 						.modules( AdminWebModule.NAME )
+						.moduleConfigurationPackageClasses( DashboardUserConfiguration.class )
 						.build()
 		) {
 			MockMvc mvc = ctx.mockMvc();
@@ -98,12 +96,9 @@ public class ITDashboard
 		   .andExpect( redirectedUrl( "/admin/" ) );
 	}
 
-	@EnableWebSecurity(debug = true)
-//	@Configuration
 	@ModuleConfiguration(SpringSecurityModule.NAME)
 	public static class DashboardUserConfiguration
 	{
-		@Exposed
 		@Bean
 		public InMemoryUserDetailsManager userDetailsManager() {
 			UserDetails user = User.builder()
@@ -113,5 +108,10 @@ public class ITDashboard
 			                       .build();
 			return new InMemoryUserDetailsManager( user );
 		}
+	}
+
+    @EnableWebSecurity(debug = true)
+	public static class SecurityConfiguration {
+
 	}
 }
