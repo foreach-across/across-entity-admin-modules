@@ -17,7 +17,7 @@ buildscript {
 repositories {
     maven {
         // This repository contains the Across RELEASE and SNAPSHOT versions
-        url 'https://repository.foreach.be/nexus/repository/public/'
+        url 'https://repository.antwerpen.io-external.com/nexus/repository/public/'
     }
 }
 

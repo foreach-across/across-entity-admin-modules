@@ -82,7 +82,10 @@ build:test-apps:
       command: [ "--tls=false" ]
   before_script:
     - if [[ -f ci-before.sh ]]; then ./ci-before.sh; fi
+<<<<<<< HEAD
     - git diff
+=======
+>>>>>>> origin/4.5
     - docker login -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
   script:
     - cd $MODULE_NAME
