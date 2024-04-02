@@ -40,10 +40,10 @@ com.foreach.across.modules:admin-web-module-test-web:jar:dev-SNAPSHOT
 |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.13.5:compile
 |  |  \- org.yaml:snakeyaml:jar:1.30:compile
 |  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
-|  |  +- org.springframework.security:spring-security-core:jar:5.7.11:compile
-|  |  |  \- org.springframework.security:spring-security-crypto:jar:5.7.11:compile
-|  |  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
-|  |  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
+|  |  +- org.springframework.security:spring-security-core:jar:5.8.11:compile
+|  |  |  \- org.springframework.security:spring-security-crypto:jar:5.8.11:compile
+|  |  +- org.springframework.security:spring-security-web:jar:5.8.11:compile
+|  |  \- org.springframework.security:spring-security-config:jar:5.8.11:compile
 |  +- org.thymeleaf.extras:thymeleaf-extras-springsecurity5:jar:3.0.5.RELEASE:compile
 |  |  \- org.slf4j:slf4j-api:jar:1.7.36:compile
 |  \- org.webjars.bower:toastr:jar:2.1.2:compile

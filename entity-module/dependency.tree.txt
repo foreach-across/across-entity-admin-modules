@@ -32,10 +32,10 @@ com.foreach.across.modules:entity-module:jar:dev-SNAPSHOT
 |  |  \- org.springframework.boot:spring-boot:jar:2.7.18:compile
 |  \- org.yaml:snakeyaml:jar:1.30:compile
 +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
-|  +- org.springframework.security:spring-security-core:jar:5.7.11:compile
-|  |  \- org.springframework.security:spring-security-crypto:jar:5.7.11:compile
-|  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
-|  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
+|  +- org.springframework.security:spring-security-core:jar:5.8.11:compile
+|  |  \- org.springframework.security:spring-security-crypto:jar:5.8.11:compile
+|  +- org.springframework.security:spring-security-web:jar:5.8.11:compile
+|  \- org.springframework.security:spring-security-config:jar:5.8.11:compile
 +- com.foreach.across.modules:across-hibernate-module:jar:dev-SNAPSHOT:compile
 |  +- org.springframework.data:spring-data-jpa:jar:2.7.18:compile
 |  +- org.springframework:spring-orm:jar:5.3.33:compile
