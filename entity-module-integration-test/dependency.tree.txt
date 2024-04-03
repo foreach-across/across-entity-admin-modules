@@ -52,12 +52,12 @@ com.foreach.across.modules:entity-module-integration-test:jar:dev-SNAPSHOT
 |  |     \- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
 |  \- com.foreach.across:across-autoconfigure:jar:dev-SNAPSHOT:compile
 +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
-|  +- org.springframework.security:spring-security-core:jar:5.7.11:compile
-|  |  +- org.springframework.security:spring-security-crypto:jar:5.7.11:compile
+|  +- org.springframework.security:spring-security-core:jar:5.8.11:compile
+|  |  +- org.springframework.security:spring-security-crypto:jar:5.8.11:compile
 |  |  \- org.springframework:spring-expression:jar:5.3.33:compile
-|  +- org.springframework.security:spring-security-web:jar:5.7.11:compile
+|  +- org.springframework.security:spring-security-web:jar:5.8.11:compile
 |  |  \- org.springframework:spring-web:jar:5.3.33:compile
-|  \- org.springframework.security:spring-security-config:jar:5.7.11:compile
+|  \- org.springframework.security:spring-security-config:jar:5.8.11:compile
 +- com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT:compile
 |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile
 |  +- org.webjars:jquery:jar:3.4.1:compile
