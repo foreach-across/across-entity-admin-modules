@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.adminweb.config;
 
+import com.foreach.across.core.annotations.Exposed;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ import java.util.Locale;
 /**
  * @author Arne Vandamme
  */
+@Exposed
 @Component
 @ConfigurationProperties(prefix = "admin-web-module.locale")
 public class LocaleProperties
