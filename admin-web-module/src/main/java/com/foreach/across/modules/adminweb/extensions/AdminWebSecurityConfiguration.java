@@ -20,18 +20,15 @@ import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.config.RememberMeProperties;
-import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.filters.LocaleChangeFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
@@ -48,9 +45,6 @@ public class AdminWebSecurityConfiguration
 	private static final Logger LOG = LoggerFactory.getLogger( AdminWebSecurityConfiguration.class );
 
 	@Autowired
-	private ApplicationEventPublisher publisher;
-
-	@Autowired
 	private AdminWeb adminWeb;
 
 	@Autowired
@@ -65,30 +59,26 @@ public class AdminWebSecurityConfiguration
 
 	@Bean
 	public SecurityFilterChain adminWebSecurityFilterChain( HttpSecurity root ) throws Exception {
-		HttpSecurity http = root.antMatcher( adminWeb.path( "/**" ) )
-		                        .csrf()
-		                        .csrfTokenRepository( CookieCsrfTokenRepository.withHttpOnlyFalse() )
-		                        .and()
-		                        .formLogin().defaultSuccessUrl( adminWeb.path( "/" ) )
-		                        .loginPage( adminWeb.path( "/login" ) )
-		                        .permitAll()
-		                        .and().logout().logoutUrl( adminWeb.path( "/logout" ) )
-		                        .permitAll()
-		                        .logoutRequestMatcher( new AntPathRequestMatcher( adminWeb.path( "/logout" ) ) )
-		                        .and();
+		HttpSecurity http = root
+				.securityMatcher( adminWeb.path( "/**" ) )
+				.csrf( ( csrf ) -> csrf
+						.csrfTokenRepository( CookieCsrfTokenRepository.withHttpOnlyFalse() ) )
+				.formLogin( ( form ) -> form
+						.defaultSuccessUrl( adminWeb.path( "/" ) )
+						.loginPage( adminWeb.path( "/login" ) )
+						.permitAll() )
+				.logout( ( logout ) -> logout
+						.logoutUrl( adminWeb.path( "/logout" ) )
+						.permitAll()
+						.logoutRequestMatcher( new AntPathRequestMatcher( adminWeb.path( "/logout" ) ) ) )
+				.authorizeHttpRequests( ( authz ) -> authz
+						.anyRequest()
+						.hasAnyAuthority( settings.getAccessPermissions() ) );
 
 		// Allow locale to be changed before security applied
 		if ( localeResolver != null ) {
 			http.addFilterBefore( new LocaleChangeFilter( localeResolver ), SecurityContextPersistenceFilter.class );
 		}
-
-		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry =
-				http.authorizeRequests();
-
-		publisher.publishEvent( new AdminWebUrlRegistry( adminWeb, urlRegistry ) );
-
-		// Only users with any of the configured admin permissions can login
-		urlRegistry.anyRequest().hasAnyAuthority( settings.getAccessPermissions() );
 
 		configureRememberMe( http );
 		customizeAdminWebSecurity( http );
