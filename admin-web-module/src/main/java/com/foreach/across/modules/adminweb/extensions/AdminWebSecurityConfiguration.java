@@ -64,7 +64,6 @@ public class AdminWebSecurityConfiguration
 	private LocaleResolver localeResolver;
 
 	@Bean
-	@SuppressWarnings("SignatureDeclareThrowsException")
 	public SecurityFilterChain adminWebSecurityFilterChain( HttpSecurity root ) throws Exception {
 		HttpSecurity http = root.antMatcher( adminWeb.path( "/**" ) )
 		                        .csrf()
@@ -96,7 +95,6 @@ public class AdminWebSecurityConfiguration
 		return http.build();
 	}
 
-	@SuppressWarnings("SignatureDeclareThrowsException")
 	protected void configureRememberMe( HttpSecurity http ) throws Exception {
 		if ( rememberMeProperties.isEnabled() ) {
 			String rememberMeKey = rememberMeProperties.getKey();
