@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.adminweb.config;
 
+import com.foreach.across.core.annotations.Exposed;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
  * @author Arne Vandamme
  * @since 1.1.1
  */
+@Exposed
 @Component
 @ConfigurationProperties(prefix = "admin-web-module.login.remember-me")
 public class RememberMeProperties

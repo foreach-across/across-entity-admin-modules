@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.adminweb.config;
+package com.foreach.across.modules.adminweb.extensions;
 
+import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
+import com.foreach.across.modules.adminweb.config.RememberMeProperties;
 import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
-import com.foreach.across.modules.spring.security.configuration.AcrossWebSecurityConfigurer;
+import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.filters.LocaleChangeFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
@@ -39,8 +42,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 
-@Configuration
-public class AdminWebSecurityConfiguration implements AcrossWebSecurityConfigurer
+@ModuleConfiguration(SpringSecurityModule.NAME)
+public class AdminWebSecurityConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( AdminWebSecurityConfiguration.class );
 
@@ -60,9 +63,8 @@ public class AdminWebSecurityConfiguration implements AcrossWebSecurityConfigure
 	@Qualifier(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 	private LocaleResolver localeResolver;
 
-	@Override
-	@SuppressWarnings("SignatureDeclareThrowsException")
-	public void configure( HttpSecurity root ) throws Exception {
+	@Bean
+	public SecurityFilterChain adminWebSecurityFilterChain( HttpSecurity root ) throws Exception {
 		HttpSecurity http = root.antMatcher( adminWeb.path( "/**" ) )
 		                        .csrf()
 		                        .csrfTokenRepository( CookieCsrfTokenRepository.withHttpOnlyFalse() )
@@ -90,9 +92,9 @@ public class AdminWebSecurityConfiguration implements AcrossWebSecurityConfigure
 
 		configureRememberMe( http );
 		customizeAdminWebSecurity( http );
+		return http.build();
 	}
 
-	@SuppressWarnings("SignatureDeclareThrowsException")
 	protected void configureRememberMe( HttpSecurity http ) throws Exception {
 		if ( rememberMeProperties.isEnabled() ) {
 			String rememberMeKey = rememberMeProperties.getKey();
