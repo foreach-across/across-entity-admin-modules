@@ -22,10 +22,11 @@ import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestWebContext;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -96,11 +97,15 @@ public class ITDashboard
 	@EnableGlobalAuthentication
 	public static class DashboardUserConfiguration
 	{
-		@Autowired
-		public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-			auth.inMemoryAuthentication()
-			    .withUser( "dashboard" ).password( "{noop}dashboard" )
-			    .authorities( new SimpleGrantedAuthority( "access administration" ) );
+		@Bean
+		public InMemoryUserDetailsManager userDetailsService() {
+			return new InMemoryUserDetailsManager(
+					User.builder()
+					    .username( "dashboard" )
+					    .password( "{noop}dashboard" )
+					    .authorities( "access administration" )
+					    .build()
+			);
 		}
 	}
 }

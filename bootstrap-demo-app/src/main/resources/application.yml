@@ -1,3 +1,7 @@
+spring:
+  main:
+    allow-circular-references: true
+
 acrossHibernate:
   create-unit-of-work-factory: true
 
