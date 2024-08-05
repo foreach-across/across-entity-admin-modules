@@ -12,7 +12,7 @@ com.foreach.across.modules:entity-module-test-application:jar:dev-SNAPSHOT
 |  |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  |  +- org.thymeleaf.extras:thymeleaf-extras-java8time:jar:3.0.4.RELEASE:compile
 |  |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|  |  |  +- com.foreach.libs:common-concurrent:jar:1.1:compile
+|  |  |  +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-1:compile
 |  |  |  +- ch.qos.logback:logback-classic:jar:1.2.13:compile
 |  |  |  |  \- ch.qos.logback:logback-core:jar:1.2.13:compile
 |  |  |  +- org.slf4j:jcl-over-slf4j:jar:1.7.36:compile

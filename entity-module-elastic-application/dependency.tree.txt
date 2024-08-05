@@ -16,7 +16,7 @@ com.foreach.across.modules:entity-module-elastic-application:jar:dev-SNAPSHOT
 |  |  |  \- org.springframework.boot:spring-boot:jar:2.7.18:compile
 |  |  \- org.yaml:snakeyaml:jar:1.30:compile
 |  \- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|     +- com.foreach.libs:common-concurrent:jar:1.1:compile
+|     +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-1:compile
 |     +- org.springframework:spring-jdbc:jar:5.3.34:compile
 |     +- ch.qos.logback:logback-classic:jar:1.2.13:compile
 |     |  \- ch.qos.logback:logback-core:jar:1.2.13:compile
