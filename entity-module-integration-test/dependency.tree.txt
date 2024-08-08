@@ -82,7 +82,7 @@ com.foreach.across.modules:entity-module-integration-test:jar:dev-SNAPSHOT
 |  +- org.junit.jupiter:junit-jupiter:jar:5.8.2:test
 |  |  \- org.junit.jupiter:junit-jupiter-params:jar:5.8.2:test
 |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|  |  +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-1:compile
+|  |  +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-2:compile
 |  |  +- ch.qos.logback:logback-classic:jar:1.2.13:compile
 |  |  |  \- ch.qos.logback:logback-core:jar:1.2.13:compile
 |  |  +- org.slf4j:jcl-over-slf4j:jar:1.7.36:compile

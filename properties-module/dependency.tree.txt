@@ -1,6 +1,6 @@
 com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT
-+- com.foreach.libs:common-spring:jar:2.0.0-beta-1:compile
-|  +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-1:compile
++- com.foreach.libs:common-spring:jar:2.0.0-beta-2:compile
+|  +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-2:compile
 |  |  \- org.slf4j:slf4j-api:jar:1.7.36:compile
 |  +- javax.mail:javax.mail-api:jar:1.6.2:compile
 |  +- org.apache.commons:commons-lang3:jar:3.12.0:compile

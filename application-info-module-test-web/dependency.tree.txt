@@ -1,7 +1,7 @@
 com.foreach.across.modules:application-info-module-test-web:jar:dev-SNAPSHOT
 +- com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT:compile
-|  \- com.foreach.libs:common-spring:jar:2.0.0-beta-1:compile
-|     +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-1:compile
+|  \- com.foreach.libs:common-spring:jar:2.0.0-beta-2:compile
+|     +- com.foreach.libs:common-concurrent:jar:2.0.0-beta-2:compile
 |     +- javax.mail:javax.mail-api:jar:1.6.2:compile
 |     +- org.apache.commons:commons-lang3:jar:3.12.0:compile
 |     +- org.hibernate.validator:hibernate-validator:jar:6.2.5.Final:compile
