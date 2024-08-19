@@ -272,14 +272,14 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 			when( properties.get( "required" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( PRINT_DATE );
 
 			TextViewElement text = assembleValue( "required" );
-			assertEquals( "07-Aug-2015 10:31", text.getText() );
+			assertEquals( "7 Aug 2015, 10:31", text.getText() );
 
 			DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration( Format.DATE );
 			when( properties.get( "required" ).hasAttribute( DateTimeFormElementConfiguration.class ) )
 					.thenReturn( true );
 			when( properties.get( "required" ).getAttribute( DateTimeFormElementConfiguration.class ) )
 					.thenReturn( configuration );
-			assertEquals( "07-Aug-2015", assembleValue( "required" ).getText() );
+			assertEquals( "7 Aug 2015", assembleValue( "required" ).getText() );
 
 			DateTimeFormElementConfiguration timeConfiguration = new DateTimeFormElementConfiguration( Format.TIME );
 			DateTimeFormElementBuilder builder = new DateTimeFormElementBuilder().configuration( timeConfiguration );
@@ -305,14 +305,14 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Test
 	public void supportedTemporalAccessorsAreCorrectlyPrinterFormattedNoFormatSet() {
-		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME, "07-Aug-2015 10:31" );
-		assertPrinterFormat( "localDate", PRINT_DATE_LOCAL_DATE_TIME.toLocalDate(), "07-Aug-2015" );
+		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME, "7 Aug 2015, 10:31" );
+		assertPrinterFormat( "localDate", PRINT_DATE_LOCAL_DATE_TIME.toLocalDate(), "7 Aug 2015" );
 		assertPrinterFormat( "localTime", PRINT_DATE_LOCAL_DATE_TIME.toLocalTime(), "10:31" );
 	}
 
 	@Test
 	public void supportedTemporalAccessorsAreCorrectlyPrinterFormattedWithFormatSet() {
-		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME.toLocalDate(), Format.DATE, "07-Aug-2015" );
+		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME.toLocalDate(), Format.DATE, "7 Aug 2015" );
 		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME.toLocalTime(), Format.TIME, "10:31" );
 	}
 

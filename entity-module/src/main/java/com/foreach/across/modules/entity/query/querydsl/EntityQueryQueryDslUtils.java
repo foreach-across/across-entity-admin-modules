@@ -167,8 +167,14 @@ public class EntityQueryQueryDslUtils
 			PathBuilder<?> nestedPath;
 			if ( StringUtils.endsWith( name, EntityPropertyRegistry.INDEXER ) ) {
 				name = StringUtils.removeEnd( name, EntityPropertyRegistry.INDEXER );
-				PathBuilder<?> any = path.getCollection( name, Object.class ).any();
-				nestedPath = any.get( remainder );
+				// This caused company.representatives[].name to be converted to:
+				//   any(company.representatives).name.name = John % Surname
+				// (notice the name.name). This was also the case in Across 5,
+				// but apparently Hibernate 5 could deal with that.
+				// Hibernate 6 seems stricter and (correctly) fails:
+				//PathBuilder<?> any = path.getCollection( name, Object.class ).any();
+				//nestedPath = any.get( remainder );
+				nestedPath = path.getCollection( name, Object.class ).any();
 			}
 			else {
 				nestedPath = path.get( name );
