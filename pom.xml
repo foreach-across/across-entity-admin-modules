@@ -84,8 +84,10 @@
 		<module>ax-bootstrap-4-utilities</module>
 		<module>entity-module</module>
 		<module>entity-module-integration-test</module>
+		<!-- I don't think we need to support these cases anymore:
 		<module>entity-module-no-adminweb</module>
 		<module>entity-module-no-bootstrapui</module>
+		-->
 		<module>entity-module-test-application</module>
 		<module>entity-module-elastic-application</module>
 		<module>properties-module</module>

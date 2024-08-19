@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MessageCodesResolver;
@@ -69,6 +70,11 @@ import static com.foreach.across.modules.entity.controllers.admin.GenericEntityV
  */
 @AdminWebController
 @RequestMapping(PATH_ENTITY_TYPE)
+// Spring 5 picked up the request handlers if you had only the @RequestMapping annotation.
+// Spring 6 requires the @Controller annotation:
+// https://github.com/spring-projects/spring-framework/issues/22154
+// https://github.com/spring-projects/spring-framework/commit/3600644ed1776dce35c4a42d74799a90b90e359e
+@Controller
 @SuppressWarnings("unused")
 public class GenericEntityViewController
 {

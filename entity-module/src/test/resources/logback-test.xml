@@ -18,4 +18,7 @@
 	<include resource="logback-across-test.xml"/>
 
 	<logger name="com.foreach.across.modules.entity" level="TRACE"/>
+	<!--
+	<logger name="org.springframework.web" level="DEBUG"/>
+	-->
 </configuration>
