@@ -20,10 +20,10 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;

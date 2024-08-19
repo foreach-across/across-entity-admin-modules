@@ -43,8 +43,8 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
+import jakarta.validation.metadata.BeanDescriptor;
+import jakarta.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -128,7 +128,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 					when( persistentProperty.isAnnotationPresent( annotation.annotationType() ) ).thenReturn( true );
 					when( persistentProperty.findAnnotation( annotation.annotationType() ) ).thenReturn( annotation );
 
-					if ( annotation.annotationType().getName().startsWith( "javax.persistence" ) ) {
+					if ( annotation.annotationType().getName().startsWith( "jakarta.persistence" ) ) {
 						when( descriptor.getAttribute( PersistentProperty.class ) ).thenReturn( persistentProperty );
 					}
 				}

@@ -117,7 +117,7 @@ public class TestPropertiesBinderSimpleProperties extends AbstractEntityProperti
 
 		assertCollection( "longCollection" )
 				.containsExactly( 1L, 2L )
-				.isInstanceOf( LinkedHashSet.class );
+				.isInstanceOf( ArrayList.class );
 
 		assertCollection( "dummyList" )
 				.containsExactly( new Dummy( 10, "10" ), new Dummy( 20, "20" ) )
@@ -130,7 +130,7 @@ public class TestPropertiesBinderSimpleProperties extends AbstractEntityProperti
 		assertProperty( "longArray" ).isEqualTo( new long[0] );
 
 		assertCollection( "longCollection" )
-				.isInstanceOf( LinkedHashSet.class )
+				.isInstanceOf( ArrayList.class )
 				.isEmpty();
 
 		assertCollection( "dummyList" )
@@ -146,19 +146,19 @@ public class TestPropertiesBinderSimpleProperties extends AbstractEntityProperti
 
 		assertCollection( "longCollection" )
 				.containsExactly( 4L, 3L, null )
-				.isInstanceOf( LinkedHashSet.class );
+				.isInstanceOf( ArrayList.class );
 
 		// bound can be set safely if tracking is not reset
 		bind( "properties[longCollection].bound=1" );
 		assertCollection( "longCollection" )
 				.containsExactly( 4L, 3L, null )
-				.isInstanceOf( LinkedHashSet.class );
+				.isInstanceOf( ArrayList.class );
 
 		resetForBinding();
 		bind( "properties[longCollection].bound=1" );
 
 		assertCollection( "longCollection" )
-				.isInstanceOf( LinkedHashSet.class )
+				.isInstanceOf( ArrayList.class )
 				.isEmpty();
 
 		// explicit sorting
@@ -171,12 +171,12 @@ public class TestPropertiesBinderSimpleProperties extends AbstractEntityProperti
 
 		assertCollection( "longCollection" )
 				.containsExactly( 3L, 4L )
-				.isInstanceOf( LinkedHashSet.class );
+				.isInstanceOf( ArrayList.class );
 
 		// clear the collection
 		bind( "properties[longCollection].value=" );
 		assertCollection( "longCollection" )
-				.isInstanceOf( LinkedHashSet.class )
+				.isInstanceOf( ArrayList.class )
 				.isEmpty();
 	}
 

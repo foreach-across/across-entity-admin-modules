@@ -43,7 +43,7 @@ public class AllowStaticResourcesSecurityConfiguration
 		ResourceConfigurationProperties resourceConfigurationProperties
 				= beanRegistry.getBeanOfTypeFromModule( AcrossWebModule.NAME, ResourceConfigurationProperties.class );
 
-		http.antMatcher( resourceConfigurationProperties.getPath() + "/**" )
+		http.securityMatcher( resourceConfigurationProperties.getPath() + "/**" )
 		    .authorizeRequests().anyRequest().permitAll();
 		return http.build();
 	}

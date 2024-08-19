@@ -23,8 +23,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

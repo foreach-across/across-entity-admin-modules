@@ -44,11 +44,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Past;
-import javax.validation.metadata.ConstraintDescriptor;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

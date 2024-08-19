@@ -20,8 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author Arne Vandamme

@@ -39,7 +39,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.Format;
 import java.text.MessageFormat;

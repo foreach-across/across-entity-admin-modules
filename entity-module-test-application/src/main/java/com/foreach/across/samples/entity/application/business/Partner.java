@@ -21,8 +21,8 @@ import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * Sample entity representing a partner with a name and url, used for sortable table demo controller.

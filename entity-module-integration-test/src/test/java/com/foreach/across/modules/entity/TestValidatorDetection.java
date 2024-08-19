@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
+import jakarta.validation.metadata.BeanDescriptor;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.metadata.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -30,8 +30,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;

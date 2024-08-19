@@ -8,8 +8,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A custom BlogPost entity implemented using one of the base classes from AcrossHibernateJpaModule.

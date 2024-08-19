@@ -43,7 +43,7 @@ public class AllowWebjarsSecurityConfiguration
 		ResourceConfigurationProperties resourceConfigurationProperties
 				= beanRegistry.getBeanOfTypeFromModule( AcrossWebModule.NAME, ResourceConfigurationProperties.class );
 
-		http.antMatcher( resourceConfigurationProperties.getWebjars() + "/**" )
+		http.securityMatcher( resourceConfigurationProperties.getWebjars() + "/**" )
 		    .authorizeRequests().anyRequest().permitAll();
 		return http.build();
 	}

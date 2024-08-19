@@ -29,10 +29,10 @@ import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.GeneratedValue;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.GeneratedValue;
 
 /**
  * Adds {@link org.springframework.data.mapping.PersistentProperty} and related attributes

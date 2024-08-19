@@ -19,10 +19,10 @@ package com.foreach.across.samples.entity.application.business;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Arne Vandamme

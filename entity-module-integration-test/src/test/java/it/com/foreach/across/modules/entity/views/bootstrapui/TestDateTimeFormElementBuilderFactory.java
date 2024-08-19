@@ -42,11 +42,11 @@ import org.mockito.Mock;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.format.Printer;
 
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;

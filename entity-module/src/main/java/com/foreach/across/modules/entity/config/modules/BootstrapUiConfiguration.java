@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.EntityModuleIcons;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 /**
  * @author Arne Vandamme

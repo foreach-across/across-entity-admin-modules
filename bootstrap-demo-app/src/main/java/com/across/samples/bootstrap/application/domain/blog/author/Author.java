@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * A basic Author entity implemented only the Spring Data persistable interface.

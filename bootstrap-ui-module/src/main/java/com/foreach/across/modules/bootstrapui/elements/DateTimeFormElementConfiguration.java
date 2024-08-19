@@ -48,6 +48,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 
 	public static final String FMT_EXTRA_PATTERN_DATE = "YYYY-MM-DD";
 
+	// UK appears to be one of the locales where date/time formatting is affected by: https://openjdk.org/jeps/252
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	public static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
 
@@ -209,7 +210,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	public void setLocale( Locale locale ) {
-		Assert.notNull( locale );
+		Assert.notNull( locale, "locale can't be null" );
 		this.locale = locale;
 		put( "locale", locale.toLanguageTag() );
 	}

@@ -16,8 +16,8 @@
 
 package com.foreach.across.testmodules.springdata.business;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 /**
  * @author Arne Vandamme

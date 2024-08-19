@@ -23,8 +23,8 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 import java.util.TreeSet;
 

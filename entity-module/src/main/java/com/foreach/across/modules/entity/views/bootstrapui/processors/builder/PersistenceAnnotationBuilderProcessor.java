@@ -23,7 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.PersistentProperty;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Map;

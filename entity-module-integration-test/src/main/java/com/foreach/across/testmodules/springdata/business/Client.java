@@ -20,8 +20,8 @@ import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity

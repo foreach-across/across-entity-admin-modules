@@ -25,8 +25,8 @@ import org.springframework.data.mapping.SimpleAssociationHandler;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
 import java.util.Collection;
 
 /**

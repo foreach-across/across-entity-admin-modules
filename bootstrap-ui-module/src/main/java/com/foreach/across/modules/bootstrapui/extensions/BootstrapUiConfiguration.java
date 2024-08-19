@@ -32,8 +32,8 @@ import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import com.foreach.across.modules.web.ui.thymeleaf.ViewElementModelWriterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.Optional;
 
 /**

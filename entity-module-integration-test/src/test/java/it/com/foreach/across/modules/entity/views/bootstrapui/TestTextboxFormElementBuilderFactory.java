@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

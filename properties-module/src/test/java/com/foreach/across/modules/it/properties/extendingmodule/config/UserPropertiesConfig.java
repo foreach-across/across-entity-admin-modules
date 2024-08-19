@@ -22,7 +22,7 @@ import com.foreach.common.spring.properties.support.SingletonPropertyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.Date;
 

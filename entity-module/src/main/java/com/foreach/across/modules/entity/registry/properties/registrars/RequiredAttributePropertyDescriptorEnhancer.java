@@ -26,14 +26,14 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 
 /**

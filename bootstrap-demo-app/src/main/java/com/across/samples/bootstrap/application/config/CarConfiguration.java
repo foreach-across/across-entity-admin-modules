@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.repository.core.EntityInformation;
 
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;

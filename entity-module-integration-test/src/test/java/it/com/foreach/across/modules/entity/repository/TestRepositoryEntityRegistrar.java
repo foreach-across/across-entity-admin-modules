@@ -70,7 +70,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
-import javax.validation.metadata.PropertyDescriptor;
+import jakarta.validation.metadata.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Objects;
 

@@ -21,8 +21,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author Andy Somers

@@ -70,7 +70,7 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -352,7 +352,7 @@ public class TestEntityQueryElasticUtils
 		@Field(type = FieldType.Date, format = DateFormat.date)
 		private LocalDate dateOfBirth;
 
-		@Field(type = FieldType.Date, format = DateFormat.custom, pattern = "HH:mm:ss.SSS")
+		@Field(type = FieldType.Date, /*format = DateFormat.custom,*/ pattern = "HH:mm:ss.SSS")
 		private LocalTime workDayFinishesAt;
 
 		@Version

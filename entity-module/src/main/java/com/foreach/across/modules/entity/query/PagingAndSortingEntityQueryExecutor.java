@@ -42,7 +42,13 @@ public class PagingAndSortingEntityQueryExecutor<T> extends AbstractEntityQueryE
 
 	@Override
 	protected Iterable<T> executeQuery( EntityQuery query ) {
-		return repository.findAll();
+		Sort sort = query.getSort();
+		if ( sort != null ) {
+			return repository.findAll( sort );
+		}
+		else {
+			return repository.findAll( Pageable.unpaged() );
+		}
 	}
 
 	@Override

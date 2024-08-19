@@ -29,12 +29,12 @@ import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
@@ -76,7 +76,7 @@ public class TestRequiredAttributePropertyDescriptorEnhancer
 					when( persistentProperty.isAnnotationPresent( annotation.annotationType() ) ).thenReturn( true );
 					when( persistentProperty.findAnnotation( annotation.annotationType() ) ).thenReturn( annotation );
 
-					if ( annotation.annotationType().getName().startsWith( "javax.persistence" ) ) {
+					if ( annotation.annotationType().getName().startsWith( "jakarta.persistence" ) ) {
 						propertyDescriptor.setAttribute( PersistentProperty.class, persistentProperty );
 					}
 				}

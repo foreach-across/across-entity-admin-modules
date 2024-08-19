@@ -54,7 +54,7 @@ public class DefaultValidationViewProcessor extends SimpleEntityViewProcessorAda
 	 */
 	@NonNull
 	@Setter
-	private Set<HttpMethod> httpMethods = EnumSet.of( HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.PATCH );
+	private Set<HttpMethod> httpMethods = Set.of( HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.PATCH );
 
 	/**
 	 * Optionally set validation hints that should be used for the default validation.

@@ -20,7 +20,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity

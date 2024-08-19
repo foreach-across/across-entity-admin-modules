@@ -28,7 +28,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.OneToMany;
+import jakarta.persistence.OneToMany;
 
 import static com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder.registerAssociationMessageCodeResolver;
 

@@ -40,9 +40,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;

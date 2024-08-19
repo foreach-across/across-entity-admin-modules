@@ -18,8 +18,8 @@ package com.foreach.across.testmodules.springdata.business;
 
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 /**
  * @author Arne Vandamme

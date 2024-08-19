@@ -23,14 +23,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ObjectUtils;
 
-import javax.validation.groups.Default;
-import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
+import jakarta.validation.groups.Default;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
- * Base implementation for handling javax.validation constraints.  This implementation will see if the
+ * Base implementation for handling jakarta.validation constraints.  This implementation will see if the
  * {@link EntityPropertyDescriptor} has a {@link PropertyDescriptor} registered that can be used
  * for fetching validation {@link ConstraintDescriptor} instances.  Constraint annotations will be passed
  * to the {@link #handleConstraint(EntityPropertyDescriptor, ViewElementMode, String, ViewElementBuilder, Annotation, Map, ConstraintDescriptor)} implementation.
@@ -62,7 +62,7 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 
 	/**
 	 * Helper that checks if the validation annotation should be applied to the default validation group.
-	 * Either the {@link javax.validation.groups.Default} is explicitly added, either no groups are specified.
+	 * Either the {@link jakarta.validation.groups.Default} is explicitly added, either no groups are specified.
 	 *
 	 * @return true if no groups specified or default group is present
 	 */

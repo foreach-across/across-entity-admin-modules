@@ -18,12 +18,13 @@ package com.foreach.across.samples.entity.application.business;
 
 import lombok.Data;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.UUID;
 
 @Entity
@@ -32,7 +33,8 @@ import java.util.UUID;
 public class Server implements Persistable<UUID>
 {
 	@Id
-	@Type(type = "uuid-char")
+	//@Type(type = "uuid-char")
+	@JdbcTypeCode(java.sql.Types.VARCHAR)
 	@GeneratedValue
 	private UUID id;
 

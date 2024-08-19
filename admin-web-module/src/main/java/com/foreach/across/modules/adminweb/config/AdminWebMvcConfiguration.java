@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 @RequiredArgsConstructor

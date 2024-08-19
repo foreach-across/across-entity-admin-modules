@@ -80,7 +80,7 @@ public class TestNumericFormElementConfiguration
 	}
 
 	@Test
-	public void euroInFront() {
+	public void euroCurrency() {
 		NumericFormElementConfiguration configuration = new NumericFormElementConfiguration(
 				Currency.getInstance( "EUR" )
 		);
@@ -94,26 +94,26 @@ public class TestNumericFormElementConfiguration
 		assertEquals( Currency.getInstance( "EUR" ).getSymbol(), configuration.get( "currencySymbol" ) );
 
 		NumberFormat format = configuration.localize( Locale.US ).createNumberFormat();
-		assertEquals( "EUR8,000.52", format.format( new BigDecimal( "8000.52" ) ) );
-		assertEquals( "(EUR8,000.52)", format.format( new BigDecimal( "-8000.52" ) ) );
+		assertEquals( "€8,000.52", format.format( new BigDecimal( "8000.52" ) ) );
+		assertEquals( "(€8,000.52)", format.format( new BigDecimal( "-8000.52" ) ) );
 	}
 
 	@Test
-	public void euroInBack() {
+	public void euroNlBe() {
 		NumericFormElementConfiguration configuration = new NumericFormElementConfiguration( Locale.forLanguageTag( "nl-BE" ) );
 
 		assertEquals( 6, configuration.size() );
 		assertEquals( Long.MIN_VALUE, configuration.get( "minimumValue" ) );
 		assertEquals( 2, configuration.get( "decimalPlaces" ) );
 		assertEquals( "B", configuration.get( "roundingMethod" ) );
-		assertEquals( 's', configuration.get( "currencySymbolPlacement" ) );
+		assertEquals( 'p', configuration.get( "currencySymbolPlacement" ) );
 		assertEquals( "(,)", configuration.get( "negativeBracketsTypeOnBlur" ) );
-		assertEquals( " €", configuration.get( "currencySymbol" )
+		assertEquals( "€ ", configuration.get( "currencySymbol" )
 		);
 
 		NumberFormat format = configuration.localize( Locale.forLanguageTag( "nl-BE" ) ).createNumberFormat();
-		assertEquals( "8.000,00 €", format.format( new BigDecimal( "8000" ) ) );
-		assertEquals( "(8.000,56 €)", format.format( new BigDecimal( "-8000.555" ) ) );
+		assertEquals( "€ 8.000,00", format.format( new BigDecimal( "8000" ) ) );
+		assertEquals( "(€ 8.000,56)", format.format( new BigDecimal( "-8000.555" ) ) );
 	}
 
 	@Test
@@ -173,11 +173,11 @@ public class TestNumericFormElementConfiguration
 		assertEquals( 8, localized.size() );
 		assertEquals( ',', localized.get( "decimalCharacter" ) );
 		assertEquals( '.', localized.get( "digitGroupSeparator" ) );
-		assertEquals( 's', localized.get( "currencySymbolPlacement" ) );
-		assertEquals( " €", localized.get( "currencySymbol" ) );
+		assertEquals( 'p', localized.get( "currencySymbolPlacement" ) );
+		assertEquals( "€ ", localized.get( "currencySymbol" ) );
 
 		NumberFormat format = localized.createNumberFormat();
-		assertEquals( "8.000,52 €", format.format( new BigDecimal( "8000.52" ) ) );
+		assertEquals( "€ 8.000,52", format.format( new BigDecimal( "8000.52" ) ) );
 
 		localized = configuration.localize( Locale.US );
 		assertEquals( 8, localized.size() );
@@ -201,11 +201,11 @@ public class TestNumericFormElementConfiguration
 		assertEquals( 8, localized.size() );
 		assertEquals( ',', localized.get( "decimalCharacter" ) );
 		assertEquals( '.', localized.get( "digitGroupSeparator" ) );
-		assertEquals( 's', localized.get( "currencySymbolPlacement" ) );
-		assertEquals( " USD", localized.get( "currencySymbol" ) );
+		assertEquals( 'p', localized.get( "currencySymbolPlacement" ) );
+		assertEquals( "US$ ", localized.get( "currencySymbol" ) );
 
 		NumberFormat format = localized.createNumberFormat();
-		assertEquals( "8.000,52 USD", format.format( new BigDecimal( "8000.52" ) ) );
+		assertEquals( "US$ 8.000,52", format.format( new BigDecimal( "8000.52" ) ) );
 
 		localized.setLocalizeDecimalSymbols( false );
 		localized = localized.localize( Locale.US );
@@ -284,11 +284,11 @@ public class TestNumericFormElementConfiguration
 		assertEquals( 0, localized.get( "decimalPlaces" ) );
 		assertEquals( ',', localized.get( "decimalCharacter" ) );
 		assertEquals( '.', localized.get( "digitGroupSeparator" ) );
-		assertEquals( 's', localized.get( "currencySymbolPlacement" ) );
-		assertEquals( " USD", localized.get( "currencySymbol" ) );
+		assertEquals( 'p', localized.get( "currencySymbolPlacement" ) );
+		assertEquals( "US$  ", localized.get( "currencySymbol" ) );
 
 		NumberFormat format = localized.createNumberFormat();
-		assertEquals( "123 USD", format.format( new BigDecimal( "123.05" ) ) );
+		assertEquals( "US$  123", format.format( new BigDecimal( "123.05" ) ) );
 
 		localized = configuration.localize( Locale.US );
 		assertEquals( 0, localized.get( "decimalPlaces" ) );

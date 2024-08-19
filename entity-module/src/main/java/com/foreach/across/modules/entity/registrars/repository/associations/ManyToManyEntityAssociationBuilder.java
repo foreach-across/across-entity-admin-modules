@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.ManyToMany;
+import jakarta.persistence.ManyToMany;
 
 import static com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder.registerAssociationMessageCodeResolver;
 

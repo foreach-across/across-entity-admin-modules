@@ -28,6 +28,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.WebDataBinder;
 
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
@@ -58,22 +59,22 @@ public class TestDefaultValidationViewProcessor
 
 	@Test
 	public void defaultSettings() {
-		verifyMethods( EnumSet.of( HttpMethod.PATCH, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE ), new Object[0] );
+		verifyMethods( Set.of( HttpMethod.PATCH, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE ), new Object[0] );
 	}
 
 	@Test
 	public void customMethods() {
-		processor.setHttpMethods( EnumSet.of( HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST ) );
-		verifyMethods( EnumSet.of( HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST ), new Object[0] );
+		processor.setHttpMethods( Set.of( HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST ) );
+		verifyMethods( Set.of( HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST ), new Object[0] );
 	}
 
 	@Test
 	public void customValidationHints() {
 		processor.setValidationHints( new Object[] { 65L, "test" } );
-		verifyMethods( EnumSet.of( HttpMethod.PATCH, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE ), new Object[] { 65L, "test" } );
+		verifyMethods( Set.of( HttpMethod.PATCH, HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE ), new Object[] { 65L, "test" } );
 	}
 
-	private void verifyMethods( EnumSet<HttpMethod> methods, Object[] validationHints ) {
+	private void verifyMethods( Set<HttpMethod> methods, Object[] validationHints ) {
 		Stream.of( HttpMethod.values() ).forEach(
 				method -> {
 					boolean isAllowed = methods.contains( method );

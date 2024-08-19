@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author Arne Vandamme

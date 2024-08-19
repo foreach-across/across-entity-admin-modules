@@ -26,7 +26,6 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.*;

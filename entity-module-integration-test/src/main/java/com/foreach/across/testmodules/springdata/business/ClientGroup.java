@@ -18,11 +18,11 @@ package com.foreach.across.testmodules.springdata.business;
 
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * Represents a link between client and group, with an extra role property.  This is the role

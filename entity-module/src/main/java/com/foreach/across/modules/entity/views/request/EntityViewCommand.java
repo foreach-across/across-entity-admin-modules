@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.Validator;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.*;
 
 /**

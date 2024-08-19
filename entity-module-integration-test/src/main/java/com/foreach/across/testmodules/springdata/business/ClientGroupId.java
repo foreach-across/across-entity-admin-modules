@@ -21,9 +21,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.Serializable;
 

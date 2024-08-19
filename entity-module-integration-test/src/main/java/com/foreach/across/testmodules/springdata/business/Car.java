@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * @author Arne Vandamme

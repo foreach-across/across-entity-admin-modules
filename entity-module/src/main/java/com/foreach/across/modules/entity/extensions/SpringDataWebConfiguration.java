@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguratio
 import org.springframework.context.annotation.Import;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Ensure Spring Data Web Support is enabled in the Across context.
@@ -40,7 +40,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Import({ RepositoryRestMvcAutoConfiguration.class, HypermediaAutoConfiguration.class, SpringDataWebAutoConfiguration.class })
 @OrderInModule
 @RequiredArgsConstructor
-class SpringDataWebConfiguration extends WebMvcConfigurerAdapter
+class SpringDataWebConfiguration implements WebMvcConfigurer
 {
 	private final EntityRegistry entityRegistry;
 

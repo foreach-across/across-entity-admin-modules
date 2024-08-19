@@ -30,9 +30,9 @@ import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Duration;

@@ -19,7 +19,7 @@ public class EntityAdminMenu<T> extends Menu
 
 	public EntityAdminMenu( Class<T> entityClass, T entity ) {
 		super( StringUtils.uncapitalize( entityClass.getSimpleName() ) + "EntityAdminMenu" );
-		Assert.notNull( entityClass );
+		Assert.notNull( entityClass, "entityClass can't be null" );
 
 		this.entityClass = entityClass;
 		this.entity = entity;

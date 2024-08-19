@@ -101,6 +101,8 @@
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 			<version>${querydsl.version}</version>
+			<scope>provided</scope>
+			<classifier>jakarta</classifier>
 		</dependency>
 	</dependencies>
 
@@ -117,18 +119,20 @@
 						<annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
 					</annotationProcessors>
 				</configuration>
-				<dependencies>
+				<!--
+   	    		<dependencies>
 					<dependency>
 						<groupId>com.querydsl</groupId>
 						<artifactId>querydsl-apt</artifactId>
 						<version>${querydsl.version}</version>
 					</dependency>
 					<dependency>
-						<groupId>org.hibernate.javax.persistence</groupId>
+						<groupId>org.hibernate.jakarta.persistence</groupId>
 						<artifactId>hibernate-jpa-2.1-api</artifactId>
 						<version>1.0.0.Final</version>
 					</dependency>
 				</dependencies>
+				-->
 			</plugin>
 		</plugins>
 	</build>

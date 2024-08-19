@@ -21,15 +21,15 @@ import org.springframework.format.AnnotationFormatterFactory;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * A FormatterFactory for fields that have a {@link javax.persistence.Temporal} annotation.
+ * A FormatterFactory for fields that have a {@link jakarta.persistence.Temporal} annotation.
  *
  * @author Andy Somers
  */

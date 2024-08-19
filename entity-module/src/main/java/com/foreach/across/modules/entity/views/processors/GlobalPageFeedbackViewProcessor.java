@@ -29,7 +29,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 

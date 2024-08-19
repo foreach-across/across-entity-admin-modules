@@ -46,11 +46,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,7 +111,7 @@ public class TestGenericEntityViewController
 	public void setUp() throws Exception {
 		mockMvc = MockMvcBuilders.standaloneSetup( controller )
 		                         .setCustomArgumentResolvers( new AcrossWebArgumentResolver() )
-		                         .addInterceptors( new HandlerInterceptorAdapter()
+		                         .addInterceptors( new HandlerInterceptor()
 		                         {
 			                         @Override
 			                         public boolean preHandle( HttpServletRequest request, HttpServletResponse response, Object handler ) throws Exception {

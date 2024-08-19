@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;

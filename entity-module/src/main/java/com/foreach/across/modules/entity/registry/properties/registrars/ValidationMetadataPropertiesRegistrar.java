@@ -23,9 +23,9 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.validation.ValidatorFactory;
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.metadata.BeanDescriptor;
+import jakarta.validation.metadata.PropertyDescriptor;
 
 /**
  * @author niels

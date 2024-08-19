@@ -29,8 +29,8 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
 

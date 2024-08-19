@@ -24,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.*;
-import org.thymeleaf.spring5.context.IThymeleafBindStatus;
-import org.thymeleaf.spring5.naming.SpringContextVariableNames;
-import org.thymeleaf.spring5.util.FieldUtils;
+import org.thymeleaf.spring6.context.IThymeleafBindStatus;
+import org.thymeleaf.spring6.naming.SpringContextVariableNames;
+import org.thymeleaf.spring6.util.FieldUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
