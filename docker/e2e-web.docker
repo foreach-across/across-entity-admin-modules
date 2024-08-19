@@ -1,5 +1,5 @@
 ARG DOCKER_REPOSITORY
-FROM $DOCKER_REPOSITORY/eclipse-temurin:8
+FROM $DOCKER_REPOSITORY/eclipse-temurin:17
 
 ENV TZ=Europe/Brussels
 ENV LC_ALL en_US.UTF-8
