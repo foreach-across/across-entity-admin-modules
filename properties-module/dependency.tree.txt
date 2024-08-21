@@ -36,7 +36,6 @@ com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT
 |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 |  |  +- org.springframework:spring-jdbc:jar:6.1.11:compile
-|  |  +- org.slf4j:jcl-over-slf4j:jar:2.0.13:compile
 |  |  \- org.liquibase:liquibase-core:jar:4.27.0:compile
 |  |     +- com.opencsv:opencsv:jar:5.9:compile
 |  |     +- org.apache.commons:commons-text:jar:1.11.0:compile

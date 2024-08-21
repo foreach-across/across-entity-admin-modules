@@ -30,9 +30,7 @@ com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT
 |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.4:compile
 |  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.2.8:compile
 |  |  \- org.yaml:snakeyaml:jar:2.2:compile
-|  +- commons-io:commons-io:jar:2.16.1:compile
-|  \- org.slf4j:log4j-over-slf4j:jar:2.0.13:compile
-|     \- org.slf4j:slf4j-api:jar:2.0.13:compile
+|  \- commons-io:commons-io:jar:2.16.1:compile
 +- com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT:compile
 |  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
 |  |  +- org.springframework.security:spring-security-core:jar:6.2.5:compile
@@ -59,6 +57,7 @@ com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT
 |  |  +- org.webjars.npm:corejs-typeahead:jar:1.2.1:compile
 |  |  \- org.webjars:font-awesome:jar:5.10.1:compile
 |  +- org.thymeleaf.extras:thymeleaf-extras-springsecurity6:jar:3.1.2.RELEASE:compile
+|  |  \- org.slf4j:slf4j-api:jar:2.0.13:compile
 |  \- org.webjars.bower:toastr:jar:2.1.2:compile
 +- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.8:compile
 +- com.foreach.libs:common-spring:jar:3.0-SNAPSHOT:compile
@@ -77,7 +76,6 @@ com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT
 |  |  \- org.junit.jupiter:junit-jupiter-params:jar:5.10.3:test
 |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 |  |  +- org.springframework:spring-jdbc:jar:6.1.11:compile
-|  |  +- org.slf4j:jcl-over-slf4j:jar:2.0.13:compile
 |  |  \- org.liquibase:liquibase-core:jar:4.27.0:compile
 |  |     +- com.opencsv:opencsv:jar:5.9:compile
 |  |     +- org.apache.commons:commons-text:jar:1.11.0:compile

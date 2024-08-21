@@ -75,12 +75,6 @@
 			<artifactId>properties-module</artifactId>
 			<version>${revision}</version>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>file-manager-module</artifactId>
-		</dependency>
--->
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>bootstrap-ui-module</artifactId>
@@ -91,12 +85,6 @@
 			<artifactId>admin-web-module</artifactId>
 			<version>${revision}</version>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>dynamic-forms-module</artifactId>
-		</dependency>
--->
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>

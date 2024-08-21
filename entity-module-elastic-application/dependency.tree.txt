@@ -17,7 +17,6 @@ com.foreach.across.modules:entity-module-elastic-application:jar:dev-SNAPSHOT
 |  \- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 |     +- com.foreach.libs:common-concurrent:jar:3.0-SNAPSHOT:compile
 |     +- org.springframework:spring-jdbc:jar:6.1.11:compile
-|     +- org.slf4j:jcl-over-slf4j:jar:2.0.13:compile
 |     +- org.apache.commons:commons-lang3:jar:3.13.0:compile
 |     \- org.liquibase:liquibase-core:jar:4.27.0:compile
 |        +- com.opencsv:opencsv:jar:5.9:compile
@@ -87,8 +86,7 @@ com.foreach.across.modules:entity-module-elastic-application:jar:dev-SNAPSHOT
 |  |  \- org.springframework:spring-web:jar:6.1.11:compile
 |  \- org.springframework.security:spring-security-config:jar:6.2.5:compile
 +- com.foreach.across.modules:debug-web-module:jar:dev-SNAPSHOT:compile
-|  +- commons-io:commons-io:jar:2.16.1:compile
-|  \- org.slf4j:log4j-over-slf4j:jar:2.0.13:compile
+|  \- commons-io:commons-io:jar:2.16.1:compile
 +- org.springframework.boot:spring-boot-starter-tomcat:jar:3.2.8:compile
 |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
 |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.26:compile
