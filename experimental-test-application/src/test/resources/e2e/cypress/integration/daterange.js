@@ -35,8 +35,7 @@ context('Modal tests', () => {
 
     it('Verify non-today filters', function () {
         cy.goToMenuItem('ExperimentalModuleTestApplicationModule').goToMenuItem('Student');
-        cy.contains("Create a new student").click();
-
+        cy.get( '#btn-create', {timeout: 10000} ).click()
 
         let random = "Student-" + utils.randomString(20);
         cy.contains("Name").type(random);

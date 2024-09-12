@@ -74,8 +74,8 @@ public class UserUiConfiguration implements EntityConfigurer
 		        )
 		        .postProcessor( mec -> {
 			        EntityViewFactory listView = mec.getViewFactory( EntityView.LIST_VIEW_NAME );
-			        if ( listView instanceof DispatchingEntityViewFactory ) {
-				        EntityViewProcessorRegistry registry = ( (DispatchingEntityViewFactory) listView ).getProcessorRegistry();
+			        if ( listView instanceof DispatchingEntityViewFactory factory ) {
+				        EntityViewProcessorRegistry registry = factory.getProcessorRegistry();
 				        registry.getProcessor( SortableTableRenderingViewProcessor.class.getName(), SortableTableRenderingViewProcessor.class )
 				                .ifPresent( p -> p.setViewElementMode(
 						                ViewElementMode.FORM_READ.withChildMode( FormGroupElementBuilderFactory.CONTROL_CHILD_MODE,

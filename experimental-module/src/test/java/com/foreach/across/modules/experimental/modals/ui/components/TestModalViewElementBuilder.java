@@ -5,9 +5,12 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.experimental.modals.ModalModule;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.test.MockAcrossServletContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.Before;
-import org.junit.Test;
+import jakarta.servlet.ServletContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -17,7 +20,7 @@ public class TestModalViewElementBuilder extends AbstractViewElementTemplateTest
 	private DefaultViewElementBuilderContext builderContext;
 	private ModalViewElementBuilder builder;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		builderContext = new DefaultViewElementBuilderContext();
 		builder = new ModalViewElementBuilder();
@@ -123,6 +126,11 @@ public class TestModalViewElementBuilder extends AbstractViewElementTemplateTest
 	@Configuration
 	protected static class Config implements AcrossContextConfigurer
 	{
+		@Bean
+		ServletContext applicationContext() {
+			return new MockAcrossServletContext();
+		}
+
 		@Override
 		public void configure( AcrossContext context ) {
 			context.addModule( new BootstrapUiModule() );

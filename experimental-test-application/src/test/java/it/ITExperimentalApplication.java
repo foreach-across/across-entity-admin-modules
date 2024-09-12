@@ -3,37 +3,35 @@ package it;
 import com.foreach.across.test.support.config.ResetDatabaseConfigurer;
 import com.foreach.across.test.support.config.TestDataSourceConfigurer;
 import com.foreach.across.testapplication.ExperimentalModuleTestApplication;
-import com.foreach.across.testapplication.application.domain.drink.DrinkRepository;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ContainerNetwork;
 import io.github.wimdeblauwe.testcontainers.cypress.CypressContainer;
 import io.github.wimdeblauwe.testcontainers.cypress.CypressTest;
 import io.github.wimdeblauwe.testcontainers.cypress.CypressTestResults;
 import io.github.wimdeblauwe.testcontainers.cypress.CypressTestSuite;
+import jakarta.validation.constraints.NotNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DynamicContainer;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.dockerclient.DockerClientConfigUtils;
 import org.testcontainers.utility.MountableFile;
 
-import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Actual bootstrap with an embedded web server on a random port.
@@ -49,24 +47,40 @@ class ITExperimentalApplication
 	@LocalServerPort
 	private int port;
 
-	@Test
-	@SneakyThrows
-	void runCypressTests( @Autowired DrinkRepository drinkRepository ) {
-		assertThat( drinkRepository.findAll() ).isEmpty();
+	@TestFactory
+	List<DynamicContainer> runCypressTests() throws InterruptedException, IOException, TimeoutException {
 
-		try (CypressContainer container = new DockerInDockerSupportingCypressContainer( port )
-				.withAutoCleanReports( false )
-				.withLocalServerPort( port )) {
+		Testcontainers.exposeHostPorts( port );
+
+		try (CypressContainer container = new CypressContainer().withLocalServerPort( port )) {
 			container.start();
-
 			CypressTestResults testResults = container.getTestResults();
 
-			//return convertToJUnitDynamicTests(testResults);
-
-			if ( testResults.getNumberOfFailingTests() > 0 ) {
-				fail( "There was a failure running the Cypress tests!\n\n" + testResults );
-			}
+			return convertToJUnitDynamicTests( testResults ); // (2)
 		}
+	}
+
+	@NotNull
+	private List<DynamicContainer> convertToJUnitDynamicTests( CypressTestResults testResults ) {
+		List<DynamicContainer> dynamicContainers = new ArrayList<>();
+		List<CypressTestSuite> suites = testResults.getSuites();
+		for ( CypressTestSuite suite : suites ) {
+			createContainerFromSuite( dynamicContainers, suite );
+		}
+		return dynamicContainers;
+	}
+
+	private void createContainerFromSuite( List<DynamicContainer> dynamicContainers, CypressTestSuite suite ) {
+		List<DynamicTest> dynamicTests = new ArrayList<>();
+		for ( CypressTest test : suite.getTests() ) {
+			dynamicTests.add( DynamicTest.dynamicTest( test.getDescription(), () -> {
+				if ( !test.isSuccess() ) {
+					LOG.error( "%s".formatted( test.getDescription() ) );
+				}
+				assertTrue( test.isSuccess() );
+			} ) );
+		}
+		dynamicContainers.add( DynamicContainer.dynamicContainer( suite.getTitle(), dynamicTests ) );
 	}
 
 	public static class DockerInDockerSupportingCypressContainer extends CypressContainer
@@ -78,7 +92,7 @@ class ITExperimentalApplication
 		@SneakyThrows
 		public DockerInDockerSupportingCypressContainer( int port ) {
 			// >=6.0.0 to use cy.intercept for fetch()
-			super( "cypress/included:6.0.1" );
+			super( "cypress/included:9.7.0" );
 			super.withBrowser( "chrome" );
 			this.port = port;
 			this.hostname = InetAddress.getLocalHost().getHostName();
@@ -161,24 +175,6 @@ class ITExperimentalApplication
 				}
 			}
 		}
-	}
-
-	@NotNull
-	private List<DynamicContainer> convertToJUnitDynamicTests( CypressTestResults testResults ) {
-		List<DynamicContainer> dynamicContainers = new ArrayList<>();
-		List<CypressTestSuite> suites = testResults.getSuites();
-		for ( CypressTestSuite suite : suites ) {
-			createContainerFromSuite( dynamicContainers, suite );
-		}
-		return dynamicContainers;
-	}
-
-	private void createContainerFromSuite( List<DynamicContainer> dynamicContainers, CypressTestSuite suite ) {
-		List<DynamicTest> dynamicTests = new ArrayList<>();
-		for ( CypressTest test : suite.getTests() ) {
-			dynamicTests.add( DynamicTest.dynamicTest( test.getDescription(), () -> assertTrue( test.isSuccess() ) ) );
-		}
-		dynamicContainers.add( DynamicContainer.dynamicContainer( suite.getTitle(), dynamicTests ) );
 	}
 
 }

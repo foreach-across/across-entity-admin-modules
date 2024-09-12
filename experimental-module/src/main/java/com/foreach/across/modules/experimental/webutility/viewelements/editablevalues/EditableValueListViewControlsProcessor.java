@@ -57,8 +57,8 @@ public class EditableValueListViewControlsProcessor extends EntityViewProcessorA
 				                MergingEntityPropertyRegistry propertyRegistry = new MergingEntityPropertyRegistry(
 						                entityViewContext.getPropertyRegistry(),
 						                propertyRegistryProvider, propertyDescriptorFactory );
-				                if ( entityViewContext instanceof ConfigurableEntityViewContext ) {
-					                ( (ConfigurableEntityViewContext) entityViewContext ).setPropertyRegistry( propertyRegistry );
+				                if ( entityViewContext instanceof ConfigurableEntityViewContext context ) {
+					                context.setPropertyRegistry( propertyRegistry );
 					                propertyRegistry.select( propertySelection )
 					                                .stream()
 					                                .map( MutableEntityPropertyDescriptor.class::cast )

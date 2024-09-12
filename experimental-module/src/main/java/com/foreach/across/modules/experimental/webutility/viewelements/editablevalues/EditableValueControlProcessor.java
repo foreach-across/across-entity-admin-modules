@@ -28,6 +28,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.WebExpressionContext;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -263,8 +265,8 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 	}
 
 	private String convertViewElementToHtml( ViewElement labelElement ) {
-		if ( labelElement instanceof TextViewElement ) {
-			return ( (TextViewElement) labelElement ).getText();
+		if ( labelElement instanceof TextViewElement element ) {
+			return element.getText();
 		}
 		else if ( labelElement != null ) {
 			LOG.trace( "Not a TextViewElement - attempting inline Thymeleaf render for " + labelElement.getClass() );
@@ -306,12 +308,12 @@ public class EditableValueControlProcessor extends ExtensionViewProcessorAdapter
 	private String renderViewElement( ViewElement viewElement ) {
 		ServletRequestAttributes ra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		IEngineConfiguration configuration = templateEngine.getConfiguration();
+		IWebExchange webExchange = JakartaServletWebApplication
+				.buildApplication( ra.getRequest().getServletContext() ).buildExchange( ra.getRequest(), ra.getResponse() );
 		WebExpressionContext context =
 				new WebExpressionContext(
 						configuration,
-						ra.getRequest(),
-						ra.getResponse(),
-						ra.getRequest().getServletContext(),
+						webExchange,
 						LocaleContextHolder.getLocale(),
 						Collections.singletonMap( "element", viewElement )
 				);

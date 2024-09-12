@@ -21,10 +21,10 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -95,8 +95,8 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 		controlWrapper.add( selectControlViewElement )
 		              .add( createNewButton( entityPropertyDescriptor, modalName, createViewUrl, builderContext ) );
 
-		String selectControlName = selectControlViewElement instanceof FormControlElementSupport
-				? ( (FormControlElementSupport) selectControlViewElement ).getControlName()
+		String selectControlName = selectControlViewElement instanceof FormControlElementSupport fces
+				? fces.getControlName()
 				: selectControlViewElement.getName();
 		wrappedElement.add( controlWrapper,
 		                    createModal( modalName, controlElementName, selectControlName, createViewUrl, entityPropertyDescriptor, builderContext ) );
@@ -127,8 +127,8 @@ public class CreateSelectViewElementBuilder extends ViewElementBuilderSupport
 								                requestAction()
 										                .url( createViewUrl )
 										                .partial( "content" )
-										                .requestConfig( ImmutableMap.of( "headers",
-										                                                 ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalName ) ) )
+										                .requestConfig( Map.of( "headers",
+										                                        Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalName ) ) )
 										                .success(
 												                clearHandler( "#" + modalName + " .modal-title" ),
 												                clearHandler( "#" + modalName + " .modal-body" ),

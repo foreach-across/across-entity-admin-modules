@@ -6,11 +6,11 @@ import com.foreach.across.modules.experimental.webutility.support.action.ActionA
 import com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.Setter;
 import org.springframework.http.HttpMethod;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
@@ -42,7 +42,7 @@ public class ModalDeleteViewProcessor extends ModalFormViewProcessor<ModalDelete
 				.url( url )
 				.method( HttpMethod.GET )
 				.partial( "content" )
-				.requestConfig( ImmutableMap.of( "headers", ImmutableMap.of( MODAL_ORIGIN_HEADER, getModalSelector() ) ) )
+				.requestConfig( Map.of( "headers", Map.of( MODAL_ORIGIN_HEADER, getModalSelector() ) ) )
 				.success(
 						clearHandler( getModalSelector() + " .modal-title" ),
 						clearHandler( getModalSelector() + " .modal-footer" ),

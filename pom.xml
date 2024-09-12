@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-module-parent</artifactId>
-		<version>5.0.1.RELEASE</version>
+		<version>6.0-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 
@@ -26,28 +26,41 @@
 	</repositories>
 
 	<properties>
+		<java.version>17</java.version>
+		<maven.compiler.release>17</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<build.revision>development</build.revision>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<revision>0.0.4-SNAPSHOT</revision>
+		<revision>0.0.5-SNAPSHOT</revision>
 		<!-- Overridden from spring-boot-dependencies -->
-		<maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+		<!--		<maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>-->
 
-		<admin-web-module.version>4.2.0-SNAPSHOT</admin-web-module.version>
+		<foreach-common-bom.version>3.0-SNAPSHOT</foreach-common-bom.version>
+		<testcontainers-bom.version>1.16.2</testcontainers-bom.version>
+		<testcontainers-cypress.version>1.4.0</testcontainers-cypress.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.foreach.across.modules</groupId>
-				<artifactId>admin-web-module</artifactId>
-				<version>${admin-web-module.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers-bom</artifactId>
-				<version>1.15.1</version>
+				<version>${testcontainers-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<!-- https://github.com/wimdeblauwe/testcontainers-cypress -->
+				<groupId>io.github.wimdeblauwe</groupId>
+				<artifactId>testcontainers-cypress</artifactId>
+				<version>${testcontainers-cypress.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.libs</groupId>
+				<artifactId>common-bom</artifactId>
+				<version>${foreach-common-bom.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -119,26 +132,27 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.jupiter</groupId>
-						<artifactId>junit-jupiter-engine</artifactId>
-						<version>${junit-jupiter.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.junit.vintage</groupId>
-						<artifactId>junit-vintage-engine</artifactId>
-						<version>${junit-jupiter.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+			<!--			<plugin>-->
+			<!--				<groupId>org.apache.maven.plugins</groupId>-->
+			<!--				<artifactId>maven-surefire-plugin</artifactId>-->
+			<!--				<version>${maven-surefire-plugin.version}</version>-->
+			<!--				<dependencies>-->
+			<!--					<dependency>-->
+			<!--						<groupId>org.junit.jupiter</groupId>-->
+			<!--						<artifactId>junit-jupiter-engine</artifactId>-->
+			<!--						<version>${junit-jupiter.version}</version>-->
+			<!--					</dependency>-->
+			<!--					<dependency>-->
+			<!--						<groupId>org.junit.vintage</groupId>-->
+			<!--						<artifactId>junit-vintage-engine</artifactId>-->
+			<!--						<version>${junit-jupiter.version}</version>-->
+			<!--					</dependency>-->
+			<!--				</dependencies>-->
+			<!--			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.0.0-M3</version>
+				<version>3.1.2</version>
 				<configuration>
 					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
 				</configuration>

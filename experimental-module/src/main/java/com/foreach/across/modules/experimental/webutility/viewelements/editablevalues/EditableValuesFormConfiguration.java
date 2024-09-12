@@ -137,8 +137,8 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 	private void handleViewActions( EntityViewRegistry entityViewRegistry, String viewName ) {
 		if ( entityViewRegistry.hasView( viewName ) ) {
 			EntityViewFactory viewFactory = entityViewRegistry.getViewFactory( viewName );
-			if ( viewFactory instanceof DispatchingEntityViewFactory ) {
-				EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
+			if ( viewFactory instanceof DispatchingEntityViewFactory factory ) {
+				EntityViewProcessorRegistry processorRegistry = factory.getProcessorRegistry();
 				if ( !processorRegistry.contains( EditableValueViewActionsViewProcessor.class.getName() ) ) {
 					processorRegistry.getProcessor( PropertyRenderingViewProcessor.class.getName(), PropertyRenderingViewProcessor.class )
 					                 .flatMap( ViewFactoryUtils::resolveViewElementMode )
@@ -158,8 +158,8 @@ class EditableValuesFormConfiguration implements EntityConfigurer
 	private void handleListViewControls( EntityViewRegistry entityViewRegistry, String viewName ) {
 		if ( entityViewRegistry.hasView( viewName ) ) {
 			EntityViewFactory viewFactory = entityViewRegistry.getViewFactory( viewName );
-			if ( viewFactory instanceof DispatchingEntityViewFactory ) {
-				EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
+			if ( viewFactory instanceof DispatchingEntityViewFactory factory ) {
+				EntityViewProcessorRegistry processorRegistry = factory.getProcessorRegistry();
 				if ( !processorRegistry.contains( EditableValueListViewControlsProcessor.class.getName() ) ) {
 					EditableValueListViewControlsProcessor processor = moduleInfo.getApplicationContext().getAutowireCapableBeanFactory()
 					                                                             .createBean( EditableValueListViewControlsProcessor.class );

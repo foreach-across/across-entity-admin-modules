@@ -48,7 +48,7 @@ public class RequestActionHandlerAttribute<SELF extends RequestActionHandlerAttr
 	 * <strong>Note that any client-side form method will be ignored as this property takes precedence.</strong>
 	 */
 	@JsonProperty
-	private HttpMethod method = HttpMethod.GET;
+	private String method = HttpMethod.GET.name();
 
 	/**
 	 * URL to which the partial request should go. If not set, the url from the {@link #form(String)} will be used
@@ -99,7 +99,7 @@ public class RequestActionHandlerAttribute<SELF extends RequestActionHandlerAttr
 	}
 
 	public SELF method( HttpMethod method ) {
-		this.method = method;
+		this.method = method.name();
 		return self();
 	}
 

@@ -43,7 +43,7 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
 	 */
 	@NonNull
 	@JsonProperty
-	private HttpMethod method = HttpMethod.GET;
+	private String method = HttpMethod.GET.name();
 
 	/**
 	 * URL to which the partial request should go. If not set, the url of the current page will be reused.
@@ -110,7 +110,7 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
 	}
 
 	public SELF method( HttpMethod method ) {
-		this.method = method;
+		this.method = method.name();
 		return self();
 	}
 
@@ -137,6 +137,7 @@ public class RequestActionAttribute<SELF extends RequestActionAttribute<SELF>> e
 		this.before = new LinkedList<>( before );
 		return self();
 	}
+
 	public SELF before( ActionHandlerAttribute... before ) {
 		return before( Arrays.asList( before ) );
 	}

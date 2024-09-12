@@ -4,9 +4,9 @@ import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuil
 import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.experimental.webutility.viewelements.editablevalues.EditableValueViewActionsViewProcessor;
+import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
 
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -54,8 +54,8 @@ public class WebUtilityConfigurers
 
 					viewFactory.ifPresent(
 							vf -> {
-								if ( vf instanceof DispatchingEntityViewFactory ) {
-									( (DispatchingEntityViewFactory) vf ).getProcessorRegistry()
+								if ( vf instanceof DispatchingEntityViewFactory factory ) {
+									factory.getProcessorRegistry()
 									                                     .remove( EditableValueViewActionsViewProcessor.class.getName() );
 								}
 							}
