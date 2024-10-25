@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.ISpringTemplateEngine;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,7 +52,9 @@ import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewE
  * @author Arne Vandamme
  * @since 2.1.0
  */
-@ConditionalOnBean(SpringTemplateEngine.class)
+// TODO
+//@ConditionalOnBean(SpringTemplateEngine.class)
+//@ConditionalOnBean(ISpringTemplateEngine.class)
 @Component
 public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 {

@@ -23,14 +23,14 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.controllers.AuthenticationController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuBuilder;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenuBuilder;
 import com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConfiguration;
 import com.foreach.across.modules.web.menu.MenuFactory;
+import com.foreach.across.modules.web.menu.MenuStore;
 import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.annotation.AnnotationClassFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.annotation.Bean;
@@ -46,17 +46,27 @@ import javax.annotation.PostConstruct;
 @ComponentScan(basePackageClasses = AuthenticationController.class)
 public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfiguration
 {
-	private final MenuFactory menuFactory;
+	//private final MenuFactory menuFactory;
 	private final AdminWebModuleSettings settings;
 	private final LocaleProperties localeProperties;
 
 	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void initialize() {
-		menuFactory.addMenuBuilder( adminMenuBuilder(), AdminMenu.class );
-		menuFactory.addMenuBuilder( entityAdminMenuBuilder(), EntityAdminMenu.class );
+		//menuFactory.addMenuBuilder( adminMenuBuilder(), AdminMenu.class );
+		//menuFactory.addMenuBuilder( entityAdminMenuBuilder(), EntityAdminMenu.class );
 
 		AdminWebModuleIcons.registerIconSet();
+	}
+
+	@Bean
+	//@ConditionalOnMissingBean(MenuFactory.class)
+	public MenuFactory adminWebMenuFactory(MenuStore requestMenuStore) {
+		MenuFactory menuFactory = new MenuFactory();
+		//menuFactory.setDefaultMenuBuilder( requestMenuBuilder );
+		menuFactory.setDefaultMenuStore( requestMenuStore );
+		menuFactory.addMenuBuilder( adminMenuBuilder(), AdminMenu.class );
+		return menuFactory;
 	}
 
 	@Override
@@ -69,6 +79,10 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 		return new AnnotationClassFilter( AdminWebController.class, true );
 	}
 
+	// TODO for some reason, this is working backwards:
+	// The bean 'localeResolver', defined in org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration, could not be registered.
+	// A bean with that name has already been defined in class path resource [com/foreach/across/modules/adminweb/config/AdminWebMvcConfiguration.class] and overriding is disabled.
+/*
 	@ConditionalOnMissingBean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME, search = SearchStrategy.ALL)
 	@Bean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 	@Exposed
@@ -78,6 +92,7 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 
 		return cookieLocaleResolver;
 	}
+*/
 
 	@Bean(name = "adminWebHandlerMapping")
 	@Exposed
@@ -87,13 +102,16 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 	}
 
 	@Bean
+	//@ConditionalOnMissingBean(AdminMenuBuilder.class)
 	public AdminMenuBuilder adminMenuBuilder() {
 		return new AdminMenuBuilder();
 	}
 
+/*
 	// todo: get out to entity module you!
 	@Bean
 	public EntityAdminMenuBuilder entityAdminMenuBuilder() {
 		return new EntityAdminMenuBuilder();
 	}
+*/
 }

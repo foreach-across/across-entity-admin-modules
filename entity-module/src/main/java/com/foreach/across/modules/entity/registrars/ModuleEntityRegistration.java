@@ -26,11 +26,15 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntityRegistryConfigurer;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.event.ApplicationContextEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Takes care of running all registered {@link com.foreach.across.modules.entity.registrars.EntityRegistrar}
@@ -48,12 +52,13 @@ import java.util.Collection;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ModuleEntityRegistration
 {
-	private final AcrossContextInfo contextInfo;
+	//private final AcrossContextInfo contextInfo;
 	private final MutableEntityRegistry entityRegistry;
 	private final AutowireCapableBeanFactory beanFactory;
-	private final AcrossModuleInfo currentModule;
+	//private final AcrossModuleInfo currentModule;
 
 	private boolean previousModulesRegistered = false;
 
@@ -61,6 +66,7 @@ public class ModuleEntityRegistration
 	@RefreshableCollection(includeModuleInternals = true, incremental = true)
 	private Collection<EntityRegistrar> registrars;
 
+/*
 	@EventListener
 	public void moduleBootstrapped( AcrossModuleBootstrappedEvent moduleBootstrappedEvent ) {
 		if ( !currentModule.equals( moduleBootstrappedEvent.getModule() ) ) {
@@ -73,7 +79,9 @@ public class ModuleEntityRegistration
 			applyModule( moduleBootstrappedEvent.getModule() );
 		}
 	}
+*/
 
+/*
 	private void registerAlreadyBootstrappedModules() {
 		for ( AcrossModuleInfo moduleInfo : contextInfo.getModules() ) {
 			switch ( moduleInfo.getBootstrapStatus() ) {
@@ -106,5 +114,21 @@ public class ModuleEntityRegistration
 		for ( EntityRegistrar registrar : registrars ) {
 			registrar.registerEntities( entityRegistry, moduleInfo, beanRegistry );
 		}
+	}
+*/
+
+	@EventListener
+	public void started(ContextRefreshedEvent event) {
+		Map<String, EntityConfigurer> map = event.getApplicationContext().getBeansOfType(EntityConfigurer.class);
+		if (map.isEmpty()) {
+			LOG.warn("No EntityConfigurer beans found!");
+		}
+		EntityRegistryConfigurer registryBuilder = new EntityRegistryConfigurer( event.getApplicationContext().getAutowireCapableBeanFactory() );
+		for (Map.Entry<String, EntityConfigurer> entry : map.entrySet()) {
+			LOG.info("Registering entities of {}", entry.getKey());
+			EntityConfigurer configurer = entry.getValue();
+			registryBuilder.add( configurer );
+		}
+		registryBuilder.applyTo( entityRegistry );
 	}
 }

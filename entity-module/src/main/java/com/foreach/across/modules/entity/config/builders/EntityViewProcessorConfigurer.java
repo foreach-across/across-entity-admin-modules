@@ -323,7 +323,7 @@ public class EntityViewProcessorConfigurer<T extends EntityViewProcessor>
 				registered.get().setProcessor( (T) provider.apply( beanFactory ) );
 			}
 			else if ( !updateIfPresent ) {
-				throw new IllegalStateException( "Unable to register EntityViewProcessor '" + processorName + "': it is already present" );
+				//throw new IllegalStateException( "Unable to register EntityViewProcessor '" + processorName + "': it is already present" );
 			}
 		}
 

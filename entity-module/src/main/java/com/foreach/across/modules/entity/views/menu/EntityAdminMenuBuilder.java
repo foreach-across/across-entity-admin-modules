@@ -21,6 +21,7 @@ import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,8 +32,9 @@ import org.springframework.stereotype.Component;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-@ConditionalOnAdminWeb
-@Component
+//@ConditionalOnAdminWeb
+//@Primary
+//@Component
 @RequiredArgsConstructor
 class EntityAdminMenuBuilder extends RequestMenuBuilder
 {

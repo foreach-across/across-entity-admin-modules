@@ -81,7 +81,7 @@ class EntityRegistryBrowserController
 
 	private final EntityRegistry entityRegistry;
 	private final PageContentStructure page;
-	private final AcrossModuleInfo entityModuleInfo;
+	//private final AcrossModuleInfo entityModuleInfo;
 
 	@EventListener
 	public void registerAdminMenu( AdminMenuEvent menuEvent ) {
@@ -117,7 +117,7 @@ class EntityRegistryBrowserController
 		adminMenu.breadcrumbLeaf( entity.getName() );
 
 		model.addAttribute( "entity", entity );
-		registerDocumentationLinks( model );
+		//registerDocumentationLinks( model );
 
 		page.setPageTitle( "Registered entities: " + entity.getName() );
 		page.setRenderAsTabs( true );
@@ -268,6 +268,7 @@ class EntityRegistryBrowserController
 		return codeResolver;
 	}
 
+/*
 	private void registerDocumentationLinks( Model model ) {
 		AcrossVersionInfo versionInfo = entityModuleInfo.getVersionInfo();
 		String docBaseUrl = String.format(
@@ -319,4 +320,5 @@ class EntityRegistryBrowserController
 			return typeName;
 		}
 	}
+*/
 }

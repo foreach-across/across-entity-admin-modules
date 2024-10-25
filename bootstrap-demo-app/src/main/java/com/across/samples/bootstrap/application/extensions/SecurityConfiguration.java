@@ -29,16 +29,15 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
  */
 @ModuleConfiguration(SpringSecurityModule.NAME)
 @EnableGlobalAuthentication
-public class SecurityConfiguration
-{
-	@Bean
-	public InMemoryUserDetailsManager userDetailsService() {
-		return new InMemoryUserDetailsManager(
-				User.builder()
-				    .username( "admin" )
-				    .password( "{noop}admin" )
-				    .authorities( "access administration" )
-				    .build()
-		);
-	}
+public class SecurityConfiguration {
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        return new InMemoryUserDetailsManager(
+                User.builder()
+                        .username("admin")
+                        .password("{noop}admin")
+                        .authorities("access administration")
+                        .build()
+        );
+    }
 }

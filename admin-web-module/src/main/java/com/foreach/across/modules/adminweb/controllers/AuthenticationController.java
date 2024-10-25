@@ -23,10 +23,12 @@ import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.config.LocaleProperties;
 import com.foreach.across.modules.adminweb.config.RememberMeProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -37,6 +39,8 @@ import java.util.List;
 import java.util.Locale;
 
 @AdminWebController
+@Controller(value = "/admin")
+@Slf4j
 public class AuthenticationController
 {
 	@Value("${adminWebModule.login.template:}")
@@ -46,7 +50,7 @@ public class AuthenticationController
 	private AdminWeb adminWeb;
 
 	@Autowired
-	@Module(AcrossModule.CURRENT_MODULE)
+	//@Module(AcrossModule.CURRENT_MODULE)
 	private AdminWebModuleSettings settings;
 
 	@Autowired
@@ -54,6 +58,10 @@ public class AuthenticationController
 
 	@Autowired
 	private LocaleProperties localeProperties;
+
+	public AuthenticationController() {
+		LOG.info("Creating {} bean", this.getClass().getName());
+	}
 
 	@RequestMapping(value = { "", "/" })
 	public String dashboard() {
@@ -66,7 +74,7 @@ public class AuthenticationController
 		return "th/adminweb/dashboard";
 	}
 
-	@RequestMapping("/login")
+	@RequestMapping(value = {"/login", "/login/" })
 	public String login( Model model ) {
 		model.addAttribute( "isLoginPage", true );
 		model.addAttribute( "isRememberMeEnabled", rememberMeProperties.isEnabled() );

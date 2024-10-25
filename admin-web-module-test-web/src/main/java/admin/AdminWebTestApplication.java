@@ -17,16 +17,67 @@
 package admin;
 
 import com.foreach.across.config.AcrossApplication;
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.modules.web.config.AcrossWebConfiguration;
+import com.foreach.across.modules.web.config.ThymeleafViewSupportConfiguration;
+import com.foreach.across.modules.web.config.UrlPrefixingConfiguration;
+import com.foreach.across.modules.web.config.resources.ResourceConfigurationProperties;
+import com.foreach.across.modules.web.menu.MenuStore;
+import com.foreach.across.modules.web.menu.RequestMenuStore;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * @author Arne Vandamme
  */
-@AcrossApplication(modules = AdminWebModule.NAME)
+//@AcrossApplication(modules = AdminWebModule.NAME)
+@Configuration
+@EnableWebSecurity
+@EnableWebMvc
+@SpringBootApplication(scanBasePackageClasses = {
+		AcrossWebModule.class,
+		//SpringSecurityModule.class,
+		AdminWebModule.class,
+		AdminWebTestApplication.class,
+})
+@ConfigurationPropertiesScan(basePackageClasses = {
+		AcrossWebModule.class,
+		//SpringSecurityModule.class,
+		AdminWebModule.class,
+})
+//@EntityScan(basePackageClasses = {
+//		AdminWebTestApplication.class,
+//})
+//@Import({
+//		ResourceConfigurationProperties.class,
+//		UrlPrefixingConfiguration.class,
+//		ThymeleafViewSupportConfiguration.class,
+//		AcrossWebConfiguration.class,
+//})
 public class AdminWebTestApplication
 {
 	public static void main( String[] args ) {
 		SpringApplication.run( AdminWebTestApplication.class, args );
 	}
+
+	@Bean
+	//@Primary
+	public AcrossDevelopmentMode acrossDevelopmentMode() {
+		return new AcrossDevelopmentMode();
+	}
+
+	@Bean
+	MenuStore menuStore() {
+		return new RequestMenuStore();
+	}
+
 }

@@ -37,7 +37,7 @@ import org.springframework.core.convert.ConversionService;
  *
  * @author Arne Vandamme
  */
-@Configuration
+//@Configuration
 public class ConversionServiceConfiguration
 {
 	public static final String CONVERSION_SERVICE_BEAN = "propertiesConversionService";

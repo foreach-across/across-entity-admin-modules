@@ -459,7 +459,12 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 				return configuration.getAssociations();
 			}
 			else {
-				return Collections.singletonList( configuration.association( name ) );
+				//return Collections.singletonList( configuration.association( name ) );
+				MutableEntityAssociation association = configuration.association(name);
+				if (association == null) {
+					return Collections.emptyList();
+				}
+				return Collections.singletonList(association);
 			}
 		}
 		else if ( associationClassType != null ) {

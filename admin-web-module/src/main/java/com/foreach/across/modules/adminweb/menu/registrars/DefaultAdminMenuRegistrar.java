@@ -53,7 +53,7 @@ public final class DefaultAdminMenuRegistrar
 	public static final String PATH = UserContextAdminMenuGroup.MENU_PATH;
 
 	private final ApplicationEventPublisher eventPublisher;
-	private final CurrentSecurityPrincipalProxy securityPrincipalProxy;
+	//private final CurrentSecurityPrincipalProxy securityPrincipalProxy;
 
 	@EventListener
 	public void registerDefaultItems( AdminMenuEvent menuEvent ) {
@@ -68,7 +68,8 @@ public final class DefaultAdminMenuRegistrar
 
 	private void registerUserContextAdminMenuGroup( PathBasedMenuBuilder menu ) {
 		UserContextAdminMenuGroup userContextAdminMenuGroup = new UserContextAdminMenuGroup();
-		userContextAdminMenuGroup.setDisplayName( securityPrincipalProxy.getPrincipalName() );
+		//userContextAdminMenuGroup.setDisplayName( securityPrincipalProxy.getPrincipalName() );
+		userContextAdminMenuGroup.setDisplayName( "Hello hacked display name" );
 		userContextAdminMenuGroup.setThumbnailUrl( "" );
 
 		eventPublisher.publishEvent( userContextAdminMenuGroup );

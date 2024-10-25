@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.context.info.AcrossContextInfo;
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -126,7 +127,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	private EntityQueryFacadeResolver entityQueryFacadeResolver;
 	private EntityRegistry entityRegistry;  // todo check if different way to resolve the EntityTypeDescriptor ?
 	private EQTypeConverter eqTypeConverter;
-	private AcrossContextInfo acrossContextInfo;
+	private AcrossDevelopmentMode developmentMode;
 
 	/**
 	 * Holds the configuration for this query filter processor.
@@ -223,7 +224,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		}
 		catch ( Exception e ) {
 			String message;
-			if ( acrossContextInfo.getContext().isDevelopmentMode() ) {
+			if ( developmentMode.isActive() ) {
 				StringWriter stringWriter = new StringWriter();
 				PrintWriter print = new PrintWriter( stringWriter );
 				ExceptionUtils.printRootCauseStackTrace( e, print );
@@ -386,7 +387,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	}
 
 	@Autowired
-	void setAcrossContextInfo( AcrossContextInfo acrossContextInfo ) {
-		this.acrossContextInfo = acrossContextInfo;
+	public void setDevelopmentMode(AcrossDevelopmentMode developmentMode) {
+		this.developmentMode = developmentMode;
 	}
 }

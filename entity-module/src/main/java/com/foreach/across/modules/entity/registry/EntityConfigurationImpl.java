@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -41,6 +42,7 @@ import java.util.Map;
  * @author Arne Vandamme
  * @since 1.0.0
  */
+@Slf4j
 public class EntityConfigurationImpl<T> extends AttributeSupport implements MutableEntityConfiguration<T>
 {
 	private final String name;
@@ -197,7 +199,11 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 
 	@Override
 	public MutableEntityAssociation association( String name ) {
-		return (MutableEntityAssociation) entityAssociations.get( name );
+		EntityAssociation entityAssociation = entityAssociations.get(name);
+		if (entityAssociation == null) {
+			LOG.debug("{}: Could not find EntityAssociation for {}", this.name, name);
+		}
+		return (MutableEntityAssociation) entityAssociation;
 	}
 
 	@Override

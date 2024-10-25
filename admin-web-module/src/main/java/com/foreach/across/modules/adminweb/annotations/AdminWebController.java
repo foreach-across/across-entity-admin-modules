@@ -24,7 +24,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ConditionalOnAcrossModule(AdminWebModule.NAME)
+//@ConditionalOnAcrossModule(AdminWebModule.NAME)
 @Component
 public @interface AdminWebController
 {

@@ -17,12 +17,12 @@
 package com.foreach.across.modules.adminweb.extensions;
 
 import com.foreach.across.core.annotations.ModuleConfiguration;
-import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.modules.web.config.resources.ResourceConfigurationProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,17 +31,16 @@ import org.springframework.security.web.SecurityFilterChain;
  * AdminWeb requires the static resources to be available, so it permits all of them by default.
  * Registered with a global 0 order so it would be before all default security configuration of regular modules.
  */
-@ModuleConfiguration(SpringSecurityModule.NAME)
+@Configuration
 @RequiredArgsConstructor
-public class AllowWebjarsSecurityConfiguration
-{
-	private final AcrossContextBeanRegistry beanRegistry;
+public class AllowWebjarsSecurityConfiguration {
+    private final BeanFactory beanRegistry;
 
 	@Order(0)
 	@Bean
 	public SecurityFilterChain webjarsSecurityFilterChain( HttpSecurity http ) throws Exception {
 		ResourceConfigurationProperties resourceConfigurationProperties
-				= beanRegistry.getBeanOfTypeFromModule( AcrossWebModule.NAME, ResourceConfigurationProperties.class );
+				= beanRegistry.getBean( ResourceConfigurationProperties.class );
 
 		http.antMatcher( resourceConfigurationProperties.getWebjars() + "/**" )
 		    .authorizeRequests().anyRequest().permitAll();

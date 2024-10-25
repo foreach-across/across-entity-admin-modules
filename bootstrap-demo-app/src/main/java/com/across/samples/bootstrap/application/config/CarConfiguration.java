@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
-@Configuration
+//@Configuration
 @OrderInModule(1)
 public class CarConfiguration implements EntityConfigurer
 {

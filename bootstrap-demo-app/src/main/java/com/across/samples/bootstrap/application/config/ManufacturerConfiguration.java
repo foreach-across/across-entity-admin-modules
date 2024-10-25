@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
-@Configuration
+//@Configuration
 @OrderInModule(2)
 public class ManufacturerConfiguration implements EntityConfigurer
 {

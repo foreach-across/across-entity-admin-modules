@@ -27,8 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
@@ -39,7 +42,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 
-@ModuleConfiguration(SpringSecurityModule.NAME)
+//@ModuleConfiguration(SpringSecurityModule.NAME)
+// TODO @Configuration
 public class AdminWebSecurityConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( AdminWebSecurityConfiguration.class );
@@ -56,6 +60,11 @@ public class AdminWebSecurityConfiguration
 	@Autowired(required = false)
 	@Qualifier(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 	private LocaleResolver localeResolver;
+
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return (web) -> web.ignoring().requestMatchers("/error");
+	}
 
 	@Bean
 	public SecurityFilterChain adminWebSecurityFilterChain( HttpSecurity root ) throws Exception {

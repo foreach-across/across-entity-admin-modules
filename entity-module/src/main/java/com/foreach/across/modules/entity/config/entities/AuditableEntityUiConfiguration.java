@@ -38,10 +38,10 @@ import org.springframework.data.domain.Sort;
  *
  * @author Arne Vandamme
  */
-@ConditionalOnClass(Auditable.class)
-@ConditionalOnAcrossModule(SpringSecurityModule.NAME)
-@Configuration
-@OrderInModule(3)
+//@ConditionalOnClass(Auditable.class)
+//@ConditionalOnAcrossModule(SpringSecurityModule.NAME)
+//@Configuration
+//@OrderInModule(3)
 @RequiredArgsConstructor
 public class AuditableEntityUiConfiguration implements EntityConfigurer
 {

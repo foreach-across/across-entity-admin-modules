@@ -21,6 +21,7 @@ import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,8 +39,13 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
  */
 @AdminWebController
 @RequestMapping("/viewElementFieldset")
+@Slf4j
 public class ViewElementFieldsetController
 {
+	public ViewElementFieldsetController() {
+		LOG.info("Created");
+	}
+
 	/**
 	 * Register the section in the administration menu.
 	 */
