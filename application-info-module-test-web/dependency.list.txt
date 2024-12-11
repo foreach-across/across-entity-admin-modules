@@ -14,8 +14,8 @@ com.foreach.across.modules:debug-web-module:jar:dev-SNAPSHOT:compile
 com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
 com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 com.foreach.across:across-web:jar:dev-SNAPSHOT:compile
-com.foreach.libs:common-concurrent:jar:3.0-SNAPSHOT:compile
-com.foreach.libs:common-spring:jar:3.0-SNAPSHOT:compile
+com.foreach.libs:common-concurrent:jar:3.0.0:compile
+com.foreach.libs:common-spring:jar:3.0.0:compile
 com.opencsv:opencsv:jar:5.9:compile
 commons-io:commons-io:jar:2.18.0:compile
 io.micrometer:micrometer-commons:jar:1.12.13:compile

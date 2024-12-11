@@ -12,7 +12,7 @@ com.foreach.across.modules:bootstrap-ui-module-test:jar:dev-SNAPSHOT
 |  |  |  |  \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
 |  |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|  |  |  +- com.foreach.libs:common-concurrent:jar:3.0-SNAPSHOT:compile
+|  |  |  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |  |  |  +- org.springframework:spring-jdbc:jar:6.1.15:compile
 |  |  |  |  \- org.springframework:spring-tx:jar:6.1.15:compile
 |  |  |  +- org.apache.commons:commons-lang3:jar:3.13.0:compile

@@ -91,18 +91,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.jsoup</groupId>
-				<artifactId>jsoup</artifactId>
-				<version>1.13.1</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>xmlunit</groupId>
-				<artifactId>xmlunit</artifactId>
-				<version>1.6</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>com.foreach.across</groupId>
 				<artifactId>across-autoconfigure</artifactId>
 				<version>${across-autoconfigure.version}</version>
@@ -121,47 +109,6 @@
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>spring-security-module</artifactId>
 				<version>${across-base-modules.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>32.1.3-jre</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.code.findbugs</groupId>
-				<artifactId>jsr305</artifactId>
-				<version>3.0.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>net.java.dev.jna</groupId>
-				<artifactId>jna</artifactId>
-				<!--
-				Spring Boot has removed this as managed dependency:
-				https://github.com/spring-projects/spring-boot/issues/21313
-				https://github.com/spring-projects/spring-boot/commit/3325709a78d15511a35691fef87fa79329bfb04b
-				-->
-				<version>5.12.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.checkerframework</groupId>
-				<artifactId>checker-qual</artifactId>
-				<version>3.42.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>javax.el</groupId>
-				<artifactId>javax.el-api</artifactId>
-				<version>3.0.1-b06</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.atteo</groupId>
-				<artifactId>evo-inflector</artifactId>
-				<version>1.2.2</version>
 			</dependency>
 
 		</dependencies>

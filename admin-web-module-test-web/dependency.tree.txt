@@ -18,7 +18,7 @@ com.foreach.across.modules:admin-web-module-test-web:jar:dev-SNAPSHOT
 |  |  |     +- org.attoparser:attoparser:jar:2.0.7.RELEASE:compile
 |  |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|  |  |  +- com.foreach.libs:common-concurrent:jar:3.0-SNAPSHOT:compile
+|  |  |  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |  |  |  +- org.springframework:spring-jdbc:jar:6.1.15:compile
 |  |  |  |  \- org.springframework:spring-tx:jar:6.1.15:compile
 |  |  |  +- org.apache.commons:commons-lang3:jar:3.13.0:compile

@@ -1,6 +1,6 @@
 com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT
-+- com.foreach.libs:common-spring:jar:3.0-SNAPSHOT:compile
-|  +- com.foreach.libs:common-concurrent:jar:3.0-SNAPSHOT:compile
++- com.foreach.libs:common-spring:jar:3.0.0:compile
+|  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
 |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
 |  +- jakarta.mail:jakarta.mail-api:jar:2.1.3:compile
@@ -64,7 +64,7 @@ com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT
 |  |  \- com.fasterxml:classmate:jar:1.6.0:compile
 |  +- org.springframework.data:spring-data-commons:jar:3.2.12:compile
 |  +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
-|  +- org.atteo:evo-inflector:jar:1.2.2:compile
+|  +- org.atteo:evo-inflector:jar:1.3:compile
 |  \- org.webjars:lodash:jar:4.17.4:compile
 +- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.12:compile
 +- com.foreach.across:across-test:jar:dev-SNAPSHOT:test
@@ -88,7 +88,7 @@ com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT
 |  |  +- com.github.docker-java:docker-java-api:jar:3.4.0:test
 |  |  \- com.github.docker-java:docker-java-transport-zerodep:jar:3.4.0:test
 |  |     +- com.github.docker-java:docker-java-transport:jar:3.4.0:test
-|  |     \- net.java.dev.jna:jna:jar:5.12.1:test
+|  |     \- net.java.dev.jna:jna:jar:5.15.0:test
 |  +- org.testcontainers:mysql:jar:1.20.4:test
 |  |  \- org.testcontainers:jdbc:jar:1.20.4:test
 |  |     \- org.testcontainers:database-commons:jar:1.20.4:test
@@ -104,7 +104,7 @@ com.foreach.across.modules:properties-module:jar:dev-SNAPSHOT
 +- com.h2database:h2:jar:2.2.224:test
 +- com.microsoft.sqlserver:mssql-jdbc:jar:12.4.2.jre11:test
 +- org.postgresql:postgresql:jar:42.6.2:test
-|  \- org.checkerframework:checker-qual:jar:3.42.0:test
+|  \- org.checkerframework:checker-qual:jar:3.48.3:test
 +- org.junit.jupiter:junit-jupiter-engine:jar:5.10.5:test
 |  +- org.junit.platform:junit-platform-engine:jar:1.10.5:test
 |  |  +- org.opentest4j:opentest4j:jar:1.3.0:test

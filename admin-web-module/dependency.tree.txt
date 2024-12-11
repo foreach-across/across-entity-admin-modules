@@ -22,7 +22,7 @@ com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT
 |  |     +- org.attoparser:attoparser:jar:2.0.7.RELEASE:compile
 |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
-|  |  +- com.foreach.libs:common-concurrent:jar:3.0-SNAPSHOT:compile
+|  |  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |  |  +- org.springframework:spring-context:jar:6.1.15:compile
 |  |  +- org.springframework:spring-jdbc:jar:6.1.15:compile
 |  |  +- org.apache.commons:commons-lang3:jar:3.13.0:compile
@@ -95,7 +95,7 @@ com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT
 |  |  +- com.github.docker-java:docker-java-api:jar:3.4.0:test
 |  |  \- com.github.docker-java:docker-java-transport-zerodep:jar:3.4.0:test
 |  |     +- com.github.docker-java:docker-java-transport:jar:3.4.0:test
-|  |     \- net.java.dev.jna:jna:jar:5.12.1:test
+|  |     \- net.java.dev.jna:jna:jar:5.15.0:test
 |  +- org.testcontainers:mysql:jar:1.20.4:test
 |  |  \- org.testcontainers:jdbc:jar:1.20.4:test
 |  |     \- org.testcontainers:database-commons:jar:1.20.4:test
@@ -111,7 +111,7 @@ com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT
 +- com.microsoft.sqlserver:mssql-jdbc:jar:12.4.2.jre11:test
 +- com.mysql:mysql-connector-j:jar:8.3.0:test
 +- org.postgresql:postgresql:jar:42.6.2:test
-|  \- org.checkerframework:checker-qual:jar:3.42.0:test
+|  \- org.checkerframework:checker-qual:jar:3.48.3:test
 +- org.webjars.bower:toastr:jar:2.1.2:compile
 +- org.junit.jupiter:junit-jupiter-engine:jar:5.10.5:test
 |  +- org.junit.platform:junit-platform-engine:jar:1.10.5:test

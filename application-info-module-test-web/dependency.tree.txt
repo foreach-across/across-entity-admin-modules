@@ -1,7 +1,7 @@
 com.foreach.across.modules:application-info-module-test-web:jar:dev-SNAPSHOT
 +- com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT:compile
-|  \- com.foreach.libs:common-spring:jar:3.0-SNAPSHOT:compile
-|     +- com.foreach.libs:common-concurrent:jar:3.0-SNAPSHOT:compile
+|  \- com.foreach.libs:common-spring:jar:3.0.0:compile
+|     +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |     +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile
 |     +- jakarta.mail:jakarta.mail-api:jar:2.1.3:compile
 |     |  \- jakarta.activation:jakarta.activation-api:jar:2.1.3:compile
