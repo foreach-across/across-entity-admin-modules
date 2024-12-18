@@ -1,6 +1,6 @@
-com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT
-+- com.foreach.across.modules:debug-web-module:jar:dev-SNAPSHOT:compile (optional)
-|  +- com.foreach.across:across-web:jar:dev-SNAPSHOT:compile (optional)
+com.foreach.across.modules:application-info-module:jar:6.0.0
++- com.foreach.across.modules:debug-web-module:jar:6.0.0:compile (optional)
+|  +- com.foreach.across:across-web:jar:6.0.0:compile (optional)
 |  |  +- org.springframework.boot:spring-boot-starter-web:jar:3.2.12:compile (optional)
 |  |  |  +- org.springframework.boot:spring-boot-starter:jar:3.2.12:compile (optional)
 |  |  |  |  \- org.springframework.boot:spring-boot-starter-logging:jar:3.2.12:compile (optional)
@@ -31,16 +31,16 @@ com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT
 |  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.2.12:compile
 |  |  \- org.yaml:snakeyaml:jar:2.2:compile
 |  \- commons-io:commons-io:jar:2.18.0:compile
-+- com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT:compile (optional)
-|  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile (optional)
++- com.foreach.across.modules:admin-web-module:jar:6.0.0:compile (optional)
+|  +- com.foreach.across.modules:spring-security-module:jar:6.0.0:compile (optional)
 |  |  +- org.springframework.security:spring-security-core:jar:6.2.8:compile (optional)
 |  |  |  +- org.springframework.security:spring-security-crypto:jar:6.2.8:compile (optional)
 |  |  |  \- io.micrometer:micrometer-observation:jar:1.12.13:compile
 |  |  |     \- io.micrometer:micrometer-commons:jar:1.12.13:compile
 |  |  +- org.springframework.security:spring-security-web:jar:6.2.8:compile (optional)
 |  |  \- org.springframework.security:spring-security-config:jar:6.2.8:compile (optional)
-|  +- com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT:compile (optional)
-|  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile (optional)
+|  +- com.foreach.across.modules:bootstrap-ui-module:jar:6.0.0:compile (optional)
+|  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:6.0.0:compile (optional)
 |  |  +- org.webjars:jquery:jar:3.4.1:compile (optional)
 |  |  +- org.webjars:bootstrap:jar:4.3.1:compile (optional)
 |  |  |  \- org.webjars:popper.js:jar:1.14.3:compile (optional)
@@ -71,10 +71,10 @@ com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT
 |  |  \- org.springframework:spring-context:jar:6.1.15:compile
 |  \- org.springframework:spring-core:jar:6.1.15:compile
 |     \- org.springframework:spring-jcl:jar:6.1.15:compile
-+- com.foreach.across:across-test:jar:dev-SNAPSHOT:test
++- com.foreach.across:across-test:jar:6.0.0:test
 |  +- org.junit.jupiter:junit-jupiter:jar:5.10.5:test
 |  |  \- org.junit.jupiter:junit-jupiter-params:jar:5.10.5:test
-|  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
+|  +- com.foreach.across:across-core:jar:6.0.0:compile
 |  |  +- org.springframework:spring-jdbc:jar:6.1.15:compile
 |  |  \- org.liquibase:liquibase-core:jar:4.30.0:compile
 |  |     +- com.opencsv:opencsv:jar:5.9:compile
