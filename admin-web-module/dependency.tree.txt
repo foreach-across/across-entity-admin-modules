@@ -102,7 +102,7 @@ com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT
 |  +- org.testcontainers:postgresql:jar:1.20.4:test
 |  +- org.testcontainers:mssqlserver:jar:1.20.4:test
 |  \- org.testcontainers:oracle-xe:jar:1.20.4:test
-+- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.12:compile
++- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.12:compile (optional)
 +- org.springframework.security:spring-security-test:jar:6.2.8:test
 |  \- org.springframework:spring-core:jar:6.1.15:compile
 |     \- org.springframework:spring-jcl:jar:6.1.15:compile

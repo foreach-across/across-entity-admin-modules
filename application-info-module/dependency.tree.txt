@@ -1,65 +1,65 @@
 com.foreach.across.modules:application-info-module:jar:dev-SNAPSHOT
-+- com.foreach.across.modules:debug-web-module:jar:dev-SNAPSHOT:compile
-|  +- com.foreach.across:across-web:jar:dev-SNAPSHOT:compile
-|  |  +- org.springframework.boot:spring-boot-starter-web:jar:3.2.12:compile
-|  |  |  +- org.springframework.boot:spring-boot-starter:jar:3.2.12:compile
-|  |  |  |  \- org.springframework.boot:spring-boot-starter-logging:jar:3.2.12:compile
-|  |  |  |     +- ch.qos.logback:logback-classic:jar:1.4.14:compile
-|  |  |  |     |  \- ch.qos.logback:logback-core:jar:1.4.14:compile
-|  |  |  |     +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.21.1:compile
-|  |  |  |     |  \- org.apache.logging.log4j:log4j-api:jar:2.21.1:compile
-|  |  |  |     \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile
-|  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:3.2.12:compile
-|  |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.4:compile
-|  |  |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.15.4:compile
-|  |  |  +- org.springframework.boot:spring-boot-starter-tomcat:jar:3.2.12:compile
-|  |  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.33:compile
-|  |  |  |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:10.1.33:compile
-|  |  |  |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:10.1.33:compile
-|  |  |  \- org.springframework:spring-web:jar:6.1.15:compile
-|  |  +- org.thymeleaf:thymeleaf-spring6:jar:3.1.2.RELEASE:compile
-|  |  |  \- org.thymeleaf:thymeleaf:jar:3.1.2.RELEASE:compile
-|  |  |     +- org.attoparser:attoparser:jar:2.0.7.RELEASE:compile
-|  |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
-|  |  +- org.springframework:spring-webmvc:jar:6.1.15:compile
++- com.foreach.across.modules:debug-web-module:jar:dev-SNAPSHOT:compile (optional)
+|  +- com.foreach.across:across-web:jar:dev-SNAPSHOT:compile (optional)
+|  |  +- org.springframework.boot:spring-boot-starter-web:jar:3.2.12:compile (optional)
+|  |  |  +- org.springframework.boot:spring-boot-starter:jar:3.2.12:compile (optional)
+|  |  |  |  \- org.springframework.boot:spring-boot-starter-logging:jar:3.2.12:compile (optional)
+|  |  |  |     +- ch.qos.logback:logback-classic:jar:1.4.14:compile (optional)
+|  |  |  |     |  \- ch.qos.logback:logback-core:jar:1.4.14:compile (optional)
+|  |  |  |     +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.21.1:compile (optional)
+|  |  |  |     |  \- org.apache.logging.log4j:log4j-api:jar:2.21.1:compile (optional)
+|  |  |  |     \- org.slf4j:jul-to-slf4j:jar:2.0.16:compile (optional)
+|  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:3.2.12:compile (optional)
+|  |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.4:compile (optional)
+|  |  |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.15.4:compile (optional)
+|  |  |  +- org.springframework.boot:spring-boot-starter-tomcat:jar:3.2.12:compile (optional)
+|  |  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:10.1.33:compile (optional)
+|  |  |  |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:10.1.33:compile (optional)
+|  |  |  |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:10.1.33:compile (optional)
+|  |  |  \- org.springframework:spring-web:jar:6.1.15:compile (optional)
+|  |  +- org.thymeleaf:thymeleaf-spring6:jar:3.1.2.RELEASE:compile (optional)
+|  |  |  \- org.thymeleaf:thymeleaf:jar:3.1.2.RELEASE:compile (optional)
+|  |  |     +- org.attoparser:attoparser:jar:2.0.7.RELEASE:compile (optional)
+|  |  |     \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile (optional)
+|  |  +- org.springframework:spring-webmvc:jar:6.1.15:compile (optional)
 |  |  |  +- org.springframework:spring-aop:jar:6.1.15:compile
 |  |  |  \- org.springframework:spring-expression:jar:6.1.15:compile
-|  |  +- com.fasterxml.jackson.core:jackson-core:jar:2.15.4:compile
-|  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.15.4:compile
+|  |  +- com.fasterxml.jackson.core:jackson-core:jar:2.15.4:compile (optional)
+|  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.15.4:compile (optional)
 |  |  |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.15.4:compile
-|  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.4:compile
+|  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.4:compile (optional)
 |  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:3.2.12:compile
 |  |  \- org.yaml:snakeyaml:jar:2.2:compile
 |  \- commons-io:commons-io:jar:2.18.0:compile
-+- com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT:compile
-|  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile
-|  |  +- org.springframework.security:spring-security-core:jar:6.2.8:compile
-|  |  |  +- org.springframework.security:spring-security-crypto:jar:6.2.8:compile
++- com.foreach.across.modules:admin-web-module:jar:dev-SNAPSHOT:compile (optional)
+|  +- com.foreach.across.modules:spring-security-module:jar:dev-SNAPSHOT:compile (optional)
+|  |  +- org.springframework.security:spring-security-core:jar:6.2.8:compile (optional)
+|  |  |  +- org.springframework.security:spring-security-crypto:jar:6.2.8:compile (optional)
 |  |  |  \- io.micrometer:micrometer-observation:jar:1.12.13:compile
 |  |  |     \- io.micrometer:micrometer-commons:jar:1.12.13:compile
-|  |  +- org.springframework.security:spring-security-web:jar:6.2.8:compile
-|  |  \- org.springframework.security:spring-security-config:jar:6.2.8:compile
-|  +- com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT:compile
-|  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile
-|  |  +- org.webjars:jquery:jar:3.4.1:compile
-|  |  +- org.webjars:bootstrap:jar:4.3.1:compile
-|  |  |  \- org.webjars:popper.js:jar:1.14.3:compile
-|  |  +- org.webjars.bower:autosize:jar:4.0.2:compile
-|  |  +- org.webjars:momentjs:jar:2.24.0:compile
-|  |  +- org.webjars:handlebars:jar:4.0.14:compile
-|  |  +- org.webjars.npm:autonumeric:jar:4.5.4:compile
-|  |  +- org.webjars.npm:tempusdominus-bootstrap:jar:5.32.1:compile
-|  |  |  +- org.webjars.npm:bootstrap:jar:5.0.0-beta3:compile
-|  |  |  +- org.webjars.npm:jquery:jar:4.0.0-beta.2:compile
-|  |  |  +- org.webjars.npm:moment:jar:2.24.0:compile
-|  |  |  \- org.webjars.npm:popper.js:jar:1.16.1-lts:compile
-|  |  +- org.webjars.npm:bootstrap-select:jar:1.13.11:compile
-|  |  +- org.webjars.npm:corejs-typeahead:jar:1.2.1:compile
-|  |  \- org.webjars:font-awesome:jar:5.10.1:compile
-|  +- org.thymeleaf.extras:thymeleaf-extras-springsecurity6:jar:3.1.2.RELEASE:compile
+|  |  +- org.springframework.security:spring-security-web:jar:6.2.8:compile (optional)
+|  |  \- org.springframework.security:spring-security-config:jar:6.2.8:compile (optional)
+|  +- com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT:compile (optional)
+|  |  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile (optional)
+|  |  +- org.webjars:jquery:jar:3.4.1:compile (optional)
+|  |  +- org.webjars:bootstrap:jar:4.3.1:compile (optional)
+|  |  |  \- org.webjars:popper.js:jar:1.14.3:compile (optional)
+|  |  +- org.webjars.bower:autosize:jar:4.0.2:compile (optional)
+|  |  +- org.webjars:momentjs:jar:2.24.0:compile (optional)
+|  |  +- org.webjars:handlebars:jar:4.0.14:compile (optional)
+|  |  +- org.webjars.npm:autonumeric:jar:4.5.4:compile (optional)
+|  |  +- org.webjars.npm:tempusdominus-bootstrap:jar:5.32.1:compile (optional)
+|  |  |  +- org.webjars.npm:bootstrap:jar:5.0.0-beta3:compile (optional)
+|  |  |  +- org.webjars.npm:jquery:jar:4.0.0-beta.2:compile (optional)
+|  |  |  +- org.webjars.npm:moment:jar:2.24.0:compile (optional)
+|  |  |  \- org.webjars.npm:popper.js:jar:1.16.1-lts:compile (optional)
+|  |  +- org.webjars.npm:bootstrap-select:jar:1.13.11:compile (optional)
+|  |  +- org.webjars.npm:corejs-typeahead:jar:1.2.1:compile (optional)
+|  |  \- org.webjars:font-awesome:jar:5.10.1:compile (optional)
+|  +- org.thymeleaf.extras:thymeleaf-extras-springsecurity6:jar:3.1.2.RELEASE:compile (optional)
 |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
-|  \- org.webjars.bower:toastr:jar:2.1.2:compile
-+- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.12:compile
+|  \- org.webjars.bower:toastr:jar:2.1.2:compile (optional)
++- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.12:compile (optional)
 +- com.foreach.libs:common-spring:jar:3.0.0:compile
 |  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |  +- jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile

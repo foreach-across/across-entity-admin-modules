@@ -59,7 +59,7 @@ com.foreach.across.modules:ax-bootstrap-theme:jar:dev-SNAPSHOT
 |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
 |  \- org.webjars.bower:toastr:jar:2.1.2:compile
 +- org.projectlombok:lombok:jar:1.18.36:provided
-+- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.12:compile
++- org.springframework.boot:spring-boot-configuration-processor:jar:3.2.12:compile (optional)
 +- com.foreach.across:across-test:jar:dev-SNAPSHOT:test
 |  +- org.junit.jupiter:junit-jupiter:jar:5.10.5:test
 |  |  \- org.junit.jupiter:junit-jupiter-params:jar:5.10.5:test
