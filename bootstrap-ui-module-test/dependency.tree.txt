@@ -5,7 +5,7 @@ com.foreach.across.modules:bootstrap-ui-module-test:jar:dev-SNAPSHOT
 |  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:3.2.12:compile
 |  |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.4:compile
 |  |  |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.15.4:compile
-|  |  |  \- org.springframework:spring-web:jar:6.1.15:compile
+|  |  |  \- org.springframework:spring-web:jar:6.1.16:compile
 |  |  +- org.thymeleaf:thymeleaf-spring6:jar:3.1.2.RELEASE:compile
 |  |  |  +- org.thymeleaf:thymeleaf:jar:3.1.2.RELEASE:compile
 |  |  |  |  +- org.attoparser:attoparser:jar:2.0.7.RELEASE:compile
@@ -13,8 +13,8 @@ com.foreach.across.modules:bootstrap-ui-module-test:jar:dev-SNAPSHOT
 |  |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
 |  |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 |  |  |  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
-|  |  |  +- org.springframework:spring-jdbc:jar:6.1.15:compile
-|  |  |  |  \- org.springframework:spring-tx:jar:6.1.15:compile
+|  |  |  +- org.springframework:spring-jdbc:jar:6.1.16:compile
+|  |  |  |  \- org.springframework:spring-tx:jar:6.1.16:compile
 |  |  |  +- org.apache.commons:commons-lang3:jar:3.13.0:compile
 |  |  |  \- org.liquibase:liquibase-core:jar:4.30.0:compile
 |  |  |     +- com.opencsv:opencsv:jar:5.9:compile
@@ -22,10 +22,10 @@ com.foreach.across.modules:bootstrap-ui-module-test:jar:dev-SNAPSHOT
 |  |  |     +- org.apache.commons:commons-collections4:jar:4.4:compile
 |  |  |     +- org.apache.commons:commons-text:jar:1.12.0:compile
 |  |  |     \- commons-io:commons-io:jar:2.18.0:compile
-|  |  +- org.springframework:spring-webmvc:jar:6.1.15:compile
-|  |  |  +- org.springframework:spring-aop:jar:6.1.15:compile
-|  |  |  +- org.springframework:spring-beans:jar:6.1.15:compile
-|  |  |  \- org.springframework:spring-expression:jar:6.1.15:compile
+|  |  +- org.springframework:spring-webmvc:jar:6.1.16:compile
+|  |  |  +- org.springframework:spring-aop:jar:6.1.16:compile
+|  |  |  +- org.springframework:spring-beans:jar:6.1.16:compile
+|  |  |  \- org.springframework:spring-expression:jar:6.1.16:compile
 |  |  +- com.fasterxml.jackson.core:jackson-core:jar:2.15.4:compile
 |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.15.4:compile
 |  |  |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.15.4:compile
@@ -54,9 +54,9 @@ com.foreach.across.modules:bootstrap-ui-module-test:jar:dev-SNAPSHOT
 |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:10.1.33:compile
 +- org.springframework.boot:spring-boot-devtools:jar:3.2.12:compile
 |  +- org.springframework.boot:spring-boot:jar:3.2.12:compile
-|  |  +- org.springframework:spring-core:jar:6.1.15:compile
-|  |  |  \- org.springframework:spring-jcl:jar:6.1.15:compile
-|  |  \- org.springframework:spring-context:jar:6.1.15:compile
+|  |  +- org.springframework:spring-core:jar:6.1.16:compile
+|  |  |  \- org.springframework:spring-jcl:jar:6.1.16:compile
+|  |  \- org.springframework:spring-context:jar:6.1.16:compile
 |  |     \- io.micrometer:micrometer-observation:jar:1.12.13:compile
 |  |        \- io.micrometer:micrometer-commons:jar:1.12.13:compile
 |  \- org.springframework.boot:spring-boot-autoconfigure:jar:3.2.12:compile
