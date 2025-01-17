@@ -30,7 +30,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.Getter;
 import lombok.NonNull;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
 /**
@@ -44,7 +43,7 @@ import java.util.*;
  *
  * @author Arne Vandamme
  */
-@NotThreadSafe
+
 public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 {
 	private final EntityViewElementBuilderService viewElementBuilderService;

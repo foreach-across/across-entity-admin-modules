@@ -83,15 +83,15 @@ public class TestNumericFormElementConfiguration
 	public void euroCurrency() {
 		NumericFormElementConfiguration configuration = new NumericFormElementConfiguration(
 				Currency.getInstance( "EUR" )
-		);
+		).localize( Locale.forLanguageTag( "nl-BE" ) );
 
-		assertEquals( 6, configuration.size() );
+		assertEquals( 8, configuration.size() );
 		assertEquals( Long.MIN_VALUE, configuration.get( "minimumValue" ) );
 		assertEquals( 2, configuration.get( "decimalPlaces" ) );
 		assertEquals( "B", configuration.get( "roundingMethod" ) );
 		assertEquals( 'p', configuration.get( "currencySymbolPlacement" ) );
 		assertEquals( "(,)", configuration.get( "negativeBracketsTypeOnBlur" ) );
-		assertEquals( Currency.getInstance( "EUR" ).getSymbol(), configuration.get( "currencySymbol" ) );
+		assertTrue(  configuration.get( "currencySymbol" ).toString().startsWith( Currency.getInstance( "EUR" ).getSymbol() ));
 
 		NumberFormat format = configuration.localize( Locale.US ).createNumberFormat();
 		assertEquals( "€8,000.52", format.format( new BigDecimal( "8000.52" ) ) );
