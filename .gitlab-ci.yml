@@ -15,11 +15,12 @@ variables:
   ACROSS_BASE_MODULES_VERSION: 4.5-SNAPSHOT
   REVISION: 4.5-SNAPSHOT
   NODEJS_DOCKER_IMAGE_VERSION: 12
+  # TODO: NODEJS_DOCKER_IMAGE_VERSION: 16
+  # node 16 does not work for ax-bootstrap-theme and experimental-module,
+  # but does work for bootstrap-ui-module and entity-module:
 
 .frontend:
   stage: test
-  # TODO: node:16 does not work for ax-bootstrap-theme, but does for bootstrap-ui-module and entity-module:
-  # image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:${NODEJS_DOCKER_IMAGE_VERSION}
   script:
     - cd ${MODULE_NAME}/src/main/frontend
@@ -44,6 +45,16 @@ frontend:entity-module:
     paths:
       - entity-module/src/main/resources/views/static/entity/
 
+frontend:experimental-module:
+  extends:
+    - .frontend
+  variables:
+    MODULE_NAME: experimental-module
+    CI: false # Otherwise typescript warnings become errors.
+  artifacts:
+    paths:
+      - experimental-module/src/main/resources/views/static/experimental/
+
 frontend:ax-bootstrap-theme:
   extends:
     - .frontend
@@ -60,6 +71,7 @@ build:test-apps:
   needs:
     - frontend:bootstrap-ui-module
     - frontend:entity-module
+    - frontend:experimental-module
     # - frontend:ax-bootstrap-theme
   script:
     # - 'mvn $MAVEN_CLI_OPTS dependency:purge-local-repository -DmanualInclude=com.foreach -DreResolve=false'
