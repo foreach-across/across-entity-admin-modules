@@ -1,6 +1,6 @@
 package com.foreach.across.testapplication.application.domain.company;
 
-import com.foreach.across.modules.filemanager.business.reference.FileReference;
+//import com.foreach.across.modules.filemanager.business.reference.FileReference;
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
 import lombok.*;
@@ -34,7 +34,9 @@ public class Company extends SettableIdBasedEntity<Company>
 	@NotBlank
 	private String name;
 
+	/*
 	@ManyToOne
 	@JoinColumn(name = "work_regulations", referencedColumnName = "id")
 	private FileReference workRegulations;
+	*/
 }

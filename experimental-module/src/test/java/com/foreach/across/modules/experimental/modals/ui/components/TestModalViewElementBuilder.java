@@ -6,8 +6,8 @@ import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.experimental.modals.ModalModule;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -17,7 +17,7 @@ public class TestModalViewElementBuilder extends AbstractViewElementTemplateTest
 	private DefaultViewElementBuilderContext builderContext;
 	private ModalViewElementBuilder builder;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		builderContext = new DefaultViewElementBuilderContext();
 		builder = new ModalViewElementBuilder();

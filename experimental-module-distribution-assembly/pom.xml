@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>experimental-module-project</artifactId>
-		<groupId>com.foreach.across</groupId>
+		<artifactId>across-entity-admin-modules</artifactId>
+		<groupId>com.foreach.across.modules</groupId>
 		<version>${revision}</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -19,8 +19,8 @@
 	<dependencies>
 		<!-- all dependencies that generate a javadoc or asciidoc, so assembly-plugin can tar them -->
 		<dependency>
-			<groupId>com.foreach.across</groupId>
 			<artifactId>experimental-module</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
 			<version>${revision}</version>
 		</dependency>
 	</dependencies>

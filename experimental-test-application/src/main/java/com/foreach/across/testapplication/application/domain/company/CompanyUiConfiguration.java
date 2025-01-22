@@ -33,10 +33,12 @@ public class CompanyUiConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Company.class )
+				/*
 		        .properties(
 				        props -> props.property( "workRegulations" )
 				                      .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
 		        )
+				*/
 		        .updateFormView( fvb -> fvb.viewElementMode( WebUtilityViewElementMode.EDITABLE_VALUE_VIEW() ) )
 		        .listView( EntityViewAjax.ajaxSettings.enableAjaxPagination()
 		                                              .ajaxUrlProvider( ( ( linkBuilder, builderContext ) -> linkBuilder.listView().withQueryParam( "custom",

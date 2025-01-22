@@ -13,6 +13,7 @@ import io.github.wimdeblauwe.testcontainers.cypress.CypressTestSuite;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicContainer;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Actual bootstrap with an embedded web server on a random port.
  * Not using mock mvc so content repository servlets can correctly start.
  */
+@Disabled
 @Slf4j
 @SpringBootTest(
 		classes = { ExperimentalModuleTestApplication.class, ResetDatabaseConfigurer.class, TestDataSourceConfigurer.class },

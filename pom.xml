@@ -84,6 +84,9 @@
 		<module>bootstrap-demo-app</module>
 		<module>application-info-module</module>
 		<module>application-info-module-test-web</module>
+		<module>experimental-module</module>
+		<module>experimental-test-application</module>
+		<!--<module>experimental-module-distribution-assembly</module>-->
 	</modules>
 
 	<dependencyManagement>
