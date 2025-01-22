@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  maven-base:
+    # 1.) Do not use the alpine image as it fails frontend-maven-plugin:install-node-and-yarn
+    #     https://github.com/eirslett/frontend-maven-plugin/issues/743
+    # 2.) Avoid 3.5.4 or higher for now, surefire fails due to a broken openjdk package
+    #     https://github.com/carlossg/docker-maven/issues/90
+    # 3.) Using > 3.5.0 because of timestamp issues with -SNAPSHOT dependencies
+    #     https://issues.apache.org/jira/browse/MDEPLOY-221
+    image: 'maven:3.6.3-jdk-8'
+    working_dir: '/usr/src/app'
+    volumes:
+      - '${PWD}:/usr/src/app:delegated'
+      # Reuse the maven repository from the host, we could omit it, but it would fetch at each build
+      - '${HOME}/.m2:/root/.m2:delegated'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    # WINDOWS USERS using cmd.exe:
+    #- '${USERPROFILE}/.m2:/root/.m2'
+    environment:
+      # Specify the timezone - used by date tests
+      TZ: "Europe/Brussels"
+      # Specify a language - used by LocaleContextHolder
+      LANG: "en_US.UTF-8"
+      # Required by embedded mongo db - across-autoconfigure/test-projects
+      LC_ALL: "C"
+      # Faster maven startup https://jrebel.com/rebellabs/your-maven-build-is-slow-speed-it-up/
+      MAVEN_OPTS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+  frontend:
+    tty: false
+    build:
+      context: ./experimental-module/src/main/frontend
+      dockerfile: ./Dockerfile
+    command: yarn run build
+    volumes:
+      - ./experimental-module/src/main/frontend:/build/src/main/frontend
+      # scope node_modules to the container
+      - /build/src/main/frontend/node_modules
+      - ./experimental-module/src/main/resources/views/static/experimental:/build/src/main/resources/views/static/experimental:delegated

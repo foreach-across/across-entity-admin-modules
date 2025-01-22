@@ -1,0 +1,34 @@
+acrossHibernate:
+  hibernate-properties:
+    hibernate.hbm2ddl.auto: update
+
+
+across:
+  development:
+    active: true
+
+adminWebModule:
+  title: Experimental module - TestApplication
+  login:
+    rememberMe:
+      key: changeme
+
+
+acrossModule:
+  ExperimentalModule:
+    resources: ./experimental-module/src/main/resources
+
+spring:
+  datasource:
+    url: jdbc:h2:./local-data/db/experimental-module
+    username: sa
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+file-manager-module:
+  expiration:
+    enabled: true
+  local-repositories-root: ./local-data/storage
