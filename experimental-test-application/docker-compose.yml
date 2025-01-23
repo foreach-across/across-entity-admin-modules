@@ -20,11 +20,11 @@ services:
     expose:
       - "8080"
     volumes:
-      - ./target/entity-module-test-application-exec.jar:/web/app.jar
+      - ./target/experimental-test-application-exec.jar:/web/app.jar
     networks:
       default:
         aliases:
-          - entity-module-test.dev.foreach.be
+          - experimental-module-test.dev.foreach.be
   e2e:
     tty: false
     build:

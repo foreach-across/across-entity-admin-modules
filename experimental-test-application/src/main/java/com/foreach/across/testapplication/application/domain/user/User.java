@@ -22,6 +22,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "user_")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class User extends SettableIdBasedEntity<User>
 {

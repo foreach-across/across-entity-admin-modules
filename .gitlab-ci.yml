@@ -124,3 +124,9 @@ end2end:entity-module:
     - .end2end
   variables:
     MODULE_NAME: entity-module-test-application
+
+end2end:experimental-module:
+  extends:
+    - .end2end
+  variables:
+    MODULE_NAME: experimental-test-application

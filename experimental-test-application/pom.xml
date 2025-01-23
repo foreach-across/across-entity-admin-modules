@@ -72,11 +72,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
+		<!--
+		This causes an issue a startup:
+		Caused by: java.lang.IllegalAccessError: tried to access class org.springframework.data.repository.config.RepositoryBeanDefinitionBuilder from class org.springframework.data.repository.config.AcrossRepositoryConfigurationDelegate
+		because AcrossRepositoryConfigurationDelegate is located in a package from Spring Data!
+		 -->
+		<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<!-- https://github.com/wimdeblauwe/testcontainers-cypress -->
 			<groupId>io.github.wimdeblauwe</groupId>
@@ -95,5 +102,26 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<finalName>experimental-test-application</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>true</executable>
+					<classifier>exec</classifier>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
