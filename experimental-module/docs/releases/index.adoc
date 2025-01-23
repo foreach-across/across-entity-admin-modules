@@ -1,0 +1,23 @@
+= ExperimentalModule releases
+
+[[module-artifact]]
+== Artifact
+
+[source,xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>com.foreach.across.modules</groupId>
+        <artifactId>experimental-module</artifactId>
+    </dependency>
+</dependencies>
+----
+
+Only the above artifact is required to pull in all feature modules.
+To activate one or more feature modules, either the ExperimentalModule or the feature modules themselves have to be activated within the application descriptor.
+
+== Release notes
+
+//Experimental module follows a https://semver.org[semantic versioning] scheme.
+
+include::./0.0.x.adoc[]

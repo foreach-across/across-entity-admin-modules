@@ -77,6 +77,11 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<!--
+		This causes an issue a startup:
+		Caused by: java.lang.IllegalAccessError: tried to access class org.springframework.data.repository.config.RepositoryBeanDefinitionBuilder from class org.springframework.data.repository.config.AcrossRepositoryConfigurationDelegate
+		because AcrossRepositoryConfigurationDelegate is located in a package from Spring Data!
+		 -->
+		<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>

@@ -1,4 +1,4 @@
-# Keep this in sync between bootstrap-ui-module-test and entity-module-test-application
+# Keep this in sync between bootstrap-ui-module-test/entity-module-test-application/experimental-test-application
 
 # To run the end-to-end tests:
 # 1. Build the frontend
