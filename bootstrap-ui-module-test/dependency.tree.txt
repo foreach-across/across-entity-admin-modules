@@ -1,6 +1,6 @@
-com.foreach.across.modules:bootstrap-ui-module-test:jar:6.0.1
-+- com.foreach.across.modules:bootstrap-ui-module:jar:6.0.1:compile
-|  +- com.foreach.across:across-web:jar:6.0.1:compile
+com.foreach.across.modules:bootstrap-ui-module-test:jar:dev-SNAPSHOT
++- com.foreach.across.modules:bootstrap-ui-module:jar:dev-SNAPSHOT:compile
+|  +- com.foreach.across:across-web:jar:dev-SNAPSHOT:compile
 |  |  +- org.springframework.boot:spring-boot-starter-web:jar:3.2.12:compile
 |  |  |  +- org.springframework.boot:spring-boot-starter-json:jar:3.2.12:compile
 |  |  |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.15.4:compile
@@ -11,7 +11,7 @@ com.foreach.across.modules:bootstrap-ui-module-test:jar:6.0.1
 |  |  |  |  +- org.attoparser:attoparser:jar:2.0.7.RELEASE:compile
 |  |  |  |  \- org.unbescape:unbescape:jar:1.1.6.RELEASE:compile
 |  |  |  \- org.slf4j:slf4j-api:jar:2.0.16:compile
-|  |  +- com.foreach.across:across-core:jar:6.0.1:compile
+|  |  +- com.foreach.across:across-core:jar:dev-SNAPSHOT:compile
 |  |  |  +- com.foreach.libs:common-concurrent:jar:3.0.0:compile
 |  |  |  +- org.springframework:spring-jdbc:jar:6.1.16:compile
 |  |  |  |  \- org.springframework:spring-tx:jar:6.1.16:compile
@@ -31,7 +31,7 @@ com.foreach.across.modules:bootstrap-ui-module-test:jar:6.0.1
 |  |  |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.15.4:compile
 |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.15.4:compile
 |  |  \- org.yaml:snakeyaml:jar:2.2:compile
-|  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:6.0.1:compile
+|  +- com.foreach.across.modules:ax-bootstrap-4-utilities:jar:dev-SNAPSHOT:compile
 |  +- org.webjars:jquery:jar:3.4.1:compile
 |  +- org.webjars:bootstrap:jar:4.3.1:compile
 |  |  \- org.webjars:popper.js:jar:1.14.3:compile
