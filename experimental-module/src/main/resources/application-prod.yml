@@ -1,6 +1,6 @@
 server:
   port: 8080
-  use-forward-headers: true
+  forward-headers-strategy: true
 
 spring:
   h2:

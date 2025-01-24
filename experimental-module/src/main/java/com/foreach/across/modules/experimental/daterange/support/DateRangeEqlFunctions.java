@@ -15,7 +15,10 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Handle all {@link com.foreach.across.modules.entity.query.EQFunction} related to {@link DateRangeFunctionRegistry}
@@ -61,8 +64,7 @@ public class DateRangeEqlFunctions implements EntityQueryFunctionHandler
 	private List<EQType> validateEQTypes( EQType[] arguments ) {
 		List<EQType> validated = new ArrayList<>();
 		for ( EQType argument : arguments ) {
-			if ( argument instanceof EQString ) {
-				EQString parsed = (EQString) argument;
+			if ( argument instanceof EQString parsed ) {
 				if ( !"null".equalsIgnoreCase( parsed.getValue() ) ) {
 					validated.add( parsed );
 				}

@@ -44,7 +44,7 @@ context( 'Modal tests', () => {
         cy.get( "textarea" ).invoke( 'val', food );
         cy.contains( "Save" ).click();
 
-        cy.wait( "@ajaxEntitiesList" );
+        cy.contains( food );
         cy.get( ".modal-content" ).should( "not.be.visible" );
         cy.findAllByText( food ).should( 'exist' );
         cy.contains( food )
@@ -64,7 +64,7 @@ context( 'Modal tests', () => {
         cy.get( ".modal-content" ).should( "be.visible" );
         cy.contains( 'button', 'Delete' ).click();
 
-        cy.wait( "@ajaxEntitiesList" );
+        cy.wait( "@ajaxModalDeleted" );
         cy.get( ".modal-content" ).should( "not.be.visible" );
 
         cy.get( '.em-sortableTable-table' )

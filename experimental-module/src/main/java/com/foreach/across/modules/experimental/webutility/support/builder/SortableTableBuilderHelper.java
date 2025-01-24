@@ -119,9 +119,9 @@ public class SortableTableBuilderHelper
 	}
 
 	public static String getCurrentUrl( EntityViewRequest entityViewRequest ) {
-		return String.format( "%s%s", ( (ServletWebRequest) entityViewRequest.getWebRequest() ).getRequest().getRequestURI(),
-		                      Optional.ofNullable( entityViewRequest.getWebRequest().getParameter( "view" ) ).map( vn -> String.format( "?view=%s", vn ) )
-		                              .orElse( "" ) );
+		return "%s%s".formatted( ( (ServletWebRequest) entityViewRequest.getWebRequest() ).getRequest().getRequestURI(),
+		                         Optional.ofNullable( entityViewRequest.getWebRequest().getParameter( "view" ) ).map( vn -> "?view=%s".formatted( vn ) )
+		                                 .orElse( "" ) );
 	}
 
 	public static String getCurrentUrl( ViewElementBuilderContext context ) {

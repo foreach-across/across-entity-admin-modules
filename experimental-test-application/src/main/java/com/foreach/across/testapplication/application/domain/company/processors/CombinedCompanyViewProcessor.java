@@ -45,7 +45,7 @@ public class CombinedCompanyViewProcessor extends EntityViewProcessorAdapter
 
 		ContainerViewElementUtils.find( container, "itemsTable-pager", NodeViewElement.class ).ifPresent( pager -> {
 			ContainerViewElementUtils.findAll( container,
-			                                   ve -> ve instanceof AbstractNodeViewElement && ( (AbstractNodeViewElement) ve ).hasAttribute( "data-tbl" ) )
+			                                   ve -> ve instanceof AbstractNodeViewElement anve && anve.hasAttribute( "data-tbl" ) )
 			                         .forEach( link -> ( (AbstractNodeViewElement) link ).setAttribute( "data-tbl", "company-table" ) );
 		} );
 	}

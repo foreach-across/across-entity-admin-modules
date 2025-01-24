@@ -46,8 +46,8 @@
 		</dependency>
 		<!--
 		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>file-manager-module</artifactId>
+			<groupId>com.foreach.libs</groupId>
+			<artifactId>common-file-manager</artifactId>
 		</dependency>
 		-->
 		<dependency>
@@ -67,6 +67,16 @@
 		<dependency>
 			<groupId>com.foreach.across</groupId>
 			<artifactId>across-test</artifactId>
+		<exclusions>
+				<exclusion>
+					<groupId>org.junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -88,13 +98,16 @@
 			<!-- https://github.com/wimdeblauwe/testcontainers-cypress -->
 			<groupId>io.github.wimdeblauwe</groupId>
 			<artifactId>testcontainers-cypress</artifactId>
-			<version>1.2.1</version>
+
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
+			<scope>test</scope></dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.assertj</groupId>

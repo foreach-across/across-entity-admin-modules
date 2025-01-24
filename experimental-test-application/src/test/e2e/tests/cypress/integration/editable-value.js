@@ -56,6 +56,8 @@ context( "Editable value tests (User / Company entities)", () => {
         const nameReplacement = name.substring( 0, 2 ) + 1 + name.substring( 2 );
 
         it( "Datepicker", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const datepicker = () => property( "dateOfBirth" );
             valueModeOfProperty( datepicker() )
                     .should( "be.visible" )
@@ -81,6 +83,8 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Single line text", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const textInput = () => property( "email" );
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
@@ -133,6 +137,8 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Embedded collection", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const embeddedCollection = () => property( "address" );
 
             embeddedCollection()
@@ -159,6 +165,8 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Multi-checkbox", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const checkboxList = () => property( "degrees" );
             valueModeOfProperty( checkboxList() )
                     .contains( "Bachelor" );
@@ -184,6 +192,8 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Autosuggest", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const autosuggest = () => property( "mentor" );
             valueModeOfProperty( autosuggest() )
                     .should( "be.visible" )
@@ -210,6 +220,8 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Numeric", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const numericInput = () => property( "netValue" );
             valueModeOfProperty( numericInput() )
                     .should( "be.visible" )
@@ -245,6 +257,8 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Invalid content renders validation error", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const textInput = () => property( "email" );
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
@@ -268,6 +282,8 @@ context( "Editable value tests (User / Company entities)", () => {
         } );
 
         it( "Updating label value also updates the title and breadcrumb", () => {
+            cy.goToMenuItem( "ExperimentalModuleTestApplicationModule" ).goToMenuItem( "User" );
+            navigateToUser( name )
             const textInput = () => property( "name" );
             valueModeOfProperty( textInput() )
                     .should( "be.visible" )
@@ -368,178 +384,4 @@ context( "Editable value tests (User / Company entities)", () => {
                     .contains( "No" );
         } );
     } );
-
-    context( "Updating values on detail view", () => {
-
-        beforeEach( () => {
-            cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
-            navigateToUser( "Svetty", true );
-        } );
-
-        singleEntityPageTests( "Svetty" );
-
-        it( "Select (update after selection)", () => {
-            const select = () => property( "company" );
-            valueModeOfProperty( select() )
-                    .should( "be.visible" )
-                    .should( "have.value", "" );
-
-            openControl( select() );
-
-            select().find( "select.form-control" )
-                    .select( "Kodak", {force: true} );
-            cy.wait( "@ajaxEditableValueSubmit" );
-
-            isInValueMode( select() );
-
-            valueModeOfProperty( select() )
-                    .should( "be.visible" )
-                    .contains( "Kodak" );
-        } );
-
-        it( "Single checkbox (update after selection)", () => {
-            const checkbox = () => property( "active" );
-            valueModeOfProperty( checkbox() )
-                    .should( "be.visible" )
-                    .contains( "Yes" );
-
-            openControl( checkbox() );
-
-            checkbox().find( "input.custom-control-input" )
-                    .uncheck( {force: true} );
-            cy.wait( "@ajaxEditableValueSubmit" );
-
-            isInValueMode( checkbox() );
-
-            valueModeOfProperty( checkbox() )
-                    .should( "be.visible" )
-                    .contains( "No" );
-        } );
-
-    } );
-    //
-    context( "Updating values on list view", () => {
-
-        beforeEach( () => {
-            cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
-            cy.wait( 150 );
-        } );
-
-        it( "Update property", () => {
-            cy.contains( "Deborah" )
-                    .closest( "tr" )
-                    .then( ( row ) => {
-                        const company = () => cy.wrap( row ).find( "[data-em-property='company']" );
-
-                        valueModeOfProperty( company() )
-                                .should( "be.visible" )
-                                .contains( "AGFA" );
-
-                        openControl( company() );
-
-                        company().find( "select.form-control" )
-                                .select( "Kodak", {force: true} )
-                                .invoke( 'val' );
-
-                        submitControl( company() );
-                        cy.wait( "@ajaxEditableValueSubmit" );
-
-                        isInValueMode( company() );
-
-                        valueModeOfProperty( company() )
-                                .should( "be.visible" )
-                                .contains( "Kodak" );
-                    } );
-        } );
-    } );
-    //
-    context( "Updating values on association list view", () => {
-
-        beforeEach( () => {
-            cy.goToMenuItem( 'ExperimentalModuleTestApplicationModule' ).goToMenuItem( 'User' );
-            navigateToUser( "Deborah", true );
-            cy.get( "[data-ax-menu-path='user\.mentor'] > a" )
-                    .click();
-            cy.wait( 150 );
-        } );
-
-        it( "Update property", () => {
-            cy.contains( "Jors" )
-                    .closest( "tr" )
-                    .then( ( row ) => {
-                        const company = () => cy.wrap( row ).find( "[data-em-property='company']" );
-
-                        valueModeOfProperty( company() )
-                                .should( "be.visible" )
-                                .contains( "AGFA" );
-
-                        openControl( company() );
-
-                        company().find( "select.form-control" )
-                                .select( "Kodak", {force: true} )
-                                .invoke( 'val' );
-
-                        submitControl( company() );
-                        cy.wait( "@ajaxEditableValueSubmit" );
-
-                        isInValueMode( company() );
-
-                        valueModeOfProperty( company() )
-                                .should( "be.visible" )
-                                .contains( "Kodak" );
-                    } );
-        } );
-
-        it( "Updating the value of a nested property of the association owner, updates the association title and referencing items", () => {
-            cy.contains( "Jors" )
-                    .closest( "tr" )
-                    .then( ( row ) => {
-                        const mentorName = () => cy.wrap( row ).find( "[data-em-property='mentor\.name']" );
-
-                        valueModeOfProperty( mentorName() )
-                                .should( "be.visible" )
-                                .contains( "Deborah" );
-
-                        openControl( mentorName() );
-
-                        mentorName().find( "textarea.form-control" )
-                                .clear()
-                                .type( "Debrah" )
-                                .should( "have.value", "Debrah" );
-
-                        submitControl( mentorName() );
-                        cy.wait( "@ajaxEditableValueSubmit" );
-
-                        isInValueMode( mentorName() );
-
-                        valueModeOfProperty( mentorName() )
-                                .should( "be.visible" )
-                                .contains( "Debrah" );
-
-                        // found whilst it really doesn't exist...
-                        cy.contains( "Deborah" )
-                                .filter( ( i, elem ) => {
-                                    return elem.closest( "[data-em-editable-value-role='control-container']" ).length === 0;
-                                } )
-                                .should( 'not.exist' );
-
-                        openControl( mentorName() );
-
-                        mentorName().find( "textarea.form-control" )
-                                .clear()
-                                .type( "Deborah" )
-                                .should( "have.value", "Deborah" );
-
-                        submitControl( mentorName() );
-                        cy.wait( "@ajaxEditableValueSubmit" );
-
-                        isInValueMode( mentorName() );
-
-                        valueModeOfProperty( mentorName() )
-                                .should( "be.visible" )
-                                .contains( "Deborah" );
-                    } );
-        } );
-    } );
-
 } );

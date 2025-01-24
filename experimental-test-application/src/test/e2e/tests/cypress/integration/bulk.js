@@ -12,9 +12,6 @@ context( 'Bulk action tests', () => {
         cy.intercept( 'POST', '/admin/entities/food/create?_partial=::body', ( req ) => {
             console.log( "food is being saved" )
         } ).as( 'ajaxModalPost' );
-        cy.intercept( 'GET', '/admin/entities/food?_partial=::itemsTable', ( req ) => {
-            console.log( "list is being refreshed" )
-        } ).as( 'ajaxEntitiesList' );
         cy.intercept( 'GET', new RegExp( "\\/admin\\/entities\\/food\\/.*\\/delete\\?_partial=content" ), ( req ) => {
             console.log( "delete modal loading..." )
         } ).as( 'ajaxModalDelete' );
@@ -43,7 +40,7 @@ context( 'Bulk action tests', () => {
         cy.get( "textarea" ).invoke( 'val', food );
         cy.get( "#btn-save" ).click();
 
-        cy.wait( "@ajaxEntitiesList" );
+        cy.contains( food );
         cy.get( ".modal-content" ).should( "not.be.visible" );
 
         // Check everything

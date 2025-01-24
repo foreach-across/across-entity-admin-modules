@@ -2,17 +2,13 @@ package com.foreach.across.modules.experimental.dependson;
 
 import com.foreach.across.modules.experimental.webutility.support.DependsOnAttribute;
 import com.foreach.across.modules.experimental.webutility.support.WebUtilityConfigurers;
-import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.setLenientDateParsing;
 
 public class DependsOnAttributeTest
 {

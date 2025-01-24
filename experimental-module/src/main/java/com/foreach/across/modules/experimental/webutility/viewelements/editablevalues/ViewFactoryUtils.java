@@ -23,8 +23,8 @@ class ViewFactoryUtils
 	static <T extends EntityViewProcessor> Optional<T> getViewProcessorFromView( EntityViewFactory entityViewFactory,
 	                                                                             String processorName,
 	                                                                             Class<T> processorType ) {
-		if ( entityViewFactory instanceof DispatchingEntityViewFactory ) {
-			return ( (DispatchingEntityViewFactory) entityViewFactory ).getProcessorRegistry()
+		if ( entityViewFactory instanceof DispatchingEntityViewFactory factory ) {
+			return factory.getProcessorRegistry()
 			                                                           .getProcessor( processorName, processorType );
 		}
 		return Optional.empty();

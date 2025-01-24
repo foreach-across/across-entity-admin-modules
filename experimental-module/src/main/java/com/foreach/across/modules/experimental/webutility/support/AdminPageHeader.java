@@ -37,7 +37,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.WebExpressionContext;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -165,8 +167,8 @@ class AdminPageHeader
 	}
 
 	private String resolveTitleMessageCode( EntityViewFactory viewFactory ) {
-		if ( viewFactory instanceof DispatchingEntityViewFactory ) {
-			EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
+		if ( viewFactory instanceof DispatchingEntityViewFactory factory ) {
+			EntityViewProcessorRegistry processorRegistry = factory.getProcessorRegistry();
 			String code = processorRegistry.getProcessor( SingleEntityPageStructureViewProcessor.class.getName(),
 			                                              SingleEntityPageStructureViewProcessor.class )
 			                               .map( p -> {
@@ -196,12 +198,12 @@ class AdminPageHeader
 	private String renderViewElement( ViewElement viewElement ) {
 		ServletRequestAttributes ra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		IEngineConfiguration configuration = templateEngine.getConfiguration();
+		IWebExchange webExchange = JakartaServletWebApplication
+				.buildApplication( ra.getRequest().getServletContext() ).buildExchange( ra.getRequest(), ra.getResponse() );
 		WebExpressionContext context =
 				new WebExpressionContext(
 						configuration,
-						ra.getRequest(),
-						ra.getResponse(),
-						ra.getRequest().getServletContext(),
+						webExchange,
 						LocaleContextHolder.getLocale(),
 						Collections.singletonMap( "element", viewElement )
 				);

@@ -22,12 +22,12 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
-import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -138,8 +138,8 @@ public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProc
 		RequestActionAttribute actionAttribute = requestAction()
 				.url( url.apply( linkViewBuilder, builderContext ) )
 				.partial( partial )
-				.requestConfig( ImmutableMap.of( "headers",
-				                                 ImmutableMap.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalSelector() ) ) )
+				.requestConfig( Map.of( "headers",
+				                        Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalSelector() ) ) )
 				.success(
 						clearHandler( modalTarget( ".modal-title" ) ),
 						clearHandler( modalTarget( ".modal-footer" ) ),
