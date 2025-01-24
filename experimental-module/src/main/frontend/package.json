@@ -1,0 +1,131 @@
+{
+  "name": "@across/experimental",
+  "license": "UNLICENSED",
+  "homepage": "/across/resources/static/experimental/web",
+  "version": "0.0.1",
+  "engines": {
+    "node": "12.x",
+    "yarn": ">=1.0.0"
+  },
+  "scripts": {
+    "start": "cross-env PROXY_URL='http://localhost:8099' FAST_REFRESH='false' react-scripts start",
+    "build:prod": "cross-env react-scripts build",
+    "test": "cross-env JEST_REPORT_FILE=./test-output/test-report.json react-scripts test",
+    "test:ci": "cross-env CI=true npm run test",
+    "lint": "concurrently 'yarn:lint:js' 'yarn:lint:css'",
+    "lint:js": "eslint ./src --max-warnings=0 --ext .ts,.tsx,.js,.jsx",
+    "lint:css": "stylelint \"src/**/*.{css,scss,sass}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md,scss,css,sass}\" && yarn lint:js --fix && yarn lint:css --fix "
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "moment": "^2.29.1",
+    "bootstrap": "4.3",
+    "react": "^16.13.1"
+  },
+  "devDependencies": {
+    "@foreachbe/react-scripts": "^7.0.0",
+    "@types/bootstrap": "^4.5.0",
+    "@types/jquery": "^3.5.0",
+    "concurrently": "^5.2.0",
+    "cross-env": "^7.0.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "sass": "1.30.0",
+    "prettier": "^2.0.5",
+    "typescript": "^4.0.2"
+  },
+  "appPages": [
+    {
+      "name": "bulk-actions",
+      "title": "bulk-actions",
+      "appIndexJs": "src/pages/bulk-actions/bulk-actions"
+    },
+    {
+      "name": "bulk-actions-state-manager",
+      "title": "bulk-actions-state-manager",
+      "appIndexJs": "src/pages/bulk-actions/bulk-actions-state-manager"
+    },
+    {
+      "name": "modal-loader",
+      "title": "modal-loader",
+      "appIndexJs": "src/pages/modals/modal-loader"
+    },
+    {
+      "name": "action-loader",
+      "title": "action-loader",
+      "appIndexJs": "src/pages/web-utility/actions/action-loader"
+    },
+    {
+      "name": "editable-value",
+      "title": "editable-value",
+      "appIndexJs": "src/pages/web-utility/editable-value/editable-value-initializer"
+    },
+    {
+      "name": "datepicker-positioning",
+      "title": "datepicker-positioning",
+      "appIndexJs": "src/pages/web-utility/editable-value/datepicker-positioning"
+    },
+    {
+      "name": "autosuggest-positioning",
+      "title": "autosuggest-positioning",
+      "appIndexJs": "src/pages/web-utility/editable-value/autosuggest-positioning"
+    },
+    {
+      "name": "experimental-module",
+      "title": "experimental-module",
+      "appIndexJs": "src/pages/web-utility/experimental"
+    },
+    {
+      "name": "daterange-loader",
+      "title": "daterange-loader",
+      "appIndexJs": "src/pages/daterangepicker/date-range-picker"
+    }
+  ],
+  "eslintConfig": {
+    "extends": "@foreachbe/eslint-config-react-app",
+    "globals": {
+      "$": "readonly",
+      "jQuery": "readonly",
+      "EntityModule": "readonly",
+      "BootstrapUiModule": "readonly",
+      "ExperimentalModule": "writable"
+    }
+  },
+  "prettier": {
+    "printWidth": 120
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{css,scss,sass}": [
+      "prettier --write",
+      "stylelint --fix"
+    ],
+    "*.{json,md,html}": [
+      "prettier --write"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

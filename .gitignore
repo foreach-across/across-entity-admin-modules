@@ -1,8 +1,33 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Java template
+*.class
+$HOME
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+### Sass template
+.sass-cache/
+*.css.map
+
+### Custom ignores
 target
 .idea/workspace.xml
 .idea/excludeFromValidation
 .idea/libraries
 .idea/template/template_variable_settings.xml
+.idea
+!.idea/codeStyles
+!.idea/runConfigurations
 *.iml
 
 #ignore all static frontend content
@@ -19,6 +44,9 @@ local-data
 
 # macOS:
 .DS_Store
+local-data
+node_modules
+.vscode
 
 # Maven:
 .effective-pom.xml
@@ -27,6 +55,10 @@ local-data
 .flattened-pom.xml
 pom.xml.versionsBackup
 versions.properties
+
+experimental-module/src/main/resources/views/static/experimental/web
+
+**/.credentials
 
 # Emacs:
 *~

@@ -1,0 +1,17 @@
+.custom-date-range-picker {
+  display: inline-block;
+  vertical-align: middle;
+
+  .custom-date-range-picker-dates {
+    display: inline-block;
+
+    > div {
+      margin-left: 5px;
+      display: inline-block;
+
+      .form-control.form-control {
+        width: 145px;
+      }
+    }
+  }
+}

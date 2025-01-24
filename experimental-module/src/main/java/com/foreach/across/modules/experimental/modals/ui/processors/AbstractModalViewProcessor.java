@@ -1,0 +1,200 @@
+package com.foreach.across.modules.experimental.modals.ui.processors;
+
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.styles.AcrossBootstrapStyles;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.experimental.modals.support.ModalConfigurers;
+import com.foreach.across.modules.experimental.modals.ui.components.ModalViewElementBuilder;
+import com.foreach.across.modules.experimental.webutility.resource.WebUtilityModuleWebResources;
+import com.foreach.across.modules.experimental.webutility.support.action.ActionAttribute;
+import com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import static com.foreach.across.modules.bootstrapui.BootstrapUiModuleIcons.ICON_SET_FONT_AWESOME_SOLID;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.experimental.modals.support.ModalLoadAttribute.modalLoadAttribute;
+import static com.foreach.across.modules.experimental.webutility.support.action.RequestActionAttribute.requestAction;
+import static com.foreach.across.modules.experimental.webutility.support.action.ResponseContentHandlerAttribute.responseContentHandler;
+import static com.foreach.across.modules.experimental.webutility.support.action.SimpleActionHandlerAttribute.*;
+import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.data;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
+
+/**
+ * Registers the necessary webresources for modal and ajax-based loading support, and defines a few utility methods to configure the loading of a modal.
+ *
+ * @param <T> inherited type
+ */
+public abstract class AbstractModalViewProcessor<T extends AbstractModalViewProcessor> extends EntityViewProcessorAdapter
+{
+	@NonNull
+	@Getter
+	private String modalId;
+
+	@NonNull
+	@Setter(AccessLevel.PROTECTED)
+	private BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url;
+
+	@Setter(AccessLevel.PROTECTED)
+	private String partial = null;
+
+	@Setter(AccessLevel.PROTECTED)
+	private Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> actionCustomizer = ModalActionCustomizationContext::action;
+
+	public T modalId( String modalId ) {
+		this.modalId = modalId;
+		return (T) this;
+	}
+
+	/**
+	 * The url from which the data should be fetched.
+	 */
+	public T url( BiFunction<EntityViewLinkBuilder, ViewElementBuilderContext, String> url ) {
+		this.url = url;
+		return (T) this;
+	}
+
+	/**
+	 * The partial that should be fetched.
+	 */
+	public T partial( String partial ) {
+		this.partial = partial;
+		return (T) this;
+	}
+
+	/**
+	 * Supports customizing the default action attribute that is registered to fetch the modal content.
+	 * Offers more advanced configuration as well as overriding of previously configured methods.
+	 * </p>
+	 * The customizer should return the final action that should be used. Overrides applied through the customizer always take precedence.
+	 *
+	 * @deprecated in favour of {@link #action(Function)}.
+	 */
+	@Deprecated
+	public T action( BiFunction<RequestActionAttribute, ViewElementBuilderContext, ActionAttribute> actionCustomizer ) {
+		this.actionCustomizer = ( ctx ) -> actionCustomizer.apply( ctx.action(), ctx.builderContext() );
+		return (T) this;
+	}
+
+	/**
+	 * Supports customizing the default action attribute that is registered to fetch the modal content.
+	 * Offers more advanced configuration as well as overriding of previously configured methods.
+	 * </p>
+	 * The customizer should return the final action that should be used. Overrides applied through the customizer always take precedence.
+	 */
+	public T action( Function<ModalActionCustomizationContext<RequestActionAttribute>, ActionAttribute> actionCustomizer ) {
+		this.actionCustomizer = actionCustomizer;
+		return (T) this;
+	}
+
+	@Override
+	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
+		webResourceRegistry.apply(
+				WebResourceRule.addPackage( WebUtilityModuleWebResources.NAME ),
+				WebResourceRule.add(
+						WebResource.javascript( "@static:/experimental/web/modal-loader.js" ) )
+				               .withKey( "modal-loader-js" )
+				               .after( WebUtilityModuleWebResources.NAME )
+				               .toBucket( JAVASCRIPT_PAGE_END )
+		);
+	}
+
+	@Override
+	protected void postRender( EntityViewRequest entityViewRequest,
+	                           EntityView entityView,
+	                           ContainerViewElement container,
+	                           ViewElementBuilderContext builderContext ) {
+		Predicate<NodeViewElement> itemsTableElement = nve -> "itemsTable".equals( nve.getName() ) || "itemsTable-noresults".equals( nve.getName() );
+		ContainerViewElementUtils.findAll( container, NodeViewElement.class, itemsTableElement )
+		                         .forEach( ve -> ve.set( css.of( "exm-table-refresh-target" ) ) );
+	}
+
+	protected void configureViewElement( ViewElement viewElement,
+	                                     EntityViewLinkBuilder linkViewBuilder,
+	                                     ViewElementBuilderContext builderContext ) {
+		RequestActionAttribute actionAttribute = requestAction()
+				.url( url.apply( linkViewBuilder, builderContext ) )
+				.partial( partial )
+				.requestConfig( Map.of( "headers",
+				                        Map.of( ModalConfigurers.MODAL_ORIGIN_HEADER, modalSelector() ) ) )
+				.success(
+						clearHandler( modalTarget( ".modal-title" ) ),
+						clearHandler( modalTarget( ".modal-footer" ) ),
+						clearHandler( modalTarget( ".modal-body" ) ),
+						responseContentHandler()
+								.source( "." + PageContentStructure.CSS_BODY_SECTION )
+								.target( modalTarget( ".modal-body" ) ),
+						responseContentHandler()
+								.source( ".page-header" )
+								.target( modalTarget( ".modal-title" ) ),
+						moveHandler()
+								.source( modalTarget( ".modal-body .em-form-actions" ) )
+								.target( modalTarget( ".modal-footer" ) ),
+						initializeFormElements( modalSelector() )
+				);
+
+		ModalActionCustomizationContext<RequestActionAttribute> customizationContext =
+				new ModalActionCustomizationContext<>( modalSelector(), ( selector ) -> modalSelector() + " " + selector, actionAttribute, builderContext );
+
+		viewElement.set( data( "toggle", "modal" ), data( "target", modalSelector() ) )
+		           .set(
+				           modalLoadAttribute()
+						           .target( modalSelector() )
+						           .content( actionCustomizer.apply( customizationContext ) )
+		           );
+	}
+
+	protected ModalViewElementBuilder createModal() {
+		return new ModalViewElementBuilder()
+				.name( modalId )
+				.centered( true )
+				.header( modalHeader() )
+				.body()
+				.footer();
+	}
+
+	protected ContainerViewElementBuilder modalHeader() {
+		return html.builders.container()
+		                    .add( html.builders.div( css.modal.title ) )
+		                    .add( html.builders.button()
+		                                       .attribute( "type", "button" )
+		                                       .with( css.close )
+		                                       .data( "dismiss", "modal" )
+		                                       .attribute( "aria-label", "Close" )
+		                                       .add( IconSet.iconSet( ICON_SET_FONT_AWESOME_SOLID ).icon( "times" )
+		                                                    .set( AcrossBootstrapStyles.css.text.danger )
+		                                                    .setAttribute( "aria-hidden", true ) )
+		                    );
+	}
+
+	protected String modalTarget( String target ) {
+		return modalSelector() + " " + target;
+	}
+
+	protected String modalSelector() {
+		return "#" + getModalId();
+	}
+}

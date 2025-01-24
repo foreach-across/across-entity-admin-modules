@@ -52,8 +52,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<revision>dev-SNAPSHOT</revision>
+		<!--
+		<foreach-common-bom.version>3.0.0</foreach-common-bom.version>
+		-->
 		<across-autoconfigure.version>dev-SNAPSHOT</across-autoconfigure.version>
 		<across-base-modules.version>dev-SNAPSHOT</across-base-modules.version>
+		<testcontainers-bom.version>1.16.2</testcontainers-bom.version>
+		<testcontainers-cypress.version>1.4.0</testcontainers-cypress.version>
 		<!-- webjar specific properties -->
 		<webjars.jquery>3.4.1</webjars.jquery>
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
@@ -86,11 +91,27 @@
 		<module>bootstrap-demo-app</module>
 		<module>application-info-module</module>
 		<module>application-info-module-test-web</module>
+		<module>experimental-module</module>
+		<module>experimental-test-application</module>
+		<!--<module>experimental-module-distribution-assembly</module>-->
 	</modules>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>${testcontainers-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.foreach.libs</groupId>
+				<artifactId>common-bom</artifactId>
+				<version>${foreach-common-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>			<dependency>
 				<groupId>com.foreach.across</groupId>
 				<artifactId>across-autoconfigure</artifactId>
 				<version>${across-autoconfigure.version}</version>
@@ -110,7 +131,13 @@
 				<artifactId>spring-security-module</artifactId>
 				<version>${across-base-modules.version}</version>
 			</dependency>
-
+			<dependency>
+				<!-- https://github.com/wimdeblauwe/testcontainers-cypress -->
+				<groupId>io.github.wimdeblauwe</groupId>
+				<artifactId>testcontainers-cypress</artifactId>
+				<version>${testcontainers-cypress.version}</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
